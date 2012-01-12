@@ -1,0 +1,288 @@
+<html>
+  <head>
+    <title>Maji third-party JARs</title>
+  </head>
+
+  <body>
+    <!- ------------------------------------------------------------------- -->
+
+    <h2>Maji third-party JARs</h2>
+    <p>
+      This repository contains all of the third-party JARs required to build
+      and run the Maji system. It also contains the maji meem and system jars
+      which constitute the meem API.
+    </p>
+    <p>
+      <b>Note:</b> When committing new JARs or newer versions ...
+      <ul>
+        <li>Remove the version number from the JAR's name</li>
+        <li>Document the version number in the CVS log</li>
+      </ul>
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Ant build tool - ant.jar</h3>
+    <h4>
+      <a href="http://ant.apache.org">
+               http://ant.apache.org
+      </a>
+    </h4>
+    <p>
+      Ant build tool. Required for the launcher that ships with the installer.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Bouncy Castle provider - bcprov.jar</h3>
+    <h4>
+      <a href="http://www.bouncycastle.org">
+               http://www.bouncycastle.org
+      </a>
+    </h4>
+    <p>
+      Java JCE security providers.  Used in Maji for creating certificates.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Bean Scripting Framework - bsf.jar</h3>
+    <h4>
+      <a href="http://jakarta.apache.org/bsf">
+               http://jakarta.apache.org/bsf
+      </a>
+    </h4>
+    <p>
+      Apache Jakarta Bean Scripting Framework (BSF) used by Maji to allow
+      interactive scripting by other languages.  In particular, BeanShell.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>BeanShell interactive Java scripting - bsh.jar version 2.0b1</h3>
+    <h4>
+      <a href="http://www.beanshell.org">
+               http://www.beanshell.org
+      </a>
+    </h4>
+    <p>
+      Provides an interactive Java scripting language that can be embedded
+      within applications.  Works with BSF.
+    </p>
+    <p>
+      Note: For BSH version 1.2b7.
+      Since BSH has moved from IBM to Apache, the BeanShellBSFEngine source
+      needed to be updated so that it uses "org.apache.bsf.*" packages, not
+      the old "com.ibm.bsf.*" packages.
+      This bsh.jar has been updated accordingly.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Jini Davis JARs - davis/*.jar</h3>
+    <h4>
+      <a href="http://davis.jini.org">
+               http://davis.jini.org
+      </a>
+    </h4>
+    <p>
+      Jini Davis project libraries.
+      These are replacement libraries for the Jini SDK that provide
+      RMI security features.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Eclipse IDE JARs - eclipse/*.jar</h3>
+    <h4>
+      <a href="http://www.eclipse.org">
+               http://www.eclipse.org
+      </a>
+    </h4>
+    <p>
+      Eclipse Integrated Developer Environment (IDE) for Java.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>GNU command line parser - getopt.jar</h3>
+    <h4>
+      <a href="http://www.gnu.org/software/java/java-software.html">
+               http://www.gnu.org/software/java/java-software.html
+      </a>
+    </h4>
+    <p>
+      Command line parser (getopt) used by the Maji Launch for
+      stand-alone JVMs.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Install Anyware classes - IAClasses.zip</h3>
+    <h4>
+		Pinched from the enterprise installed version of Install Anywhere
+    </h4>
+    <p>
+      This is only needed to build the majitek-install project.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>JavaBeans Activation Framework- activation.jar</h3>
+    <h4>
+      <a href="http://java.sun.com/beans/glasgow/jaf.html">
+               http://java.sun.com/beans/glasgow/jaf.html 
+      </a>
+    </h4>
+    <p>
+      Required by JavaMail (and thus MeeMail).
+
+      JavaBeans Activation Framework provides services to determine the type
+      of an arbitrary piece of data, encapsulate access to it, discover the
+      operations available on it, and to instantiate the appropriate bean to
+      perform said operation(s).  
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+    
+    <h3>Java Development Tools - jdtcore.jar</h3>
+    <h4>
+      <a href="http://www.eclipse.org">
+               http://www.eclipse.org
+      </a>
+    </h4>
+    <p>
+      Provides bytecode parser for classlibrary. This jar comes from the
+      org.eclipse.jdt.core_2.1.0 eclipse plugin.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>JavaMail - mail.jar</h3>
+    <h4>
+      <a href="http://java.sun.com/products/javamail/">
+               http://java.sun.com/products/javamail/
+      </a>
+    </h4>
+    <p>
+      Required by MeeMail.
+
+      The JavaMail 1.3.1 API provides a set of abstract classes that model a
+      mail system. The API provides a platform independent and protocol
+      independent framework to build Java technology-based mail and messaging
+      applications. 
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Java Serialization to XML - jsx.jar</h3>
+    <h4>
+      <a href="http://www.csse.monash.edu.au/~bren/JSX">
+               http://www.csse.monash.edu.au/~bren/JSX
+      </a>
+    </h4>
+    <p>
+      Provides Java object importing and exporting in XML format.
+      Used by MeemSpace to provide MemeDefinition and MeemContent
+      persistence.
+    </p>
+    <p>
+      This JAR must be licensed for commercial use - WHICH WE HAVE
+      NOT DONE YET.  We'll have to decide whether to purchase or
+      replace this JARS.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>JUnit (unit testing) - junit.jar</h3>
+    <h4>
+      <a href="http://www.junit.org">
+               http://www.junit.org
+      </a>
+    </h4>
+    <p>
+      Provides command line and GUI unit testing tools.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Maji meem and system API - maji/maji-meem.jar, maji/maji-system.jar</h3>
+    <h4>
+      <a href="http://www.majitek.com">
+               http://www.majitek.com
+      </a>
+    </h4>
+    <p>
+      The Maji meem API jars - not 3rd party.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+
+    <h3>Software Zoo library - swzoo.jar</h3>
+    <h4>
+      <a href="http://www.swzoo.org">
+               http://www.swzoo.org
+      </a>
+    </h4>
+    <p>
+      Contains general utilities and sub-systems. such as the Logging
+      infrastructure.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+    
+    <h3>Apache XML-RPC - xmlrpc.jar</h3>
+    <h4>
+      <a href="http://ws.apache.org/xmlrpc">
+               http://ws.apache.org/xmlrpc
+      </a>
+    </h4>
+    <p>
+      Java implementation of XML-RPC , a protocol that uses XML over HTTP to implement remote procedure calls.
+    </p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+    
+    <h3>Jetty Web Server and Servlet Container - jetty/javax.servlet.jar, jetty/org.mortbay.jetty.jar</h3>
+    <h4>
+      <a href="http://jetty.mortbay.org/jetty/">
+               http://jetty.mortbay.org/jetty/
+      </a>
+    </h4>
+    <p>
+      Jetty is a 100% Java HTTP Server and Servlet Container, that can be easily included in another application.
+	</p>
+    <hr/>
+
+    <!- ------------------------------------------------------------------- -->
+    
+    <h3>Java Service Wrapper - a launcher/wrapper for Java services</h3>
+    <h4>
+      <a href="http://wrapper.tanukisoftware.org/">
+               http://wrapper.tanukisoftware.org/
+      </a>
+    </h4>
+    <p>
+      JSW is a multi-platform wrapper for Java services. It provides start, stop, restart and automatic restart.
+	</p>
+    <hr/>
+
+  </body>
+</html>

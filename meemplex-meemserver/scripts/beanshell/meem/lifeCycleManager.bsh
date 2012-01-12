@@ -1,0 +1,59 @@
+/*
+keywords:
+topic:
+description:
+endhelp:
+*/
+
+import org.openmaji.filter.*;
+import org.openmaji.helper.*;
+import org.openmaji.manager.lifecycle.*;
+import org.openmaji.meem.*;
+import org.openmaji.meem.definition.*;
+import org.openmaji.meem.aspect.wedge.reference.*;
+import org.openmaji.manager.registry.*;
+import org.openmaji.space.*;
+
+import org.openmaji.implementation.meem.test.HelloWorld;
+import org.openmaji.implementation.utility.*;
+
+LifeCycleManagerClient lcmClient = new LifeCycleManagerClient() {
+  void meemCreated(
+    Meem   meem,
+    String identifier) {
+
+    print("Created:    " + meem.getMeemPath());
+    print("Identifier: " + identifier);
+  }
+
+  void meemDestroyed(
+    Meem meem) {
+
+    print("Transition DORMANT_ABSENT:  " + meem.getMeemPath());
+  }
+};
+
+MeemPath meemRegistryMeemPath =
+  MeemPath.spi.create(Space.TRANSIENT, MeemRegistry.spi.getIdentifier());
+
+MeemPath helloWorldMeemPath =
+  MeemPath.spi.create(Space.TRANSIENT, HelloWorld.IDENTIFIER);
+
+Reference lcmClientReference = Reference.spi.create(
+   "lifeCycleManagerClient",
+   lcmClient,
+   true,
+   null                                        // No filter
+// new ExactMatchFilter(meemRegistryMeemPath)  // Filter MeemRegistry
+// new ExactMatchFilter(helloWorldMeemPath)    // Filter HelloWorld MeemPath
+// new ExactMatchFilter("helloWorld")          // Filter HelloWorld identifier
+);
+
+MeemPath lcmMeemPath =
+  MeemPath.spi.create(Space.TRANSIENT, LifeCycleManager.spi.getIdentifier());
+
+Meem lcmMeem = MeemRegistryGateway.Singleton.get().locateMeem(lcmMeemPath);
+
+lcmMeem.addOutboundReference(lcmClientReference, false);
+
+scriptLoaded("lifeCycleManager.bsh");

@@ -1,0 +1,76 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     create category performance test
+topic:        create lots of category Meems for performance and memory usage
+description:
+
+  This beanshell script is used to test Meem category creation performance. The
+  first parameter is the base category the other category meems should be made in,
+  the second parameter is the depth to create the categories to, and the third parameter is
+  the number of categories/meems to create in each category.
+
+usage:
+
+    source("test/createCategories_test.bsh");
+    createCategories("/base", 10, 10);
+
+endhelp:
+*/
+
+if (scriptNotLoaded("binary.bsh")) {
+  source(scriptBase + "automation/binary.bsh");
+}
+
+/*
+function: createPersistentMeems
+functionDescription: test Meem creation performance by creating a number of persistent meems
+functionType: void
+argument: quantity
+argumentDescription: The number of meems to create
+argumentType: int
+argument: categoryPath
+argumentDescription: The category to create the meems in
+argumentType: String
+functionEnd:
+*/
+
+void createCategories(
+  String base,
+  int    	depth,
+  int      entriesPerCategory) {
+
+  categoryMeem = getMeem(base);
+
+  if (categoryMeem != null) {
+    print("Must use a new Category name for the base!");
+  }
+  else {
+    HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+
+    categoryMeem = hsh.createPath(base);
+
+    for (int index = 0; index < entriesPerCategory; index ++) 
+    {
+    	Meem last = categoryMeem;
+    	String path = base;
+    	
+		for (int level = 0; level < depth; level++) 
+		{
+			entryName = "l" + level + "n" + index;
+	      	path = path + "/" + entryName;
+
+			last = createCategory(last, entryName);
+	    }
+	    
+	    path = path + "/b" + index;
+	    
+	    binaryMeem = createBinaryMeem(path);
+    }
+  }
+}

@@ -1,0 +1,84 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     multiple meemServer
+topic:        create and test remote Meems
+description:
+
+  This beanshell script is used to test multiple meemServers.
+
+usage:
+
+    source("test/remoteMeem_test.bsh");
+
+endhelp:
+*/
+
+if (scriptNotLoaded("dependency.bsh")) {
+  source(scriptBase + "dependency.bsh");
+}
+if (scriptNotLoaded("binary.bsh")) {
+  source(scriptBase + "automation/binary.bsh");
+}
+
+Binary createClientMeem(
+  String serverMeemUID) {
+
+  clientMeem = createBinaryMeem();
+  createBinaryMonitor(clientMeem);
+
+  serverMeemPath = MeemPath.spi.create(Space.MEEMSTORE, serverMeemUID);
+
+  serverMeem = MeemRegistryGateway.Singleton.get().locateMeem(serverMeemPath);
+
+  addDependency(clientMeem, "binaryClient", serverMeem, "binary");
+
+  return(getBinary(clientMeem));
+}
+
+void createTransientServerMeem() {
+  serverMeem = createBinaryMeem();
+
+  createBinaryMonitor(serverMeem);
+}
+
+void createPermanentServerMeem(
+  String meemPath) {
+
+  serverMeem = createBinaryMeem(meemPath);
+
+  createBinaryMonitor(serverMeem);
+}
+
+void createEssentialServerMeem(
+  String meemPath) {
+
+  wedgeClasses = new Class[] {
+    org.openmaji.implementation.domain.common.BinaryWedge.class,
+    org.openmaji.implementation.domain.automation.loopback.LoopbackBinaryWedge.class
+  };
+
+  Iterator wedgeIterator = Arrays.asList(wedgeClasses).iterator();
+
+  DefinitionFactory definitionFactory = DefinitionFactory.spi.create();
+
+  MeemDefinition serverMeemDefinition =
+    definitionFactory.createMeemDefinition(wedgeIterator);
+
+  elcm = EssentialMeemHelper.getEssentialMeemPath(
+    "essentialLifeCycleManager"
+  );
+
+  serverMeem = LifeCycleManagerHelper.createMeem(
+    serverMeemDefinition, elcm, LifeCycleState.READY
+  );
+
+  createBinaryMonitor(serverMeem);
+}
+
+scriptLoaded("remoteMeem_test.bsh");

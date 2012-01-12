@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence">
+	<persistence-unit name="meemstore" transaction-type="RESOURCE_LOCAL">
+	<!-- 
+		<provider>oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider</provider>
+-->		
+<!-- 
+		<provider>oracle.toplink.essentials.PersistenceProvider</provider>
+		 -->
+		 
+		<class>org.openmaji.implementation.server.space.meemstore.jpa.MeemEntity</class>
+		<class>org.openmaji.implementation.server.space.meemstore.jpa.WedgeEntity</class>
+		<class>org.openmaji.implementation.server.space.meemstore.jpa.FacetEntity</class>
+		<class>org.openmaji.implementation.server.space.meemstore.jpa.ContentEntity</class>
+
+		<properties>
+		
+			<property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/test" />
+			<property name="toplink.jdbc.user" value="root" />
+			<property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="toplink.jdbc.password" value="" />
+
+			<property name="toplink.ddl-generation" value="create-tables" />
+		</properties>
+	</persistence-unit>
+</persistence>

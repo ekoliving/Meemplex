@@ -1,0 +1,329 @@
+/*
+keywords:     create remove edit user users group group management password
+topic:        User and group maintenance.
+description:
+
+  Use the following functions maintain users and group privileges.
+  
+  addUser(String userName, String fullUserName, String groupName, String userPassword)
+  addUser(String userName, String fullUserName, String emailAddress, String groupName, String userPassword)
+  removeUser(String userName)
+  changePassword(String userName, String oldPassword, String newPassword)
+  addAccess(String userOrGroupName,  MeemPath path, AccessLevel level)
+  removeAccess(String userOrGroupName, MeemPath path)
+  listUsers()
+  listUserDetails()
+  groups()
+
+  Available access levels are:
+  
+  AccessLevel.DENY
+  AccessLevel.READ
+  AccessLevel.WRITE
+  AccessLevel.READ_WRITE
+  AccessLevel.CONFIGURE
+  AccessLevel.ADMINISTER
+  
+  When a user is created they are given ADMINISTER level access to their home
+  category.
+  
+  To connect to a Meem a user needs at least READ level access, to get a Meem to
+  return an inbound proxy facet a user needs at least WRITE level access. CONFIGURE
+  access allows a user to change a meems CONFIGURATION properties and 
+  ADMINISTER allows a user to do anything.
+
+endhelp:
+*/
+
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.security.Principal;
+
+import org.openmaji.system.gateway.ServerGateway;
+import org.openmaji.system.manager.user.GroupManagement;
+import org.openmaji.system.meemserver.MeemServer;
+
+import org.openmaji.implementation.server.security.auth.CoreAdminHelper;
+import org.openmaji.system.meem.hook.security.AccessLevel;
+import org.openmaji.system.meem.hook.security.AccessLevel;
+import org.openmaji.system.meem.hook.security.AccessControl;
+import org.openmaji.system.meem.hook.security.GroupPrincipal;
+
+if (scriptNotLoaded("category.bsh")) {
+  source(scriptBase + "category.bsh");
+}
+
+/*
+function: userExists
+functionDescription: return if a user with the passed in userName already exists.
+functionType: boolean
+argument: userName
+argumentDescription: The login ID for the user being looked for.
+argumentType: String
+functionEnd:
+*/
+boolean userExists(String userName)
+{
+    Iterator it = CoreAdminHelper.getUsers();
+    while (it.hasNext())
+    {
+        if (it.next().equals(userName))
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+/*
+function: addUser
+functionDescription: add a user to the meemServer placing them in the given group.
+functionType: void
+argument: userName, fullUserName, groupName, userPassword
+argumentDescription: The login ID for the user, the full name for the user, the group ID for the user, the user's password.
+argumentType: String, String, String, String
+functionEnd:
+*/
+void addUser(String userName, String fullUserName, String groupName, String userPassword)
+{
+     addUser(userName, fullUserName, null, groupName, userPassword);
+}
+
+/*
+function: addUser
+functionDescription: add a user to the meemServer placing them in the given group.
+functionType: void
+argument: userName, fullUserName, emailAddress, groupName, userPassword
+argumentDescription: The login ID for the user, the full name for the user, the email address for the user, the group ID for the user, the user's password.
+argumentType: String, String, String, String, String
+functionEnd:
+*/
+void addUser(String userName, String fullUserName, String emailAddress, String groupName, String userPassword)
+{
+    if (userExists(userName))
+    {
+        throw new RuntimeException("User with userName = " + userName + " already exists.");
+    }
+    
+  	CoreAdminHelper.addUser(userName, fullUserName, emailAddress, userPassword.toCharArray());
+  	
+  	Meem             meem = ServerGateway.spi.create().getMeem(MeemPath.spi.create(Space.HYPERSPACE, MeemServer.spi.getEssentialMeemsCategoryLocation() + "/userManager"));
+  	GroupManagement  groupMgr = ReferenceHelper.getTarget(meem, "userGroupManagement", GroupManagement.class);
+  	
+  	groupMgr.memberAdded(groupName, userName);
+  	
+  	Meem category = Meem.spi.get(MeemPath.spi.create(Space.HYPERSPACE,"/user"));
+  	Meem home = getMeem(category, userName);
+  	
+  	if (home == null)
+  	{
+  		home = createCategory(Meem.spi.get(MeemPath.spi.create(Space.HYPERSPACE,"/user")), userName);
+  	}
+
+	addAccess(userName, home.getMeemPath(), AccessLevel.ADMINISTER);
+}
+
+/*
+function: removeUser
+functionDescription: remove a user from the server.
+functionType: void
+argument: userID
+argumentDescription: The login ID for the user to be removed.
+argumentType: String
+functionEnd:
+*/
+void removeUser(String userID)
+{
+	CoreAdminHelper.removeUser(userID);
+	
+	Meem             meem = ServerGateway.spi.create().getMeem(MeemPath.spi.create(Space.HYPERSPACE, MeemServer.spi.getEssentialMeemsCategoryLocation() + "/userManager"));
+  	GroupManagement  groupMgr = ReferenceHelper.getTarget(meem, "userGroupManagement", GroupManagement.class);
+  	
+  	groupMgr.memberRemoved(userID);
+}
+
+/*
+function: changePassword
+functionDescription: changes a user's password. oldPassword can be null if system user.
+functionType: void
+argument: userID, oldPassword, newPassword
+argumentDescription: The login ID for the user to be changed, the old password, the new password.
+argumentType: String, String, String
+functionEnd:
+*/
+void changePassword(String userID, String oldPassword, String newPassword)
+{
+	CoreAdminHelper.changePassword(userID, oldPassword.toCharArray(), newPassword.toCharArray());
+}
+
+/*
+function: addAccess
+functionDescription: grant the passed in access level to the user/group presented to the given meem.
+functionType: void
+argument: userOrGroupID, meemPath, level
+argumentDescription: The ID for the user/group, the meemPath affected and the access level to be granted.
+argumentType: String, MeemPath, AccessLevel
+functionEnd:
+*/
+void addAccess(String userOrGroupID, MeemPath meemPath, AccessLevel level)
+{
+    if (userOrGroupID.equals("system"))
+    {
+    	return;
+    }
+    
+	Meem	                meem = Meem.spi.get(meemPath);
+	AccessControl	control = ReferenceHelper.getTarget(meem, "accessControl", AccessControl.class);
+	
+	Principal				principal = CoreAdminHelper.getPrincipal(userOrGroupID);
+	
+	if (principal == null)
+	{
+	    throw new RuntimeException("no principal found for " + userOrGroupID);
+	}
+	
+	control.addAccess(principal, level);
+}
+
+/*
+function: addAccess
+functionDescription: grant the passed in access level to the user/group presented to the given meem.
+functionType: void
+argument: userOrGroupID, hyperSpacePath, level
+argumentDescription: The ID for the user/group, the hyperSpacePath affected and the access level to be granted.
+argumentType: String, String, AccessLevel
+functionEnd:
+*/
+void addAccess(String userOrGroupID, String hyperSpacePath, AccessLevel level)
+{
+    addAccess(userOrGroupID, MeemPath.spi.create(Space.HYPERSPACE, hyperSpacePath), level);
+}
+
+/*
+function: removeAccess
+functionDescription: remove access to the user/group presented to the given meem.
+functionType: void
+argument: userOrGroupID, meemPath
+argumentDescription: The ID for the user/group and the meemPath affected.
+argumentType: String, MeemPath
+functionEnd:
+*/
+void removeAccess(String userOrGroupID, MeemPath meemPath)
+{
+    if (userOrGroupID.equals("system"))
+    {
+    	return;
+    }
+    
+	Meem	                meem = Meem.spi.get(meemPath);
+	AccessControl	control = ReferenceHelper.getReference(meem, "accessControl", AccessControl.class);
+	
+	Principal				principal = CoreAdminHelper.getPrincipal(userOrGroupID);
+	
+	if (principal == null)
+	{
+	    principal = CoreAdminHelper.getGroupPrincipal(userOrGroupID);
+	}
+	
+	if (principal == null)
+	{
+	    throw new RuntimeException("no principal found for " + userOrGroupID);
+	}
+	
+	control.removeAccess(principal);
+}
+
+/*
+function: removeAccess
+functionDescription: remove access to the user/group presented to the given meem.
+functionType: void
+argument: userOrGroupID, hyperSpacePath
+argumentDescription: The ID for the user/group, the hyperSpacePath affected and the access level to be granted.
+argumentType: String, String
+functionEnd:
+*/
+void removeAccess(String userOrGroupID, String hyperSpacePath)
+{
+    removeAccess(userOrGroupID, MeemPath.spi.create(Space.HYPERSPACE, hyperSpacePath));
+}
+
+/*
+function: listUsers
+functionDescription: list the userids with access to the system.
+functionType: void
+functionEnd:
+*/
+void listUsers()
+{
+    Iterator it = CoreAdminHelper.getUsers();
+    while (it.hasNext())
+    {
+        print(it.next());
+    }
+}
+
+private String pad(String baseStr, int length)
+{
+    if (baseStr.length() > length)
+    {
+        return " ";
+    }
+    else
+    {
+    	length = length - baseStr.length();
+    	
+    	StringBuffer	buf = new StringBuffer(length);
+    	
+    	for (int i = 0; i != length; i++)
+    	{
+    	    buf.append(' ');
+    	}
+    	
+    	return buf.toString();
+    }
+}
+
+/*
+function: listUserDetails
+functionDescription: list the userids with access to the system, together with their full name and email address.
+functionType: void
+functionEnd:
+*/
+void listUserDetails()
+{
+    Iterator it = CoreAdminHelper.getUserDetails();
+    
+    print("User ID   User Name                     Email Address");
+    
+    while (it.hasNext())
+    {
+    	String[]	detail = (String[])it.next();
+        
+		if (detail[2] != null)
+		{
+			print(detail[0] + pad(detail[0], 10) + detail[1] + pad(detail[1], 30) + detail[2]);
+		}
+		else
+		{
+		    print(detail[0] + pad(detail[0], 10) + detail[1]);
+		}
+    }
+}
+
+/*
+function: groups
+functionDescription: list the groups the current user is in.
+functionType: void
+functionEnd:
+*/
+void groups()
+{
+    Iterator it = CoreAdminHelper.getGroups();
+    while (it.hasNext())
+    {
+        print(((GroupPrincipal)it.next()).getName());
+    }
+}
+
+scriptLoaded("useradmin.bsh");

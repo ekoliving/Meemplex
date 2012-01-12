@@ -1,0 +1,85 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     create performance test
+topic:        create lots of Meems for performance and memory usage.
+description:
+
+  This beanshell script is used to test Meem creation performance.
+
+usage:
+
+    source("test/createMeems_test.bsh");
+    createTransientMeems(2000);
+    createPersistentMeems(2000, "/someCategory");
+
+endhelp:
+*/
+
+if (scriptNotLoaded("binary.bsh")) {
+  source(scriptBase + "automation/binary.bsh");
+}
+
+/*
+function: createTransientMeems
+functionDescription: test Meem creation performance by creating a number of transient meems
+functionType: void
+argument: quantity
+argumentDescription: The number of meems to create
+argumentType: int
+functionEnd:
+*/
+
+void createTransientMeems(
+  int quantity) {
+
+  for (int index = 0; index < quantity; index ++) {
+    binaryMeem = createBinaryMeem();
+    if (( index % 100) == 0 ) { 
+      print (index); 
+    }
+  }
+}
+
+/*
+function: createPersistentMeems
+functionDescription: test Meem creation performance by creating a number of persistent meems
+functionType: void
+argument: quantity
+argumentDescription: The number of meems to create
+argumentType: int
+argument: categoryPath
+argumentDescription: The category to create the meems in
+argumentType: String
+functionEnd:
+*/
+
+void createPersistentMeems(
+  int    quantity,
+  String categoryPath) {
+
+  categoryMeem = getMeem(categoryPath);
+
+  if (categoryMeem != null) {
+    print("Must use a new Category name !");
+  }
+  else {
+    HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+
+    hsh.createPath(categoryPath);
+
+    for (int index = 0; index < quantity; index ++) {
+      String categoryPath = categoryPath + "/" + index;
+
+      binaryMeem = createBinaryMeem(categoryPath);
+      if (( index % 100) == 0 ) { 
+        print (index); 
+      }
+    }
+  }
+}

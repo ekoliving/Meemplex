@@ -1,0 +1,108 @@
+/*
+ * @(#)example_02.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - Replace BinaryMeem with real SkiLift Meem.
+ */
+
+/*
+keywords:    example ski
+topic:       An example that creates a hyperspace category of Australian Ski lifts
+description:
+
+    An example for obtaining the status of various ski lifts in Australian
+    ski fields.
+ 
+  Usage:
+
+    source("example/example_02.bsh");
+    example_02_setup();
+ 
+  Virgin HyperSpace/MeemStore:
+    hyperSpace:/
+      example/
+        example_02/
+          australia/
+            victoria/
+              <skiField>/
+                <skiLift> ...
+endhelp:
+
+*/
+
+import org.openmaji.helper.HyperSpaceHelper;
+
+if (scriptNotLoaded("binary.bsh")) {
+  source(scriptBase + "automation/binary.bsh");
+}
+
+/*
+function: createSkiLift
+functionDescription: Create a binary meem representing the state of a ski-lift
+functionType: void
+functionEnd:
+*/
+
+void createSkiLift(String pathname)
+{
+  createBinaryMeem(pathname); // don't create a loopback binary, create something else
+}
+
+/*
+function: example_02_setup
+functionDescription: Create an example of meems representing if ski-lifts at various ski-fields are open or not
+functionType: void
+functionEnd:
+*/
+
+void example_02_setup()
+{
+  print("victoria/fallsCreek/");
+  HyperSpaceHelper.getInstance().createPath("/example/example_02/australia/victoria/fallsCreek");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/eagle");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/gully");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/halleysComet");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/international");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/lakeside");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/panorama");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/playground");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/ruinedCastle");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/scott");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/summit");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/tomthumb");
+  createSkiLift("/example/example_02/australia/victoria/fallsCreek/towers");
+
+  print("victoria/mountHotham/");
+  HyperSpaceHelper.getInstance().createPath("/example/example_02/australia/victoria/mountHotham");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/australiaDrift");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/bigD");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/blueRibbon");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/heavenlyValley");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/mountHothamSummit");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/orchard");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/roadRunner");
+  createSkiLift("/example/example_02/australia/victoria/mountHotham/villageChair");
+
+  print("newSouthWales/charlottePass/");
+  HyperSpaceHelper.getInstance().createPath("/example/example_02/australia/newSouthWales/charlottePass");
+  createSkiLift("/example/example_02/australia/newSouthWales/charlottePass/basinPoma");
+  createSkiLift("/example/example_02/australia/newSouthWales/charlottePass/guthriesPoma");
+  createSkiLift("/example/example_02/australia/newSouthWales/charlottePass/kangarooRidgeTriple");
+  createSkiLift("/example/example_02/australia/newSouthWales/charlottePass/pulpitTBar");
+  createSkiLift("/example/example_02/australia/newSouthWales/charlottePass/ropeTow");
+
+  print("tasmania/mountMawson/");
+  HyperSpaceHelper.getInstance().createPath("/example/example_02/australia/tasmania/mountMawson");
+  createSkiLift("/example/example_02/australia/tasmania/mountMawson/beginners");
+  createSkiLift("/example/example_02/australia/tasmania/mountMawson/mawson");
+  createSkiLift("/example/example_02/australia/tasmania/mountMawson/rodway");
+  createSkiLift("/example/example_02/australia/tasmania/mountMawson/university");
+}
+
+scriptLoaded("example_02.bsh");

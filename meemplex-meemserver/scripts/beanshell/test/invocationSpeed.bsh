@@ -1,0 +1,98 @@
+/*
+ * Copyright 2004 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     create performance test invocation
+topic:        generates many meem involcations for performance and memory usage.
+description:
+
+  This beanshell script is used to test Meem invocation performance.
+
+usage:
+
+    source("test/invocationSpeed.bsh");
+    invokeTransientMeem(1000);
+    invokePersistentMeem(1000,"/someCategory");
+
+    Sample results on a Centrino 1.7Ghz
+    100,000 binary transient invocations = 26 seconds
+    100,000 binary persistent invocations = 27 seconds
+
+endhelp:
+*/
+
+if (scriptNotLoaded("binary.bsh")) {
+  source(scriptBase + "automation/binary.bsh");
+}
+
+/*
+function: invokeTransientMeem
+functionDescription: test Meem invocation performance by invoking transient meems
+functionType: void
+argument: quantity
+argumentDescription: The number of invocations on the meem
+argumentType: int
+functionEnd:
+*/
+
+void invokeTransientMeem(
+  int quantity) {
+
+  binaryMeem = createBinaryMeem();
+  b = getBinary(binaryMeem);
+  value = true;
+
+  print("Commencing " + quantity + " invocations on a binary transient meem.");
+  print("Commence: " + new Date());
+  for (int index = 0; index < quantity; index ++) {
+    b.valueChanged(value);
+    value = (! value);
+  }
+  print("Conclude: " + new Date());
+}
+
+/*
+function: invokePersistentMeem
+functionDescription: test Meem invocation performance by invoking persistent meems
+functionType: void
+argument: quantity
+argumentDescription: The number of meem invocations
+argumentType: int
+argument: categoryPath
+argumentDescription: The category to create the meem in
+argumentType: String
+functionEnd:
+*/
+
+void invokePersistentMeem(
+  int    quantity,
+  String categoryPath) {
+  categoryMeem = getMeem(categoryPath);
+
+  if (categoryMeem != null) {
+    print("Must use a new Category name !");
+  }
+  else {
+    HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+
+    hsh.createPath(categoryPath);
+    String categoryPath = categoryPath + "/persistentBinaryMeem" ;
+
+    binaryMeem = createBinaryMeem(categoryPath);
+    b = getBinary(binaryMeem);
+    value = true;
+
+    print("Commencing " + quantity + " invocations on a persistent binary meem.");
+    print("Commence: " + new Date());
+    for (int index = 0; index < quantity; index ++) {
+      b.valueChanged(value);
+      value = (! value);
+    }
+    print("Conclude: " + new Date());
+
+  }
+}

@@ -1,0 +1,185 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None, yet.
+ */
+
+/*
+keywords:     binary create helper logic
+topic:        create and manipulate binary logic meems
+description:
+
+  This beanshell script is used to build and test Binary Logic Meems.
+  For example, BinaryNOT, BinaryAND2, BinaryOR2 and BinaryXOR2 Meems.
+
+usage:
+
+    source("automation/logic.bsh");
+    transientNOTMeem = createBinaryNOTMeem();
+    createBinaryMonitor(transientNOTMeem);
+    binaryNOT = getBinary(transientNOTMeem);
+    binaryNOT.valueChanged(true);
+    binaryNOT.valueChanged(false);
+
+    transientAND2Meem = createBinaryAND2Meem();
+    createBinaryMonitor(transientAND2Meem);
+    binaryAND2Input1 = getBinary(transientAND2Meem, "binaryInput");
+    binaryAND2Input2 = getBinary(transientAND2Meem, "binary");
+    binaryAND2Input1.valueChanged(true);
+    binaryAND2Input2.valueChanged(true);
+    binaryAND2Input1.valueChanged(false);
+    binaryAND2Input2.valueChanged(false);
+
+    transientOR2Meem = createBinaryOR2Meem();
+    createBinaryMonitor(transientOR2Meem);
+    binaryOR2Input1 = getBinary(transientOR2Meem, "binaryInput");
+    binaryOR2Input2 = getBinary(transientOR2Meem, "binary");
+    binaryOR2Input1.valueChanged(true);
+    binaryOR2Input2.valueChanged(true);
+    binaryOR2Input1.valueChanged(false);
+    binaryOR2Input2.valueChanged(false);
+
+    transientXOR2Meem = createBinaryXOR2Meem();
+    createBinaryMonitor(transientXOR2Meem);
+    binaryXOR2Input1 = getBinary(transientXOR2Meem, "binaryInput");
+    binaryXOR2Input2 = getBinary(transientXOR2Meem, "binary");
+    binaryXOR2Input1.valueChanged(true);
+    binaryXOR2Input2.valueChanged(true);
+    binaryXOR2Input1.valueChanged(false);
+    binaryXOR2Input2.valueChanged(false);
+
+    persistentBinaryNOTMeem = createBinaryNOTMeem("/path/in/hyperspace");
+    persistentBinaryAND2Meem = createBinaryAND2Meem("/path/in/hyperspace");
+    persistentBinaryOR2Meem = createBinaryOR2Meem("/path/in/hyperspace");
+    persistentBinaryXOR2Meem = createBinaryXOR2Meem("/path/in/hyperspace");
+
+endhelp:
+*/
+
+import org.openmaji.common.*;
+import org.openmaji.common.*;
+
+if (scriptNotLoaded("binary.bsh")) { source(scriptBase + "automation/binary.bsh"); }
+
+/*
+function: createBinaryNOTMeem
+functionDescription: Create a transient binary NOT Meem that contains a BinaryNOTWedge 
+functionType: Meem
+functionEnd:
+*/
+
+Meem createBinaryNOTMeem()
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryNOTWedge.class };
+  return assembleMeem(wedges);
+}
+
+/*
+function: createBinaryNOTMeem
+functionDescription: Create a persistent binary NOT Meem that contains a BinaryNOTWedge 
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createBinaryNOTMeem(String path)
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryNOTWedge.class };
+  return assembleMeem(wedges,path);
+}
+
+/*
+function: createBinaryAND2Meem
+functionDescription: Create a transient binary AND Meem with 2 inputs, that contains a BinaryAND2Wedge and a BinaryWedge
+functionType: Meem
+functionEnd:
+*/
+
+Meem createBinaryAND2Meem()
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryAND2Wedge.class, org.openmaji.implementation.common.BinaryWedge.class };
+  return assembleMeem(wedges);
+}
+
+/*
+function: createBinaryAND2Meem
+functionDescription: Create a persistent binary AND Meem with 2 inputs, that contains a BinaryAND2Wedge and a BinaryWedge 
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createBinaryAND2Meem(String path)
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryAND2Wedge.class, org.openmaji.implementation.common.BinaryWedge.class };
+  return assembleMeem(wedges,path);
+}
+
+/*
+function: createBinaryOR2Meem
+functionDescription: Create a transient binary OR Meem with 2 inputs, that contains a BinaryOR2Wedge and a BinaryWedge
+functionType: Meem
+functionEnd:
+*/
+
+Meem createBinaryOR2Meem()
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryOR2Wedge.class, org.openmaji.implementation.common.BinaryWedge.class };
+  return assembleMeem(wedges);
+}
+
+/*
+function: createBinaryOR2Meem
+functionDescription: Create a persistent binary OR Meem with 2 inputs, that contains a BinaryOR2Wedge and a BinaryWedge 
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createBinaryOR2Meem(String path)
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryOR2Wedge.class, org.openmaji.implementation.common.BinaryWedge.class };
+  return assembleMeem(wedges,path);
+}
+
+/*
+function: createBinaryXOR2Meem
+functionDescription: Create a transient binary XOR Meem with 2 inputs, that contains a BinaryXOR2Wedge and a BinaryWedge
+functionType: Meem
+functionEnd:
+*/
+
+Meem createBinaryXOR2Meem()
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryXOR2Wedge.class, org.openmaji.implementation.common.BinaryWedge.class };
+  return assembleMeem(wedges);
+}
+
+/*
+function: createBinaryXOR2Meem
+functionDescription: Create a persistent binary XOR Meem with 2 inputs, that contains a BinaryXOR2Wedge and a BinaryWedge
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createBinaryXOR2Meem(String path)
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryXOR2Wedge.class, org.openmaji.implementation.common.BinaryWedge.class };
+  return assembleMeem(wedges,path);
+}
+
+scriptLoaded("logic.bsh");

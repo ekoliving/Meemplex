@@ -1,0 +1,310 @@
+/*
+keywords:    toolkit meemkit install pattern
+topic:       Adding pattern Meems to the Toolkit
+description:
+
+    This beanshell script contains functions that can be used to add Meems to the Toolkit.
+    You can either add them one at a time or in bulk using a meemkit descriptor file.
+
+  usage:
+  
+    A meemkit descriptor file is an XML document that specifies what pattern
+    Meems to add to the toolkit's Meem view and Wedge view. To search for all
+    available meemkit descriptor files:
+
+      source("meemkit.bsh");
+      meemkits();
+      
+    The 'core' meemkit is installed by default but all other meemkits must be
+    separately downloaded and installed. After you have downloaded and unpacked
+    a meemkit you need to install it:
+    
+      installMeemkit(String meemkitName);
+      
+    Some additional functions that you may find useful:
+
+      installAllMeemkits();
+      findMeemkits(String path);
+    
+    You can also install individual pattern Meems into the toolkit using the functions
+    indicated below.
+  
+      createToolkitMeemHierarchy("entertainment","common_meemkit_16.gif");
+      createToolkitMeemHierarchy("entertainment/audio","common_meemkit_16.gif");
+
+      Class[] wedges = new Class[] { com.redshoes.firstmeem.StereoController.class };
+      meemAbstract = new Abstract("Amplifier Controller");
+      meemAbstract.setDescription("......");
+      meemAbstract.setOverview("......");
+      meemAbstract.setCompany("......");
+      meemAbstract.setCopyright("......");
+      meemAbstract.setAuthor("......");
+      meemAbstract.setVersion("......");
+      addMeemToToolkit(wedges,"entertainment/audio","StereoController",meemAbstract);
+
+endhelp:
+*/
+
+import org.openmaji.system.meempool.metadata.Abstract;
+import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
+import org.openmaji.system.meemkit.core.MeemkitDescriptor;
+//import org.openmaji.implementation.gateway.manager.meemkit.SynchronousMeemkitManagerGateway;
+
+import org.openmaji.system.meemkit.core.MeemkitManager;
+import org.openmaji.server.helper.EssentialMeemHelper;
+
+SynchronousMeemkitManagerGateway meemkitManager;
+
+void setupMeemkitManager()
+{
+  if ( meemkitManager == null )
+  {
+    //meemkitManager = new SynchronousMeemkitManagerGateway();
+    //meemkitManager.initialise(100);
+    
+    Meem meemkitManagerMeem = EssentialMeemHelper.getEssentialMeem(MeemkitManager.spi.getIdentifier());
+    meemkitManager = (MeemkitManager) ReferenceHelper.getTarget(meemkitManagerMeem, MeemkitManager.spi.getIdentifier(), MeemkitManager.class);
+  }
+}
+
+/*
+function: meemkits
+functionDescription: Locate all meemkit descriptor files and pre-process them
+functionType: void
+functionEnd:
+*/
+
+void meemkits()
+{
+  setupMeemkitManager();
+  MeemkitDescriptor[] descriptors = meemkitManager.getMeemkitDescriptors();
+  for ( int i=0; i<descriptors.length; i++ )
+  {
+    MeemkitDescriptor descriptor = descriptors[i];
+    print(descriptor.getHeader().getName());
+  }
+}
+
+/*
+function: uninstallMeemkit
+functionDescription: Uninstalls a meemkit
+functionType: void
+argument: meemkitName
+argumentDescription: The name of the meemkit to uninstall
+argumentType: String
+functionEnd:
+*/
+
+void uninstallMeemkit(String name)
+{
+  setupMeemkitManager();
+  meemkitManager.uninstallMeemkit(name);
+}
+
+/*
+function: installMeemkit
+functionDescription: Installs a meemkit
+functionType: void
+argument: meemkitName
+argumentDescription: The name of the meemkit to install
+argumentType: String
+functionEnd:
+*/
+
+void installMeemkit(String name)
+{
+  setupMeemkitManager();
+  meemkitManager.installMeemkit(name);
+}
+
+/*
+function: installMeemkit
+functionDescription: Upgrade a meemkit given a URL
+functionType: void
+argument: URL
+argumentDescription: The URL of the meemkit to upgrade
+argumentType: URL
+functionEnd:
+*/
+
+void upgradeMeemkit(URL url)
+{
+  setupMeemkitManager();
+  meemkitManager.upgradeMeemkit(url);
+}
+
+/*
+function: installMeemkit
+functionDescription: Install the pattern Meems for a meemkit given a URL
+functionType: void
+argument: URL
+argumentDescription: The URL of the meemkit to install
+argumentType: URL
+functionEnd:
+*/
+
+void installMeemkit(URL url)
+{
+  setupMeemkitManager();
+  meemkitManager.installMeemkit(null,url);
+}
+
+/*
+function: addWedgeToToolkit
+functionDescription: Add a Wedge to the Toolkit
+functionType: void
+argument: applicationWedges
+argumentDescription: An array of wedge classes used to assemble the Meem
+argumentType: Class[]
+argument: categoryName
+argumentDescription: The category to add this Meem to, relative to the root of wedge patterns
+argumentType: String
+argument: meemName
+argumentDescription: The name to use for the category entry
+argumentType: String
+argument: meemAbstract
+argumentDescription: An Abstract describing the Meem
+argumentType: Abstract
+functionEnd:
+*/
+
+void addWedgeToToolkit(Class[] applicationWedges, String categoryName, String meemName, Abstract meemAbstract)
+{
+  String fullPathName = StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_WEDGE + "/" + categoryName + "/" + meemName;
+  addToToolkit(applicationWedges,fullPathName,meemAbstract);
+}
+
+/*
+function: addMeemToToolkit
+functionDescription: Add a Meem to the Toolkit
+functionType: void
+argument: applicationWedges
+argumentDescription: An array of wedge classes used to assemble the Meem
+argumentType: Class[]
+argument: categoryName
+argumentDescription: The category to add this Meem to, relative to the root of wedge patterns
+argumentType: String
+argument: meemName
+argumentDescription: The name to use for the category entry
+argumentType: String
+argument: meemAbstract
+argumentDescription: An Abstract describing the Meem
+argumentType: Abstract
+functionEnd:
+*/
+
+void addMeemToToolkit(Class[] applicationWedges, String categoryName, String meemName, Abstract meemAbstract)
+{
+  String fullPathName = StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_MEEM + "/" + categoryName + "/" + meemName;
+  addToToolkit(applicationWedges,fullPathName,meemAbstract);
+}
+
+/*
+function: addToToolkit
+functionDescription: Add a Meem to the Toolkit (meem or wedge view)
+functionType: void
+argument: applicationWedges
+argumentDescription: An array of wedge classes used to assemble the Meem
+argumentType: Class[]
+argument: fullPathName
+argumentDescription: The full path for the Meem
+argumentType: String
+argument: meemAbstract
+argumentDescription: An Abstract describing the Meem
+argumentType: Abstract
+functionEnd:
+*/
+
+void addToToolkit(Class[] applicationWedges, String fullPathName, Abstract meemAbstract)
+{
+  int numberApplicationWedges = applicationWedges.length;
+  Class[] meemWedges = new Class[numberApplicationWedges+2];
+  for ( int i=0; i<numberApplicationWedges; i++ ) meemWedges[i] = applicationWedges[i];
+  meemWedges[numberApplicationWedges] = org.openmaji.implementation.common.VariableMapWedge.class;
+  meemWedges[numberApplicationWedges+1] = org.openmaji.implementation.server.nursery.pattern.MeemPatternWedge.class;
+  Meem meem = assembleMeem(meemWedges,LifeCycleState.LOADED, LifeCycleState.LOADED,fullPathName);
+  variableMap = (VariableMap) ReferenceHelper.getTarget(meem, "variableMap", VariableMap.class);
+  variableMap.update(org.openmaji.system.presentation.InterMajik.ABSTRACT_KEY, meemAbstract);
+}
+
+/*
+function: createToolkitWedgeHierarchy
+functionDescription: Add a new category to the Toolkit wedge view using an icon from the default set
+functionType: void
+argument: categoryName
+argumentDescription: The name of the category within the Toolkit wedge view
+argumentType: String
+argument: iconName
+argumentDescription: The icon to use
+argumentType: String
+functionEnd:
+*/
+
+void createToolkitWedgeHierarchy(String categoryName, String iconName)
+{
+  Class imageClass = org.openmaji.implementation.common.images.Images.class;
+  createPatternGroup(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_WEDGE,categoryName,imageClass,iconName);
+}
+
+/*
+function: createToolkitWedgeHierarchy
+functionDescription: Add a new category to the Toolkit wedge view using a specific icon
+functionType: void
+argument: categoryName
+argumentDescription: The name of the category within the Toolkit wedge view
+argumentType: String
+argument: imageClass
+argumentDescription: The image Class used to locate the image
+argumentType: Class
+argument: iconName
+argumentDescription: The icon to use
+argumentType: String
+functionEnd:
+*/
+
+void createToolkitWedgeHierarchy(String categoryName, Class imageClass, String iconName)
+{
+  createPatternGroup(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_WEDGE,categoryName,imageClass,iconName);
+}
+
+/*
+function: createToolkitMeemHierarchy
+functionDescription: Add a new category to the MeemKit using an icon from the default set
+functionType: void
+argument: categoryName
+argumentDescription: The name of the category within the Toolkit meem view
+argumentType: String
+argument: iconName
+argumentDescription: The icon to use
+argumentType: String
+functionEnd:
+*/
+
+void createToolkitMeemHierarchy(String categoryName, String iconName)
+{
+  Class imageClass = org.openmaji.implementation.common.images.Images.class;
+  createPatternGroup(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_MEEM,categoryName,imageClass,iconName);
+}
+
+/*
+function: createToolkitMeemHierarchy
+functionDescription: Add a new category to the Toolkit using a specific icon
+functionType: void
+argument: categoryName
+argumentDescription: The name of the category within the Toolkit
+argumentType: String
+argument: imageClass
+argumentDescription: The image Class used to locate the image
+argumentType: Class
+argument: iconName
+argumentDescription: The icon to use
+argumentType: String
+functionEnd:
+*/
+
+void createToolkitMeemHierarchy(String categoryName, Class imageClass, String iconName)
+{
+  createPatternGroup(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_MEEM,categoryName,imageClass,iconName);
+}
+
+scriptLoaded("meemkit.bsh");

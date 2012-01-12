@@ -1,0 +1,130 @@
+/*
+ * Copyright 2005 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     multistate create helper monitor
+topic:        create and manipulate multistate loopback meems
+description:
+
+  This beanshell script is used to build and test Multistate Meems. Note
+  that the Meems created by this script are constructed by joining
+  together a MultistateWedge and a LoopbackMultistateWedge.
+
+usage:
+
+    source("automation/multistate.bsh");
+    transientMeem = createMultistateMeem();
+    createMultistateMonitor(transientMeem);
+    multistate = getMultistate(transientMeem);
+    state = new TrafficLightState("red");
+    multistate.stateChanged(state);
+
+    persistentMeem = createMultistateMeem("/path/in/hyperspace");
+
+endhelp:
+*/
+
+import org.openmaji.meem.definition.MeemDefinition;
+import org.openmaji.meem.MeemPath;
+import org.openmaji.meem.space.Space;
+import org.openmaji.common.Multistate;
+import org.openmaji.common.State;
+import org.openmaji.common.TrafficLightState;
+import org.openmaji.implementation.automation.loopback.LoopbackMultistateMeem;
+
+/*
+function: createMultistateMeem
+functionDescription: Create a transient Multistate Meem
+functionType: Meem
+functionEnd:
+*/
+
+Meem createMultistateMeem()
+{
+  MeemDefinition meemDefinition = (new LoopbackMultistateMeem()).getMeemDefinition();
+  return LifeCycleManagerHelper.createTransientMeem(meemDefinition);
+}
+
+/*
+function: createMultistateMeem
+functionDescription: Create a persistent Multistate Meem
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this Hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createMultistateMeem(String path)
+{
+  MeemDefinition meemDefinition = (new LoopbackMultistateMeem()).getMeemDefinition();
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE,path);
+  return LifeCycleManagerHelper.createMeem(meemDefinition,meemPath);
+}
+
+/*
+function: getMultistate
+functionDescription: Return a reference to a Meem's Multistate inbound facet
+functionType: Multistate
+argument: multistateMeem
+argumentDescription: A Meem containing a Multistate inbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+Multistate getMultistate(Meem multistateMeem)
+
+
+{
+  return (Multistate) ReferenceHelper.getTarget(multistateMeem, "multistateInput", Multistate.class);
+}
+
+/*
+function: getMultistate
+functionDescription: Return a reference to a Meem's Multistate facet
+functionType: Multistate
+argument: multistateMeem
+argumentDescription: A Meem containing a Multistate facet
+argumentType: Meem
+argument: facetIdentifier
+argumentDescription: The name of the Multistate facet
+argumentType: Meem
+functionEnd:
+*/
+
+Multistate getMultistate(Meem multistateMeem, String facetIdentifier)
+{
+  return (Multistate) ReferenceHelper.getTarget(multistateMeem, facetIdentifier, Multistate.class);
+}
+
+/*
+function: createMultistateMonitor
+functionDescription: Create a monitor that displays state changes in a Multistate Meem
+functionType: void
+argument: multistateMeem
+argumentDescription: A Meem containing a Multistate outbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+void createMultistateMonitor(Meem multistateMeem) {
+  Multistate multistateClient = new Multistate() {
+    void stateChanged(State state) {
+      print(multistateMeem.getMeemPath() + ".stateChanged(): " + state);
+    }
+  };
+
+  Reference multistateClientReference = Reference.spi.create(
+    "multistateOutput",  // Multistate Provider Meem out-bound Facet identifier
+     multistateClient,   // Multistate Client (not a Meem)
+     true            // Initial content required
+  );
+
+  multistateMeem.addOutboundReference(multistateClientReference, false);
+};
+
+scriptLoaded("multistate.bsh");

@@ -1,0 +1,295 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     dependency 
+topic:        creation of dependencies and dependency monitoring 
+description:
+
+  This beanshell script is used to create Dependencies. 
+  
+  addDependency will create a persistent strong dependency with local scope.
+
+usage:
+
+	% source("dependency.bsh");
+ 
+endhelp:
+*/
+
+import org.openmaji.utility.*;
+import org.openmaji.server.helper.*;
+import org.openmaji.meem.aspect.wedge.dependency.*;
+
+/*
+function: addDependency
+functionDescription: Create a dependency between two Meems and return the generated DependencyAttribute
+functionType: DependencyAttribute
+argument: sourceMeem
+argumentDescription: The source of the dependency
+argumentType: Meem
+argument: sourceFacetIdentifier
+argumentDescription: The name of the Facet on the source Meem
+argumentType: String
+argument: targetLocation
+argumentDescription: The location of the target Meem in HyperSpace
+argumentType: String
+argument: targetFacetIdentifier
+argumentDescription: The name of the Facet of the Target Meem
+argumentType: String
+functionEnd:
+*/
+
+DependencyAttribute addDependency(Meem sourceMeem, String sourceFacetIdentifier, String targetLocation, String targetFacetIdentifier) {
+
+	DependencyAttribute dependencyAttribute = createDependencyAttribute(targetLocation, targetFacetIdentifier);
+
+	FacetAttribute facetAttribute = getFacetAttribute(sourceMeem, sourceFacetIdentifier);
+
+	MetaMeem  metaMeem = ReferenceHelper.getTarget(sourceMeem, "metaMeem", MetaMeem.class);
+	
+	metaMeem.addDependencyAttribute(facetAttribute.getIdentifier(), dependencyAttribute);
+	
+	return dependencyAttribute;
+}
+
+/*
+function: addManyDependency
+functionDescription: Create a 1-to-many dependency between a Meem and a Category and return the generated DependencyAttribute
+functionType: DependencyAttribute
+argument: sourceMeem
+argumentDescription: The source of the dependency
+argumentType: Meem
+argument: sourceFacetIdentifier
+argumentDescription: The name of the Facet on the source Meem
+argumentType: String
+argument: targetLocation
+argumentDescription: The location of the target Category in HyperSpace
+argumentType: String
+argument: targetFacetIdentifier
+argumentDescription: The name of the target Facet of the entries in the Category
+argumentType: String
+functionEnd:
+*/
+
+DependencyAttribute addManyDependency(Meem sourceMeem, String sourceFacetIdentifier, String targetLocation, String targetFacetIdentifier) {
+
+	DependencyAttribute dependencyAttribute = createManyDependencyAttribute(targetLocation, targetFacetIdentifier);
+
+	FacetAttribute facetAttribute = getFacetAttribute(sourceMeem, sourceFacetIdentifier);
+
+	MetaMeem  metaMeem = ReferenceHelper.getTarget(sourceMeem, "metaMeem", MetaMeem.class);
+	
+	metaMeem.addDependencyAttribute(facetAttribute.getIdentifier(), dependencyAttribute);
+	
+	return dependencyAttribute;
+}
+
+/*
+function: addDependency
+functionDescription: Create a dependency between two Meems and return the generated DependencyAttribute
+functionType: DependencyAttribute
+argument: sourceMeem
+argumentDescription: The source of the dependency
+argumentType: Meem
+argument: sourceFacetIdentifier
+argumentDescription: The name of the Facet on the source Meem
+argumentType: String
+argument: targetMeem
+argumentDescription: The target of the dependency
+argumentType: Meem
+argument: targetFacetIdentifier
+argumentDescription: The name of the target Facet of the entries in the Category
+argumentType: String
+functionEnd:
+*/
+
+DependencyAttribute addDependency(Meem sourceMeem, String sourceFacetIdentifier, Meem targetMeem, String targetFacetIdentifier)
+{
+	DependencyAttribute dependencyAttribute = createDependencyAttribute(targetMeem.getMeemPath(), targetFacetIdentifier);
+	FacetAttribute facetAttribute = getFacetAttribute(sourceMeem, sourceFacetIdentifier);
+	
+	MetaMeem  metaMeem = ReferenceHelper.getTarget(sourceMeem, "metaMeem", MetaMeem.class);
+	
+	metaMeem.addDependencyAttribute(facetAttribute.getIdentifier(), dependencyAttribute);
+	
+	return dependencyAttribute;
+}
+
+/*
+function: removeDependency
+functionDescription: Remove a dependency between two Meems
+functionType: void
+argument: sourceMeem
+argumentDescription: The source of the Dependency
+argumentType: Meem
+argument: dependencyAttribute
+argumentDescription: The specific DependencyAttribute to remove
+argumentType: DependencyAttribute
+functionEnd:
+*/
+
+removeDependency(Meem sourceMeem, DependencyAttribute dependencyAttribute) {
+
+	MetaMeem  metaMeem = ReferenceHelper.getTarget(sourceMeem, "metaMeem", MetaMeem.class);
+	
+	metaMeem.removeDependencyAttribute(dependencyAttribute.getKey());
+}
+
+/*
+function: createDependencyAttribute
+functionDescription: Create a DependencyAttribute for a target Meem
+functionType: DependencyAttribute
+argument: meemPath
+argumentDescription: The MeemPath of the target Meem
+argumentType: MeemPath
+argument: targetFacetIdentifier
+argumentDescription: The name of the Facet on the Target Meem
+argumentType: String
+functionEnd:
+*/
+
+DependencyAttribute createDependencyAttribute(MeemPath meemPath, String targetFacetIdentifier)
+{
+	return new DependencyAttribute(DependencyType.STRONG,Scope.LOCAL,meemPath,targetFacetIdentifier);
+}
+
+/*
+function: createManyDependencyAttribute
+functionDescription: Create a 1-to-many DependencyAttribute for a target Category Meem
+functionType: DependencyAttribute
+argument: meemPath
+argumentDescription: The MeemPath of the target Category Meem
+argumentType: MeemPath
+argument: targetFacetIdentifier
+argumentDescription: The name of the Facet on the Target Meem
+argumentType: String
+functionEnd:
+*/
+
+DependencyAttribute createManyDependencyAttribute(MeemPath meemPath, String targetFacetIdentifier)
+{
+	return new DependencyAttribute(DependencyType.STRONG_MANY,Scope.LOCAL,meemPath,targetFacetIdentifier);
+}
+
+/*
+function: createDependencyAttribute
+functionDescription: Create a DependencyAttribute for a target Meem
+functionType: DependencyAttribute
+argument: targetLocation
+argumentDescription: The location of the target Meem in HyperSpace
+argumentType: String
+argument: targetFacetIdentifier
+argumentDescription: The name of the Facet on the Target Meem
+argumentType: String
+functionEnd:
+*/
+
+DependencyAttribute createDependencyAttribute(String targetLocation, String targetFacetIdentifier) {
+
+	return new DependencyAttribute(
+		DependencyType.STRONG,
+		Scope.LOCAL,
+		MeemPath.spi.create(Space.HYPERSPACE, targetLocation),
+		targetFacetIdentifier);
+
+}
+
+/*
+function: createManyDependencyAttribute
+functionDescription: Create a 1-to-many DependencyAttribute for a target Category Meem
+functionType: DependencyAttribute
+argument: targetLocation
+argumentDescription: The location of the target Meem in HyperSpace
+argumentType: String
+argument: targetFacetIdentifier
+argumentDescription: The name of the Facet on the Target Meem
+argumentType: String
+functionEnd:
+*/
+
+DependencyAttribute createManyDependencyAttribute(String targetLocation, String targetFacetIdentifier) {
+
+	return new DependencyAttribute(
+		DependencyType.STRONG_MANY,
+		Scope.LOCAL,
+		MeemPath.spi.create(Space.HYPERSPACE, targetLocation),
+		targetFacetIdentifier);
+
+}
+
+/*
+function: getFacetAttribute
+functionDescription: Return a FacetAttribute for a particular Facet of a Meem
+functionType: FacetAttribute
+argument: meem
+argumentDescription: The Meem containing the Facet
+argumentType: Meem
+argument: facetIdentifier
+argumentDescription: The name of the Facet
+argumentType: String
+functionEnd:
+*/
+
+FacetAttribute getFacetAttribute(
+  Meem   meem,
+  String facetIdentifier) {
+
+  FacetAttribute facetAttribute =
+    MetaMeemHelper.getFacetAttribute(meem, facetIdentifier);
+
+  if (facetAttribute == null) {
+    print(
+      "dependency.bsh:getFacetAttribute(): Facet identifier: " +
+      facetIdentifier + ", doesn't exist for Meem: " + meem
+    );
+  }
+
+	return(facetAttribute);
+}
+
+/*
+function: createDependencyMonitor
+functionDescription: Create a instance of DependencyClient that monitors a Meem's Dependencies
+functionType: Reference
+argument: meem
+argumentDescription: The Meem to monitor
+argumentType: Meem
+functionEnd:
+*/
+
+Reference createDependencyMonitor(Meem meem) {
+	DependencyClient dependencyClient = new DependencyClient() {
+		void dependencyConnected(DependencyAttribute dependencyAttribute) {
+			print(
+				meem.getMeemPath()
+					+ ".dependencyConnected(): "
+					+ dependencyAttribute.getMeemPath()
+					+ " facet: "
+					+ dependencyAttribute.getFacetIdentifier());
+		}
+
+		void dependencyDisconnected(DependencyAttribute dependencyAttribute) {
+			print(
+				meem.getMeemPath()
+					+ ".dependencyDisconnected(): "
+					+ dependencyAttribute.getMeemPath()
+					+ " facet: "
+					+ dependencyAttribute.getFacetIdentifier());
+		}
+	};
+
+		Reference dependencyClientReference = Reference.spi.create("dependencyClient", dependencyClient, // Dependency Client (not a Meem)
+		true // Initial content required
+	);
+
+	meem.addOutboundReference(dependencyClientReference, false);
+	
+	return dependencyClientReference;
+};
+
+scriptLoaded("dependency.bsh");

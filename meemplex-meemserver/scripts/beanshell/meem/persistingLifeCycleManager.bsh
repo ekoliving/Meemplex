@@ -1,0 +1,78 @@
+/*
+ * @(#)persistingLCM.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None. yet.
+ */
+
+/*
+keywords:     
+topic:        
+description:
+endhelp:
+*/
+
+import org.openmaji.implementation.space.meemstore.test.*;
+import org.openmaji.meem.*;
+import org.openmaji.space.Space;
+import org.openmaji.helper.*;
+import org.openmaji.implementation.utility.*;
+import org.openmaji.filter.*;
+import org.openmaji.meem.aspect.wedge.reference.*;
+import org.openmaji.implementation.meem.test.HelloWorld;
+import org.openmaji.manager.lifecycle.*;
+
+PersistingLifeCycleManager persistingLifeCycleManager() {
+  import org.openmaji.helper.*;
+  import org.openmaji.manager.lifecycle.LifeCycleManager;
+  import org.openmaji.meem.*;
+  import org.openmaji.meem.definition.DefinitionFactory;
+  import org.openmaji.space.Space;
+
+  import org.openmaji.implementation.utility.*;
+
+  DefinitionFactory definitionFactory = DefinitionFactory.spi.create();
+
+  AbstractFactory.addFactory(PersistingLifeCycleManager.class);
+
+  Meem persistingLifeCycleManagerMeem = LifeCycleManagerHelper.createMeem(
+    definitionFactory.createMeemDefinition(PersistingLifeCycleManager.IDENTIFIER)
+  );
+
+
+  PersistingLifeCycleManager persistingLifeCycleManager = (PersistingLifeCycleManager)
+    org.openmaji.helper.ReferenceHelper.getTarget(
+      persistingLifeCycleManagerMeem, "persistingLifeCycleManager", PersistingLifeCycleManager.class
+    );
+
+
+  return(persistingLifeCycleManager);
+}
+
+Meem locateLCM() {
+	return MeemRegistryGateway.Singleton.get().locateMeem(
+    MeemPath.spi.create(Space.TRANSIENT, LifeCycleManager.spi.getIdentifier())
+  );
+}
+
+PersistingLifeCycleManager getPM() {
+  Meem pmMeem = locateLCM();
+  
+  PersistingLifeCycleManager persistingLifeCycleManager = (PersistingLifeCycleManager)
+    org.openmaji.helper.ReferenceHelper.getTarget(
+      pmMeem, "persistingLifeCycleManager", PersistingLifeCycleManager.class
+    );
+    
+  return persistingLifeCycleManager;
+}
+
+void loadHello() {
+	pm = getPM();
+	pm.activateMeem(MeemPath.spi.create(Space.MEEMSTORE, HelloWorld.IDENTIFIER));
+}

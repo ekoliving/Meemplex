@@ -1,0 +1,541 @@
+/*
+ * @(#)meem.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - Persist the "meemCounter", so that it doesn't reset to "0".
+ * - Replace "globalMap" with proper BSH "global." namespace.
+ */
+
+/*
+keywords:     create assemble meem reference
+topic:        creating meems, assembling meems and adding meem references
+description:
+
+  These script contains a number of methods that allow you to create
+  Meems and also assemble Meems from an arbitrary list of wedges.
+  You can also optionally specify that a Meem be created with a particular
+  life cycle manager by specifying a path in Hyperspace to place the Meem.
+
+usage:
+
+    % meem = assembleMeem(Class[] wedgeClasses);
+    % meem = assembleMeem(Class[] wedgeClasses, LifeCycleState lifeCycleState);
+    % meem = assembleMeem(Class[] wedgeClasses, String path);
+    % meem = assembleMeem(Class[] wedgeClasses, LifeCycleState lifeCycleState, String path);
+    % meem = assembleMeem(String[] wedgeNames);
+    % meem = assembleMeem(String[] wedgeNames, LifeCycleState lifeCycleState);
+    % meem = assembleMeem(String[] wedgeNames, String path);
+    % meem = assembleMeem(String[] wedgeNames, LifeCycleState lifeCycleState, String path);
+
+    % changeMeemState(Meem meem, LifeCycleState lifeCycleState);
+    % meem.addOutboundReference(Reference reference, false);
+
+    % int = getGlobalInt(String identifier);
+    % setGlobalInt(String identifier, int value);
+
+    % meem = createMeem(String identifier, MeemPath path);
+    % meem = createMeem(String identifier, Class meemClass, MeemPath path);
+    % meem = createMeem(MeemDefinition meemDefinition, MeemPath path);
+
+  These functions are preloaded.
+
+endhelp:
+*/
+
+import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
+
+/* -------------------------------------------------------------------------- *
+ * Generally useful stuff.
+ */
+
+HashMap globalMap = new HashMap();
+
+/*
+function: getGlobalInt
+functionDescription: Get the value of a global integer variable
+functionType: int
+argument: key
+argumentDescription: The name of the global integer variable
+argumentType: String
+functionEnd:
+*/
+
+int getGlobalInt(String key) {
+  Integer value = globalMap.get(key);
+  
+  return(value.intValue());
+}
+
+/*
+function: setGlobalInt
+functionDescription: Set the value of a global integer variable
+functionType: void
+argument: key
+argumentDescription: The name of the global integer variable
+argumentType: String
+argument: value
+argumentDescription: The value to set the global integer variable to
+argumentType: int
+functionEnd:
+*/
+
+void setGlobalInt(String key, int value) {
+  globalMap.put(key, new Integer(value));
+}
+
+/*
+function: getGlobalString
+functionDescription: Get the value of a global String variable
+functionType: String
+argument: key
+argumentDescription: The name of the global String variable
+argumentType: String
+functionEnd:
+*/
+
+String getGlobalString(String key) {
+  return(globalMap.get(key));
+}
+
+/*
+function: setGlobalString
+functionDescription: Set the value of a global String variable
+functionType: void
+argument: key
+argumentDescription: The name of the global String variable
+argumentType: String
+argument: value
+argumentDescription: The value to set the global String variable to
+argumentType: String
+functionEnd:
+*/
+
+void setGlobalString(String key, String value) {
+  globalMap.put(key, value);
+}
+
+setGlobalInt("meemCounter", 0);
+
+/*
+function: bumpMeemCounter
+functionDescription: Increment the value of the global "meemCounter" variable and return the new value
+functionType: int
+functionEnd:
+*/
+
+int bumpMeemCounter() {
+  int meemCounter = getGlobalInt("meemCounter");
+
+  setGlobalInt("meemCounter", meemCounter + 1);
+
+  return(meemCounter);
+}
+
+/* --- utilities for assembling Meems from wedges --------------------------- */
+
+Hashtable knownWedges = new Hashtable();
+
+/*
+function: setupMeemAssembler
+functionDescription: Creates an instance of WedgeLibraryClient to collect all known Wedge types
+functionType: void
+functionEnd:
+*/
+
+void setupMeemAssembler()
+{
+  WedgeLibraryClient wedgeLibraryClient = new WedgeLibraryClient() {
+    public void wedgeAdded(ClassDescriptor wedgeClassDescriptor)
+    {
+      String className = wedgeClassDescriptor.getClassName();
+      int index = className.lastIndexOf('.')+1;
+      Class theClass = Class.forName(className);
+      knownWedges.put(className.substring(index),theClass);
+    }
+  };
+
+  Reference wedgeLibraryClientReference = Reference.spi.create("wedgeLibraryClient",wedgeLibraryClient,true);
+  MeemPath meemPath = 
+    MeemPath.spi.create(Space.HYPERSPACE,StandardHyperSpaceCategory.MAJI_SYSTEM_WEDGE_LIBRARY);
+  Meem meem = MeemPathResolverHelper.getInstance().resolveMeemPath(meemPath);
+  meem.addOutboundReference(wedgeLibraryClientReference, false);
+}
+
+/*
+function: checkMeemAssembler
+functionDescription: Checks whether or not the MeemAssembler needs to be invoked
+functionType: void
+functionEnd:
+*/
+
+void checkMeemAssembler()
+{
+  if ( knownWedges.isEmpty() == false ) return;
+
+  print("Please wait: ensuring classLibrary and wedgeLibrary are READY");
+  MeemPath meemPath = 
+    MeemPath.spi.create(Space.HYPERSPACE,StandardHyperSpaceCategory.MAJI_SYSTEM_CLASS_LIBRARY);
+  Meem meem = MeemPathResolverHelper.getInstance().resolveMeemPath(meemPath);
+  MeemPath meemPath = 
+    MeemPath.spi.create(Space.HYPERSPACE,StandardHyperSpaceCategory.MAJI_SYSTEM_WEDGE_LIBRARY);
+  Meem meem = MeemPathResolverHelper.getInstance().resolveMeemPath(meemPath);
+
+  print("Initialising the Meem Assembler");
+  setupMeemAssembler();
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a transient Meem from the specified array of Wedge classes with a READY lifecycle state
+functionType: Meem
+argument: wedgeClasses
+argumentDescription: The array of Wedge classes
+argumentType: Class[]
+functionEnd:
+*/
+
+Meem assembleMeem(Class[] wedgeClasses)
+{
+  return assembleMeem(wedgeClasses,LifeCycleState.READY);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a transient Meem from the specified array of Wedge classes with the specified lifecycle state
+functionType: Meem
+argument: wedgeClasses
+argumentDescription: The array of Wedge classes
+argumentType: Class[]
+argument: lifeCycleState
+argumentDescription: The lifecycle state to set the Meem to
+argumentType: LifeCycleState
+functionEnd:
+*/
+
+Meem assembleMeem(Class[] wedgeClasses, LifeCycleState lifeCycleState)
+{
+  return assembleMeem(wedgeClasses, lifeCycleState, null);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a persistent Meem from the specified array of Wedge classes with a READY lifecycle state
+functionType: Meem
+argument: wedgeClasses
+argumentDescription: The array of Wedge classes
+argumentType: Class[]
+argument: path
+argumentDescription: The path in HyperSpace into which to place the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem assembleMeem(Class[] wedgeClasses, String path)
+{
+  return assembleMeem(wedgeClasses,LifeCycleState.READY,path);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a persistent Meem from the specified array of Wedge classes with the specified lifecycle state
+functionType: Meem
+argument: wedgeClasses
+argumentDescription: The array of Wedge classes
+argumentType: Class[]
+argument: lifeCycleState
+argumentDescription: The lifecycle state to set the Meem to
+argumentType: LifeCycleState
+argument: path
+argumentDescription: The path in HyperSpace into which to place the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem assembleMeem(Class[] wedgeClasses, LifeCycleState lifeCycleState, String path)
+{
+  return assembleMeem(wedgeClasses,lifeCycleState,LifeCycleState.READY,path);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a persistent Meem from the specified array of Wedge classes with the specified lifecycle state and limited maximum lifecycle state
+functionType: Meem
+argument: wedgeClasses
+argumentDescription: The array of Wedge classes
+argumentType: Class[]
+argument: lifeCycleState
+argumentDescription: The lifecycle state to set the Meem to
+argumentType: LifeCycleState
+argument: lifeCycleStateLimit
+argumentDescription: The maximum lifecycle state limit
+argumentType: LifeCycleState
+argument: path
+argumentDescription: The path in HyperSpace into which to place the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem assembleMeem(Class[] wedgeClasses, LifeCycleState lifeCycleState, LifeCycleState lifeCycleStateLimit, String path)
+{
+  return LifeCycleManagerHelper.assembleMeem(wedgeClasses,lifeCycleState,lifeCycleStateLimit,path);
+}
+
+/*
+function: getWedgeClassesFromNames
+functionDescription: Return an array of Wedge classes that correspond to an array of Wedge names
+functionType: Class[]
+argument: wedgeNames
+argumentDescription: The array of Wedge names
+argumentType: String[]
+functionEnd:
+*/
+
+Class[] getWedgeClassesFromNames(String[] wedgeNames)
+{
+  Class[] wedgeClasses = new Class[wedgeNames.length];
+  for ( int i=0; i<wedgeNames.length; i++ )
+  {
+    String wedgeName = wedgeNames[i];
+    Class theClass = (Class) knownWedges.get(wedgeName);
+    if ( theClass == null )
+    {
+      print("'"+wedgeName+"' is an unknown wedge");
+      return null;
+    }
+    wedgeClasses[i] = theClass;
+  }
+  return wedgeClasses;
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a transient Meem from the specified array of Wedge names with a READY lifecycle state
+functionType: Meem
+argument: wedgeNames
+argumentDescription: The array of Wedge names
+argumentType: Class[]
+functionEnd:
+*/
+
+Meem assembleMeem(String[] wedgeNames)
+{
+  return assembleMeem(wedgeNames,LifeCycleState.READY);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a transient Meem from the specified array of Wedge names with the specified lifecycle state
+functionType: Meem
+argument: wedgeNames
+argumentDescription: The array of Wedge names
+argumentType: String[]
+argument: lifeCycleState
+argumentDescription: The lifecycle state to set the Meem to
+argumentType: LifeCycleState
+functionEnd:
+*/
+
+Meem assembleMeem(String[] wedgeNames, LifeCycleState lifeCycleState)
+{
+  checkMeemAssembler();
+  Class[] wedgeClasses = getWedgeClassesFromNames(wedgeNames);
+  if ( wedgeClasses == null ) return null;
+  return assembleMeem(wedgeClasses,lifeCycleState);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a persistent Meem from the specified array of Wedge names with a READY lifecycle state
+functionType: Meem
+argument: wedgeNames
+argumentDescription: The array of Wedge names
+argumentType: String[]
+argument: path
+argumentDescription: The path in HyperSpace into which to place the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem assembleMeem(String[] wedgeNames, String path)
+{
+  return assembleMeem(wedgeNames,LifeCycleState.READY,path);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a persistent Meem from the specified array of Wedge names with the specified lifecycle state
+functionType: Meem
+argument: wedgeNames
+argumentDescription: The array of Wedge names
+argumentType: String[]
+argument: lifeCycleState
+argumentDescription: The lifecycle state to set the Meem to
+argumentType: LifeCycleState
+argument: path
+argumentDescription: The path in HyperSpace into which to place the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem assembleMeem(String[] wedgeNames, LifeCycleState lifeCycleState, String path)
+{
+  return assembleMeem(wedgeNames,lifeCycleState,LifeCycleState.READY,path);
+}
+
+/*
+function: assembleMeem
+functionDescription: Assemble a persistent Meem from the specified array of Wedge names with the specified lifecycle state and limited maximum lifecycle state
+functionType: Meem
+argument: wedgeNames
+argumentDescription: The array of Wedge names
+argumentType: String[]
+argument: lifeCycleState
+argumentDescription: The lifecycle state to set the Meem to
+argumentType: LifeCycleState
+argument: lifeCycleStateLimit
+argumentDescription: The maximum lifecycle state limit
+argumentType: LifeCycleState
+argument: path
+argumentDescription: The path in HyperSpace into which to place the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem assembleMeem(String[] wedgeNames, LifeCycleState lifeCycleState, LifeCycleState lifeCycleStateLimit, String path)
+{
+  checkMeemAssembler();
+  Class[] wedgeClasses = getWedgeClassesFromNames(wedgeNames);
+  if ( wedgeClasses == null ) return null;
+  
+  return LifeCycleManagerHelper.assembleMeem(wedgeClasses,lifeCycleState,lifeCycleStateLimit,path);
+}
+
+/*
+function: changeMeemState
+functionDescription: Change the LifeCycle state and the maximum LifeCycle state of a Meem
+functionType: void
+argument: meem
+argumentDescription: The Meem whose LifeCycle you wish change
+argumentType: Meem
+argument: lifeCycleState
+argumentDescription: The new LifeCycle state and maximum LifeCycle state of a Meem
+argumentType: LifeCycleState
+functionEnd:
+*/
+
+void changeMeemState(Meem meem, LifeCycleState lifeCycleState)
+{
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(meem, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(lifeCycleState);
+	
+  LifeCycle lifeCycle = (LifeCycle) ReferenceHelper.getTarget(meem,"lifeCycle",LifeCycle.class);
+  lifeCycle.changeLifeCycleState(lifeCycleState);
+}
+
+/* -------------------------------------------------------------------------- *
+ * Generally useful stuff for manipulating Meems.
+ */
+
+DefinitionFactory definitionFactory = DefinitionFactory.spi.create();
+
+void addReference(Meem meem, Reference reference) {
+  print("meem.bsh: addReference() is no longer available");
+}
+
+void removeReference(Meem meem, Reference reference) {
+  print("meem.bsh: removeReference() is no longer available");
+}
+
+/*
+function: createMeem
+functionDescription: Create a simple persistent Meem with a given identifier
+functionType: Meem
+argument: meemIdentifier
+argumentDescription: The identifier for the Meem
+argumentType: String
+argument: meemPath
+argumentDescription: The meemPath of the new Meem to create
+argumentType: MeemPath
+functionEnd:
+*/
+
+Meem createMeem(String meemIdentifier, MeemPath meemPath) {
+  return(
+    createMeem(
+      definitionFactory.createMeemDefinition(
+        mungeIdentifier(meemIdentifier)
+      ), meemPath
+    )
+  );
+}
+
+/*
+function: createMeem
+functionDescription: Create a persistent Meem with a given identifier
+functionType: Meem
+argument: meemIdentifier
+argumentDescription: The identifier for the Meem
+argumentType: String
+argument: meemSpecification
+argumentDescription: The class
+argumentType: Class
+argument: meemPath
+argumentDescription: The meemPath of the new Meem to create
+argumentType: MeemPath
+functionEnd:
+*/
+
+Meem createMeem(String meemIdentifier, Class meemSpecification, MeemPath meemPath) {
+  return(
+    createMeem(
+      definitionFactory.createMeemDefinition(
+        mungeIdentifier(meemIdentifier), meemSpecification
+      ), meemPath
+    )
+  );
+}
+
+/*
+function: createMeem
+functionDescription: Create a persistent Meem from a MeemDefinition
+functionType: Meem
+argument: meemDefinition
+argumentDescription: The defintion for the Meem
+argumentType: MeemDefinition
+argument: meemPath
+argumentDescription: The meemPath for the new Meem
+argumentType: MeemPath
+functionEnd:
+*/
+
+Meem createMeem(MeemDefinition meemDefinition, MeemPath meemPath) {
+  return(LifeCycleManagerHelper.createMeem(
+  		meemDefinition, meemPath
+  ));
+}
+
+/*
+function: mungeIdentifier
+functionDescription: Returns an String suitable for use as a Meem identifier
+functionType: String
+argument: meemIdentifier
+argumentDescription: The prefix of the identifier
+argumentType: String
+functionEnd:
+*/
+
+String mungeIdentifier(String meemIdentifier) {
+  String meemCounter = "000000" + bumpMeemCounter();
+
+  return(
+    meemIdentifier + "_" + meemCounter.substring(meemCounter.length() - 6)
+  );
+}
+
+scriptLoaded("meem.bsh");

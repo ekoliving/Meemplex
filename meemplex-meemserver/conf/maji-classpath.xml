@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+  <path value="/Users/stormboy/Projects/majiklab/openmaji-meem/build/classes"/>
+  <path value="/Users/stormboy/Projects/majiklab/openmaji-system/build/classes"/>
+  <path value="/Users/stormboy/Projects/majiklab/openmaji-meemserver/build/classes"/>
+<!-- 
+  <path value="../lib/maji/maji-meem.jar"/>
+  <path value="../lib/maji/maji-system.jar"/>
+  <path value="../lib/maji/maji-server.jar"/>
+-->
+  <path value="../lib/maji/meemkit-sdk.jar"/>
+  <path value="../lib/swzoo.jar"/>
+  <path value="../lib/activation.jar"/>
+  <path value="../lib/bcprov.jar"/>
+  <path value="../lib/bsf.jar"/>
+  <path value="../lib/bsh.jar"/>
+  <path value="../lib/jline-2.6.jar"/>
+  <path value="../lib/cxf-extensions.jar"/>
+  <path value="../lib/javax.persistence_2.0.3.jar"/>
+  <path value="../lib/eclipselink.jar"/>
+  <path value="../lib/derby.jar"/>
+  <path value="../lib/getopt.jar"/>
+  <path value="../lib/jdom.jar"/>
+  <path value="../lib/jetty/servlet-api-2.5-20081211.jar" />
+  <path value="../lib/jetty/jetty-6.1.19.jar" />
+  <path value="../lib/jetty/jetty-util-6.1.19.jar" />
+  
+  <path value="../lib/jini/jini-core.jar"/>
+  <path value="../lib/jini/jini-ext.jar"/>
+  <path value="../lib/jini/sun-util.jar"/>
+
+	<!-- for JiniStarter2 -->  
+	<path value="../lib/jini/start.jar"/>
+	<path value="../lib/jini/tools.jar"/>
+  
+</classpath>

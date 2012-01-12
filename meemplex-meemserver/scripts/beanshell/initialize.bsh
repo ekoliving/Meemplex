@@ -1,0 +1,150 @@
+/*
+ * @(#)initialize.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None. yet.
+ */
+
+/*
+keywords:     initialize maji startup shutdown exit quit script
+topic:        the beanshell initialization process
+description:
+
+  When Maji starts the beanshell environment a number of beanshell
+  scripts are automatically preloaded for you.  If you would like
+  your own script to be automatically sourced you should add it to loadAll.bsh.
+  To list all loaded beanshell scripts:
+
+usage:
+
+    % printScriptsLoaded();
+
+  The beanshell 'exit()' function has been disabled. Use shutdown() to
+  terminate a MeemServer cleanly.
+
+usage:
+
+    % shutdown();
+
+  These functions printScriptsLoaded() and shutdown() are preloaded.
+
+endhelp:
+*/
+
+/* -------------------------------------------------------------------------- *
+ * Rewrite the BeanShell exit() command to be a little more informative !
+ */
+
+import org.openmaji.implementation.server.genesis.ShutdownHelper;
+import org.openmaji.implementation.server.utility.UserProperties;
+
+/*
+function: exit
+functionDescription: This function has been disabled, please use shutdown()
+functionType: void
+functionEnd:
+*/
+
+void exit() {
+  if (bsh.system.shutdownOnExit == true   ||
+      UserProperties.getInstance().confirmPropertyTrue(
+        "bsh.system.shutdownOnExit")) {
+    String message = "Maji immediate termination initiated";
+    info(message);
+    printToLog(message);
+    ShutdownHelper.shutdownMaji();
+  }
+  else {
+    printToLog("Maji termination disabled from BeanShell");
+    printToLog("See help(\"exit\") for more information");
+  }
+}
+
+/*
+function: shutdown
+functionDescription: Gracefully terminate the JVM allowing outstanding requests to complete and Meem's to persist their state
+functionType: void
+functionEnd:
+*/
+
+void shutdown() {
+    String message = "Maji immediate termination initiated";
+    info(message);
+    printToLog(message);
+    ShutdownHelper.shutdownMaji();
+}
+
+/* -------------------------------------------------------------------------- *
+ * Define a mechanism for determining if a required script is already loaded.
+ *
+ * Loading script usage (at the beginning of the script):
+ *   if (scriptNotLoaded(SCRIPT_NAME)) {
+ *     source(scriptBase + PATH_NAME + "/" + SCRIPT_NAME);
+ *   }
+ *
+ * Loaded script usage (at the end of the script):
+ *   scriptLoaded(SCRIPT_NAME);
+ */
+
+String  scriptBase      = bsh.cwd + "/";
+TreeSet scriptLoadedSet = new TreeSet();
+
+/*
+function: scriptLoaded
+functionDescription: Declare that a BeanShell script has been loaded to save having to subsequently reload it
+functionType: void
+argument: script
+argumentDescription: The name of the BeanShell script
+argumentType: String
+functionEnd:
+*/
+
+void scriptLoaded(String script) {
+  scriptLoadedSet.add(script);
+
+  printToLog("Script loaded: " + script);
+}
+
+/*
+function: scriptNotLoaded
+functionDescription: Returns whether or not the specified BeanShell script has already been loaded
+functionType: boolean
+argument: script
+argumentDescription: The name of the BeanShell script
+argumentType: String
+functionEnd:
+*/
+
+boolean scriptNotLoaded(String script) {
+  return(scriptLoadedSet.contains(script) == false);
+}
+
+/*
+function: printScriptsLoaded
+functionDescription: Print a list of all the loaded BeanShell scripts
+functionType: void
+functionEnd:
+*/
+
+void printScriptsLoaded() {
+  print(scriptLoadedSet);
+}
+
+/* -------------------------------------------------------------------------- *
+ * Load all Maji BeanShell scripts and use the Maji log mechanism.
+ */
+
+
+boolean printToLog = true;  // See log.bsh
+
+source("loadAll.bsh");
+
+scriptLoaded("initialize.bsh");
+
+printToLog = false;

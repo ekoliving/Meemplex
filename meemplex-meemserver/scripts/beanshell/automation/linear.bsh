@@ -1,0 +1,107 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     linear create monitor
+topic:        create and manipulate linear loopback meems
+description:
+
+  This beanshell script is used to build and test Linear Meems. Note
+  that the Meems created by this script are constructed by joining
+  together a LinearWedge and a LoopbackLinearWedge.
+
+usage:
+
+    source("automation/linear.bsh");
+    transientMeem = createLinearMeem();
+    createLinearMonitor(transientMeem);
+    linear = getLinear(transientMeem);
+    linear.valueChanged(new PercentagePosition(0.0f));
+    linear.valueChanged(new PercentagePosition(100.0f));
+ 
+    persistentMeem = createLinearMeem("/path/in/hyperspace");
+
+endhelp:
+*/
+
+import org.openmaji.meem.definition.MeemDefinition;
+import org.openmaji.meem.MeemPath;
+import org.openmaji.meem.space.Space;
+import org.openmaji.common.Linear;
+import org.openmaji.common.PercentagePosition;
+import org.openmaji.common.Position;
+import org.openmaji.implementation.automation.loopback.LoopbackLinearMeem;
+
+/*
+function: createLinearMeem
+functionDescription: Create a transient Meem that contains a LinearWedge and a LinearLoopbackWedge
+functionType: Meem
+functionEnd:
+*/
+
+Meem createLinearMeem()
+{
+  MeemDefinition meemDefinition = (new LoopbackLinearMeem()).getMeemDefinition();
+  return LifeCycleManagerHelper.createTransientMeem(meemDefinition);
+}
+
+/*
+function: createLinearMeem
+functionDescription: Create a persistent Meem that contains a LinearWedge and a LinearLoopbackWedge
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this Hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createLinearMeem(String path)
+{
+  MeemDefinition meemDefinition = (new LoopbackLinearMeem()).getMeemDefinition();
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE,path);
+  return LifeCycleManagerHelper.createMeem(meemDefinition,meemPath);
+}
+
+/*
+function: getLinear
+functionDescription: Return a reference to a Meem's Linear inbound facet
+functionType: Linear
+argument: linearMeem
+argumentDescription: A Meem containing a Linear inbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+Linear getLinear(Meem linearMeem)
+{
+  return (Linear) ReferenceHelper.getTarget(linearMeem, "linearInput", Linear.class);
+}
+
+/*
+function: createLinearMonitor
+functionDescription: Create a monitor that displays state changes in a Linear Meem
+functionType: void
+argument: linearMeem
+argumentDescription: A Meem containing a Linear outbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+void createLinearMonitor(Meem linearMeem)
+{
+  Linear linearClient = new Linear() {
+    void valueChanged(Position value)
+    {
+      print(linearMeem.getMeemPath() + ".valueChanged(): " + value);
+    }
+  };
+
+  Reference linearClientReference = Reference.spi.create("linearOutput",linearClient,true);
+  linearMeem.addOutboundReference(linearClientReference, false);
+}
+
+scriptLoaded("linear.bsh");

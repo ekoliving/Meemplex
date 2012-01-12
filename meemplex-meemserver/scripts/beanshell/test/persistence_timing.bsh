@@ -1,0 +1,106 @@
+/*
+keywords:     
+topic:        
+description:
+endhelp:
+*/
+
+import java.util.*;
+import org.openmaji.space.meemstore.*;
+import org.openmaji.meem.*;
+import org.openmaji.space.Space;
+import org.openmaji.helper.*;
+import org.openmaji.manager.lifecycle.LifeCycleManager;
+import org.openmaji.meem.definition.*;
+import org.openmaji.manager.registry.Scope;
+import org.openmaji.implementation.utility.*;
+import org.openmaji.implementation.space.meemstore.test.*;
+import org.openmaji.meem.aspect.wedge.reference.*;
+import org.openmaji.meem.aspect.wedge.persistence.PersistenceHandler;
+import org.openmaji.implementation.space.CategoryWedgeDefinition;
+
+int NUM_TO_TEST = 1000;
+
+void testStore() {
+	
+	UIDBogusImpl categoryUID = new UIDBogusImpl();
+
+	print("Commence: " + new Date());
+
+	Meem categoryMeem = null;
+
+	for (int i = 0; i < NUM_TO_TEST; i ++) {
+		UIDBogusImpl categoryUID = new UIDBogusImpl();
+		
+		MeemDefinition meemDefinition = (MeemDefinition)AbstractFactory.create(MeemDefinition.IDENTIFIER);
+		
+		meemDefinition.setScope(Scope.LOCAL);
+		meemDefinition.setIdentifier("HyperspaceCategory" + categoryUID.getUIDString());
+		meemDefinition.setVersion(1);
+		meemDefinition.addWedgeDefinition(CategoryWedgeDefinition.getWedgeDefinition());
+		
+		
+		categoryMeem = LifeCycleManagerHelper.createMeem(meemDefinition);
+		
+//	persist new category
+		 ((PersistenceHandler)categoryMeem).persist();
+	}
+
+	print("Conclude: " + new Date());
+}
+
+
+
+List meemPaths = new ArrayList();
+
+MeemStoreClient meemStoreClient = new MeemStoreClient() {
+	
+	void meemStored(MeemPath meemPath) {
+		meemPaths.add(meemPath);
+		if ((meemPaths.size() % 100) == 0)
+			print("size: " + meemPaths.size());
+	}
+
+	void meemDestroyed(MeemPath meemPath) {
+	}
+};
+
+void loadMeemPaths() {
+	//get all the meems that meemstore knows about
+
+	meemPaths.clear();
+	
+	MeemPath meemStoreMeemPath = MeemPath.spi.create(Space.TRANSIENT, "meemStore");
+
+	Meem meemStoreMeem = MeemRegistryGateway.Singleton.get().locateMeem(meemStoreMeemPath);
+
+	Reference meemStoreClientReference = Reference.spi.create(
+	 "meemStoreClient", meemStoreClient, true, null
+	);
+
+	meemStoreMeem.addOutboundReference(meemStoreClientReference, false);
+}
+
+void testLoad() {
+	
+	loadMeemPaths();
+	
+	MeemPath pLCMMeemPath = MeemPath.spi.create(Space.TRANSIENT, "lifeCycleManager");
+
+	Meem pLCMMeem = MeemRegistryGateway.Singleton.get().locateMeem(pLCMMeemPath);
+	
+	PersistingLifeCycleManager pLCM = (PersistingLifeCycleManager)
+		org.openmaji.helper.ReferenceHelper.getTarget(
+			pLCMMeem, "persistingLifeCycleManager", PersistingLifeCycleManager.class
+		);
+	
+	print("Commence: " + new Date());
+
+	for (int i = 0; i < meemPaths.size(); i ++) {
+		pLCM.activateMeem((MeemPath)meemPaths.get(i));
+	}
+
+	print("Conclude: " + new Date());
+	print("Activated" + meemPaths.size() + " Meems");
+}
+

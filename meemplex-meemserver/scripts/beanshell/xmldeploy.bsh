@@ -1,0 +1,109 @@
+/*
+ * Copyright 2005 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     xml deploy deployment configuration
+topic:        deploy a configuration using the xmlDeployment meem
+description:
+
+  This script contains methods that can be used to deploy a configuration.
+  They use the xmlDeploymentMeem to perform this function.
+
+usage:
+
+    source("xmldeploy.bsh");
+    deployConfiguration("/tmp/deploy.xml");
+
+endhelp:
+*/
+
+import org.openmaji.meem.definition.MeemDefinition;
+import org.openmaji.implementation.automation.deployment.AutomationDeploymentWedge;
+import org.openmaji.meem.wedge.configuration.ConfigurationHandler;
+import org.openmaji.meem.wedge.configuration.ConfigurationIdentifier;
+import org.openmaji.implementation.deployment.wedge.XmlReaderWedge;
+import org.openmaji.implementation.deployment.wedge.XmlDeploymentProcessorWedge;
+import org.openmaji.implementation.deployment.wedge.DeploymentWedge;
+import org.openmaji.implementation.deployment.wedge.ProgressClientWedge;
+import org.openmaji.implementation.deployment.Progress;
+import org.openmaji.implementation.deployment.ProgressClient;
+
+Meem deploymentMeem = null;
+Reference progressClientReference = null;
+ProgressClient progressClient = null;
+
+void deployConfiguration(String filename)
+{
+  if ( deploymentMeem != null )
+  {
+    print("Please run 'cleanup()'");
+    return;
+  }
+  
+  File file = new File(filename);
+  if ( file.exists() == false )
+  {
+    print("File does not exist");
+    return;
+  }
+
+  Class[] wedges = new Class[] { XmlReaderWedge.class, XmlDeploymentProcessorWedge.class, DeploymentWedge.class, AutomationDeploymentWedge.class, ProgressClientWedge.class };
+  deploymentMeem = assembleMeem(wedges,LifeCycleState.LOADED,"/work/deploymentMeem");
+  ConfigurationHandler ch = (ConfigurationHandler) ReferenceHelper.getTarget(deploymentMeem,"configurationHandler",ConfigurationHandler.class);
+  ch.valueChanged(new ConfigurationIdentifier("XmlReaderWedge","filename"),filename);
+  changeMeemState(deploymentMeem,LifeCycleState.READY);
+  createProgressClientMonitor(deploymentMeem);
+}
+
+void createProgressClientMonitor(Meem meem)
+{
+  progressClient = new ProgressClient() {
+    void updateProgress(Progress progress)
+    {
+      float percentFloat = ( progress.getProgressPoint() * 100.0 ) / progress.getCompletionPoint();
+      int percent = (int) percentFloat;
+      print("progress="+percent+"% "+progress.getProgressPoint()+"/"+progress.getCompletionPoint());
+      if ( progress.getProgressPoint() == progress.getCompletionPoint() )
+      {
+        meem.removeOutboundReference(progressClientReference);
+        cleanup();
+      }
+    }
+  };
+
+  progressClientReference = Reference.spi.create(
+    "progressClient",  // Binary Provider Meem out-bound Facet identifier
+     progressClient,   // Binary Client (not a Meem)
+     true              // Initial content required
+  );
+
+  meem.addOutboundReference(progressClientReference, false);
+};
+
+
+void cleanup()
+{
+  Runnable runnable = new Runnable() {
+    public void run()
+    {
+      // We do this in another thread because we want the invoking Maji thread
+      // to complete before we kill the deployment meem.
+      Meem categoryMeem = getMeem("/work");
+      Category category = getCategory(categoryMeem);
+      category.removeEntry("deploymentMeem");
+      changeMeemState(deploymentMeem,LifeCycleState.ABSENT);
+      deploymentMeem = null;
+      Reference progressClientReference = null;
+      ProgressClient progressClient = null;
+    }
+  };
+
+  Thread thread = new Thread(runnable);
+  thread.start();
+}
+
+scriptLoaded("xmldeploy.bsh");

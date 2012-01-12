@@ -1,0 +1,89 @@
+/*
+keywords:    tutorial configuration dependencies
+topic:       Configuring meems and making dependencies
+description:
+
+  The "Configuring a Meem and changing its Life Cycle State" tutorial
+  creates a socket meem and configures it to open a connection to
+  the google website.
+
+  The "Creating Dependencies" tutorial uses this socket meem and creates
+  two variable meems that interact with it.
+
+  This beanshell script will create, configure and make the dependencies
+  for you.
+
+  Usage:
+
+    source("tutorial/dependencies.bsh");
+    tutorialDir = "/work/tutorial/dependencies";
+    setupTutorial(tutorialDir);
+
+  You can directly manipulate the Meems created by the setupTutorial() function
+  like this:
+
+    socketMeem = sget(tutorialDir+"/socketMeem");
+    requestMeem = sget(tutorialDir+"/request");
+    responseMeem = sget(tutorialDir+"/response");
+
+    createVariableMonitor(responseMeem);	
+    v = getVariable(requestMeem);
+    v.valueChanged(new org.openmaji.common.StringValue("get \n\n"));
+
+endhelp:
+*/
+
+import org.openmaji.meem.wedge.configuration.ConfigurationHandler;
+import org.openmaji.meem.wedge.configuration.PropertySpecificationIdentifier;
+
+/*
+function: setupTutorial
+functionDescription: Build the "Configuring a Meem and changing its Life Cycle State" tutorial from meems on a worksheet
+functionType: void
+argument: path
+argumentDescription: The location to place the category containing the meems
+argumentType: String
+functionEnd:
+*/
+
+void setupTutorial(String path)
+{
+	categoryMeem = getMeem(path);
+	if ( categoryMeem != null )
+	{
+		print("That category already exists. Please remove it or select another category.");
+		return null;
+	}
+
+    HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+
+    if (hsh.getHyperSpaceMeem() == null)
+    {
+      print("ERROR: You don't have a HyperSpace; can't setup tutorial at: " + path);
+      return;
+    }
+
+    hsh.createPath(path);
+
+	Class[] wedges = new Class[2];
+	wedges[0] = org.openmaji.common.VariableWedge.class;
+	wedges[1] = org.openmaji.implementation.network.StringSocketAdapterWedge.class;
+	Meem socketMeem = assembleMeem(wedges,LifeCycleState.LOADED,path+"/socketMeem");
+
+	psHost = new PropertySpecificationIdentifier("StringSocketAdapterWedge", "host");
+	psPort = new PropertySpecificationIdentifier("StringSocketAdapterWedge", "port");
+	ch = (ConfigurationHandler) ReferenceHelper.getTarget(socketMeem,"configurationHandler",ConfigurationHandler.class);
+	ch.configurationChanged(psHost,"www.google.com");
+	ch.configurationChanged(psPort,new Integer(80));
+	changeMeemState(socketMeem,LifeCycleState.READY);
+
+	source("automation/variable.bsh");
+	source("dependency.bsh");
+
+	requestMeem = createVariableMeem(path+"/request");
+	responseMeem = createVariableMeem(path+"/response");
+	addDependency(requestMeem,"variableClient",socketMeem,"variable");
+	addDependency(responseMeem,"variable",socketMeem,"variableClient");
+
+	scriptLoaded("dependencies.bsh");
+}

@@ -1,0 +1,46 @@
+/*
+keywords:     
+topic:        
+description:
+endhelp:
+*/
+
+import org.openmaji.implementation.test.maji.system.speed.HelloWorld;
+import org.openmaji.system.meem.wedge.persistence.PersistenceHandler;
+import org.openmaji.system.meem.definition.MeemContent;
+import org.openmaji.system.space.meemstore.MeemStore;
+import org.openmaji.meem.space.Space;
+import org.openmaji.server.helper.ReferenceHelper;
+
+MeemContent makeContent() {
+	MeemContent content = new MeemContent();
+	content.addWedgeField("org.openmaji.implementation.test.maji.system.speed.HelloWorldClientImpl", "persistentField", "NEW VALUE");
+	return content;
+}
+
+Meem locateHelloWorld() {
+	return MeemRegistryGateway.Singleton.get().locateMeem(MeemPath.spi.create(Space.TRANSIENT, HelloWorld.IDENTIFIER));
+}
+
+Meem locateMeemStore() {
+	return MeemRegistryGateway.Singleton.get().locateMeem(MeemPath.spi.create(Space.TRANSIENT, MeemStore.IDENTIFIER));
+}
+
+MeemStore getMeemStore() {
+    Meem meemStoreMeem = locateMeemStore();
+    if ( meemStoreMeem == null ) return null;
+    MeemStore meemStore = (MeemStore) ReferenceHelper.getTarget(meemStoreMeem,"meemStore",MeemStore.class);
+    return meemStore;
+}
+
+void storeHelloWorld() {
+	MeemStore meemStore = getMeemStore();
+	if ( meemStore == null ) {
+    	print("Unable to locate MeemStore");
+    	return;
+    }
+
+	meemStore.storeMeemDefinition(locateHelloWorld());
+	meemStore.storeMeemContent(locateHelloWorld());
+}
+

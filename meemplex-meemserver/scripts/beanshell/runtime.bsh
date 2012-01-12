@@ -1,0 +1,54 @@
+/*
+ * @(#)runtime.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None. yet.
+ */
+
+/*
+keywords:     runtime gc garbage statistics memory
+topic:        interacting with the runtime environment
+description:
+
+  The script runtime.bsh defines a number of helpful functions to
+  interact with the Runtime environment of the running JVM.
+
+usage:
+
+    % gc();             // Run garbage collector");
+    % statistics();     // Print useful statistics");
+
+  These functions are preloaded.
+
+endhelp:
+*/
+
+/*
+function: gc
+functionDescription: Invoke the garbage collector
+functionType: void
+functionEnd:
+*/
+
+void gc() {
+  Runtime.getRuntime().gc();
+}
+
+/*
+function: statistics
+functionDescription: Print various statistics to to the log, including free memory
+functionType: void
+functionEnd:
+*/
+
+void statistics() {
+  printToLog("Free memory=" + Runtime.getRuntime().freeMemory());
+}
+
+scriptLoaded("runtime.bsh");

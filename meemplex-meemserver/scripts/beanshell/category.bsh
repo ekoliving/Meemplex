@@ -1,0 +1,372 @@
+/*
+ * @(#)category.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - The *Helper.java classes need to be neater, so this script can be neater.
+ * - Consider assigning HyperSpaceMeem to "global.hyperSpaceMeem".
+ */
+
+/*
+keywords:     create category hyperspace
+topic:        creating categories and category entries in hyperspace
+description:
+
+  Use the following functions to create categories in hyperspace, add
+  category entries, retrieve categories and their entries.
+
+  These functions are preloaded.
+
+usage:
+
+    % Meem categoryMeem = createCategory(Meem parentCategory, String entryName);
+    % Meem categoryMeem = createCategoryWithIcon(Meem parentCategory, String entryName, String iconPath);
+    % boolean categoryEntryExists(Meem category, String entryName);
+    % Category category = getCategory(Meem category);
+    % Hashtable categoryEntries = getCategoryEntries(Meem category);
+    % Meem hyperSpaceMeem = getHyperSpaceMeem();
+    % Meem meem = getMeem(String location);
+    % Meem meem = getMeem(Meem category, String entryName);
+    % updateCategoryEntry(Meem category, String entryName, MeemPath path);
+
+endhelp:
+*/
+
+import org.openmaji.common.VariableMap;
+import org.openmaji.meem.wedge.configuration.ConfigurationHandler;
+import org.openmaji.meem.wedge.configuration.ConfigurationIdentifier;
+import org.openmaji.system.presentation.ResourceExporter;
+import org.openmaji.system.presentation.MeemIconicPresentation;
+
+if (scriptNotLoaded("meem.bsh")) {
+  source(scriptBase + "meem.bsh");
+}
+/* -------------------------------------------------------------------------- *
+ * Generally useful stuff for manipulating Categories.
+ */
+
+/*
+function: createCategory
+functionDescription: Given an existing Category Meem create a new sub-Category with a specified name
+functionType: Meem
+argument: parentCategoryMeem
+argumentDescription: The parent Category Meem
+argumentType: Meem
+argument: categoryEntryName
+argumentDescription: The name for the new sub-Category
+argumentType: String
+functionEnd:
+*/
+
+Meem createCategory(
+  Meem   parentCategoryMeem,
+  String categoryEntryName) {
+
+  Meem categoryMeem = null;
+
+  if (categoryEntryExists(parentCategoryMeem, categoryEntryName)) {
+    Meem meem = getMeem(parentCategoryMeem, categoryEntryName);
+
+    if ( MeemHelper.isA(meem,Category.class)) categoryMeem = meem;
+  }
+  else {
+		categoryMeem = LifeCycleManagerHelper.createMeem(
+			HyperSpaceHelper.getInstance().getCategoryDefinition(),
+			parentCategoryMeem.getMeemPath()
+		);
+  	
+    //categoryMeem = HyperSpaceClientHelper.getInstance().makeCategory();
+
+    Category parentCategory = getCategory(parentCategoryMeem);
+
+    parentCategory.addEntry(categoryEntryName, categoryMeem);
+  }
+
+  return(categoryMeem);
+}
+
+
+/*
+function: createCategoryWithIcon
+functionDescription: Given an existing Category Meem create a new sub-Category with a specified name, and issign an icon to it
+functionType: Meem
+argument: parentCategoryMeemPath
+argumentDescription: The path to the parent Category Meem
+argumentType: String
+argument: categoryEntryName
+argumentDescription: The name for the new sub-Category
+argumentType: String
+argument: resourceClass
+argumentDescription: The class containing the icon resources
+argumentType: Class
+argument: iconPath
+argumentDescription: The relative path to the icon to be used
+argumentType: String
+functionEnd:
+*/
+
+Meem createCategoryWithIcon(
+  String    parentCategoryMeemPath,
+  String    categoryEntryName,
+  Class    resourceClass,
+  String    iconPath) {
+
+  Meem categoryMeem = null;
+  
+  parentCategoryMeem=getMeem(parentCategoryMeemPath);
+  
+  if (categoryEntryExists(parentCategoryMeem, categoryEntryName)) {
+    Meem meem = getMeem(parentCategoryMeem, categoryEntryName);
+
+    if ( MeemHelper.isA(meem,Category.class)) categoryMeem = meem;
+  }
+  else {
+     categoryMeem = assembleMeem(
+        new Class[] {
+            org.openmaji.implementation.common.VariableMapWedge.class,
+            org.openmaji.implementation.server.space.CategoryWedge.class
+          },
+          LifeCycleState.LOADED,
+          parentCategoryMeemPath + "/" + categoryEntryName
+        );
+    ResourceExporter re = new ResourceExporter(resourceClass);
+    MeemIconicPresentation icons = new MeemIconicPresentation();
+    
+    icons.setSmallIcon(re.extract(iconPath));
+		icons.setLargeIcon(re.extract(MeemIconicPresentation.getLargeIconName(iconPath)));
+    
+    
+		// Add the MeemIconicPresentation to the variable map.
+    getVariableMap(categoryMeem).update(org.openmaji.system.presentation.InterMajik.ICONIC_PRESENTATION_KEY, icons);
+
+    Category parentCategory = getCategory(parentCategoryMeem);
+
+    parentCategory.renameEntry(categoryMeem.getMeemPath().getLocation(), categoryEntryName);
+  }
+  return(categoryMeem);
+}
+
+Meem createPatternGroup(
+  String    parentCategoryMeemPath,
+  String    categoryEntryName,
+  Class    resourceClass,
+  String    iconPath) {
+	Meem categoryMeem = null;
+  
+	parentCategoryMeem=getMeem(parentCategoryMeemPath);
+  
+	if (categoryEntryExists(parentCategoryMeem, categoryEntryName)) {
+	  Meem meem = getMeem(parentCategoryMeem, categoryEntryName);
+
+	  if ( MeemHelper.isA(meem,Category.class)) categoryMeem = meem;
+	}
+	else {
+	   categoryMeem = assembleMeem(
+		  new Class[] {
+			  org.openmaji.implementation.common.VariableMapWedge.class,
+			  org.openmaji.implementation.server.space.CategoryWedge.class,
+				org.openmaji.server.presentation.PatternGroupWedge.class
+			},
+			LifeCycleState.LOADED,
+			parentCategoryMeemPath + "/" + categoryEntryName
+		  );
+	  ResourceExporter re = new ResourceExporter(resourceClass);
+	  MeemIconicPresentation icons = new MeemIconicPresentation();
+	  icons.setSmallIcon(re.extract(iconPath));
+	  icons.setLargeIcon(re.extract(MeemIconicPresentation.getLargeIconName(iconPath)));
+
+      variableMap = (VariableMap) ReferenceHelper.getTarget(categoryMeem, "variableMap", VariableMap.class);
+      variableMap.update(org.openmaji.system.presentation.InterMajik.ICONIC_PRESENTATION_KEY, icons);
+      
+      String entryName = categoryEntryName;
+      if ( categoryEntryName.charAt(0) == '/' )
+      {
+        entryName = categoryEntryName.substring(1);
+      }
+      ConfigurationHandler ch = (ConfigurationHandler) ReferenceHelper.getTarget(categoryMeem,"configurationHandler",ConfigurationHandler.class);
+      ConfigurationIdentifier ci = new ConfigurationIdentifier("MeemSystemWedge", "meemIdentifier");
+      ch.valueChanged(ci,entryName);
+      
+	  //categoryMeem = HyperSpaceClientHelper.getInstance().makeCategory();
+
+	  Category parentCategory = getCategory(parentCategoryMeem);
+
+	  parentCategory.renameEntry(categoryMeem.getMeemPath().getLocation(), categoryEntryName);
+	}
+	return(categoryMeem);
+}
+
+/*
+function: categoryEntryExists
+functionDescription: Returns whether or not a Category contains an entry with a particular name
+functionType: boolean
+argument: categoryMeem
+argumentDescription: The Category
+argumentType: Meem
+argument: categoryEntryName
+argumentDescription: The entry in the Category
+argumentType: String
+functionEnd:
+*/
+
+boolean categoryEntryExists(
+  Meem   categoryMeem,
+  String categoryEntryName) {
+
+  return (getCategoryEntries(categoryMeem).get(categoryEntryName) != null);
+}
+
+/*
+function: getCategory
+functionDescription: Returns a reference to the Meem's Category Facet
+functionType: Category
+argument: categoryMeem
+argumentDescription: The Meem
+argumentType: Meem
+functionEnd:
+*/
+
+Category getCategory(
+  Meem categoryMeem) {
+
+  Category category = null;
+
+    if ( MeemHelper.isA(categoryMeem,Category.class)) {
+    category = (Category) ReferenceHelper.getTarget(
+      categoryMeem, "category", Category.class
+    );
+  }
+
+  return(category);
+}
+
+/*
+function: getCategoryEntries
+functionDescription: Return all of the entries in a Category
+functionType: Hashtable
+argument: categoryMeem
+argumentDescription: The Category Meem
+argumentType: Meem
+functionEnd:
+*/
+
+Hashtable getCategoryEntries(
+  Meem categoryMeem) {
+
+  return(CategoryHelper.getCategoryEntries(categoryMeem));
+}
+
+/*
+function: getHyperSpaceMeem
+functionDescription: Return the Meem that represents the root of HyperSpace
+functionType: Meem
+functionEnd:
+*/
+
+Meem getHyperSpaceMeem() {
+  HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+
+  if (!hsh.isHyperSpaceSet()) {
+	error("You do not have a HyperSpace");
+	return null;
+  }
+
+  return hsh.getHyperSpaceMeem();
+}
+
+/*
+function: getMeem
+functionDescription: Return a Meem with a given a location in HyperSpace
+functionType: Meem
+argument: location
+argumentDescription: The location in HyperSpace
+argumentType: String
+functionEnd:
+*/
+
+Meem getMeem(
+  String location) {
+
+  Meem meem = null;
+
+  if (location.length() == 0 || location.equals("/")) {
+    meem = getHyperSpaceMeem();
+  }
+  else if (HyperSpaceHelper.getInstance().isHyperSpaceSet()) {
+    meem = MeemPathResolverHelper.getInstance().resolveMeemPath(
+      MeemPath.spi.create(Space.HYPERSPACE, location)
+    );
+  }
+  else {
+	error("You do not have a HyperSpace");
+  }
+
+  return(meem);
+}
+
+/*
+function: getMeem
+functionDescription: Return an particular entry in a Category
+functionType: Meem
+argument: categoryMeem
+argumentDescription: The Category Meem
+argumentType: Meem
+argument: categoryEntryName
+argumentDescription: The name of the Category entry
+argumentType: String
+functionEnd:
+*/
+
+Meem getMeem(
+  Meem   categoryMeem,
+  String categoryEntryName) {
+
+  Meem meem = null;
+
+  Hashtable categoryEntries = getCategoryEntries(categoryMeem);
+
+  CategoryEntry categoryEntry = categoryEntries.get(categoryEntryName);
+
+  if (categoryEntry != null) {
+    meem = categoryEntry.getMeem();
+  }
+
+  return(meem);
+}
+
+/*
+function: updateCategoryEntry
+functionDescription: Add a new entry to a Category
+functionType: void
+argument: categoryMeem
+argumentDescription: The Category Meem
+argumentType: Meem
+argument: categoryEntryName
+argumentDescription: The name of the new entry to be added to the Category
+argumentType: String
+argument: meemPath
+argumentDescription: The path to the Meem to be added to the Category
+argumentType: MeemPath
+functionEnd:
+*/
+
+void updateCategoryEntry(
+  Meem     categoryMeem,
+  String   categoryEntryName,
+  MeemPath meemPath) {
+
+  Category category = getCategory(categoryMeem);
+
+  if (categoryEntryExists(categoryMeem, categoryEntryName)) {
+    category.removeEntry(categoryEntryName);
+  }
+
+  category.addEntry(categoryEntryName, Meem.spi.get(meemPath));
+}
+
+scriptLoaded("category.bsh");

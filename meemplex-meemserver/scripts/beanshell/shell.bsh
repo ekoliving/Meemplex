@@ -1,0 +1,299 @@
+/*
+ * @(#)shell.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     shell functions hyperspace
+topic:        peruse hyperspace using unix like commands
+description:
+
+  The Maji beanshell environment provides some convenience functions
+  for you to traverse and peruse hyperspace. It also allows you to
+  obtain a Meem given its hyperspace location.
+
+usage:
+
+    % Meem hyperSpaceMeem = scd();              // Set current location to HyperSpace root
+    % Meem category = scd(String location);     // Set current location
+    % Meem meem = sget(String location);        // Get Meem at location
+    % Meem meem = scat(String location);        // Cat Meem at location
+    % sls([String location]);                   // Display CategoryEntries
+    % spwd();                                   // Display current location
+
+  These functions are preloaded.
+
+endhelp:
+*/
+
+/* ToDo:
+ * - Allow different BSH interpreters to have their own MeemSpace context.
+ * - Other Unix shell-like commands, e.g. "mv" and "rm".
+ * - Incorporate Meem creation language.
+ *
+ * Usage:
+ *   % spwd();
+ *     hyperSpace:/
+ *   % scd("user");
+ *   % spwd();
+ *     hyperSpace:/user
+ *   % sls();
+ *     guest/  system/
+ *   % scd();
+ *   % spwd();
+ *     hyperSpace:/
+ *   % scat("/work");
+ *     Meem[2ce65aa2-b850-4205-a2ef-fcb90521da9d, unbound]
+ *   % binaryMeem = sget("/application/maji/installation/pattern/meem/logic/Binary");
+ *   % print(binaryMeem);
+ */
+
+/* -------------------------------------------------------------------------- *
+ * Generally useful stuff for exploring MeemSpace.
+ */
+
+setGlobalString("currentLocation", "/");
+
+/*
+function: mungeLocation
+functionDescription: Convert a relative HyperSpace location to an abolute path
+functionType: String
+argument: location
+argumentDescription: The relative location
+argumentType: String
+functionEnd:
+*/
+
+String mungeLocation(String location) {
+
+  if (location == null  ||  location.length() == 0) location = "/";
+
+  if (location.charAt(0) != '/') {
+    String currentLocation = getGlobalString("currentLocation");
+    location = currentLocation + "/" + location;
+  }
+
+  while (location.startsWith("/")) location = location.substring(1);
+
+  while (location.endsWith("/")  &&  location.length() > 1) {
+    location = location.substring(0, location.length() - 1);
+  }
+
+  location = normalize(location);
+
+  if (!location.startsWith("/")) location = "/" + location;
+
+  return(location);
+}
+
+/*
+function: normalize
+functionDescription: Normalise a string appropriate for HyperSpace paths
+functionType: String
+argument: location
+argumentDescription: The location in HyperSpace
+argumentType: String
+functionEnd:
+*/
+
+String normalize(String location) {
+  if (location.equals("..")) return("");
+
+  // Resolve occurrences of "//"
+
+  while (true) {
+    int index = location.indexOf("//");
+    if (index < 0) break;
+    location = location.substring(0, index) + location.substring(index + 1);
+  }
+
+  // Resolve occurrences of "/./"
+
+  while (true) {
+    int index = location.indexOf("/./");
+    if (index < 0) break;
+    location = location.substring(0, index) + location.substring(index + 2);
+  }
+
+  // Resolve occurrences of "/../"
+
+  while (true) {
+    int index = location.indexOf("/../");
+    if (index < 0) break;
+    if (index == 0) return(null);  // Trying to go outside our context
+    int index2 = location.lastIndexOf('/', index - 1);
+    if (index2 < 0) index2 = 0;
+    location = location.substring(0, index2) + location.substring(index + 3);
+  }
+
+  // Resolve occurrences of "/.."
+
+  while (true) {
+    int index = location.indexOf("/..");
+    if (index < 0) break;
+    if (index == 0) return(null);  // Trying to go outside our context
+    int index2 = location.lastIndexOf('/', index - 1);
+    if (index2 < 0) return("");    // Trying to go outside our context
+    location = location.substring(0, index2) + location.substring(index + 3);
+  }
+
+  // Resolve occurrences of "/." at end
+
+  while (true) {
+    if (!location.endsWith("/.")) break;
+    location = location.substring(0, location.length() - 2);  
+  }
+
+  if (location.equals(".")) {
+    location = "";
+  }
+
+  return(location);
+}
+
+/*
+function: scat
+functionDescription: Invoke the toString() method of the Meem at the specified HyperSpace location
+functionType: Meem
+argument: location
+argumentDescription: The HyperSpace location of the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem scat(String location) {
+  Meem meem = sget(location);
+
+  if (meem != null) print(meem);  // Requires meem.toString() to be implemented
+
+  return(meem);
+}
+
+/*
+function: scd
+functionDescription: Change the current working directory to the root of HyperSpace and return the HyperSpace root Category Meem
+functionType: Meem
+functionEnd:
+*/
+
+Meem scd() {
+  return(scd("/"));
+}
+
+/*
+function: scd
+functionDescription: Change the current working directory to the specified location and return that location's Category Meem
+functionType: Meem
+argument: newLocation
+argumentDescription: The location in HyperSpace to change to
+argumentType: String
+functionEnd:
+*/
+
+Meem scd(String newLocation) {
+  newLocation = mungeLocation(newLocation);
+
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE, newLocation);
+  Meem     meem     = getMeem(newLocation);
+
+  if (meem == null) {
+    print("Category not found: " + meemPath);
+  }
+  else if (MeemHelper.isA(meem, Category.class)  == false) {
+    print("Meem is not a Category: " + meemPath);
+  }
+  else {
+    setGlobalString("currentLocation", newLocation);
+  }
+
+  return(meem);
+}
+
+/*
+function: sget
+functionDescription: Return the Meem with a given HyperSpace location
+functionType: Meem
+argument: location
+argumentDescription: The HyperSpace location of the Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem sget(String location) {
+  location = mungeLocation(location);
+
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE, location);
+  Meem     meem     = getMeem(location);
+
+  if (meem == null) print("Meem not found: " + meemPath);
+
+  return(meem);
+}
+
+/*
+function: sls
+functionDescription: List the category entries in the current location in HyperSpace
+functionType: void
+functionEnd:
+*/
+
+void sls() {
+  sls(getGlobalString("currentLocation"));
+}
+
+/*
+function: sls
+functionDescription: List the category location of a location in HyperSpace
+functionType: void
+argument: location
+argumentDescription: The location in HyperSpace
+argumentType: String
+functionEnd:
+*/
+
+void sls(String location) {
+  Meem categoryMeem = sget(location);
+
+  if (categoryMeem != null) {
+    Hashtable categoryEntries = getCategoryEntries(categoryMeem);
+
+    Enumeration enumeration = categoryEntries.elements();
+
+    while(enumeration.hasMoreElements()) {
+      CategoryEntry categoryEntry = (CategoryEntry) enumeration.nextElement();
+
+      Meem meem = categoryEntry.getMeem();
+
+      if (meem == null) {
+        print(categoryEntry.getName() + " (unresolved)");
+      }
+      else if (MeemHelper.isA(meem, Category.class)) {
+        print(categoryEntry.getName() + "/");
+      }
+      else {
+        print(categoryEntry.getName());
+      }
+    }
+  }
+}
+
+/*
+function: spwd
+functionDescription: Display the current location in HyperSpace
+functionType: void
+functionEnd:
+*/
+
+void spwd() {
+  print(
+    MeemPath.spi.create(
+      Space.HYPERSPACE, mungeLocation(getGlobalString("currentLocation"))
+    )
+  );
+}
+
+scriptLoaded("shell.bsh");

@@ -1,0 +1,57 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     dependency test
+topic:        create and test dependencies
+description:
+
+  This beanshell script is used to test dependencies. createDependingMeem
+  creates a client meem "b" linked to another meem via a dependecy, when 
+  b.valueChanged() is executed both b and the other binary will print a 
+  response if the dependency is set up properly.
+
+usage:
+
+    source("test/dependency_test.bsh");
+
+	b = createDependingMeem();
+
+endhelp:
+*/
+
+if (scriptNotLoaded("dependency.bsh")) {
+  source(scriptBase + "dependency.bsh");
+}
+if (scriptNotLoaded("binary.bsh")) {
+  source(scriptBase + "automation/binary.bsh");
+}
+
+/*
+function: createDependingMeem
+functionDescription: test function to create a deoendency between two meems and notify on valueChanged
+functionType: Binary
+functionEnd:
+*/
+
+Binary createDependingMeem()
+{
+  serverMeem = createBinaryMeem();
+
+  createBinaryMonitor(serverMeem);
+
+  clientMeem = createBinaryMeem();
+  createBinaryMonitor(clientMeem);
+
+  serverMeem = MeemRegistryGateway.Singleton.get().locateMeem(serverMeem.getMeemPath());
+
+  addDependency(clientMeem, "binaryClient", serverMeem, "binary");
+
+  return(getBinary(clientMeem));
+}
+
+scriptLoaded("dependency_test.bsh");

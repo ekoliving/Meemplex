@@ -1,0 +1,29 @@
+Development Notes
+=================
+
+Meemkits
+--------
+
+Each meemkit is an OSGI bundle.
+
+A few rules must be followed:
+	- include the MANIFEST.MF header "Eclipse-RegisterBuddy: org.meemplex.meemserver" to allow MeemServer to access the meemkit's classes.
+	- register meemkit with meemit OSGI service: e.g. "meemkitRegistration = bundleContext.registerService(MeemkitService.class, meemkitService, null);"
+	  Do this on bundle start().  The meemkit will be picked up by the meemserver.
+	- ...	
+
+
+UI
+--
+
+Use the org.meemplex.internet.gwt meemkit for web UI.
+
+There use by creating a Meem with a WAR application wedge along-side an Embedded Jetty wedge
+
+
+TODO
+----
+
+Meemkit initialisation:
+	- Check for patterns that are already installed, and create/update those that are new or have changed.
+	

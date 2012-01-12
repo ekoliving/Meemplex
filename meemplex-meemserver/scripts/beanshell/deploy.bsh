@@ -1,0 +1,247 @@
+/*
+ * @(#)deploy.bsh
+ *
+ * Copyright 2004 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - Use a single generic SynchronousApplicationManager implementation.
+ */
+
+/*
+keywords:     install upgrade uninstall meemkit servlet osgi bundle
+topic:        manage jars that represent meemkits, servlets or osgi bundles
+description:
+
+  This script contains a methods for installing, upgrading, uninstalling
+  and listing Meemkits, Servlets and OSGi Bundles.
+  You can also stop and start OSGi Bundles.
+
+usage:
+
+    % installMeemkit(String meemkitIdentifier, String jarLocation);
+    % upgradeMeemkit(String meemkitIdentifier, String jarLocation);
+    % uninstallMeemkit(String meemkitIdentifier);
+    % listMeemkit();
+
+    % installOSGi(String bundleName, String jarLocation);
+    % upgradeOSGi(String bundleName, String jarLocation);
+    % uninstallOSGi(String bundleName);
+    % startOSGi(String bundleName);
+    % stopOSGi(String bundleName);
+    % listOSGi();
+
+    % installServlet(String servletIdentifier, String jarLocation);
+    % upgradeServlet(String servletIdentifier, String jarLocation);
+    % uninstallServlet(String servletIdentifier);
+    % listServlet();
+
+  These functions are preloaded.
+
+endhelp:
+*/
+
+/* ------------------------------------------------------------------------- */
+
+import java.security.AccessController;
+import javax.security.auth.Subject;
+import org.openmaji.implementation.gateway.application.*;
+
+Subject deploySubject = null;
+
+synchronousApplicationManagerMeemkit = null;
+synchronousApplicationManagerOSGi    = null;
+synchronousApplicationManagerServlet = null;
+
+void deployInitializeCommon() {
+  if (deploySubject == null) {
+    deploySubject = Subject.getSubject(AccessController.getContext());
+  }
+}
+
+void deployInitializeMeemkit() {
+  deployInitializeCommon();
+
+  if (synchronousApplicationManagerMeemkit == null) {
+    synchronousApplicationManagerMeemkit =
+      SynchronousApplicationManager.spi.createMeemkit();
+
+    synchronousApplicationManagerMeemkit.initialize(deploySubject);
+  }
+}
+
+void deployInitializeOSGi() {
+  deployInitializeCommon();
+
+  if (synchronousApplicationManagerOSGi == null) {
+    synchronousApplicationManagerOSGi =
+      SynchronousApplicationManager.spi.createOSGi();
+
+    synchronousApplicationManagerOSGi.initialize(deploySubject);
+  }
+}
+
+void deployInitializeServlet() {
+  deployInitializeCommon();
+
+  if (synchronousApplicationManagerServlet == null) {
+    synchronousApplicationManagerServlet =
+      SynchronousApplicationManager.spi.createTomcat();
+
+    synchronousApplicationManagerServlet.initialize(deploySubject);
+  }
+}
+
+void listApplication(
+  Object synchronousApplicationManager) {
+  
+  Application[] applications =
+    ((SynchronousApplicationManager) synchronousApplicationManager).getApplications();
+
+  for (int index = 0; index < applications.length; index ++) {
+    print("Identifier:   " + applications[index].getIdentifier());
+    print("JAR location: " + applications[index].getJARLocation());
+  }
+}
+
+/*
+function: installMeemkit
+functionDescription: Install a Meemkit JAR
+functionType: void
+argument: meemkitIdentifier
+argumentDescription: Uniquely identifies the Meemkit
+argumentType: String
+argument: jarLocation
+argumentDescription: Location of the Meemkit JAR to install
+argumentType: String
+functionEnd:
+*/
+
+void installMeemkit(
+  String meemkitIdentifier,
+  String jarLocation) {
+
+  deployInitializeMeemkit();
+
+  synchronousApplicationManagerMeemkit.installApplication(
+    meemkitIdentifier, new URL(jarLocation)
+  );
+}
+
+void upgradeMeemkit(
+  String meemkitIdentifier,
+  String jarLocation) {
+
+  deployInitializeMeemkit();
+
+  synchronousApplicationManagerMeemkit.upgradeApplication(
+    meemkitIdentifier, new URL(jarLocation)
+  );
+}
+
+void uninstallMeemkit(
+  String meemkitIdentifier) {
+
+  deployInitializeMeemkit();
+
+  synchronousApplicationManagerMeemkit.uninstallApplication(meemkitIdentifier);
+}
+
+void listMeemkit() {
+  deployInitializeMeemkit();
+
+  listApplication(synchronousApplicationManagerMeemkit);
+}
+
+void installOSGi(
+  String bundleName,
+  String jarLocation) {
+
+  deployInitializeOSGi();
+
+  synchronousApplicationManagerOSGi.installApplication(
+    bundleName, new URL(jarLocation)
+  );
+}
+
+void upgradeOSGi(
+  String bundleName,
+  String jarLocation) {
+
+  deployInitializeOSGi();
+
+  synchronousApplicationManagerOSGi.upgradeApplication(
+    bundleName, new URL(jarLocation)
+  );
+}
+
+void uninstallOSGi(
+  String bundleName) {
+
+  deployInitializeOSGi();
+
+  synchronousApplicationManagerOSGi.uninstallApplication(bundleName);
+}
+
+void startOSGi(
+  String bundleName) {
+
+  deployInitializeOSGi();
+
+  synchronousApplicationManagerOSGi.startApplication(bundleName);
+}
+
+void stopOSGi(
+  String bundleName) {
+
+  deployInitializeOSGi();
+
+  synchronousApplicationManagerOSGi.stopApplication(bundleName);
+}
+
+void listOSGi() {
+  deployInitializeOSGi();
+
+  listApplication(synchronousApplicationManagerOSGi);
+}
+
+void installServlet(
+  String servletIdentifier,
+  String jarLocation) {
+
+  deployInitializeServlet();
+
+  synchronousApplicationManagerServlet.installApplication(
+    servletIdentifier, new URL("jar:file:" + jarLocation + "!/")
+  );
+}
+
+void upgradeServlet(
+  String servletIdentifier,
+  String jarLocation) {
+
+  deployInitializeServlet();
+
+  synchronousApplicationManagerServlet.upgradeApplication(
+    servletIdentifier, new URL("jar:file:" + jarLocation + "!/")
+  );
+}
+
+void uninstallServlet(
+  String servletIdentifier) {
+
+  deployInitializeServlet();
+
+  synchronousApplicationManagerServlet.uninstallApplication(servletIdentifier);
+}
+
+void listServlet() {
+  deployInitializeServlet();
+  
+  listApplication(synchronousApplicationManagerServlet);
+}
+
+scriptLoaded("deploy.bsh");

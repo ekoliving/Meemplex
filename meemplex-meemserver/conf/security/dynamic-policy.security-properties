@@ -1,0 +1,13 @@
+# Java security properties file to install the dynamic security policy
+# provider
+
+# Security policy provider that supports dynamic granting of permissions
+# at run-time. This provider is designed as a wrapper to layer dynamic
+# grant functionality on top of an underlying policy provider.
+
+# Andy 2004-02-29: At the moment, it appears that the use of this
+# PolicyProvider and the interaction with Maji causes *excessive*
+# memory usage, e.g. 2 Mb per Meem.  Best to leave it commented out,
+# until the problem is resolved.
+
+# policy.provider=net.jini.security.policy.DynamicPolicyProvider

@@ -1,0 +1,73 @@
+/*
+ * @(#)equals_test.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - Retrofit into a generic script test harness, perhaps JUnit ?
+ */
+
+/*
+Keywords:    test equals
+Topic:       Test whether equals() works correctly on Meem References
+Description:
+
+  Checks for a historical Maji bug regarding the use of the equals() method
+  on either the Dynamic Proxy Object for all of the Meem's System Wedges
+  or on the Dynamic Proxy Objects for the Meem's Application Wedges.
+
+Usage:
+  % source("test/equals_test.bsh");
+  % equals_test();
+EndHelp:
+*/
+
+if (scriptNotLoaded("binary.bsh")) {
+  source(scriptBase + "automation/binary.bsh");
+}
+
+/*
+function: equals_test
+functionDescription: tests for a historical Maji bug regarding the use of the equals() method
+functionType: void
+functionEnd:
+*/
+
+
+equals_test() {
+  print("Creating Binary Meem 1 and a Reference to it's Binary Facet");
+  Meem   binaryMeem1  = createBinaryMeem();
+  Binary binaryFacet1 = getBinary(binaryMeem1);
+
+  print("Testing:   'binaryMeem1.equals(binaryMeem1)'");
+  print("Result: " + binaryMeem1.equals(binaryMeem1));
+
+  print("Testing:   'binaryFacet1.equals(binaryFacet1)'");
+  print("Result: " + binaryFacet1.equals(binaryFacet1));
+
+  print("Creating Binary Meem 2 and a Reference to it's Binary Facet");
+  Meem   binaryMeem2  = createBinaryMeem();
+  Binary binaryFacet2 = getBinary(binaryMeem2);
+
+  print("Testing:   'binaryMeem1.equals(binaryMeem2)'");
+  print("Result: " + binaryMeem1.equals(binaryMeem2));
+
+  print("Testing:   'binaryFacet1.equals(binaryFacet2)'");
+  print("Result: " + binaryFacet1.equals(binaryFacet2));
+
+  print("Destroying Meems and cleaning up all Object references");
+
+  ((LifeCycle) binaryMeem1).changeLifeCycleState(LifeCycleState.ABSENT);
+  binaryMeem1  = null;
+  binaryFacet1 = null;
+
+  ((LifeCycle) binaryMeem2).changeLifeCycleState(LifeCycleState.ABSENT);
+  binaryMeem2  = null;
+  binaryFacet2 = null;
+}
+
+scriptLoaded("equals_test.bsh");

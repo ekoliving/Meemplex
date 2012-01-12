@@ -1,0 +1,125 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     unary create helper monitor
+topic:        create and manipulate unary loopback meems
+description:
+
+  This beanshell script is used to build and test Unary Meems. Note
+  that the Meems created by this script are constructed by joining
+  together a UnaryWedge and a LoopbackUnaryWedge.
+
+usage:
+
+    source("automation/unary.bsh");
+    transientMeem = createUnaryMeem();
+    createUnaryMonitor(transientMeem);
+    unary = getUnary(transientMeem);
+    unary.valueChanged();
+
+    persistentMeem = createUnaryMeem("/path/in/hyperspace");
+
+endhelp:
+*/
+
+import org.openmaji.meem.definition.MeemDefinition;
+import org.openmaji.meem.MeemPath;
+import org.openmaji.meem.space.Space;
+import org.openmaji.common.Unary;
+import org.openmaji.implementation.automation.loopback.LoopbackUnaryMeem;
+
+/*
+function: createUnaryMeem
+functionDescription: Create a transient Unary Meem
+functionType: Meem
+functionEnd:
+*/
+
+Meem createUnaryMeem()
+{
+  MeemDefinition meemDefinition = (new LoopbackUnaryMeem()).getMeemDefinition();
+  return LifeCycleManagerHelper.createTransientMeem(meemDefinition);
+}
+
+/*
+function: createUnaryMeem
+functionDescription: Create a persistent Unary Meem
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this Hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createUnaryMeem(String path)
+{
+  MeemDefinition meemDefinition = (new LoopbackUnaryMeem()).getMeemDefinition();
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE,path);
+  return LifeCycleManagerHelper.createMeem(meemDefinition,meemPath);
+}
+
+/*
+function: getUnary
+functionDescription: Return a reference to a Meem's Unary inbound facet
+functionType: Unary
+argument: unaryMeem
+argumentDescription: A Meem containing a Unary inbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+Unary getUnary(Meem unaryMeem)
+{
+  return (Unary) ReferenceHelper.getTarget(unaryMeem, "unaryInput", Unary.class);
+}
+
+/*
+function: getUnary
+functionDescription: Return a reference to a Meem's Unary facet
+functionType: Unary
+argument: unaryMeem
+argumentDescription: A Meem containing a Unary facet
+argumentType: Meem
+argument: facetIdentifier
+argumentDescription: The name of the Unary facet
+argumentType: Meem
+functionEnd:
+*/
+
+Unary getUnary(Meem unaryMeem, String facetIdentifier)
+{
+  return (Unary) ReferenceHelper.getTarget(unaryMeem, facetIdentifier, Unary.class);
+}
+
+/*
+function: createUnaryMonitor
+functionDescription: Create a monitor that displays state changes in a Unary Meem
+functionType: void
+argument: unaryMeem
+argumentDescription: A Meem containing a Unary outbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+void createUnaryMonitor(Meem unaryMeem) {
+  Unary unaryClient = new Unary() {
+    void valueChanged() {
+      print(unaryMeem.getMeemPath() + ".valueChanged()");
+    }
+  };
+
+  Reference unaryClientReference = Reference.spi.create(
+    "unaryOutput",  // Unary Provider Meem out-bound Facet identifier
+     unaryClient,   // Unary Client (not a Meem)
+     true            // Initial content required
+  );
+
+  unaryMeem.addOutboundReference(unaryClientReference, false);
+};
+
+scriptLoaded("unary.bsh");

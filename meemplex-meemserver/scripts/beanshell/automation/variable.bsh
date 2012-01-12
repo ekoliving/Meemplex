@@ -1,0 +1,108 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     variable create monitor
+topic:        create and manipulate variable loopback meems
+description:
+
+  This beanshell script is used to build and test Variable Meems. Note
+  that the Meems created by this script are constructed by joining
+  together a VariableWedge and a LoopbackVariableWedge.
+
+usage:
+
+    source("automation/variable.bsh");
+    transientMeem = createVariableMeem();
+    createVariableMonitor(transientMeem);
+    variable = getVariable(transientMeem);
+    variable.valueChanged(new StringValue("hello"));
+    variable.valueChanged(new NumberValue(new Integer(5)));
+ 
+    persistentMeem = createVariableMeem("/path/in/hyperspace");
+
+endhelp:
+*/
+
+import org.openmaji.meem.definition.MeemDefinition;
+import org.openmaji.meem.MeemPath;
+import org.openmaji.meem.space.Space;
+import org.openmaji.common.NumberValue;
+import org.openmaji.common.StringValue;
+import org.openmaji.common.Value;
+import org.openmaji.common.Variable;
+import org.openmaji.implementation.automation.loopback.LoopbackVariableMeem;
+
+/*
+function: createVariableMeem
+functionDescription: Create a transient variable Meem, that contains a VariableWedge and a LoopbackVariableWedge
+functionType: Meem
+functionEnd:
+*/
+
+Meem createVariableMeem()
+{
+  MeemDefinition meemDefinition = (new LoopbackVariableMeem()).getMeemDefinition();
+  return LifeCycleManagerHelper.createTransientMeem(meemDefinition);
+}
+
+/*
+function: createVariableMeem
+functionDescription: Create a persistent variable Meem, that contains a VariableWedge and a LoopbackVariableWedge
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createVariableMeem(String path)
+{
+  MeemDefinition meemDefinition = (new LoopbackVariableMeem()).getMeemDefinition();
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE,path);
+  return LifeCycleManagerHelper.createMeem(meemDefinition,meemPath);
+}
+
+/*
+function: getVariable
+functionDescription: Return a reference to a Meem's Variable inbound facet
+functionType: Variable
+argument: variableMeem
+argumentDescription: A Meem containing a Variable inbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+Variable getVariable(Meem variableMeem)
+{
+  return (Variable) ReferenceHelper.getTarget(variableMeem, "variableInput", Variable.class);
+}
+
+/*
+function: createVariableMonitor
+functionDescription: Create a monitor that displays state changes in a Variable Meem
+functionType: void
+argument: linearMeem
+argumentDescription: A Meem containing a Variable outbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+void createVariableMonitor(Meem variableMeem)
+{
+  Variable variableClient = new Variable() {
+    void valueChanged(Value value)
+    {
+      print(variableMeem.getMeemPath() + ".valueChanged(): " + value);
+    }
+  };
+
+  Reference variableClientReference = Reference.spi.create("variableOutput",variableClient,true);
+  variableMeem.addOutboundReference(variableClientReference, false);
+}
+
+scriptLoaded("variable.bsh");

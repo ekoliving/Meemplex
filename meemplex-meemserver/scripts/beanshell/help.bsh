@@ -1,0 +1,146 @@
+/*
+keywords:    introduction help overview
+topic:       introduction to help
+description:
+
+  Welcome to the Maji BeanShell help system. This documentation is written to
+  assist you in using the features of the BeanShell environment. You will be
+  able to access many aspects of the Maji system both interactively and from
+  BeanShell scripts.
+
+  If you are a developer and would like to add help documentation to your
+  BeanShell scripts just add the following at the head of your source inside
+  Java comments. Note that these tags must begin in column 0.
+
+        keywords:    keyword1 keyword2 keyword3 ....
+        topic:       A uniquely identifiable title
+        description:
+
+          Your free form documentation goes in here.
+
+        endhelp:
+
+  Once you have written your help, run the command scanScripts() to rebuild
+  the help indexing tables.
+
+  If you are a user of the BeanShell facility a good place to start is with
+  the helpTopics() command. It will list all of the help topics available.
+  You can also use helpKeywords() for a full list of all the keywords that
+  you can query.
+  
+  To get an index of all currently available functions use the command index().
+  For a detailed description of a specific function, including return type and
+  arguments, use index("function name");
+endhelp:
+*/
+
+import org.openmaji.implementation.server.scripting.bsf.BSFScriptProcessor;
+
+BSFScriptProcessor bsfScriptProcessor = null;
+
+void verifyScanDone()
+{
+  if ( bsfScriptProcessor == null )
+  {
+    bsfScriptProcessor = new BSFScriptProcessor(scriptBase);
+    bsfScriptProcessor.scanScripts();
+  }
+}
+
+/*
+function: index
+functionDescription: Display the global index of all beanshell functions
+functionType: void
+functionEnd:
+*/
+
+void index()
+{
+  verifyScanDone();
+  String text = bsfScriptProcessor.getIndexAsText();
+  print(text);
+}
+
+/*
+function: help
+functionDescription: Display a short message that provides an overview of the Maji beanshell help system
+functionType: void
+functionEnd:
+*/
+
+void help()
+{
+  verifyScanDone();
+
+  print("Usage:");
+  print("           help(\"help\");");
+  print("           helpTopics();");
+  print("           helpKeywords();");
+  print("           help(keyword);");
+  print("           help(topic);");
+  print("");
+  print("Where 'keyword' is a single word such as \"binary\", \"create\", \"hyperspace\"");
+  print("and 'topic' is the title of a specific topic (can be more than one word).");
+  print("");
+  print("For example: help(\"binary\") will list a number topics related to binary Meems.");
+  print("To view one of those topics you must enter the full title of that topic.");
+  print("such as help(\"create and manipulate binary meems\");");
+}
+
+/*
+function: help
+functionDescription: Display the help for a topic or keyword
+functionType: void
+argument: topicOrKeyword
+argumentDescription: The topic or keyword you are interested in
+argumentType: String
+functionEnd:
+*/
+
+void help(String topicOrKeyword)
+{
+  verifyScanDone();
+  print(bsfScriptProcessor.getHelp(topicOrKeyword));
+}
+
+/*
+function: helpTopics
+functionDescription: Display a list of all of the topics available
+functionType: void
+functionEnd:
+*/
+
+void helpTopics()
+{
+  verifyScanDone();
+  print(bsfScriptProcessor.getHelpTopics());
+}
+
+/*
+function: helpKeywords
+functionDescription: Display a list of all of the keywords available
+functionType: void
+functionEnd:
+*/
+
+void helpKeywords()
+{
+  verifyScanDone();
+  print(bsfScriptProcessor.getHelpKeywords());
+}
+
+
+/*
+function: scanScripts
+functionDescription: Re-initialises the help system by re-scanning all of the beanshell scripts
+functionType: void
+functionEnd:
+*/
+
+void scanScripts()
+{
+  bsfScriptProcessor = null;
+  verifyScanDone();
+}
+
+scriptLoaded("help.bsh");

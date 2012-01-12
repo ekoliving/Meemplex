@@ -1,0 +1,122 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     transfer test
+topic:        test transferring Meems between LCMs 
+description:
+
+  This beanshell script is used to test transferring Meems between LCMs 
+
+usage:
+
+    source("test/transfer_test.bsh");
+    setup();
+
+endhelp:
+*/
+
+
+import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
+import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
+import org.openmaji.implementation.server.manager.lifecycle.hyperspace.HyperSpaceMeem;
+import org.openmaji.implementation.server.manager.lifecycle.persisting.PersistingLifeCycleManagerMeem;
+import org.openmaji.implementation.server.manager.lifecycle.lazy.LazyLifeCycleManagerMeem;
+
+source(scriptBase + "dependency.bsh");
+
+MeemPath currentLcmPath;
+MeemPath newLcmPath;
+MeemPath testMeemPath;
+
+setup() {
+	if (!HyperSpaceHelper.getInstance().isHyperSpaceSet()) {
+		LifeCycleManagerHelper.createMeem(
+			HyperSpaceMeem.getMeemDefinition(), 
+			EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier()).getMeemPath()
+		);
+	}
+
+	// create the Containing LCM
+	
+	elcmMeem = EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier());
+	lifeCycleManagerMeem = LifeCycleManagerHelper.createMeem(PersistingLifeCycleManagerMeem.getMeemDefinition(), elcmMeem);  
+	lifeCycleManager = (LifeCycleManager) ReferenceHelper.getTarget(lifeCycleManagerMeem, "lifeCycleManager", LifeCycleManager.class);
+	
+	// create a category
+	
+	Meem categoryMeem = LifeCycleManagerHelper.createMeem(HyperSpaceHelper.getCategoryDefinition(), lifeCycleManagerMeem);  
+	//Category category = getCategory(categoryMeem);
+	  
+	String path = "transfer_test";
+	  
+	updateCategoryEntry(HyperSpaceHelper.getInstance().getHyperSpaceMeem(), path, categoryMeem.getMeemPath());
+	  
+	// Create the UI component Meems
+	
+	Class[] wedges = new Class[] { org.openmaji.implementation.gui.BasicFrameWedge.class };
+	window = assembleMeem(wedges,LifeCycleState.LOADED,path+"/window");
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(window, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+	
+	Class[] wedges = new Class[] { org.openmaji.implementation.gui.BinaryInputButtonWedge.class };
+	button = assembleMeem(wedges,LifeCycleState.LOADED,path+"/button");
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(button, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+	
+	Class[] wedges = new Class[] { org.openmaji.implementation.gui.LinearInputSliderWedge.class };
+	slider = assembleMeem(wedges,LifeCycleState.LOADED,path+"/slider");
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(slider, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+	
+	Class[] wedges = new Class[] { org.openmaji.implementation.gui.FeedbackDisplayWedge.class };
+	binaryFeedback = assembleMeem(wedges,LifeCycleState.LOADED,path+"/binaryFeedback");
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(binaryFeedback, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+	
+	Class[] wedges = new Class[] { org.openmaji.implementation.gui.FeedbackDisplayWedge.class };
+	linearFeedback = assembleMeem(wedges,LifeCycleState.LOADED,path+"/linearFeedback");
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(linearFeedback, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+	
+	// Setup the dependencies for the UI component Meems
+	
+	addDependency(button,"container",window,"mContainer");
+	addDependency(slider,"container",window,"mContainer");
+	addDependency(binaryFeedback,"container",window,"mContainer");
+	addDependency(linearFeedback,"container",window,"mContainer");
+	
+	// Create the device Meems - use loopback  
+	
+	Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryWedge.class, org.openmaji.implementation.automation.loopback.LoopbackBinaryWedge.class };
+	loopbackBinary = assembleMeem(wedges,LifeCycleState.LOADED,path+"/loopbackBinary");
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(loopbackBinary, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+	
+	Class[] wedges = new Class[] { org.openmaji.implementation.common.LinearWedge.class, org.openmaji.implementation.automation.loopback.LoopbackLinearWedge.class };
+	loopbackLinear = assembleMeem(wedges,LifeCycleState.LOADED,path+"/loopbackLinear");
+	LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(loopbackLinear, "lifeCycleLimit", LifeCycleLimit.class);
+	lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+	
+	// Setup the dependencies between the device Meems and the UI component Meems
+	
+	addDependency(button,"binaryOutput",loopbackBinary,"binary");
+	addDependency(binaryFeedback,"binary",loopbackBinary,"binaryClient");
+	addDependency(slider,"linearOutput",loopbackLinear,"linear");
+	addDependency(linearFeedback,"linear",loopbackLinear,"linearClient");
+	
+	newLifeCycleManagerMeem = LifeCycleManagerHelper.createMeem(PersistingLifeCycleManagerMeem.getMeemDefinition(), elcmMeem);  
+	
+	currentLcmPath = MeemPath.spi.create(Space.MEEMSTORE, elcmMeem.getMeemPath().getLocation());
+	newLcmPath = MeemPath.spi.create(Space.MEEMSTORE, newLifeCycleManagerMeem.getMeemPath().getLocation());
+	testMeemPath = MeemPath.spi.create(Space.MEEMSTORE, lifeCycleManagerMeem.getMeemPath().getLocation());
+	
+	print("To test transfer:\n");
+	print("transfer(testMeemPath, newLcmPath);\n");
+	print("to transfer back:\n");
+	print("transfer(testMeemPath, currentLcmPath);\n");
+}

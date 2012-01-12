@@ -1,0 +1,72 @@
+/*
+ * @(#)metaMeem.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - Consider how to make the "metaMeemMonitor" go away.
+ */
+
+/*
+keywords:     metameem monitor test
+topic:        create a metameem monitor
+description:
+
+  You can create a monitor to display changes made to a Meem's MetaMeem
+  data structure. This can be useful for testing and diagnostic purposes.
+
+usage:
+
+    % void createMetaMeemMonitor(Meem meem);
+
+  These functions are preloaded.
+
+endhelp:
+*/
+
+/* ------------------------------------------------------------------------- */
+
+/*
+function: createMetaMeemMonitor
+functionDescription: Create an instance of MetaMeem that monitors a Meem and displays diagnostic messages upon changes
+functionType: void
+argument: meem
+argumentDescription: The meem to monitor
+argumentType: Meem
+functionEnd:
+*/
+
+void createMetaMeemMonitor(Meem meem) {
+  MetaMeem metaMeemClient = new MetaMeem() {
+    void updateMeemAttribute(MeemAttribute meemAttribute) {
+      print("MeemAttribute: " + meemAttribute);
+    }
+
+    void addWedgeAttribute(WedgeAttribute wedgeAttribute) {
+      print("WedgeAttribute: " + wedgeAttribute);
+    }
+
+    void addFacetAttribute(Object wedgeKey, FacetAttribute facetAttribute) {
+      print("FacetAttribute: " + facetAttribute);
+    }
+
+    void addDependencyAttribute(
+      Object facetKey,
+      DependencyAttribute dependencyAttribute) {
+
+      print("DependencyAttribute: " + dependencyAttribute);
+    }
+  };
+
+  Reference metaMeemClientReference = Reference.spi.create(
+    "metaMeemClient", metaMeemClient, true
+  );
+
+  meem.addOutboundReference(metaMeemClientReference, false);
+}
+
+scriptLoaded("metaMeem.bsh");

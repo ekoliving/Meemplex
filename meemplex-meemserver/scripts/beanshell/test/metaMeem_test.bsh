@@ -1,0 +1,160 @@
+/*
+keywords:     
+topic:        
+description:
+endhelp:
+*/
+
+import org.openmaji.helper.*;
+import org.openmaji.meem.*;
+import org.openmaji.meem.definition.*;
+import org.openmaji.meem.aspect.wedge.reference.*;
+import org.openmaji.manager.registry.MeemRegistry;
+
+import org.openmaji.implementation.meem.test.HelloWorld;
+import org.openmaji.implementation.utility.AbstractFactory;
+
+MetaMeemClient metaMeemClient = new MetaMeemClient() {
+  void meemDefinitionUpdated(
+    MeemDefinition meemDefinition) {
+
+    print("meemDefinitionUpdated: " + meemDefinition);
+    print("");
+  }
+
+  void wedgeDefinitionAdded(
+    WedgeDefinition wedgeDefinition,
+    boolean         systemWedge) {
+
+    print("wedgeDefinitionAdded: " + wedgeDefinition);
+    print("systemWedge:          " + systemWedge);
+    print("");
+  }
+
+  void wedgeDefinitionUpdated(
+    WedgeDefinition wedgeDefinition) {
+
+    print("wedgeDefinitionUpdated: " + wedgeDefinition);
+    print("");
+  }
+
+  void wedgeDefinitionRemoved(
+    WedgeDefinition wedgeDefinition) {
+
+    print("wedgeDefinitionRemoved: " + wedgeDefinition);
+    print("");
+  }
+
+  void facetDefinitionAdded(
+    WedgeDefinition wedgeDefinition,
+    FacetDefinition facetDefinition) {
+
+    print("facetDefinitionAdded: " + wedgeDefinition.getIdentifier());
+    print("                      " + facetDefinition);
+    print("");
+  }
+
+  void facetDefinitionUpdated(
+    FacetDefinition facetDefinition) {
+
+    print("facetDefinitionUpdated: " + facetDefinition);
+    print("");
+  }
+
+  void facetDefinitionRemoved(
+    FacetDefinition facetDefinition) {
+
+    print("facetDefinitionRemoved: " + facetDefinition);
+    print("");
+  }
+
+  void dependencyDefinitionAdded(
+    FacetDefinition      facetDefinition,
+    DependencyDefinition dependencyDefinition) {
+
+    print("dependencyDefinitionAdded: " + facetDefinition.getIdentifier());
+    print("                           " + dependencyDefinition);
+    print("");
+  }
+
+  void dependencyDefinitionUpdated(
+    FacetDefinition      facetDefinition,
+    DependencyDefinition dependencyDefinition) {
+
+    print("dependencyDefinitionUpdated: " + facetDefinition.getIdentifier());
+    print("                             " + dependencyDefinition);
+    print("");
+  }
+
+  void dependencyDefinitionRemoved(
+    FacetDefinition      facetDefinition,
+    DependencyDefinition dependencyDefinition) {
+
+    print("dependencyDefinitionRemoved: " + facetDefinition.getIdentifier());
+    print("                             " + dependencyDefinition);
+    print("");
+  }
+};
+
+// ------------------------------------------------------------------------- //
+
+Reference metaMeemClientReference = Reference.spi.create(
+   "metaMeemClient", metaMeemClient, true
+);
+
+Meem meem = LifeCycleManagerHelper.createMeem();
+
+print("meemCreated: " + meem.getMeemPath());
+print("");
+
+meem.addOutboundReference(metaMeemClientReference, false);
+
+MetaMeem metaMeem = (MetaMeem) meem;
+
+// ------------------------------------------------------------------------- //
+
+meemDefinition = AbstractFactory.create(MeemDefinition.IDENTIFIER);
+meemDefinition.setVersion(1);
+metaMeem.updateMeemDefinition(meemDefinition);
+
+wedgeDefinition = AbstractFactory.create(WedgeDefinition.IDENTIFIER);
+wedgeDefinition.setImplementationClassName(MeemRegistry.DEFAULT_IMPLEMENTATION);
+metaMeem.addWedgeDefinition(wedgeDefinition);
+
+wedgeDefinition = AbstractFactory.create(WedgeDefinition.IDENTIFIER);
+wedgeDefinition.setImplementationClassName(HelloWorld.DEFAULT_IMPLEMENTATION);
+metaMeem.addWedgeDefinition(wedgeDefinition);
+
+facetDefinition = AbstractFactory.create(FacetDefinition.IDENTIFIER);
+facetDefinition.setIdentifier("helloWorld");
+facetDefinition.setInterfaceName(HelloWorld.class.getName());
+metaMeem.addFacetDefinition(wedgeDefinition, facetDefinition);
+
+facetDefinition = AbstractFactory.create(FacetDefinition.IDENTIFIER);
+facetDefinition.setDirection(Direction.OUTBOUND);
+facetDefinition.setIdentifier("test");
+facetDefinition.setInterfaceName(HelloWorld.class.getName());
+metaMeem.addFacetDefinition(wedgeDefinition, facetDefinition);
+
+HelloWorld helloWorld = (HelloWorld)
+  ReferenceHelper.getTarget(meem, "helloWorld", HelloWorld.class);
+helloWorld.hello("hello");
+print("");
+
+facetDefinition.setWedgePublicFieldName("bogusFieldName");
+metaMeem.updateFacetDefinition(facetDefinition);
+
+wedgeDefinition.addPersistentField("persistentField");
+metaMeem.updateWedgeDefinition(wedgeDefinition);
+
+// metaMeem.removeWedgeDefinition(wedgeDefinition);
+// metaMeem.removeFacetDefinition(facetDefinition);
+// metaMeem.resetMeemDefinition();
+
+meem.removeOutboundReference(metaMeemClientReference);
+printToLog("----------------------------");
+printToLog("");
+
+meem.addOutboundReference(metaMeemClientReference, false);
+
+scriptLoaded("metaMeem.bsh");

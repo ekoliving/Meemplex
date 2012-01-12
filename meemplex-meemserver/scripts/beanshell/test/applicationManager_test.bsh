@@ -1,0 +1,130 @@
+/*
+ * @(#)applicationManager_test.bsh
+ *
+ * Copyright 2004 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None, yet.
+ */
+
+/*
+keywords:     test application management osgi
+topic:        test application management of osgi bundles
+description:
+
+  Tests the basic operation of the SynchronousApplicationManager and
+  the OSGi Engine Meem, by installing, starting, stopping and uninstalling
+  a simple OSGi Bundle.
+
+usage:
+
+    % source("test/applicationManager_test.bsh");
+
+endhelp:
+*/
+
+import javax.security.auth.Subject;
+
+import org.openmaji.system.gateway.ServerGateway;
+import org.openmaji.system.meemkit.core.MeemkitManager;
+
+import org.openmaji.implementation.server.meem.core.MeemCoreRootAuthority;
+
+import org.openmaji.implementation.gateway.application.*;
+
+import org.openmaji.implementation.osgiengine.OsgiWedge;
+
+// ------------------------------------------------------------------------- //
+
+String getBundleRepository() {
+  String bundleRepository =
+    System.getProperty(OsgiWedge.PROPERTY_BUNDLE_REPOSITORY);
+
+//print("PROPERTY_BUNDLE_REPOSITORY: " + bundleRepository);
+
+  if (bundleRepository == null) {
+    String meemkitManagerDir =
+      System.getProperty(MeemkitManager.PROPERTY_MEEMKIT_MANAGER_DIRECTORY);
+
+//  print("PROPERTY_MEEMKIT_MANAGER_DIRECTORY: " + meemkitManagerDir);
+
+    String installedMeemkitDir =
+      System.getProperty(MeemkitManager.INSTALLED_MEEMKITS_DIRECTORY);
+
+//  print("INSTALLED_MEEMKITS_DIRECTORY: " + installedMeemkitDir);
+
+    bundleRepository =
+      meemkitManagerDir + installedMeemkitDir + "/meemkit-osgi/bundle/";
+
+//  print("Bundle repository: " + bundleRepository);
+  }
+
+  return(bundleRepository);
+}
+
+// ------------------------------------------------------------------------- //
+
+Subject subject = MeemCoreRootAuthority.getSubject();
+//print("Subject: " + subject);
+
+//ServerGateway serverGateway = ServerGateway.spi.create(subject);
+//print("ServerGateway: " + serverGateway);
+
+SynchronousApplicationManager synchronousApplicationManager;
+
+try {
+  synchronousApplicationManager = SynchronousApplicationManager.spi.createOSGi();
+  print(synchronousApplicationManager);
+
+  print("Initializing SynchronousApplicationManager");
+    synchronousApplicationManager.initialize(subject);
+
+  print(synchronousApplicationManager.getApplications());
+  print(synchronousApplicationManager.getApplicationInstances());
+  print("----------");
+
+  String bundleName = "Hello Service";
+  String bundleLocation = "file://" + getBundleRepository() + "Hello.jar";
+  print("Bundle location: " + bundleLocation);
+
+  print("Installing OSGi Bundle: " + bundleName);
+  Application application = synchronousApplicationManager.installApplication(
+    bundleName, new URL(bundleLocation)
+  );
+
+  print(synchronousApplicationManager.getApplications());
+  print(synchronousApplicationManager.getApplicationInstances());
+  print("----------");
+
+  print("Starting OSGi Bundle: " + bundleName);
+  synchronousApplicationManager.startApplication(bundleName);
+
+  print(synchronousApplicationManager.getApplications());
+  print(synchronousApplicationManager.getApplicationInstances());
+  print("----------");
+
+  print("Stopping OSGi Bundle: " + bundleName);
+  synchronousApplicationManager.stopApplication(bundleName);
+
+  print(synchronousApplicationManager.getApplications());
+  print(synchronousApplicationManager.getApplicationInstances());
+  print("----------");
+
+  print("Uninstalling OSGi Bundle: " + bundleName);
+  synchronousApplicationManager.uninstallApplication(bundleName);
+
+  print(synchronousApplicationManager.getApplications());
+  print(synchronousApplicationManager.getApplicationInstances());
+  print("----------");
+}
+catch (SynchronousApplicationManagerException synchronousApplicationManagerException) {
+  print("Exception: " + synchronousApplicationManagerException);
+}
+
+// ------------------------------------------------------------------------- //
+
+scriptLoaded("applicationManager_test.bsh");

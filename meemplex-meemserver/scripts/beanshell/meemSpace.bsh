@@ -1,0 +1,302 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None, yet.
+ */
+
+/*
+Keywords:     create hyperspace initialize maji meemspace meemstore restore initialise
+Topic:        Create an initial MeemSpace
+Description:
+
+  The Maji system needs a properly populated MeemSpace to function correctly.
+  To create an initial MeemSpace or start from a known clean state you can
+  use the "meemSpace.bsh" script to create a HyperSpace, populate it
+  with Categories, create some Meems and place them in HyperSpace.
+
+  The HyperSpace created by this script looks like this:
+
+     hyperSpace:/
+       application/
+         maji/
+           installation/
+             library/
+             pattern/
+               meem/
+               wedge/
+           configuration/
+               meemkit/
+               wedgekit/
+       deployment/
+         meemServer_01/
+           identityManager/
+           lifeCycleManager/
+         meemServer_02/
+           identityManager/
+           lifeCycleManager/
+         worksheet/
+      
+       site/       
+       user/
+         guest/
+       work/
+         example/
+         tutorial/
+
+Usage:
+
+    source("meemSpace.bsh");
+    createMeemSpace();                 // Creates a vanilla MeemSpace
+    createMeemSpace("myretsu.bsh");    // Creates a vanilla MeemSpace PLUS Myretsu Categories
+
+EndHelp:
+*/
+
+import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
+import org.openmaji.system.meemkit.core.MeemkitManager;
+import org.openmaji.system.meemserver.*;
+import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
+
+import org.openmaji.server.helper.EssentialMeemHelper;
+import org.openmaji.server.utility.*;  
+
+import org.openmaji.implementation.server.manager.lifecycle.hyperspace.HyperSpaceMeem;
+import org.openmaji.implementation.server.manager.lifecycle.lazy.LazyLifeCycleManagerMeem;
+import org.openmaji.implementation.server.manager.lifecycle.persisting.PersistingLifeCycleManagerMeem;
+import org.openmaji.implementation.server.utility.meemspace.MeemSpaceCreateUtility;
+
+if (scriptNotLoaded("category.bsh")) {
+	System.err.println("loading: " + scriptBase + "category.bsh");
+  source(scriptBase + "category.bsh");
+}
+
+/*
+function: createMeemSpace
+functionDescription: Create a new MeemSpace
+functionType: void
+functionEnd:
+*/
+
+void createMeemSpace()
+{
+  createMeemSpace(null);
+}
+
+/*
+function: createMeemSpace
+functionDescription: Create a MeemSpace that is tailored to a particular deployment target
+functionType: void
+argument: deployTarget
+argumentDescription: The name of the deployment target to use
+argumentType: String
+functionEnd:
+*/
+
+String fullScriptPath = null;
+String installerName = null;
+
+void createMeemSpace(String deployTarget)
+{
+  long atStart = System.currentTimeMillis();
+
+  if (HyperSpaceHelper.getInstance().isHyperSpaceSet()) {
+    categoryMeem = getMeem(StandardHyperSpaceCategory.MAJI_SYSTEM);
+    if ( categoryMeem != null ) {
+      log("You already have a MeemSpace.");
+      return;
+    }
+  }  
+
+  MeemSpaceCreateUtility meemSpaceCreateUtility = new MeemSpaceCreateUtility();
+  meemSpaceCreateUtility.installMeemkits();
+
+  boolean deployFromScript = false;
+  if ( deployTarget != null )
+  {
+    fullScriptPath = scriptBase + "deploy/" + deployTarget;
+    java.io.File file = new java.io.File(fullScriptPath);
+    if ( file.exists() == true )
+    {
+      deployFromScript = true;
+    }
+    else
+    {
+      if ( deployTarget.endsWith(".bsh") == true )
+      {
+        log("No such deployment script");
+        return;
+      }
+      else
+      {
+        fullScriptPath = scriptBase + "deploy/" + deployTarget + ".bsh";
+        java.io.File file = new java.io.File(fullScriptPath);
+        if ( file.exists() == true )
+        {
+          deployFromScript = true;
+        }
+        else
+        {
+          // TODO: Check if deployTarget is something other than a beanShell script. But
+          // for now just generate an error.
+          log("No such deployment target");
+          return;
+        }
+      }
+    }
+  }
+
+	// --------------------------
+	// Create the HyperSpace Meem
+	// --------------------------
+	
+	log("Creating HyperSpace");
+	
+	LifeCycleManagerHelper.createMeem(
+		HyperSpaceMeem.getMeemDefinition(), 
+		EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier()).getMeemPath()
+	);
+	
+  HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+  
+  // Create HyperSpace image
+  ResourceExporter re = new ResourceExporter(org.openmaji.server.presentation.hyperspace.images.Images.class);
+  MeemIconicPresentation icons = new MeemIconicPresentation();
+  icons.setSmallIcon(re.extract("hyperspace_16.gif"));
+  icons.setLargeIcon(re.extract(MeemIconicPresentation.getLargeIconName("hyperspace_16.gif")));
+
+  variableMap = (VariableMap) ReferenceHelper.getTarget(HyperSpaceHelper.getInstance().getHyperSpaceMeem(), "variableMap", VariableMap.class);
+  variableMap.update(org.openmaji.system.presentation.InterMajik.ICONIC_PRESENTATION_KEY, icons);
+
+  String meemServerName = System.getProperties().getProperty(MeemServer.PROPERTY_MEEMSERVER_NAME);
+
+  // -----------------------------------
+  // First create the Category hierarchy
+  // -----------------------------------
+
+  log("Creating Categories in HyperSpace");
+  
+  // ----------------------------------
+  // These are the new categories as per MDN-004
+  // ---------------------------------- 
+  
+  log("Creating Category: /application");
+  createPatternGroup("/",StandardHyperSpaceCategory.APPLICATION,org.openmaji.server.presentation.hyperspace.images.Images.class,"application_16.gif");
+  
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM);
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_INSTALLATION); 
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_LIBRARY);  
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN); 
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_CONFIGURATION);
+  
+  log("Creating Category: /deployment"); 
+  createPatternGroup("/",StandardHyperSpaceCategory.DEPLOYMENT,org.openmaji.server.presentation.hyperspace.images.Images.class,"meemserver_16.gif");
+		  
+  log("Creating Category: /site"); 
+  
+  createPatternGroup("/",StandardHyperSpaceCategory.SITE,org.openmaji.server.presentation.hyperspace.images.Images.class,"site_16.gif");
+ 
+  log("Creating Category: /user"); 
+  
+  createPatternGroup("/",StandardHyperSpaceCategory.USER,org.openmaji.server.presentation.hyperspace.images.Images.class,"user_16.gif");
+  hsh.createPath(StandardHyperSpaceCategory.USER + "/system");
+ 
+  log("Creating Category: /work"); 
+  
+  createPatternGroup("/",StandardHyperSpaceCategory.WORK,org.openmaji.server.presentation.hyperspace.images.Images.class,"work_16.gif");
+  
+  hsh.createPath(StandardHyperSpaceCategory.WORK + "/demonstration");
+  hsh.createPath(StandardHyperSpaceCategory.WORK + "/example");
+  hsh.createPath(StandardHyperSpaceCategory.WORK + "/tutorial");
+  
+  // --------------------------------------------------------------------
+  // Create some non-system users
+  // --------------------------------------------------------------------
+  
+  removeUser("guest");
+  log("Creating user account: guest");
+  addUser("guest","InterMajik Guest User","other","guest99");
+  
+  removeUser("owner");
+  log("Creating user account: owner");
+  addUser("owner","InterMajik Owner User","user","owner99");
+  
+  addAccess("owner", "/site", AccessLevel.ADMINISTER);
+  addAccess("owner", "/work", AccessLevel.ADMINISTER);
+  addAccess("owner", "/work/demonstration", AccessLevel.ADMINISTER);
+  addAccess("owner", "/work/example", AccessLevel.ADMINISTER);
+  addAccess("owner", "/work/tutorial", AccessLevel.ADMINISTER);
+
+  // ------------------------------------------------------------------
+  // Create the Hyperspace Categories for the pattern Meems and Wedges.
+  // These are used by the MeemKit and WedgeKit views in InterMajik.
+  // ------------------------------------------------------------------
+
+  log("Creating Meemkit Hyperspace Categories");
+
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_MEEM);
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_WEDGE);
+
+  // ----------------------------------------------------------
+  // Create the SubsystemFactory Meem and associated categories
+  // ----------------------------------------------------------
+/*
+  log("Creating SubsystemFactory");
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SUBSYSTEM);
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SUBSYSTEM_INSTALLED);
+  hsh.createPath(StandardHyperSpaceCategory.MAJI_SUBSYSTEM_MEEMS);
+
+  import org.openmaji.meem.definition.MeemDefinitionFactory;
+  import org.openmaji.implementation.server.manager.lifecycle.persisting.PersistingLifeCycleManagerMeem;
+  import org.openmaji.implementation.server.manager.lifecycle.subsystem.SubsystemFactoryMeem;
+
+  MeemDefinition meemDefinition = (new PersistingLifeCycleManagerMeem()).getMeemDefinition();
+  MeemPath meemPath = EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier()).getMeemPath();
+  Meem subsystemLCM = LifeCycleManagerHelper.createMeem(meemDefinition,meemPath);
+  Category category = hsh.getCategory(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SUBSYSTEM));
+  category.addEntry("subsystemLifeCycleManager",subsystemLCM);
+
+  meemDefinition = (new SubsystemFactoryMeem()).getMeemDefinition();
+  Meem subsystemFactory = LifeCycleManagerHelper.createMeem(meemDefinition,meemPath);
+  category.addEntry("subsystemFactory",subsystemFactory);
+*/
+  // -----------------------------
+  // Create the Import/Export Meem
+  // -----------------------------
+  
+  import org.openmaji.implementation.common.importexport.ImportExportManagerMeem;
+  
+  Meem importExportMeem = LifeCycleManagerHelper.createMeem(
+  	MeemDefinitionFactory.spi.create().createMeemDefinition(ImportExportManagerMeem.class),
+  	EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier()).getMeemPath()
+  );
+  
+  Category majiSystemCategory = hsh.getCategory(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM));
+  
+  majiSystemCategory.addEntry("importExport", importExportMeem);
+
+  // --------------------------------------------------------------------
+  // If a deploy script was specified then invoke it now as the last step
+  // --------------------------------------------------------------------
+
+  if ( deployFromScript == true )
+  {
+    setNameSpace(super.namespace);
+    source(fullScriptPath);
+    updateMeemSpace();
+  }
+  
+  long atEnd = System.currentTimeMillis();
+  log("Create MeemSpace elapsed time: " + (atEnd - atStart) + " milliseconds");
+}
+
+void log(String message) {
+  print(message);
+  info(message);
+}
+
+scriptLoaded("meemSpace.bsh");

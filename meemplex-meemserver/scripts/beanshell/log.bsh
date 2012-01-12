@@ -1,0 +1,216 @@
+/*
+ * @(#)log.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - Implement ability to turn log tracing on or off.
+ * - Implement ability to alter the log tracing level.
+ * - Implement ability to log trace specific packages or classes.
+ */
+
+/*
+keywords:     log logging maji
+topic:        beanshell access to the maji logging facility
+description:
+
+  The Maji logging facility can be accessed from inside the beanshell.
+  The shell script log.bsh defines a number of helpful routines.
+
+usage:
+
+      error(String message);
+      info(String message);
+      trace(String message);
+      verbose(String message);
+      warn(String message);
+      traceLevel=getLogTraceLevel();
+      setLogTraceLevel(int traceLevel);
+      showTraceFlags();
+
+  These functions are preloaded.
+
+endhelp:
+*/
+
+import java.util.Properties;
+
+import org.swzoo.log2.util.ConfigurableLogFactory;
+import org.swzoo.log2.topology.shortblack.Brew;
+import org.swzoo.log2.component.process.filter.TraceLevelFilter;
+import org.swzoo.nursery.properties.PropertiesUtil;
+
+/* -------------------------------------------------------------------------- *
+ * Print to Maji log or BeanShell console, depending on "printToLog" flag.
+ *
+ * Note: "printToLog" is defined in "initialize.bsh".
+ */
+
+/*
+function: printToLog
+functionDescription: Print an INFO level message to the logging system
+functionType: void
+argument: message
+argumentDescription: The message to print to the log system
+argumentType: String
+functionEnd:
+*/
+
+void printToLog(
+  String message) {
+
+  if (printToLog == true) {
+    info(message);
+  }
+  else {
+    print(message);
+  }
+}
+
+/*
+function: error
+functionDescription: Print an ERROR level message to the logging system
+functionType: void
+argument: message
+argumentDescription: The message to print to the log system
+argumentType: String
+functionEnd:
+*/
+
+void error(String message) {
+  log.error(message);
+}
+
+/*
+function: info
+functionDescription: Print an INFO level message to the logging system
+functionType: void
+argument: message
+argumentDescription: The message to print to the log system
+argumentType: String
+functionEnd:
+*/
+
+void info(String message) {
+  log.info(message);
+}
+
+/*
+function: trace
+functionDescription: Print a TRACE level message to the logging system
+functionType: void
+argument: message
+argumentDescription: The message to print to the log system
+argumentType: String
+functionEnd:
+*/
+
+void trace(String message) {
+  log.trace(message);
+}
+
+/*
+function: verbose
+functionDescription: Print a VERBOSE level message to the logging system
+functionType: void
+argument: message
+argumentDescription: The message to print to the log system
+argumentType: String
+functionEnd:
+*/
+
+void verbose(String message) {
+  log.verbose(message);
+}
+
+/*
+function: warn
+functionDescription: Print a WARNING level message to the logging system
+functionType: void
+argument: message
+argumentDescription: The message to print to the log system
+argumentType: String
+functionEnd:
+*/
+
+void warn(String message) {
+  log.warn(message);
+}
+
+/*
+function: getTraceLevelFilter
+functionDescription: Return the logging system's trace level filter
+functionType: TraceLevelFilter
+functionEnd:
+*/
+
+TraceLevelFilter getTraceLevelFilter() {
+
+  factory  = new ConfigurableLogFactory();
+  topology = factory.getProvider();
+
+  backend = topology.getBackEnd();
+  if ( backend instanceof org.openmaji.implementation.tool.eclipse.util.log.LatteBackEnd ) {
+    latteBackend = (org.openmaji.implementation.tool.eclipse.util.log.LatteBackEnd) backend;
+    return latteBackend.traceLevelFilter;
+  }
+
+  if ( backend instanceof Brew ) {
+    brew = (Brew) topology.getBackEnd();
+    return brew.traceLevelFilter;
+  }
+  
+  print("Unrecognised logging backend: "+backend.getClass().getName());
+  return null;
+}
+
+/*
+function: getLogTraceLevel
+functionDescription: Return the current logging trace level
+functionType: int
+functionEnd:
+*/
+
+int getLogTraceLevel() {
+  return(getTraceLevelFilter().getLevel());
+}
+
+/*
+function: setLogTraceLevel
+functionDescription: Set the current trace level
+functionType: void
+argument: traceLevel
+argumentDescription: The new trace level to set
+argumentType: int
+functionEnd:
+*/
+
+void setLogTraceLevel(
+  int traceLevel) {
+
+  getTraceLevelFilter().setLevel(traceLevel);
+}
+
+/*
+function: showTraceFlags
+functionDescription: Display a list of all the trace level logging flags that can be turned on in application meems.
+functionType: void
+functionEnd:
+*/
+
+void showTraceFlags() {
+
+  String text = org.openmaji.implementation.server.utility.TraceFlagUtility.getTraceFlagDescriptions();
+  print(text);
+  print("To set trace level logging for, example, the C-Bus application Meems:");
+  print("");
+  print("    org.openmaji.implementation.server.Common.TRACE_ENABLED = true;");
+  print("    org.openmaji.implementation.server.Common.TRACE_AUTOMATION_CBUS = true;");
+  print("");
+}
+
+scriptLoaded("log.bsh");

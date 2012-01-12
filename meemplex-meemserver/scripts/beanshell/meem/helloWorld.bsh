@@ -1,0 +1,102 @@
+/*
+ * @(#)helloWorld.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     example test
+topic:        a meem creation speed test of the maji system
+description:
+
+  Usage:
+
+    source("meem/helloWorld.bsh");
+    helloWorldMeem = createHelloWorldMeem();
+    helloWorld = getHelloWorld(helloWorldMeem);
+    helloWorld.hello("Go away, I'm busy !");
+
+    testHelloWorld(int iterations, int meemIndex);
+
+endhelp:
+*/
+
+import org.openmaji.implementation.test.maji.system.speed.*;
+
+/*
+function: createHelloWorldMeem
+functionDescription: Create a performance test meem containing a HelloWorldClientImpl wedge
+functionType: Meem
+functionEnd:
+*/
+
+Meem createHelloWorldMeem()
+{
+  Class[] wedges = new Class[] { org.openmaji.implementation.test.maji.system.speed.HelloWorldClientImpl.class };
+  return assembleMeem(wedges);
+}
+
+/*
+function: getHelloWorld
+functionDescription: Return a reference to a helloWorldMeem
+functionType: HelloWorld
+argument: helloWorldMeem
+argumentDescription: The helloWorldMeem to return
+argumentType: Meem
+functionEnd:
+*/
+
+HelloWorld getHelloWorld(Meem helloWorldMeem) {
+  return((HelloWorld)
+    ReferenceHelper.getTarget(helloWorldMeem, "helloWorld", HelloWorld.class)
+  );
+}
+
+/*
+function: doHelloWorld
+functionDescription: Test to create a hello world meem
+functionType: HelloWorld
+functionEnd:
+*/
+
+HelloWorld doHelloWorld() {
+  helloWorldMeem = createHelloWorldMeem();
+  helloWorld = getHelloWorld(helloWorldMeem);
+  helloWorld.hello("Go away, I'm busy !");
+  return(helloWorld);
+}
+
+// Create 1,000 Meems
+//   JDK 1.4.2-beta-b19: 1st run: 38 + 35 + 42 = 115
+//                       2nd run: 19 + 17 + 16 =  52
+//                       3rd run: 18 + 16 + 18 =  52
+
+void testHelloWorldA() { testHelloWorld(1000,    0); }  // First  1,000
+void testHelloWorldB() { testHelloWorld(1000, 1000); }  // Second 1,000
+void testHelloWorldC() { testHelloWorld(1000, 2000); }  // Third  1,000
+
+/*
+function: testHelloWorld
+functionDescription: test the performance of creating a number of helloWorldMeems
+functionType: void
+argument: iterations
+argumentDescription: The number fo meems to create
+argumentType: int
+argument: meemIndex
+argumentDescription: The offset of the meem index 
+argumentType: int
+functionEnd:
+*/
+
+void testHelloWorld(int iterations, int meemIndex) {
+  print("Commence: " + new Date());
+
+  HelloWorldClientImpl.testCreation(iterations, meemIndex);
+
+  print("Conclude: " + new Date());
+}
+
+scriptLoaded("helloWorld.bsh");

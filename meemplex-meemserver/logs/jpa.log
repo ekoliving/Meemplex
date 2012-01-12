@@ -1,0 +1,37 @@
+[EL Info]: 2011-11-06 15:53:46.179--ServerSession(2097261823)--EclipseLink, version: Eclipse Persistence Services - 2.2.0.v20110202-r8913
+[EL Info]: 2011-11-06 15:53:48.052--ServerSession(2097261823)--bundleresource://48.fwk760370133:16_meemstore_url=jdbc:derby:/Users/stormboy/Projects/majiklab/openmaji-meemserver//servers/meemServer_01/meemStore;create=true login successful
+[EL Warning]: 2011-11-06 15:53:48.286--ServerSession(2097261823)--Exception [EclipseLink-4002] (Eclipse Persistence Services - 2.2.0.v20110202-r8913): org.eclipse.persistence.exceptions.DatabaseException
+Internal Exception: java.sql.SQLException: Table/View 'MEEM' already exists in Schema 'APP'.
+Error Code: 30000
+Call: CREATE TABLE MEEM (meem_id VARCHAR(255) NOT NULL, date_created TIMESTAMP, date_modified TIMESTAMP, DEFINITION BLOB(2147483647), DESCRIPTION VARCHAR(255), meem_key VARCHAR(255), NAME VARCHAR(255), SCOPE VARCHAR(255), VERSION INTEGER, PRIMARY KEY (meem_id))
+Query: DataModifyQuery(sql="CREATE TABLE MEEM (meem_id VARCHAR(255) NOT NULL, date_created TIMESTAMP, date_modified TIMESTAMP, DEFINITION BLOB(2147483647), DESCRIPTION VARCHAR(255), meem_key VARCHAR(255), NAME VARCHAR(255), SCOPE VARCHAR(255), VERSION INTEGER, PRIMARY KEY (meem_id))")
+[EL Warning]: 2011-11-06 15:53:48.33--ServerSession(2097261823)--Exception [EclipseLink-4002] (Eclipse Persistence Services - 2.2.0.v20110202-r8913): org.eclipse.persistence.exceptions.DatabaseException
+Internal Exception: java.sql.SQLException: Table/View 'WEDGE' already exists in Schema 'APP'.
+Error Code: 30000
+Call: CREATE TABLE WEDGE (ID BIGINT NOT NULL, CLASSNAME VARCHAR(255), is_system SMALLINT DEFAULT 0, NAME VARCHAR(255), SORTINDEX INTEGER, meem_id VARCHAR(255), PRIMARY KEY (ID))
+Query: DataModifyQuery(sql="CREATE TABLE WEDGE (ID BIGINT NOT NULL, CLASSNAME VARCHAR(255), is_system SMALLINT DEFAULT 0, NAME VARCHAR(255), SORTINDEX INTEGER, meem_id VARCHAR(255), PRIMARY KEY (ID))")
+[EL Warning]: 2011-11-06 15:53:48.337--ServerSession(2097261823)--Exception [EclipseLink-4002] (Eclipse Persistence Services - 2.2.0.v20110202-r8913): org.eclipse.persistence.exceptions.DatabaseException
+Internal Exception: java.sql.SQLException: Table/View 'FACET' already exists in Schema 'APP'.
+Error Code: 30000
+Call: CREATE TABLE FACET (ID BIGINT NOT NULL, DIRECTION VARCHAR(255), FACETCLASS VARCHAR(255), FIELDNAME VARCHAR(255), NAME VARCHAR(255), SORTINDEX INTEGER, wedge_id BIGINT, PRIMARY KEY (ID))
+Query: DataModifyQuery(sql="CREATE TABLE FACET (ID BIGINT NOT NULL, DIRECTION VARCHAR(255), FACETCLASS VARCHAR(255), FIELDNAME VARCHAR(255), NAME VARCHAR(255), SORTINDEX INTEGER, wedge_id BIGINT, PRIMARY KEY (ID))")
+[EL Warning]: 2011-11-06 15:53:48.371--ServerSession(2097261823)--Exception [EclipseLink-4002] (Eclipse Persistence Services - 2.2.0.v20110202-r8913): org.eclipse.persistence.exceptions.DatabaseException
+Internal Exception: java.sql.SQLException: Table/View 'CONTENT' already exists in Schema 'APP'.
+Error Code: 30000
+Call: CREATE TABLE CONTENT (NAME VARCHAR(255) NOT NULL, wedge_name VARCHAR(255) NOT NULL, meem_id VARCHAR(255) NOT NULL, TYPE VARCHAR(255), VALUE BLOB(2147483647), PRIMARY KEY (NAME, wedge_name, meem_id))
+Query: DataModifyQuery(sql="CREATE TABLE CONTENT (NAME VARCHAR(255) NOT NULL, wedge_name VARCHAR(255) NOT NULL, meem_id VARCHAR(255) NOT NULL, TYPE VARCHAR(255), VALUE BLOB(2147483647), PRIMARY KEY (NAME, wedge_name, meem_id))")
+[EL Warning]: 2011-11-06 15:53:48.446--ServerSession(2097261823)--Exception [EclipseLink-4002] (Eclipse Persistence Services - 2.2.0.v20110202-r8913): org.eclipse.persistence.exceptions.DatabaseException
+Internal Exception: java.sql.SQLException: Constraint 'FK_WEDGE_MEEM_ID' already exists in Schema 'APP'.
+Error Code: 30000
+Call: ALTER TABLE WEDGE ADD CONSTRAINT FK_WEDGE_meem_id FOREIGN KEY (meem_id) REFERENCES MEEM (meem_id)
+Query: DataModifyQuery(sql="ALTER TABLE WEDGE ADD CONSTRAINT FK_WEDGE_meem_id FOREIGN KEY (meem_id) REFERENCES MEEM (meem_id)")
+[EL Warning]: 2011-11-06 15:53:48.497--ServerSession(2097261823)--Exception [EclipseLink-4002] (Eclipse Persistence Services - 2.2.0.v20110202-r8913): org.eclipse.persistence.exceptions.DatabaseException
+Internal Exception: java.sql.SQLException: Constraint 'FK_FACET_WEDGE_ID' already exists in Schema 'APP'.
+Error Code: 30000
+Call: ALTER TABLE FACET ADD CONSTRAINT FK_FACET_wedge_id FOREIGN KEY (wedge_id) REFERENCES WEDGE (ID)
+Query: DataModifyQuery(sql="ALTER TABLE FACET ADD CONSTRAINT FK_FACET_wedge_id FOREIGN KEY (wedge_id) REFERENCES WEDGE (ID)")
+[EL Warning]: 2011-11-06 15:53:48.505--ServerSession(2097261823)--Exception [EclipseLink-4002] (Eclipse Persistence Services - 2.2.0.v20110202-r8913): org.eclipse.persistence.exceptions.DatabaseException
+Internal Exception: java.sql.SQLException: Table/View 'SEQUENCE' already exists in Schema 'APP'.
+Error Code: 30000
+Call: CREATE TABLE SEQUENCE (SEQ_NAME VARCHAR(50) NOT NULL, SEQ_COUNT DECIMAL(15), PRIMARY KEY (SEQ_NAME))
+Query: DataModifyQuery(sql="CREATE TABLE SEQUENCE (SEQ_NAME VARCHAR(50) NOT NULL, SEQ_COUNT DECIMAL(15), PRIMARY KEY (SEQ_NAME))")

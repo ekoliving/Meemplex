@@ -1,0 +1,126 @@
+/*
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     binary create helper monitor
+topic:        create and manipulate binary loopback meems
+description:
+
+  This beanshell script is used to build and test Binary Meems. Note
+  that the Meems created by this script are constructed by joining
+  together a BinaryWedge and a LoopbackBinaryWedge.
+
+usage:
+
+    source("automation/binary.bsh");
+    transientMeem = createBinaryMeem();
+    createBinaryMonitor(transientMeem);
+    binary = getBinary(transientMeem);
+    binary.valueChanged(true);
+    binary.valueChanged(false);
+
+    persistentMeem = createBinaryMeem("/path/in/hyperspace");
+
+endhelp:
+*/
+
+import org.openmaji.meem.definition.MeemDefinition;
+import org.openmaji.meem.MeemPath;
+import org.openmaji.meem.space.Space;
+import org.openmaji.common.Binary;
+import org.openmaji.implementation.automation.loopback.LoopbackBinaryMeem;
+
+/*
+function: createBinaryMeem
+functionDescription: Create a transient Binary Meem
+functionType: Meem
+functionEnd:
+*/
+
+Meem createBinaryMeem()
+{
+  MeemDefinition meemDefinition = (new LoopbackBinaryMeem()).getMeemDefinition();
+  return LifeCycleManagerHelper.createTransientMeem(meemDefinition);
+}
+
+/*
+function: createBinaryMeem
+functionDescription: Create a persistent Binary Meem
+functionType: Meem
+argument: path
+argumentDescription: Create the Meem with this Hyperspace path
+argumentType: String
+functionEnd:
+*/
+
+Meem createBinaryMeem(String path)
+{
+  MeemDefinition meemDefinition = (new LoopbackBinaryMeem()).getMeemDefinition();
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE,path);
+  return LifeCycleManagerHelper.createMeem(meemDefinition,meemPath);
+}
+
+/*
+function: getBinary
+functionDescription: Return a reference to a Meem's Binary inbound facet
+functionType: Binary
+argument: binaryMeem
+argumentDescription: A Meem containing a Binary inbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+Binary getBinary(Meem binaryMeem)
+{
+  return (Binary) ReferenceHelper.getTarget(binaryMeem, "binaryInput", Binary.class);
+}
+
+/*
+function: getBinary
+functionDescription: Return a reference to a Meem's Binary facet
+functionType: Binary
+argument: binaryMeem
+argumentDescription: A Meem containing a Binary facet
+argumentType: Meem
+argument: facetIdentifier
+argumentDescription: The name of the Binary facet
+argumentType: Meem
+functionEnd:
+*/
+
+Binary getBinary(Meem binaryMeem, String facetIdentifier)
+{
+  return (Binary) ReferenceHelper.getTarget(binaryMeem, facetIdentifier, Binary.class);
+}
+
+/*
+function: createBinaryMonitor
+functionDescription: Create a monitor that displays state changes in a Binary Meem
+functionType: void
+argument: binaryMeem
+argumentDescription: A Meem containing a Binary outbound facet
+argumentType: Meem
+functionEnd:
+*/
+
+void createBinaryMonitor(Meem binaryMeem) {
+  Binary binaryClient = new Binary() {
+    void valueChanged(boolean value) {
+      print(binaryMeem.getMeemPath() + ".valueChanged(): " + value);
+    }
+  };
+
+  Reference binaryClientReference = Reference.spi.create(
+    "binaryOutput",  // Binary Provider Meem out-bound Facet identifier
+     binaryClient,   // Binary Client (not a Meem)
+     true            // Initial content required
+  );
+
+  binaryMeem.addOutboundReference(binaryClientReference, false);
+};
+
+scriptLoaded("binary.bsh");

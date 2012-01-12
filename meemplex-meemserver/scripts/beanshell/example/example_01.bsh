@@ -1,0 +1,103 @@
+/*
+ * @(#)example_01.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - Replace Binary with LightSimulated.
+ * - Incorporate MeemUI functionality !
+ */
+
+/*
+keywords:    example binary
+topic:       an example of Interconnected Binary Meems
+description:
+
+  Set-up three interconnected Binary Meems, that simulate a switch, a light
+  and a display for the light status.  Turning the switch on or off will
+  alter the state of the light and, in turn, the display.
+
+ Usage:
+
+    source("example/example_01.bsh");
+    example_01_setup();
+    lightSwitch = getLightSwitch();
+    lightSwitch.valueChanged(true);
+    lightSwitch.valueChanged(false);
+
+ HyperSpace Layout:
+ 
+    HyperSpace/MeemStore:
+      hyperSpace:/
+        example/
+        example_01/
+          display light switch = Binary Meems
+ 
+  andigram:
+  ---------
+                       Binary::control
+          switchMeem -----------------+
+                                      v
+                                  lightMeem
+                                      |
+          displayMeem <---------------+
+               |       Binary::state
+               v
+    print(valueChanged());
+
+endhelp:
+ */
+
+import org.openmaji.helper.HyperSpaceHelper;
+
+if (scriptNotLoaded("binary.bsh")) { source(scriptBase + "automation/binary.bsh"); }
+
+/*
+function: example_01_setup
+functionDescription: Set up a meem example, implementing a switch/light/display scenario
+functionType: void
+functionEnd:
+*/
+
+void example_01_setup()
+{
+  HyperSpaceHelper.getInstance().createPath("/example/example_01");
+
+  switchMeem  = createBinaryMeem("/example/example_01/switch");
+  createBinaryMonitor(switchMeem);
+
+  lightMeem   = createBinaryMeem("/example/example_01/light");
+  createBinaryMonitor(lightMeem);
+
+  displayMeem = createBinaryMeem("/example/example_01/display");
+  createBinaryMonitor(displayMeem);
+
+  ReferenceHelper.createReference(switchMeem,  "binaryClient", lightMeem,   "binary", Binary.class, false);
+  ReferenceHelper.createReference(lightMeem,   "binaryClient", displayMeem, "binary", Binary.class, true);
+}
+
+/*
+function: getLightSwitch
+functionDescription: get a reference to the light switch
+functionType: Binary
+functionEnd:
+*/
+Binary getLightSwitch() {
+  Meem switchMeem = getMeem("/example/example_01/switch");
+
+  Binary lightSwitch = null;
+
+  if (MeemHelper.isA(switchMeem, Binary.class)) {
+    lightSwitch = (Binary) ReferenceHelper.getTarget(
+      switchMeem, "binary", Binary.class
+    );
+  }
+
+  return(lightSwitch);
+}
+
+scriptLoaded("example_01.bsh");

@@ -1,0 +1,62 @@
+/*
+ * @(#)loadAll.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None. yet.
+ */
+
+/*
+keywords:     
+topic:        
+description:
+endhelp:
+*/
+
+/* -------------------------------------------------------------------------- *
+ * Import all the commonly used Maji packages ...
+ * ... so that other scripts don't need to.
+ */
+
+import org.openmaji.server.helper.*;
+import org.openmaji.server.manager.lifecycle.LifeCycleManager;
+import org.openmaji.system.manager.registry.*;
+import org.openmaji.meem.*;
+import org.openmaji.meem.space.*;
+import org.openmaji.meem.wedge.lifecycle.*;
+import org.openmaji.system.meem.wedge.persistence.*;
+import org.openmaji.meem.wedge.reference.*;
+import org.openmaji.meem.definition.*;
+import org.openmaji.system.meem.definition.*;
+import org.openmaji.system.space.*;
+import org.openmaji.system.space.hyperspace.*;
+
+import org.openmaji.implementation.automation.common.classlibrary.*;
+import org.openmaji.implementation.server.Common;
+import org.openmaji.implementation.server.manager.lifecycle.persisting.*;
+import org.openmaji.implementation.server.utility.*;
+import org.openmaji.implementation.server.manager.registry.*;
+
+/* -------------------------------------------------------------------------- *
+ * Load all Maji platform related BeanShell scripts
+ */
+
+source("log.bsh");      // Must do first !!
+source("meem.bsh");     // Must do second !
+source("category.bsh"); // Must do third  !
+
+source("metaMeem.bsh");
+source("runtime.bsh");
+source("shell.bsh");
+source("help.bsh");
+source("useradmin.bsh");
+source("dependency.bsh");
+source("meemSpace.bsh");
+source("deploy.bsh");
+
+scriptLoaded("loadAll.bsh");

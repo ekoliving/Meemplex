@@ -1,0 +1,56 @@
+/*
+ * Copyright 2004 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     create performance test user adduser
+topic:        generates many users to test the capacity of the keystore
+description:
+
+  This beanshell script is used to test user maintenance function capacity.
+
+usage:
+
+    source("test/manyUsersTest.bsh");
+
+    addUsers(100);
+
+endhelp:
+*/
+
+if (scriptNotLoaded("useradmin.bsh")) {
+  source(scriptBase + "useradmin.bsh");
+}
+
+/*
+function: addUsers
+functionDescription: create many users to test keystore capacity
+functionType: void
+argument: quantity
+argumentDescription: The number of users to create
+argumentType: int
+functionEnd:
+*/
+
+void addUsers(
+  int quantity) {
+  String userNamePrefix = "UserNumber";
+  String fullUserNamePrefix = "Test User Number ";
+  groupName = "system";
+  password = "lmlp";
+
+  print("Commencing " + quantity + " user creations.");
+  print("Commence: " + new Date());
+  for (int index = 0; index < quantity; index ++) {
+    userName = userNamePrefix + index;
+    fullUserName = fullUserNamePrefix + index;
+   
+    addUser(userName, fullUserName, groupName, password);
+    print ("Added " + userName );
+  }
+  print("Conclude: " + new Date());
+}
+

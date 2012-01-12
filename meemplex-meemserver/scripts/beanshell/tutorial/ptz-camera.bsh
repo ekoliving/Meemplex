@@ -1,0 +1,115 @@
+/*
+keywords:    tutorial swing gui camera video
+topic:       A Swing application that controls a PTZ camera
+description:
+
+  This beanshell script creates a swing application that demonstrates
+  control of a Pan-Tilt-Zoom camera and the display of the video recorded
+  by that camera.
+
+  Usage:
+
+    source("tutorial/ptz-camera.bsh");
+    setupTutorial("/work/tutorial/ptz-camera");
+
+endhelp:
+*/
+
+import org.openmaji.meem.wedge.configuration.*;
+
+source(scriptBase + "worksheet.bsh");
+source(scriptBase + "dependency.bsh");
+
+/*
+function: setupTutorial
+functionDescription: Build the Pan/Tilt/Zoom GUI demo from meems on a worksheet
+functionType: void
+argument: path
+argumentDescription: The location to place the worksheet containing the meems
+argumentType: String
+functionEnd:
+*/
+
+void setupTutorial(String path)
+{
+  categoryMeem = getMeem(path);
+  if ( categoryMeem != null )
+  {
+    print("That category already exists. Please remove it or select another category.");
+    return null;
+  }
+
+  HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+
+  if (hsh.getHyperSpaceMeem() == null)
+  {
+    print("ERROR: You don't have a HyperSpace; can't setup tutorial at: " + path);
+    return;
+  }
+
+  hsh.createPath(path);
+
+  // Create the UI component Meems
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.gui.BasicFrameWedge.class };
+  frame = assembleMeem(wedges,LifeCycleState.LOADED,path+"/Frame");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(frame, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.gui.MediaVideoPanelWedge.class };
+  mediaVideoPanel = assembleMeem(wedges,LifeCycleState.LOADED,path+"/MediaVideoPanel");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(mediaVideoPanel, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.gui.MediaTransportInputWedge.class };
+  mediaTransportInput = assembleMeem(wedges,LifeCycleState.LOADED,path+"/MediaTransportInput");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(mediaTransportInput, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.automation.camera.ui.PTZContinuousInputWedge.class };
+  ptzInput = assembleMeem(wedges,LifeCycleState.LOADED,path+"/PTZInput");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(ptzInput, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.media.MediaPlayerWedge.class };
+  mediaPlayer = assembleMeem(wedges,LifeCycleState.LOADED,path+"/MediaPlayer");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(mediaPlayer, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.automation.camera.axis.AxisControlWedge.class };
+  axisPTZ = assembleMeem(wedges,LifeCycleState.LOADED,path+"/AxisPTZ");
+  ConfigurationHandler ch = (ConfigurationHandler) ReferenceHelper.getTarget(axisPTZ,"configurationHandler",ConfigurationHandler.class);
+  ch.configurationChanged(new PropertySpecificationIdentifier("AxisControlWedge", "address"),"http://61.88.14.115/view/view.shtml");
+  ch.configurationChanged(new PropertySpecificationIdentifier("AxisControlWedge", "username"),"guest");
+  ch.configurationChanged(new PropertySpecificationIdentifier("AxisControlWedge", "password"),"hts01");
+  changeMeemState(axisPTZ,LifeCycleState.READY);
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(axisPTZ, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.media.MediaSourceWedge.class };
+  mediaSource = assembleMeem(wedges,LifeCycleState.LOADED,path+"/MediaSource");
+  ConfigurationHandler ch = (ConfigurationHandler) ReferenceHelper.getTarget(axisPTZ,"configurationHandler",ConfigurationHandler.class);
+  ch.configurationChanged(new PropertySpecificationIdentifier("MediaSourceWedge", "location"),"http://61.88.14.115/view/view.shtml");
+  changeMeemState(axisPTZ,LifeCycleState.READY);
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(mediaSource, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  // Setup the dependencies for the UI component Meems
+
+  addDependency(mediaVideoPanel,"container",frame,"mContainer");
+  addDependency(mediaTransportInput,"container",frame,"mContainer");
+  addDependency(ptzInput,"container",frame,"mContainer");
+  addDependency(mediaVideoPanel,"visualDevice",mediaPlayer,"visualDevice");
+  addDependency(mediaTransportInput,"mediaPlayer",mediaPlayer,"mediaPlayer");
+  addDependency(ptzInput,"ptzContinuous",axisPTZ,"cameraPTZContinuous");
+  addDependency(mediaPlayer,"mediaLocal",mediaSource,"mediaLocal");
+
+  // Final step is to create a worksheet containing all of the Meems we just created
+
+  worksheetMeem = createWorksheet(path+"-worksheet");
+  categoryMeem = sget(path);
+  addCategoryEntriesToWorksheet(worksheetMeem,categoryMeem);
+
+}
+
+scriptLoaded("ptz-camera.bsh");

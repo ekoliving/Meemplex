@@ -1,0 +1,74 @@
+/*
+ * @(#)transfer.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/*
+keywords:     transfer
+topic:        transfer a Meem to a new LifeCycleManager
+description:
+
+  Use the following functions to create transfer a Meem to a new LifeCycleManager
+
+  These functions are preloaded.
+
+usage:
+
+    % transfer(MeemPath meemPath, MeemPath newLifeCycleManagerPath);
+
+endhelp:
+*/
+
+import org.openmaji.server.utility.PigeonHole;
+import org.openmaji.system.meem.wedge.lifecycle.LifeCycleManagementClient;
+import org.openmaji.system.manager.lifecycle.LifeCycleManager;
+
+/*
+function: transfer
+functionDescription: Move a Meem to a new LifeCycleManager
+functionType: void
+argument: meemPath
+argumentDescription: The MeemPath of the Meem to move
+argumentType: MeemPath
+argument: newLifeCycleManagerPath
+argumentDescription: The MeemPath of the new LifeCycleManager
+argumentType: MeemPath
+functionEnd:
+*/
+transfer(MeemPath meemPath, MeemPath newLifeCycleManagerPath) {
+
+	Meem meem = Meem.spi.get(meemPath);
+	Meem newLCMMeem = Meem.spi.get(newLifeCycleManagerPath);
+	LifeCycleManager newLCM = ReferenceHelper.getTarget(newLCMMeem, "lifeCycleManager", LifeCycleManager.class);
+	
+	LifeCycleManager currentLCM = null;
+	PigeonHole lcmHole = new PigeonHole();
+
+	// get meems current lcm
+	LifeCycleManagementClient lifeCycleManagementClient = new LifeCycleManagementClient() {
+
+		void parentLifeCycleManagerChanged(Meem meem, LifeCycleManager lifeCycleManager) {
+			lcmHole.put(lifeCycleManager);
+		}
+
+	};
+	
+	Reference lifeCycleManagementClientReference = Reference.spi.create(
+    "lifeCycleManagementClient", lifeCycleManagementClient, true
+  );
+  
+	meem.addOutboundReference(lifeCycleManagementClientReference, true);
+
+	currentLCM = (LifeCycleManager) lcmHole.get(10000);
+
+	print("About to transfer Meem : " + meem);
+	print("from LCM : " + currentLCM);
+	print("to LCM: " + newLCM);
+
+	currentLCM.transferMeem(meem, newLCM);
+
+}

@@ -1,0 +1,93 @@
+/*
+keywords:     create worksheet hyperspace
+topic:             Creating worksheets in HyperSpace
+description:
+
+  Use the following functions to create worksheets in hyperspace.
+
+  These functions are preloaded.
+
+usage:
+
+    source("worksheet.bsh");
+    Meem worksheetMeem = createWorksheet(String path);
+    meemPath = MeemPath.spi.create(Space.HYPERSPACE,"/path/to/meem);
+    addMeemToWorksheet(worksheetMeem, "some_name", meemPath);
+
+endhelp:
+*/
+
+import java.util.Hashtable;
+import java.util.Enumeration;
+import org.openmaji.implementation.intermajik.worksheet.WorksheetMeem;
+
+/*
+function: createWorksheet
+functionDescription: Create a Worksheet Meem with the specified HyperSpace path and return it
+functionType: Meem
+argument: path
+argumentDescription: The HyperSpace path for the Worksheet Meem
+argumentType: String
+functionEnd:
+*/
+
+Meem createWorksheet(String path)
+{
+  MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE,path);
+  MeemDefinition   definition = MeemDefinitionFactory.spi.create().createMeemDefinition(WorksheetMeem.class);
+  return LifeCycleManagerHelper.createMeem(definition,meemPath);
+}
+
+/*
+function: addMeemToWorksheet
+functionDescription: Add a Meem to a Worksheet and give it a specific name 
+functionType: void
+argument: worksheetMeem
+argumentDescription: The Worksheet to add the Meem to
+argumentType: Meem
+argument: entryName
+argumentDescription: The name for the Meem
+argumentType: String
+argument: meemPath
+argumentDescription: The meemPath of the Meem to add
+argumentType: MeemPath
+functionEnd:
+*/
+
+void addMeemToWorksheet(Meem worksheetMeem, String entryName, MeemPath meemPath)
+{
+  updateCategoryEntry(worksheetMeem,entryName,meemPath);
+}
+
+/*
+function: addCategoryEntriesToWorksheet
+functionDescription: Add every Meem in a Category to a Worksheet
+functionType: void
+argument: worksheetMeem
+argumentDescription: The Worksheet to add the Meems to
+argumentType: Meem
+argument: categoryMeem
+argumentDescription: The Category containing the Meems
+argumentType: Meem
+functionEnd:
+*/
+
+void addCategoryEntriesToWorksheet(Meem worksheetMeem, Meem categoryMeem)
+{
+  Hashtable entries = CategoryHelper.getCategoryEntries(categoryMeem);
+  if ( entries.isEmpty() )
+  {
+    print("No entries in category");
+    return;
+  }
+
+  for ( Enumeration e = entries.keys(); e.hasMoreElements() ; )
+  {
+    String name = (String) e.nextElement();
+    CategoryEntry entry = (CategoryEntry) entries.get(name);
+    addMeemToWorksheet(worksheetMeem,name,entry.getMeem().getMeemPath());
+  }
+}
+
+scriptLoaded("worksheet.bsh");
+

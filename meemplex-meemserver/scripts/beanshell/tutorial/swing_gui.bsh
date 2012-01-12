@@ -1,0 +1,110 @@
+/*
+keywords:    tutorial swing gui
+topic:       Creating a simple Swing GUI
+description:
+
+  The Swing GUI tutorial creates a simple Swing GUI. This script will
+  create a worksheet and the Meems required for this tutorial.
+
+  Usage:
+
+    source("tutorial/swing_gui.bsh");
+    setupTutorial("/work/tutorial/swing_gui");
+
+endhelp:
+*/
+
+source(scriptBase + "worksheet.bsh");
+source(scriptBase + "dependency.bsh");
+
+/*
+function: setupTutorial
+functionDescription: Build the Swing GUI demo from meems on a worksheet
+functionType: void
+argument: path
+argumentDescription: The location to place the worksheet containing the meems
+argumentType: String
+functionEnd:
+*/
+
+void setupTutorial(String path)
+{
+  categoryMeem = getMeem(path);
+  if ( categoryMeem != null )
+  {
+    print("That category already exists. Please remove it or select another category.");
+    return null;
+  }
+
+  HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+
+  if (hsh.getHyperSpaceMeem() == null)
+  {
+    print("ERROR: You don't have a HyperSpace; can't setup tutorial at: " + path);
+    return;
+  }
+
+  hsh.createPath(path);
+
+  // Create the UI component Meems
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.ui.tutorial.gui.BasicFrameWedge.class };
+  window = assembleMeem(wedges,LifeCycleState.LOADED,path+"/window");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(window, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.ui.tutorial.gui.BinaryInputButtonWedge.class };
+  button = assembleMeem(wedges,LifeCycleState.LOADED,path+"/button");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(button, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+  
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.ui.tutorial.gui.LinearInputSliderWedge.class };
+  slider = assembleMeem(wedges,LifeCycleState.LOADED,path+"/slider");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(slider, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.ui.tutorial.gui.FeedbackDisplayWedge.class };
+  binaryFeedback = assembleMeem(wedges,LifeCycleState.LOADED,path+"/binaryFeedback");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(binaryFeedback, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.example.ui.tutorial.gui.FeedbackDisplayWedge.class };
+  linearFeedback = assembleMeem(wedges,LifeCycleState.LOADED,path+"/linearFeedback");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(linearFeedback, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  // Setup the dependencies for the UI component Meems
+
+  addDependency(button,"container",window,"mContainer");
+  addDependency(slider,"container",window,"mContainer");
+  addDependency(binaryFeedback,"container",window,"mContainer");
+  addDependency(linearFeedback,"container",window,"mContainer");
+
+  // Create the device Meems - use loopback  
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.BinaryWedge.class, org.openmaji.implementation.automation.loopback.LoopbackBinaryWedge.class };
+  loopbackBinary = assembleMeem(wedges,LifeCycleState.LOADED,path+"/loopbackBinary");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(loopbackBinary, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  Class[] wedges = new Class[] { org.openmaji.implementation.common.LinearWedge.class, org.openmaji.implementation.automation.loopback.LoopbackLinearWedge.class };
+  loopbackLinear = assembleMeem(wedges,LifeCycleState.LOADED,path+"/loopbackLinear");
+  LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) ReferenceHelper.getTarget(loopbackLinear, "lifeCycleLimit", LifeCycleLimit.class);
+  lifeCycleLimit.limitLifeCycleState(LifeCycleState.READY);
+
+  // Setup the dependencies between the device Meems and the UI component Meems
+
+  addDependency(button,"binaryOutput",loopbackBinary,"binary");
+  addDependency(binaryFeedback,"binary",loopbackBinary,"binaryClient");
+  addDependency(slider,"linearOutput",loopbackLinear,"linear");
+  addDependency(linearFeedback,"linear",loopbackLinear,"linearClient");
+
+  // Final step is to create a worksheet containing all of the Meems we just created
+
+  worksheetMeem = createWorksheet(path+" worksheet");
+  categoryMeem = sget(path);
+  addCategoryEntriesToWorksheet(worksheetMeem,categoryMeem);
+
+}
+
+scriptLoaded("swing_gui.bsh");

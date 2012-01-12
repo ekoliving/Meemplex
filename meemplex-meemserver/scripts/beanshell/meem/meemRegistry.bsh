@@ -1,0 +1,50 @@
+/*
+ * @(#)meemRegistry.bsh
+ *
+ * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ *
+ * This software is the proprietary information of Majitek Limited.
+ * Use is subject to license terms.
+ */
+
+/* ToDo:
+ * - None. yet.
+ */
+
+/*
+keywords:     
+topic:        
+description:
+endhelp:
+*/
+
+import org.openmaji.meem.*;
+import org.openmaji.meem.aspect.wedge.reference.*;
+import org.openmaji.manager.registry.MeemRegistryClient;
+import org.openmaji.space.Space;
+
+MeemRegistryClient meemRegistryClient = new MeemRegistryClient() {
+  void meemRegistered(
+    Meem meem) {
+
+    print("Registered:   " + meem.getMeemPath());
+  }
+
+  void meemDeregistered(
+    Meem meem) {
+
+    print("Deregistered: " + meem.getMeemPath());
+  }
+};
+
+MeemPath meemRegistryMeemPath = MeemPath.spi.create(Space.TRANSIENT, "meemRegistry");
+
+Meem meemRegistryMeem = MeemRegistryGateway.Singleton.get().locateMeem(meemRegistryMeemPath);
+
+Reference meemRegistryClientReference = Reference.spi.create(
+ "meemRegistryClient", meemRegistryClient, true, null
+);
+
+meemRegistryMeem.addOutboundReference(meemRegistryClientReference, false);
+
+scriptLoaded("meemRegistry.bsh");
