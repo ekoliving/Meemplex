@@ -1,0 +1,46 @@
+{
+	"widgets" : [
+		{
+			"type" : "button",
+			"name" : "All Lights",
+			"classes" : ["lights", "house"],
+			"facetOut" : "hyperSpace:/site/smart/function/light/allHouseLights/binaryInput",
+			"facetIn" : "hyperSpace:/site/smart/function/light/allHouseLights/binaryOutput",
+		},
+		{
+			"type" : "button.toggle",
+			"name" : "All Lights",
+			"classes" : ["lights", "house"],
+			"facetOut" : "hyperSpace:/site/smart/function/light/allHouseLights/binaryInput",
+			"facetIn" : "hyperSpace:/site/smart/function/light/allHouseLights/binaryOutput",
+		},
+		{
+			"type" : "button",
+			"name" : "All Auto-Lights",
+			"classes" : ["lights", "house"],
+			"facetOut" : "hyperSpace:/site/smart/function/light/allAutolights/binaryInput",
+			"facetIn" : "hyperSpace:/site/smart/function/light/allAutolights/binaryOutput",
+		},
+		{
+			"type" : "button",
+			"name" : "External Locks",
+			"classes" : ["locks", "house"],
+			"facetOut" : "hyperSpace:/site/smart/function/security/externalLock/binaryInput",
+			"facetIn" : "hyperSpace:/site/smart/function/security/externalLock/binaryOutput",
+		},
+		{
+			"type" : "button",
+			"name" : "All Blinds",
+			"classes" : ["blinds", "house"],
+			"facetOut" : "hyperSpace:/site/smart/function/blind/allBlinds/binaryInput",
+			"facetIn" : "hyperSpace:/site/smart/function/blind/allBlinds/binaryOutput",
+		},
+		{
+			"type" : "button",
+			"name" : "Front Gate",
+			"classes" : ["gate", "house"],
+			"facetOut" : "hyperSpace:/site/smart/ui/house/gate/binaryInput",
+			"facetIn" : "hyperSpace:/site/smart/ui/house/gate/binaryOutput",
+		}
+	]	
+}

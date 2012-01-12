@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="source"/>
+	<classpathentry exported="true" kind="lib" path="build/classes/"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="library/javax.comm.jar"/>
+	<classpathentry kind="lib" path="library/jcl.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/meemplex-core"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

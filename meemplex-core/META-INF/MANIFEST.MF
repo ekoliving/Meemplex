@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Meemplex Core
+Bundle-SymbolicName: org.meemplex.core;singleton:=true
+Bundle-Version: 1.0.0.1
+Bundle-Vendor: Sugar Coding
+DynamicImport-Package: *
+Eclipse-RegisterBuddy: org.meemplex.meemserver
+Export-Package: org.openmaji.common,
+ org.openmaji.diagnostic,
+ org.openmaji.implementation.common,
+ org.openmaji.implementation.common.images,
+ org.openmaji.implementation.common.importexport,
+ org.openmaji.implementation.common.meem,
+ org.openmaji.implementation.common.regex,
+ org.openmaji.implementation.deployment,
+ org.openmaji.implementation.deployment.meem,
+ org.openmaji.implementation.deployment.model,
+ org.openmaji.implementation.deployment.wedge,
+ org.openmaji.implementation.diagnostic,
+ org.openmaji.implementation.diagnostic.util,
+ org.openmaji.implementation.util.meem,
+ org.openmaji.implementation.util.wedge,
+ org.openmaji.util
+Import-Package: org.osgi.framework;version="1.6.0"
+Require-Bundle: org.meemplex.meemserver;bundle-version="1.0.0";visibility:=reexport
+Bundle-ClassPath: library/jdom.jar,
+ library/swzoo.jar,
+ build/classes/
+Bundle-Activator: org.meemplex.core.CoreActivator
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

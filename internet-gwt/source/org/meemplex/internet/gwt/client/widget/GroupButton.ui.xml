@@ -1,0 +1,12 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:gwt="urn:import:org.meemplex.internet.gwt.client.widget">
+
+	<ui:style>
+	</ui:style>
+	
+	<g:FlowPanel styleName="widget">
+		<g:Label ui:field="labelName" addStyleNames="widgetTitle">Name</g:Label>
+		<gwt:ElementWidget ui:field="onWidget" name="on" enabled="false" />
+		<gwt:ElementWidget ui:field="offWidget" name="off" enabled="false" />
+	</g:FlowPanel>
+</ui:UiBinder> 

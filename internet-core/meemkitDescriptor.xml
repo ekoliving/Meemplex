@@ -1,0 +1,116 @@
+<meemkit
+  name="internet-core"
+  version="1.10"
+  author="Chris Kakris"
+  company="Majitek International"
+  copyright="Copyright (c) 2004 - 2008 by Majitek International Pte. Ltd."
+  resourceClass="org.openmaji.implementation.network.images.Images">
+
+  <summary>
+    This meemkit contains Meems whose primary functions are to provide a bridge
+    between Maji components and the outside world using the Internet Protocol.
+    These includes Sockets, etc.
+  </summary>
+
+  <dependencies>
+    <dependentMeemkit name="openmaji-core" version="1.10" />
+    <dependentMeemkit name="automation-core" version="1.10" />
+  </dependencies>
+
+  <libraries>
+    <library name="jars/internet-core.jar"/>
+  </libraries>
+
+  <meemview>
+    <hierarchy>
+      <category name="internet" path="/"         icon="network_meemkit_16.gif"/>
+      <category name="core"     path="/internet" icon="network_meemkit_16.gif"/>
+    </hierarchy>
+
+    <entry name="StringMulticastSocketAdapter" path="/internet/core" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.network.StringMulticastSocketAdapterMeem" />
+      <description overview="UDP Multicast Adapter" author="Andy Gelme">
+        <detail>The String Multicast Socket Adapter effectively adapts a String Variable into a multicast UDP socket.</detail>
+      </description>
+    </entry>
+
+    <entry name="StringSocketAdapter" path="/internet/core" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.network.StringSocketAdapterMeem" />
+      <description overview="Socket Adapter">
+        <detail>The String Socket Adapter effectively adapts a String Variable into a Socket.</detail>
+      </description>
+    </entry>  
+    
+    <entry name="SimpleRequestProcessor" path="/internet/core" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.network.RequestProcessorMeem" />
+      <description overview="String request processor">
+        <detail>The Simple Request Processor meem processes string-based requests.</detail>
+      </description>
+    </entry> 
+    
+    <entry name="WakeOnLanBroadcaster" path="/internet/core" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.network.WakeOnLanMeem" />
+      <description overview="Wake on LAN broadcaster">
+        <detail>Sends Wake On LAN messages on network</detail>
+      </description>
+    </entry> 
+  </meemview>
+
+  <wedgeview>
+    <hierarchy>
+      <category name="internet" path="/"         icon="network_meemkit_16.gif"/>
+      <category name="core"     path="/internet" icon="network_meemkit_16.gif"/>
+      <category name="http"     path="/internet" icon="network_meemkit_16.gif"/>
+    </hierarchy>
+
+    <entry name="StringMulticastSocketAdapterWedge" path="/internet/core" icon="">
+      <wedge class="org.openmaji.implementation.network.StringMulticastSocketAdapterWedge"/>
+      <description overview="UDP Multicast Adapter">
+        <detail>The String Multicast Socket Adapter effectively adapts a String Variable into a multicast UDP socket.</detail>
+      </description>
+    </entry>
+
+    <entry name="StringSocketAdapterWedge" path="/internet/core" icon="">
+      <wedge class="org.openmaji.implementation.network.StringSocketAdapterWedge"/>
+      <description overview="Socket Adapter">
+        <detail>The String Socket Adapter meem wraps a Socket as a StringVariable.</detail>
+      </description>
+    </entry>  
+    
+    <entry name="SimpleRequestProcessorWedge" path="/internet/core" icon="">
+      <wedge class="org.openmaji.implementation.network.RequestProcessorWedge"/>
+      <description overview="String request processor">
+        <detail>The Simple Request Processor meem processes string-based requests.</detail>
+      </description>
+    </entry>  
+    
+    <entry name="EmbeddedJettyWedge" path="/internet/http" icon="">
+      <wedge class="org.openmaji.implementation.server.http.EmbeddedJettyWedge"/>
+      <description overview="Embeds a web server">
+        <detail>A wedge that embeds a Jetty web server.</detail>
+      </description>
+    </entry>
+
+    <entry name="WebAppWedge" path="/internet/http" icon="">
+      <wedge class="org.openmaji.implementation.server.http.WebAppWedge"/>
+      <description overview="Represents a web app">
+        <detail>A wedge that uses a "war" file to add a web app to an HTTP server.</detail>
+      </description>
+    </entry> 
+     
+    <entry name="ServletWedge" path="/internet/http" icon="">
+      <wedge class="org.openmaji.implementation.server.http.ServletWedge"/>
+      <description overview="Represents a Servlet">
+        <detail>A wedge that adds a servlet the HTTP server.</detail>
+      </description>
+    </entry>  
+    
+    <entry name="FileResourceWedge" path="/internet/http" icon="">
+      <wedge class="org.openmaji.implementation.server.http.FileResourceWedge"/>
+      <description overview="Represents a file resource">
+        <detail>A wedge that adds file resources to the HTTP server.</detail>
+      </description>
+    </entry>  
+    
+  </wedgeview>
+</meemkit>

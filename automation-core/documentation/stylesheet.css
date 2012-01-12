@@ -1,0 +1,45 @@
+body {
+  margin-left: 0.5cm;
+  margin-right: 1.5cm;
+  font-family: Verdana, sans-serif, helvetica, arial;
+}
+
+pre {
+  font-size: x-small;
+  font-family: Verdana, sans-serif, helvetica, arial;
+  margin-left: 1.0cm;
+  margin-bottom: 0.25cm;
+}
+
+table {
+  margin-left: 1.0cm;
+  border-color: black;
+  border-width: 1px;
+  border-style: solid;
+}
+
+th {
+  font-size: x-small;
+  background-color: grey;
+}
+
+td {
+  font-size: x-small;
+}
+
+div.quote {
+  margin-left: 1.0cm;
+  margin-bottom: 0.25cm;
+  font-size: smaller;
+  font-style: italic;
+}
+
+p {
+  margin: 0.5cm;
+  font-size: smaller;
+}
+
+li {
+  font-size: smaller;
+}
+

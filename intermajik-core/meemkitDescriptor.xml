@@ -1,0 +1,54 @@
+<meemkit
+  name="intermajik-core"
+  version="1.10"
+  author="Mark Gaylard"
+  company="Majitek International"
+  copyright="Copyright (c) 2004 - 2008 by Majitek International Pte. Ltd."
+  resourceClass="org.openmaji.implementation.intermajik.images.Images">
+
+  <summary>
+    This meemkit is used by InterMajik and contains Worksheet and
+    VariableMap Meems.
+  </summary>
+  
+  <dependencies>
+    <dependentMeemkit name="openmaji-core" version="1.10" />
+  </dependencies>
+
+  <libraries>
+    <library name="jars/intermajik-core.jar"/>
+  </libraries>
+
+  <meemview>
+    <hierarchy>
+      <category name="intermajik" path="/" icon="intermajik_domain_16.gif" />
+      <category name="worksheet" path="/intermajik" icon="intermajik_meemkit_16.gif" />
+    </hierarchy>
+
+<!--
+    <entry name="Worksheet" path="/intermajik/worksheet" icon="worksheet16.gif">
+      <meemDefinitionProvider class="org.openmaji.implementation.intermajik.worksheet.WorksheetMeem" />
+      <description overview="Worksheet">
+        <detail>A meem implementing an InterMajik worksheet.</detail>
+      </description>
+    </entry>    
+-->
+  </meemview>
+
+  <wedgeview>
+    <hierarchy>
+      <category name="intermajik" path="/" icon="intermajik_domain_16.gif" />
+      <category name="worksheet" path="/intermajik" icon="intermajik_meemkit_16.gif" />
+    </hierarchy>
+
+<!--
+   <entry name="WorksheetWedge" path="/intermajik/worksheet" icon="">
+      <wedge class="org.openmaji.implementation.intermajik.worksheet.WorksheetWedge"/>
+      <description overview="Worksheet Wedge">
+        <detail>A wedge implementing a InterMajik worksheet.</detail>
+      </description>
+    </entry>
+-->
+
+  </wedgeview>
+</meemkit>

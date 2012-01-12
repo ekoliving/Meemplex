@@ -1,0 +1,128 @@
+html,body {
+	margin:0;
+	padding:0;
+	height:100%;
+	
+	font-family:arial,sans-serif;
+	font-size:small;
+	color:#666;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #FFF;
+  text-align: center;
+	margin: 0;
+	padding: 5px;
+}
+
+h2 {
+	margin-top: 0;
+	padding-top: 7px;
+}
+
+h2, p {
+	margin-left: 7px;
+	margin-right: 7px;
+}
+
+div#container {
+	position:relative; /* needed for footer positioning*/
+	margin:0 auto; /* center, not in IE5 */
+	width:100%;
+	background:#f0f0f0;
+	
+	height:auto !important; /* real browsers */
+	height:100%; /* IE6: treaded as min-height*/
+	min-height:100%; /* real browsers */
+}
+
+/*
+div#header {
+	padding:1em;
+	background:#ddd url("../csslayout.gif") 98% 10px no-repeat;
+	height: 2em;
+}
+
+div#content {
+	padding:1em 1em 5em;
+	position: absolute;
+	top: 4em;
+	bottom: 50px;
+	left: 0;
+	right: 0;
+	overflow: auto;
+}
+
+div#footer {
+	position:absolute;
+	width:100%;
+	height: 50px;
+	bottom:0;
+	background:#ddd;
+}
+*/
+/*
+
+.hyperspaceContainer {
+	background-color: #336666;
+	float: left
+}
+
+.hyperspacePanel {
+	background-color: red;
+}
+*/
+
+.header {
+	width: 100%;
+}
+
+.sendButton {
+  display: block;
+  font-size: 16pt;
+}
+
+.meem-widget {
+	margin: 5px;
+	padding: 5px;
+	float: left;
+	/*
+	width: 100px;
+	height: 100px;
+	*/
+	background-color: black;
+}
+
+.meem-group {
+	border: solid thin;
+}
+
+.testToggle {
+	min-width: 90px;
+	min-height: 50px;
+	opacity: 0.90;
+	filter:alpha(opacity=90);
+	-moz-opacity:0.90;
+	-khtml-opacity: 0.90;
+}
+
+.widget {
+	border: line;
+	background: #333;
+	margin : 3px;
+}
+
+.widgetTitle {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 5px;
+}
+
+.pushButton {
+	background-color: #CCCCCC;
+	height: 50px;
+	width: 50px;
+	line-height: 
+}

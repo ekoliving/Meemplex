@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='meemplex_touch'>
+	<!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name="com.google.gwt.json.JSON" />
+
+	<!-- Inherit the GWT style sheet. -->
+	<!-- 
+	<inherits name='com.google.gwt.user.theme.dark.Dark' />
+	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
+ 	-->
+	
+ 	<!-- Specify the app entry point class. -->
+	<entry-point class='org.meemplex.internet.gwt.client.MeemplexTouch' />
+
+	<!-- Specify the paths for translatable code -->
+	<source path='client' />
+	<source path='shared' />
+
+	<replace-with class="org.meemplex.internet.gwt.client.ClientFactoryImpl">
+		<when-type-is class="org.meemplex.internet.gwt.client.ClientFactory" />
+	</replace-with>
+	
+	<!-- <set-property name="user.agent" value="gecko1_8"/> -->
+
+</module>
+	

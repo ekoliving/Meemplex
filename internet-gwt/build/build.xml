@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="internet-gwt" default="meemkit" basedir=".">
+	<property environment="env"/>
+
+	<import file="../openmaji-install/meemkits/sdk/build_meemkit.xml" />
+
+	<target name="init_custom">
+		<property name="meemkit.name" value="internet-gwt"/>
+		<property name="package.name" value="org.meemplex.*"/>
+		<property name="project.dir" value="."/>
+
+		<path id="project.class.path">
+			<pathelement location="../openmaji-install/lib/maji/maji-meem.jar" />
+			<pathelement location="../openmaji-install/lib/maji/maji-system.jar" />
+			<pathelement location="../openmaji-core/build/artifacts/jars/openmaji-core.jar"/>
+			<pathelement location="../internet-core/build/artifacts/jars/internet-core.jar"/>
+			<pathelement location="../internet-xmlrpc/build/artifacts/jars/internet-xmlrpc.jar"/>
+			<pathelement location="../openmaji-install/lib/jetty/servlet-api-2.5-20081211.jar" />
+			<pathelement location="./library/gwt-servlet.jar" />
+
+		</path>
+	</target>
+</project>

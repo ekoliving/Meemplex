@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.openmaji.jars" default="build" basedir=".">
+
+	<property name="bootclasspath" value=""/>
+	<property name="javacFailOnError" value="false"/>
+	<property name="javacDebugInfo" value="on"/>
+	<property name="javacVerbose" value="false"/>
+
+	<target name="init">
+		<property name="project.folder" value="."/>
+		
+		<property name="plugin" value="org.openmaji.jars"/>
+		
+		<property name="version.suffix" value="1.1.0"/>
+		
+		<property name="full.name" value="${plugin}_${version.suffix}"/>
+
+		<property name="build.folder.update" value="${project.folder}/build/update"/>
+		<property name="build.folder.update.plugin" value="${build.folder.update}/plugins"/>
+		
+		<property environment="env"/> 
+		<fail message="MAJITEK_HOME environment variable not set." unless="env.MAJITEK_HOME"/>
+                <property name="majitek.jars" value="${env.MAJITEK_HOME}/openmaji-install/lib" />
+                <property name="majitek.server" value="${env.MAJITEK_HOME}/openmaji-meemserver/build/jars" />
+	  
+	</target>
+	
+	<target name="clean" depends="init" description="Clean the plug-in: ${plugin} of all the classes, zips and jars created.">
+		<echo message="Cleaning ${ant.project.name}"/>
+		<delete dir="${build.folder.update}"/>
+	</target>
+
+	<target name="build">
+		<antcall target="build.plugin.update"/>
+	</target>
+
+	<target name="build.plugin.update">
+		<antcall target="build.update.plugin.jar"/>
+	</target>
+
+	<target name="build.update.plugin.jar" depends="init" description="Build the plug-in: ${plugin} for an update site.">
+
+		<mkdir dir="${build.folder.update.plugin}"/>
+		
+		<jar jarfile="${build.folder.update.plugin}/${full.name}.jar" basedir="${majitek.jars}" filesonly="false" update="yes"/>
+	</target>
+
+
+	<target name="build.plugin.zip" depends="init" description="Create a zip containing all the elements for the plug-in: ${plugin}.">
+		<mkdir dir="${build.folder.zip}"/>
+		
+		<zip zipfile="${build.folder.zip}/${full.name}.zip" basedir="${majitek.jars}" filesonly="false" update="yes"/>
+	</target>
+	    
+  	<target name="build.all">
+		<antcall target="build.plugin.update"/>
+		<antcall target="build.plugin.zip"/>
+	</target>
+
+		
+	<target name="eclipse.update" depends="init">		
+		<copy todir="${update.root.folder}">
+			<fileset dir="${build.folder.update}"/>
+		</copy>
+	</target>	
+	
+	<target name="copy.files.plugin" depends="init" if="destination.temp.folder">
+		<copy todir="${destination.temp.folder}">
+			<fileset dir="${majitek.jars}">
+				<include name="**/*"/>
+				<exclude name="junit.jar"/>
+				<exclude name="IAClasses.zip"/>
+				<exclude name="jogl"/>
+				<exclude name="jogl/*"/>
+				<exclude name="jsx*.jar"/>
+				<exclude name="JSX*.jar"/>
+			</fileset>
+		</copy>
+                <copy file="${majitek.server}/project-maji-server.jar" tofile="${destination.temp.folder}/maji/maji-server.jar"/>
+	</target>
+	
+	<target name="prepare.install" depends="init" if="destination.folder">
+		<antcall target="copy.files.plugin">
+			<param name="destination.temp.folder" value="${destination.folder}/../../lib/"/>
+		</antcall>
+	</target>
+	
+</project>

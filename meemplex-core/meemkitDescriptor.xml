@@ -1,0 +1,531 @@
+<meemkit
+  name="openmaji-core"
+  version="1.10"
+  author="Andy Gelme, Mark Gaylard"
+  company="Majitek International"
+  copyright="Copyright (c) 2004 - 2008 by Majitek International Pte. Ltd."
+  resourceClass="org.openmaji.implementation.common.images.Images">
+
+  <summary>
+    This meemkit contains general purpose Meems and Wedges.
+    These Maji components provide basic logical, lifecycle,
+    import/export and other capabilities.
+  </summary>
+  
+  <libraries>
+    <library name="jars/openmaji-core.jar"/>
+  </libraries>
+  
+  <meemview>
+    <hierarchy>
+      <category name="core"       path="/"     icon="common_meemkit_16.gif" />
+      <category name="adapter"    path="/core" icon="common_meemkit_16.gif" />
+      <category name="deployment" path="/core" icon="common_meemkit_16.gif" />
+      <category name="diagnostic" path="/core" icon="common_meemkit_16.gif" />
+      <category name="export"     path="/core" icon="common_meemkit_16.gif" />
+      <category name="logic"      path="/core" icon="common_meemkit_16.gif" />
+      <category name="maji"       path="/core" icon="common_meemkit_16.gif" />
+      <category name="regex"      path="/core" icon="common_meemkit_16.gif" />
+      <category name="util"       path="/core" icon="common_meemkit_16.gif" />
+    </hierarchy>
+
+	<entry name="BinaryGroupMeem" path="/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.common.group.BinaryGroupMeem" />
+      <description overview="Binary Group Meem" author="Warren Bloomer">
+        <detail>Interfaces to a group of binary meems, keeping track of the binary values sent, and which ones are "ready"</detail>
+      </description>
+    </entry>
+    
+	<entry name="BinaryLinearAdapterMeem" path="/core/adapter" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.common.meem.BinaryLinearAdapterMeem" />
+      <description overview="Binary-Linear Adapter" author="Warren Bloomer">
+        <detail>Translates between Binary and Linear facets.</detail>
+      </description>
+    </entry>
+  
+	<entry name="BinaryVariableAdapterMeem" path="/core/adapter" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.common.meem.BinaryVariableAdapterMeem" />
+      <description overview="Binary-Variable Adapter" author="Warren Bloomer">
+        <detail>Translates between binary and Variable facets.</detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryMultistateAdapterMeem" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryMultistateAdapterWedge"/>
+      <description overview="BinaryMultistateAdapter" author="Diana Huang">
+        <detail>This meem is to transfer Binary input to Multistate output</detail>
+      </description>
+    </entry>
+	  
+    <entry name="BinaryUnaryAdapterMeem" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryUnaryAdapterWedge"/>
+      <description overview="BinaryUnaryAdapter" author="Diana Huang">
+        <detail>This meem is to transfer Binary input to Unary output</detail>
+      </description>
+    </entry>
+	  
+    <entry name="MultistateBinaryAdapterMeem" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.MultistateBinaryAdapterWedge"/>
+      <description overview="MultistateBinaryAdapter" author="Diana Huang">
+        <detail>This meem is to transfer Multistate input to Binary output</detail>
+      </description>
+    </entry>
+
+    <entry name="MultistateUnaryAdapterMeem" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.MultistateUnaryAdapterWedge"/>
+      <description overview="MultistateUnaryAdapter" author="Diana Huang">
+        <detail>This meem is to transfer Multistate input to Unary output</detail>
+      </description>
+    </entry>
+	  
+    <entry name="UnaryBinaryAdapterMeem" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.UnaryBinaryAdapterWedge"/>
+      <description overview="UnaryBinaryAdapter" author="Diana Huang">
+        <detail>This meem is to transfer Unary input to Binary output</detail>
+      </description>
+    </entry>
+	  
+    <entry name="UnaryMultistateAdapterMeem" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.UnaryMultistateAdapterWedge"/>
+      <description overview="UnaryMultistateAdapter" author="Diana Huang">
+        <detail>This meem is to transfer Unary input to Multistate output</detail>
+      </description>
+    </entry>
+	  
+    <entry name="XML Deployment" path="/core/deployment" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.deployment.meem.XmlDeploymentMeem"/>
+      <description overview="Meem that deploys other meems" author="Warren Bloomer">
+        <detail>This meem is used deploy meems in EdgeSystem.  An XML file is used to specicify meem deployment.</detail>
+      </description>
+    </entry>
+
+    <entry name="LifeCycleTransitionLogger" path="/core/diagnostic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.diagnostic.LifeCycleTransitionLoggerMeem"/>
+      <description overview="LifeCycle Transition Logger" author="Chris Kakris">
+        <detail>This meem does nothing except log each lifecycle transition it experiences.</detail>
+      </description>
+    </entry>
+
+    <entry name="Export" path="/core/export" icon="common_meemkit_16.gif">
+      <meemDefinitionProvider class="org.openmaji.implementation.common.importexport.ExportMeem"/>
+      <description overview="Export">
+        <detail>Recursive Category and Meem export to an external source</detail>
+      </description>
+    </entry>
+
+    <entry name="Import" path="/core/export" icon="common_meemkit_16.gif">
+      <meemDefinitionProvider class="org.openmaji.implementation.common.importexport.ImportMeem"/>
+      <description overview="Import">
+        <detail>Recursive Category and Meem import from an external source</detail>
+      </description>
+    </entry>
+
+    <entry name="ImportExportManager" path="/core/export" icon="common_meemkit_16.gif">
+      <meemDefinitionProvider class="org.openmaji.implementation.common.importexport.ImportExportManagerMeem"/>
+      <description overview="Import/Export Manager">
+        <detail>Manages multiple simultaneous import/export operations</detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryAND2" path="/core/logic" icon="and16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryWedge"/>
+      <wedge class="org.openmaji.implementation.common.BinaryAND2Wedge"/>
+      <description overview="Binary AND" author="Andy Gelme">
+        <detail> This meem accepts 2 binary inputs and provides the boolean AND function of those inputs as an output. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryNOT" path="/core/logic" icon="not16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryNOTWedge"/>
+      <description overview="Binary NOT" author="Andy Gelme">
+        <detail> This meem accepts a single binary input and provides the boolean NOT function as an output. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryOR2" path="/core/logic" icon="or16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryWedge"/>
+      <wedge class="org.openmaji.implementation.common.BinaryOR2Wedge"/>
+      <description overview="Binary OR" author="Andy Gelme">
+        <detail> This meem accepts 2 binary inputs and provides the boolean OR of those inputs as an output. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryXOR2" path="/core/logic" icon="xor16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryWedge"/>
+      <wedge class="org.openmaji.implementation.common.BinaryXOR2Wedge"/>
+      <description overview="Binary XOR" author="Andy Gelme">
+        <detail> This meem accepts 2 binary inputs and provides the boolean Exclusive OR function as an output. </detail>
+      </description>
+    </entry>
+
+    <entry name="LazyLifeCycleManager" path="/core/maji" icon="">
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.LifeCycleManagerWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.adapter.lifecycle.LifeCycleAdapterWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.activation.ActivationWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.adapter.meemstore.MeemStoreAdapterWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.adapter.persistence.PersistenceHandlerAdapterWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.category.LifeCycleManagerCategoryWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.lazy.LazyLifeCycleManagerWedge"/>
+      <description overview="Lazy LifeCycleManager" author="Mark Gaylard">
+        <detail>
+          This LifeCycle Manager creates, and manages the LifeCycle state of, persistent Meems.
+          It differs from the Persistent LifeCycleManager in that it will only load and attempt to ready
+          its Meems the first time those Meems are referenced.
+        </detail>
+      </description>
+    </entry>
+
+    <entry name="PersistingLifeCycleManager" path="/core/maji" icon="">
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.LifeCycleManagerWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.adapter.lifecycle.LifeCycleAdapterWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.activation.ActivationWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.adapter.meemstore.MeemStoreAdapterWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.adapter.persistence.PersistenceHandlerAdapterWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.category.LifeCycleManagerCategoryWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.persisting.PersistingLifeCycleManagerWedge"/>
+      <description overview="Persisting LifeCycleManager" author="Mark Gaylard">
+        <detail>
+          This LifeCycle Manager creates, and manages the LifeCycle state of, Meems that are persisted.
+          These Meems are persisted in the MeemStore and are available after Maji restarts. This LifeCycle
+          Manager loads and readies all of its Meems when it starts.
+        </detail>
+      </description>
+    </entry>
+
+    <entry name="TransientLifeCycleManager" path="/core/maji" icon="">
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.transitory.TransientLifeCycleManagerWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.category.LifeCycleManagerCategoryWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.LifeCycleManagerWedge"/>
+      <wedge class="org.openmaji.implementation.server.manager.lifecycle.adapter.lifecycle.LifeCycleAdapterWedge"/>
+      <description overview="Transient LifeCycleManager" author="Mark Gaylard">
+        <detail>
+          This LifeCycle Manager creates, and manages the LifeCycle state of, transient Meems.
+          Transient Meems are not persisted in the MeemStore.
+        </detail>
+      </description>
+    </entry>
+    
+    <entry name="Single Pattern Binary Regex" path="/core/regex" icon="">
+      <wedge class="org.openmaji.implementation.common.regex.SinglePatternBinaryRegexWedge"/>
+      <description overview="Single Pattern Binary Regex Meem" author="Ben Stringer">
+        <detail> This meem can be configured with a regular expression, which 
+          it attempts to match on it's inbound variable facet. The result is 
+          presented on the outbound binary facet. </detail>
+      </description>
+    </entry>
+
+    <entry name="Dual Pattern Binary Regex" path="/core/regex" icon="">
+      <wedge class="org.openmaji.implementation.common.regex.DualPatternBinaryRegexWedge"/>
+      <description overview="Dual Pattern Binary Regex Meem" author="Ben Stringer">
+        <detail> This meem can be configured with a pair of regular expressions.
+          One regular expression represents a result of "true" when matched, 
+          the other represents a value of "false" when matched.
+         </detail>
+      </description>
+    </entry>
+    
+    <entry name="File Picker" path="/core/util" icon="">
+      <wedge class="org.openmaji.implementation.util.wedge.FilePickerWedge"/>
+      <wedge class="org.openmaji.implementation.common.VariableWedge"/>
+      <description overview="File Picker Meem" author="Chris Kakris">
+        <detail> This meem can be configured to monitor a directory and periodically send the name of one of those files on the variableControlConduit</detail>
+      </description>
+    </entry>
+
+    <entry name="Pulse Timer" path="/core/util" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.util.meem.PulseTimerMeem" />
+      <description overview="Pulse Timer">
+        <detail>
+          Pulse Timer produces periodic Unary, Binary and Linear pulses.
+          These pulses can be inverted or have a random time period.
+		</detail>
+      </description>
+    </entry>
+  </meemview>
+
+  <wedgeview>
+    <hierarchy>
+      <category name="core"   path="/"     icon="common_meemkit_16.gif" />
+      <category name="adapter" path="/core" icon="common_meemkit_16.gif" />
+      <category name="deployment"   path="/core" icon="common_meemkit_16.gif" />
+      <category name="diagnostic"   path="/core" icon="common_meemkit_16.gif" />
+      <category name="export" path="/core" icon="common_meemkit_16.gif" />
+      <category name="logic"  path="/core" icon="common_meemkit_16.gif" />
+      <category name="regex"  path="/core" icon="common_meemkit_16.gif" />
+      <category name="maji"   path="/core" icon="common_meemkit_16.gif" />
+      <category name="util"   path="/core" icon="common_meemkit_16.gif" />
+    </hierarchy>
+
+	<entry name="BinaryLinearAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryLinearAdapterWedge"/>
+      <description overview="Binary-Linear Adapter Wedge" author="Warren Bloomer">
+        <detail> Wedge that translates between Binary and Linear conduits. </detail>
+      </description>
+    </entry>
+
+	<entry name="BinaryVariableAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryVariableAdapterWedge"/>
+      <description overview="Binary-Variable Adapter Wedge" author="Warren Bloomer">
+        <detail> Wedge that translates between Binary and Variable conduits. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryMultistateAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryMultistateAdapterWedge"/>
+      <description overview="Binary To Multistate Wedge" author="Diana Huang">
+        <detail> Wedge that transfers Binary input to Multistate output. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryUnaryAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryUnaryAdapterWedge"/>
+      <description overview="Binary To Unary Wedge" author="Diana Huang">
+        <detail> Wedge that transfers Binary input to Unary output. </detail>
+      </description>
+    </entry>
+    
+    <entry name="MultistateBinaryAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.MultistateBinaryAdapterWedge"/>
+      <description overview="Multistate To Binary Wedge" author="Diana Huang">
+        <detail> Wedge that transfers Multistate input to Binary output. </detail>
+      </description>
+    </entry>
+    
+    <entry name="MultistateUnaryAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.MultistateUnaryAdapterWedge"/>
+      <description overview="Multistate To Unary Wedge" author="Diana Huang">
+        <detail> Wedge that transfers Multistate input to Unary output. </detail>
+      </description>
+    </entry>
+    
+    <entry name="UnaryBinaryAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.UnaryBinaryAdapterWedge"/>
+      <description overview="Unary To Multistate Wedge" author="Diana Huang">
+        <detail> Wedge that transfers Unary input to Binary output. </detail>
+      </description>
+    </entry>
+    
+    <entry name="UnaryMultistateAdapterWedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.UnaryMultistateAdapterWedge"/>
+      <description overview="Unary To Multistate Wedge" author="Diana Huang">
+        <detail> Wedge that transfers Unary input to Multistate output. </detail>
+      </description>
+    </entry>
+    
+    <entry name="CategoryEntry-Variable Adapter Wedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.CategoryEntryVariableAdapterWedge"/>
+      <description overview="CategoryEntry to Variable Wedge" author="Warren Bloomer">
+        <detail> Wedge that translates CategoryEntry input to Variable output. The name of the CategoryEntry is used for the value.</detail>
+      </description>
+    </entry>
+	  
+    <entry name="CategoryEntry-Unary Adapter Wedge" path="/core/adapter" icon="">
+      <wedge class="org.openmaji.implementation.common.CategoryEntryUnaryAdapterWedge"/>
+      <description overview="CategoryEntry to Unary Wedge" author="Warren Bloomer">
+        <detail> Wedge that translates CategoryEntry input to Unary output.</detail>
+      </description>
+    </entry>
+	  
+    <entry name="DeploymentWedge" path="/core/deployment" icon="">
+      <wedge class="org.openmaji.implementation.deployment.wedge.DeploymentWedge"/>
+      <description overview="Deployment wedge" author="Warren Bloomer">
+        <detail>This wedge creates the deployment meems and subsystems</detail>
+      </description>
+    </entry>
+
+    <entry name="XMLDeploymentProcessor" path="/core/deployment" icon="">
+      <wedge class="org.openmaji.implementation.deployment.wedge.XmlDeploymentProcessorWedge"/>
+      <description overview="XML deployment processor" author="Warren Bloomer">
+        <detail>This wedge processes the deployment DOM</detail>
+      </description>
+    </entry>
+
+    <entry name="XMLReader" path="/core/deployment" icon="">
+      <wedge class="org.openmaji.implementation.deployment.wedge.XmlReaderWedge"/>
+      <description overview="XML file reader" author="Chris Kakris">
+        <detail>This wedge reads an XML file and passes the resulting DOM through the domProcessorConduit to other wedges</detail>
+      </description>
+    </entry>
+
+    <entry name="Dependency Management Wedge" path="/core/util" icon="">
+      <wedge class="org.openmaji.implementation.util.wedge.DependencyManagerWedge" />
+      <description overview="Dependency management wedge.">
+        <detail>
+			Manages configured dependencies of the local meem on another meem.  The remote meem is provided on the inbound MeemPathConsumer facet.
+		</detail>
+      </description>
+    </entry>    
+
+    <entry name="File Picker Wedge" path="/core/util" icon="">
+      <wedge class="org.openmaji.implementation.util.wedge.FilePickerWedge" />
+      <description overview="File picker wedge.">
+        <detail>Selects a file from a directory and places that filename onto the variableControlConduit</detail>
+      </description>
+    </entry>    
+
+    <entry name="LifeCycleTransitionLogger" path="/core/diagnostic" icon="">
+      <wedge class="org.openmaji.implementation.diagnostic.LifeCycleTransitionLoggerWedge"/>
+      <description overview="LifeCycle Transition Logger" author="Chris Kakris">
+        <detail>Wedge that logs each lifecycle transition it experiences.</detail>
+      </description>
+    </entry>
+
+    <entry name="DebugWedge" path="/core/diagnostic" icon="">
+      <wedge class="org.openmaji.implementation.diagnostic.DebugWedge"/>
+      <description overview="Allows Meems to be debugged" author="Chris Kakris">
+        <detail>Wedge that turns on debug mode for Meems</detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryAND2Wedge" path="/core/logic" icon="and16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryAND2Wedge"/>
+      <description overview="Binary AND Wedge" author="Andy Gelme">
+        <detail> Wedge that when coupled with a BinaryWedge, can implement a 2-input AND boolean function. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryNOTWedge" path="/core/logic" icon="not16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryNOTWedge"/>
+      <description overview="Binary NOT Wedge" author="Andy Gelme">
+        <detail> Wedge that implements a NOT boolean function. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryOR2Wedge" path="/core/logic" icon="or16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryOR2Wedge"/>
+      <description overview="Binary OR Wedge" author="Andy Gelme">
+        <detail> Wedge that implements a 2-input OR boolean function. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryWedge"/>
+      <description overview="Binary Wedge" author="Andy Gelme">
+        <detail> Wedge that represents a binary value. </detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryXOR2Wedge" path="/core/logic" icon="xor16.gif">
+      <wedge class="org.openmaji.implementation.common.BinaryXOR2Wedge"/>
+      <description overview="Binary XOR Wedge" author="Andy Gelme">
+        <detail> Wedge that implements a 2-input Exclusive OR boolean function. </detail>
+      </description>
+    </entry>
+
+    <entry name="LinearListWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.LinearListWedge"/>
+      <description overview="LinearList Wedge">
+        <detail>A wedge implementing a LinearList.</detail>
+      </description>
+    </entry>
+
+    <entry name="LinearWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.LinearWedge"/>
+      <description overview="Linear Wedge" author="Andy Gelme">
+        <detail> Wedge that represents a linear value. </detail>
+      </description>
+    </entry>
+
+    <entry name="MultistateWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.MultistateWedge"/>
+      <description overview="Multistate Wedge" author="Diana Huang">
+        <detail> Wedge that represents a Multistate value. </detail>
+      </description>
+    </entry>
+    
+    <entry name="UnaryWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.UnaryWedge"/>
+      <description overview="Unary Wedge" author="Diana Huang">
+        <detail> Wedge that represents a unary value. </detail>
+      </description>
+    </entry>
+    
+    <entry name="VariableListWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.VariableListWedge"/>
+      <description overview="VariableList Wedge">
+        <detail>A wedge implementing a VariableList.</detail>
+      </description>
+    </entry>
+	  
+    <entry name="VariableSelectWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.VariableSelectWedge"/>
+      <description overview="VariableSelect Wedge">
+        <detail>A wedge providing a list of available variables, and allowing client to select from the list.</detail>
+      </description>
+    </entry>
+	  
+<!--
+    <entry name="VariableMapWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.VariableMapWedge"/>
+      <description overview="VariableMap Wedge">
+        <detail>A wedge implementing a Variable map.</detail>
+      </description>
+    </entry>
+  -->
+    <entry name="VariableWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.VariableWedge"/>
+      <description overview="Variable Wedge" author="Andy Gelme">
+        <detail> Wedge that represents a value. </detail>
+      </description>
+    </entry>
+    
+    <entry name="BinaryInputWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryInputWedge"/>
+      <description overview="Binary Input Wedge" author="Christos Kakris">
+        <detail>A wedge with just a single binary inbound facet</detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryOutputWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.BinaryOutputWedge"/>
+      <description overview="Binary Output Wedge" author="Christos Kakris">
+        <detail>A wedge with just a single binary outbound facet</detail>
+      </description>
+    </entry>
+
+    <entry name="BinaryGroupWedge" path="/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.common.group.BinaryGroupWedge" />
+      <description overview="Binary Group">
+        <detail>A Wedge that connects to a group of meems, keeping track of the binary values provided</detail>
+      </description>
+    </entry>
+    
+    <entry name="CategoryWedge" path="/core/maji" icon="">
+      <wedge class="org.openmaji.system.space.Category"/>
+      <description overview="Category Wedge">
+        <detail> Wedge that contains a group of Meems. </detail>
+      </description>
+    </entry>
+    
+    <entry name="SinglePatternBinaryRegexWedge" path="/core/regex" icon="">
+      <wedge class="org.openmaji.implementation.common.regex.SinglePatternBinaryRegexWedge"/>
+      <description overview=" Single Pattern Binary Regex Wedge">
+        <detail> Wedge that performs a regular expression match for a single pattern. </detail>
+      </description>
+    </entry>
+    
+    <entry name="DualPatternBinaryRegexWedge" path="/core/regex" icon="">
+      <wedge class="org.openmaji.implementation.common.regex.DualPatternBinaryRegexWedge"/>
+      <description overview=" Dual Pattern Binary Regex Wedge">
+        <detail> Wedge that performs a regular expression match for a pair of patterns. </detail>
+      </description>
+    </entry>
+	
+	<entry name="CategoryEntryConsumerWedge" path="/core/maji" icon="">
+      <wedge class="org.openmaji.implementation.common.CategoryEntryConsumerWedge"/>
+      <description overview="CategoryEntry Consumer Wedge" author="Diana Huang">
+        <detail> Wedge with inbound/outbound CategoryEntryConsumer. </detail>
+      </description>
+    </entry>
+
+    <entry name="Pulse Timer" path="/core/util" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.util.wedge.PulseTimerWedge" />
+      <description overview="Pulse Timer">
+        <detail>
+          Pulse Timer produces periodic Unary, Binary and Linear pulses.
+          These pulses can be inverted or have a random time period.
+		</detail>
+      </description>
+    </entry>
+  </wedgeview>
+</meemkit>

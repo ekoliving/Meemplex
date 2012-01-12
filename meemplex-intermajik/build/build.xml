@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="intermajik-eclipse" default="build" basedir="..">
+  <property environment="env"/>
+
+  <property name="full.name" value="intermajik"/>
+    <path id="build.classpath">
+      <pathelement location="../openmaji-install/lib/maji/maji-meem.jar" />
+      <pathelement location="../openmaji-install/lib/maji/maji-system.jar" />
+      <pathelement location="../openmaji-install/lib/maji/maji-server.jar" />
+      <pathelement location="../openmaji-install/lib/jdom.jar" />
+      <pathelement location="../openmaji-install/lib/mail.jar" />
+      <pathelement location="../openmaji-install/lib/swzoo.jar" />
+<!--
+      <pathelement location="../openmaji-install/meemkits/jars/meemkit-sdk.jar" />
+      <pathelement location="../openmaji-install/meemkits/jars/openmaji-core.jar" />
+      <pathelement location="../openmaji-install/meemkits/jars/intermajik-core.jar" />
+-->
+      <!-- eclipse classes -->
+      <files>
+        <!-- include classes in eclipse's plugins -->
+        <include name="${env.ECLIPSE_HOME}/plugins/*.jar"/>
+        <include name="${env.ECLIPSE_HOME}/plugins/**/*.jar"/>
+		  
+        <!-- some plugins are installed in user's home directory --> 
+      	<!--<include name="${env.HOME}/.eclipse/org.eclipse.platform_3.3.0_*/configuration/eclipse/plugins/*.jar" />-->
+      	<include name="${env.HOME}/.eclipse/org.eclipse.platform_3.*/configuration/eclipse/plugins/*.jar" />
+      </files>
+    </path>
+  <import file="./common.xml" />
+
+  <target name="init_custom">
+    <fail message="ECLIPSE_HOME environment variable not set." unless="env.ECLIPSE_HOME"/>
+    <property name="plugin" value="org.openmaji.intermajik"/>
+    <property name="feature" value="org.openmaji.intermajik.feature"/>
+    <property name="full.name" value="intermajik"/>
+  </target>
+
+  <target name="prepare.install" depends="init" if="destination.folder">
+  	<copy file="${build.folder.jars}/MajiAdaptor.jar" todir="${destination.folder}/plugins/org.eclipse.osgi_3.0.0" overwrite="true"/>
+    <mkdir dir="${destination.folder}/features/${full.name.feature}"/>
+    <antcall target="copy.files.feature">
+      <param name="destination.temp.folder" value="${destination.folder}/features/${full.name.feature}/"/>
+    </antcall>
+    <mkdir dir="${destination.folder}/plugins/${full.name.feature}"/>
+    <antcall target="copy.files.feature.plugin">
+      <param name="destination.temp.folder" value="${destination.folder}/plugins/${full.name.feature}/"/>
+    </antcall>
+    <mkdir dir="${destination.folder}/plugins/${full.name.plugin}"/>
+    <antcall target="copy.files.plugin">
+      <param name="destination.temp.folder" value="${destination.folder}/plugins/${full.name.plugin}/"/>
+    </antcall>
+    <ant antfile="build_jars.xml" target="prepare.install" inheritAll="false">
+      <property name="destination.folder" value="${destination.folder}"/>
+    </ant>
+
+  </target>
+
+
+  <!-- TODO[ben] reconile this target with the one in common.xml -->
+  <target name="copy.files.plugin" depends="init" if="destination.temp.folder">
+    <copy file="${build.folder.jars}/${full.name}.jar" todir="${destination.temp.folder}"/>
+    <copy todir="${destination.temp.folder}">
+      <fileset dir="${project.folder}" includes="plugin.xml,plugin_customization.ini,icons/*"/>
+    </copy>
+    <copy todir="${destination.temp.folder}" flatten="true">
+      <fileset dir="${project.folder}" includes="plugin_files/*"/>
+    </copy>
+  </target>
+
+
+  <target name="getos" description="Get current operating system">
+    <condition property="isWindows">
+      <os family="windows" />
+    </condition>
+
+    <condition property="isMacOsX">
+      <and>
+        <os family="mac" />
+        <os family="unix" />
+      </and>
+    </condition>
+
+    <condition property="isUnix">
+      <and>
+        <os family="unix" />
+        <not>
+          <os family="mac" />
+        </not>
+      </and>
+    </condition>
+  </target>
+
+  <!-- TODO[ben] reconcile this taregt with the one in common.xml -->
+  <target name="eclipse.setup" depends="init, getos" description="Setup eclipse project">
+    <copy todir="${project.folder}" flatten="yes">
+      <fileset dir="eclipse">
+        <include name="unix.classpath_template" if="isUnix"/>
+        <include name="windows.classpath_template" if="isWindows"/>
+        <include name="macos.classpath_template" if="isMacOsX"/>
+      </fileset>
+    </copy>
+
+    <move tofile="${project.folder}/.classpath">
+      <fileset dir="${project.folder}">
+        <include name="*.classpath_template"/>
+      </fileset>
+    </move>
+
+    <mkdir dir="${project.folder}/lib"/>
+    <copy file="${env.dir_mt_jars}/swzoo.jar" todir="${project.folder}/lib" />
+                                                                                            
+  </target>
+	
+  <target name="create.adaptor.jar" depends="init">
+	<jar destfile="${build.folder.jars}/${jar.name}">
+      <fileset dir="${env.MAJITEK_HOME}/openmaji-meemserver/build/classes"
+        includes="org/openmaji/implementation/server/classloader/**"
+		excludes="org/openmaji/implementation/server/classloader/Launch.class"
+      />
+      <fileset dir="${build.folder.source}"
+        includes="org/openmaji/implementation/eclipse/adaptor/**"
+      />
+	</jar>
+  </target>
+
+</project>

@@ -1,0 +1,244 @@
+<meemkit
+  name="automation-core"
+  version="1.10"
+  author="Andy Gelme, Chris Kakris"
+  company="Majitek International"
+  copyright="Copyright (c) 2004 - 2008 by Majitek International Pte. Ltd."
+  resourceClass="org.openmaji.implementation.automation.images.Images">
+
+  <summary>
+    Contains Meems and Wedges that are common across the automation domain.
+    These Maji components are generic and protocol indepedent so they can be
+    used by other (protocol specific) automation meemkits.
+  </summary>
+
+  <dependencies>
+    <dependentMeemkit name="openmaji-core" version="1.10" />
+  </dependencies>
+
+  <libraries>
+    <library name="jars/automation-core.jar"/>
+    <library name="jars/library/javax.comm.jar"/>
+    <library name="jars/library/jcl.jar"/>
+  </libraries>
+  
+  <meemview>
+
+    <hierarchy>
+      <category name="automation" path="/"                icon="automation_domain_16.gif" />
+      <category name="core"       path="/automation"      icon="common_meemkit_16.gif" />
+      <category name="subsystem"  path="/automation"      icon="common_meemkit_16.gif" />
+      <category name="deployment" path="/automation"      icon="common_meemkit_16.gif" />
+      <category name="logic"      path="/automation/core" icon="common_meemkit_16.gif" />
+    </hierarchy>
+
+    <entry name="LoopbackBinary" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackBinaryMeem" />
+      <description overview="Loopback Binary">
+        <detail>A binary meem that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackLinear" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackLinearMeem" />
+      <description overview="Loopback Linear">
+        <detail>A linear meem that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackVariable" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackVariableMeem" />
+      <description overview="Loopback Variable">
+        <detail>A variable meem that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+
+    <entry name="LoopbackVariableList" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackVariableListMeem" />
+      <description overview="Loopback VariableList">
+        <detail>A variable list meem that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+
+    <entry name="LoopbackLinearList" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackLinearListMeem" />
+      <description overview="Loopback LinearList">
+        <detail>A linear list meem that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackUnary" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackUnaryMeem" />
+      <description overview="Loopback Unary">
+        <detail>Unary meem that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackMultistate" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackMultistateMeem" />
+      <description overview="Loopback Multistate">
+        <detail>A Multistate meem that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+
+    <entry name="Loopback" path="/automation/subsystem" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackSubsystemMeem"/>
+      <description overview="Loopback Subsystem" author="Chris Kakris">
+        <detail>This meem is used to create and manage a loopback subsystem.</detail>
+      </description>
+    </entry>
+
+    <entry name="Automation XML Deployment" path="/automation/deployment" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.deployment.AutomationDeploymentMeem"/>
+      <description overview="Automation XML Deployment" author="Chris Kakris">
+        <detail>This meem is used to create automation related deployments</detail>
+      </description>
+    </entry>
+
+    <entry name="SlowLoopbackLinear" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.SlowLoopbackLinearMeem" />
+      <description overview="Slow Loopback Linear">
+        <detail>A linear meem that provides its state in a loopback arrangement - but takes its time doing so.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackTrueBinary" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackTrueBinaryMeem" />
+      <description overview="True Binary">
+        <detail>Always generates a true value no matter what the input value is</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackFalseBinary" path="/automation/core/logic" icon="">
+      <meemDefinitionProvider class="org.openmaji.implementation.automation.loopback.LoopbackFalseBinaryMeem" />
+      <description overview="False Binary">
+        <detail>Always generates a false value no matter what the input value is</detail>
+      </description>
+    </entry>
+    
+  </meemview>
+
+  <wedgeview>
+
+    <hierarchy>
+      <category name="automation" path="/"                icon="automation_domain_16.gif" />
+      <category name="core"       path="/automation"      icon="common_meemkit_16.gif" />
+      <category name="deployment" path="/automation"      icon="common_meemkit_16.gif" />
+      <category name="logic"      path="/automation/core" icon="common_meemkit_16.gif" />
+      <category name="serial"      path="/automation/core" icon="common_meemkit_16.gif" />
+    </hierarchy>
+
+    <entry name="LoopbackBinaryWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackBinaryWedge"/>
+      <description overview="Loopback Binary Wedge">
+        <detail>A binary wedge that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackLinearWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackLinearWedge"/>
+      <description overview="Loopback Linear Wedge">
+        <detail>A linear wedge that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackVariableWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackVariableWedge"/>
+      <description overview="Loopback Variable Wedge">
+        <detail>A variable wedge that provides its state in a loopback arrangement.</detail>
+      </description>
+    </entry>
+       
+    <entry name="LoopbackVariableListWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackVariableListWedge"/>
+      <description overview="Loopback VariableList Wedge">
+        <detail>A wedge implementing a Loopback VariableList.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackUnaryWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackUnaryWedge"/>
+      <description overview="Loopback Unary Wedge">
+        <detail>A wedge implementing a Loopback Unary.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackMultistateWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackMultistateWedge"/>
+      <description overview="Loopback Multistate Wedge">
+        <detail>A wedge implementing a Multistate.</detail>
+      </description>
+    </entry>
+
+   <entry name="LoopbackLinearListWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackLinearListWedge"/>
+      <description overview="Loopback LinearList Wedge">
+        <detail>A wedge implementing a Loopback LinearList.</detail>
+      </description>
+    </entry>
+
+	<entry name="BinaryToVariableWedge" path="/automation/core/serial" icon="">
+      <wedge class="org.openmaji.implementation.automation.serial.BinaryToVariableWedge"/>
+      <description overview="Binary to Variable wedge">
+        <detail>A wedge to adapt binary to variable.</detail>
+      </description>
+    </entry>
+	  
+	<entry name="VariableToSerialWedge" path="/automation/core/serial" icon="">
+      <wedge class="org.openmaji.implementation.automation.serial.VariableToSerialWedge"/>
+      <description overview="Variable serial wedge">
+        <detail>A wedge to read and write values from/to a serial port.</detail>
+      </description>
+    </entry>
+        
+    <entry name="SlowLoopbackLinearWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.SlowLoopbackLinearWedge"/>
+      <description overview="Slow Loopback Linear Wedge">
+        <detail>A linear wedge that provides its state in a loopback arrangement - but changes its state gradually over time</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackTrueBinaryWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackTrueBinaryWedge" />
+      <description overview="True Binary">
+        <detail>Always generates a true value no matter what the input value is</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackFalseBinaryWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackFalseBinaryWedge" />
+      <description overview="False Binary">
+        <detail>Always generates a false value no matter what the input value is</detail>
+      </description>
+    </entry>
+    
+    <entry name="LoopbackPulseBinaryWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.loopback.LoopbackPulseBinaryWedge" />
+      <description overview="Pulse Binary">
+        <detail>Generates a pulse, of configurable duration</detail>
+      </description>
+    </entry>
+    
+    <entry name="BinaryDeviceWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.common.BinaryDeviceWedge" />
+      <description overview="Binary Device">
+        <detail>A Wedge that passes the binary messages to facets.</detail>
+      </description>
+    </entry>
+    
+    <entry name="LinearDeviceWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.common.LinearDeviceWedge" />
+      <description overview="Linear Device">
+        <detail>A Wedge that passes the linear messages to facets.</detail>
+      </description>
+    </entry>
+    
+    <entry name="VariableDeviceWedge" path="/automation/core/logic" icon="">
+      <wedge class="org.openmaji.implementation.automation.common.VariableDeviceWedge" />
+      <description overview="Variable Device">
+        <detail>A Wedge that passes the variable messages to facets.</detail>
+      </description>
+    </entry>
+        
+  </wedgeview>
+</meemkit>

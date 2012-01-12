@@ -1,0 +1,33 @@
+/*
+keywords:    create binary linear variable loopback transient persistent
+topic:       loopback meems
+description:
+
+  Loopback Meems represent a special type of device. Unlike other Meems
+  which interact with real hardware, such as X10 or CBus, Loopback Meems
+  can be thought of as special logical devices rather than hardware devices.
+
+  These Meems can be used in place of real device Meems for testing purposes.
+
+usage:
+
+    source("automation/binary.bsh");
+    transientMeem = createBinaryMeem();
+    createBinaryMonitor(transientMeem);
+    Binary b = getBinary(transientMeem);
+    b.valueChanged(true);
+    b.valueChanged(false);
+
+    persistentMeem = createBinaryMeem("/some/path/in/hyperspace");
+
+    source("automation/linear.bsh");
+    transientMeem = createLinearMeem();
+    persistentMeem = createLinearMeem("/some/path/in/hyperspace");
+
+    source("automation/variable.bsh");
+    transientMeem = createVariableMeem();
+    persistentMeem = createVariableMeem("/some/path/in/hyperspace");
+
+endhelp:
+*/
+

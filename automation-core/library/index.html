@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <title>automation-core library</title>
+  </head>
+  <body>
+    <pre>
+Java Communications API - javax.comm.jar
+http://java.sun.com/products/javacomm
+
+	The Java Communications API is used by anything that requires
+	serial line communications, e.g. X10 library.
+
+	This JAR is a composite of ...
+
+		Solaris "comm.jar" version 2.0.2
+		Windows "comm.jar" version 2.0
+
+	... where the Windows specific implementation (com.sun.com.Win32*)
+	was copied into the Solaris JAR and then renamed "javax.comm.jar".
+	For further details, please see
+
+		../native/windows/build-instructions.txt
+
+	This was done to avoid a bizarre Windows error.
+
+	This JAR should work on all of Linux, Windows and Solaris,
+	because it contains the generic Java standard API (javax.comm),
+	plus the Windows specific implementation, which will be ignored
+	on Unix / Linux systems.
+
+	On Unix, using JavaComm JARs older than version 2.0.2 will result
+	in the following error message ...
+
+		"java.lang.NullPointerException: name can't be null
+		 while loading driver gnu.io.RXTXCommDriver"
+
+	... when utilizing JavaComm with applications that also use
+	the RMI SecurityManager !
+
+Java Communications Library (Linux: RxTx) - jcl.jar
+http://www.rxtx.org
+
+	Java Communications Library (JCL) that contains the Java Native
+	Interface to the Linux RxTx Driver (gnu.io.RXTXCommDriver).
+	If you are using Windoze, you can ignore this.
+	
+	Normally, you'd compile RxTx on your Linux system and install it in
+	the JDK/JRE Library Extensions area.  This works fine, if you run
+	Maji standalone, i.e. not in InterMajik.  Unfortunately, if you
+	attempt to use serial communications, e.g. X10, from InterMajik,
+	then it ends up being a little ugly.
+	
+	Ths simpliest way to move forward seemed to be to put the "jcl.jar"
+	into the "majitek-meemkit-automation-core" MeemKit and fix up the
+	"fragment.xml" to reference this JAR.  This allows the InterMajik
+	plug-in to find "jcl.jar" as required.
+	
+	If anyone knows of an easier and/or better way to do this ...
+	... then "go for it".
+	
+	This version of "jcl.jar" was compiled from RxTx version 2.0-7pre2.
+	The resulting "RXTXcomm.jar" was renamed to "jcl.jar".
+
+	It is *crucial* that the version of "jcl.jar" exactly matches the
+	versions of ...
+
+		../native/linux/jre/lib/i386/librxtxParallel.so
+		../native/linux/jre/lib/i386/librxtxSerial.so
+    </pre>
+  </body>
+</html>

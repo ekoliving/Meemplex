@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>automation-core Building Linux RxTx</title>
+  </head>
+  <body>
+    <pre>
+Steps used to build the RxTx libraries for Linux
+================================================
+
+Software required
+-----------------
+	RedHat Fedora Core 4
+	Sun JDK 1.4.2_09
+	JavaComm javax_comm-2_0_3-solsparc
+	RxTx 2.0-7pre2.
+
+Instructions
+------------
+	cd /usr/local
+	tar -zxvf download/javax_comm-2_0_3-solsparc.tar.gz
+	mv commapi javacomm
+	cd javacomm
+	vi javax.comm.properties
+	  Driver=gnu.io.RXTXCommDriver
+	cd /usr/local/jdk/jre/lib
+	ln -s /usr/local/javacomm/javax.comm.properties .
+	cd ext
+	ln -s /usr/local/javacomm/comm.jar .
+
+	export PATH=$PATH:/usr/local/jdk1.4/bin
+	cd /usr/local/src
+	tar -zxpf ../download/linux/rxtx/rxtx-2.0-7pre2.tar.gz
+	cd rxtx-2.0-7pre2
+	./configure
+	make
+	make install
+	# /usr/local/jdk/jre/lib/i386/librxtxSerial*
+	# /usr/local/jdk/jre/lib/i386/librxtxParallel*
+	# /usr/local/jdk/jre/lib/ext/RXTXcomm.jar
+    </pre>
+  </body>
+</html>

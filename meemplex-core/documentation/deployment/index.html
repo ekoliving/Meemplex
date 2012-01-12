@@ -1,0 +1,242 @@
+<html>
+  <head>
+    <title>Using the XML Deployment Meem</title>
+    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+  </head>
+  <body>
+    <h2>Using the XML Deployment Meem</h2>
+    <h4>Overview and Introduction</h4>
+    <p>
+      The XML Deployment meem is located in the meem toolkit view under the
+      core category and the deployment subcategory. You can drag this meem onto a
+      worksheet and configure it with the full pathname of an XML document. When the
+      meem goes READY it will attempt to create the subsystems and meems specified
+      in that document.
+    </p>
+    <p>
+      This Meem includes the following list of wedges:
+    </p>
+    <ol>
+      <li>XmlReaderWedge</li>
+      <li>XmlDeploymentProcessorWedge</li>
+      <li>DeploymentWedge</li>
+    </ol>
+    <p>
+      When this Meem changes to the READY lifecycle state the XmlReaderWedge will
+      read the configured XML file from disk and construct a DOM representation of
+      it using JDOM. It then passes that DOM instance onto the domProcessorConduit.
+    </p>
+    <p>
+      The XmlDeploymentProcessorWedge receives the DOM and processes all &lt;category&gt; tags,
+	  and then creates a list of
+      meem and subsystem descriptors which is then passed onto the
+      deploymentProcessorConduit.
+    </p>
+    <p>
+      The DeploymentWedge receives the list of descriptors via the deploymentProcessorConduit
+      and creates the specified meems and subsystems.
+    </p>
+    <h4>The Details</h4>
+    <p>
+      The XML Deployment Meem recognises the following top level XML elements:
+    </p>
+    <table cellspacing="0" cellpadding="5">
+      <tr>
+        <th>Element</th><th>Number</th><th>Description</th>
+      </tr>
+      <tr>
+        <td>summary</td>
+        <td>One only</td>
+        <td>A summary of the deployment</td>
+      </tr>
+	  <tr>
+        <td>site-deployment</td>
+        <td>One only or Zero</td>
+        <td>Specifies a deployment site name</td>
+      </tr>
+      <tr>
+        <td>prerequisite</td>
+        <td>One only</td>
+        <td>Specifies the dependencies that this deployment script has</td>
+      </tr>
+      <tr>
+        <td>category</td>
+        <td>Many</td>
+        <td>A category in hyperspace to create</td>
+      </tr>
+      <tr>
+        <td>subsystem</td>
+        <td>Many</td>
+        <td>Declares a new subsystem and a list of meems it should contain</td>
+      </tr>
+      <tr>
+        <td>meem</td>
+        <td>Many</td>
+        <td>The details of the meem to be created</td>
+      </tr>
+    </table>
+    <p>
+      Each of these elements are described in detail below.
+    </p>
+    <h5>The summary element</h5>
+	<h5>The site-deployment element</h5>
+	  <p>
+		The <i>site-deployment</i> element declares a site name which decides whether this deployment file will be deployed or not. If the
+		name specified here matches (not case-sensitive) with a EdgeSystem Space name specified when running Installer, this file will
+		be deployed. If the site-deployment name is "base", this file will be deployed by default. If the site-deployment name is not
+		specified or is not included in the deployment file, this file will be deployed as well. Otherwise, the file won't be deployed.
+	</p>
+	<pre>
+      &lt;site-deployment name="brookwater" /&gt; &lt;!-- this file is only deployed to a system where its EdgeSystem space name is brookwater --&gt;
+      &lt;site-deployment name="base" /&gt; &lt;!-- this file is deployed by default --&gt;
+     
+    </pre>
+    <h5>The prerequisite element</h5>
+    <h5>The category element</h5>
+	<p>
+		The <i>category</i> element declares a single path in hyperspace to be
+		created. It has two attributes as shown in the example below:
+	</p>
+    <pre>
+      &lt;category path="/work/site/test1" /&gt;
+      &lt;category path="/work/site/test2" existing-entries="destroy" /&gt;
+      &lt;category path="/work/site/test3" existing-entries="remove" /&gt;
+    </pre>
+	<p>
+		The <i>path</i> attribute is required and specifies the hyperspace path
+		to create. If the category already exists this tag will not create another.
+		If any parent categories do not exist this tag will create them.
+    </p>
+	<p>
+		The <i>existing-entries</i> attribute is optional and specifies what
+		action to take if the category already exists and contains Meems. If the
+		value of the attribute is <i>destroy</i> it will remove all Meems from
+		the category and change their LifeCycleState to ABSENT. If the value of the
+		attribute is <i>remove</i> it will only remove all Meems from the category.
+	</p>
+	  
+    <h5>The subsystem element</h5>
+    <p>
+      The <i>subsystem</i> element defines an instance of a subsystem and a list of the
+      meems that it should contain. An example is shown below:
+    </p>
+    <pre>
+      &lt;subsystem name="gui_test"&gt;
+        &lt;meem id="Test Loopback Binary"/&gt;
+        &lt;meem id="Test Frame"/&gt;
+        &lt;meem id="Test Button"/&gt;
+        &lt;meem id="Test Feedback"/&gt;
+      &lt;/subsystem&gt;
+    </pre>
+    <p>
+      The <i>subsystem</i> element has a single attribute which is the name of the subsystem.
+      It has a single type of child element <i>meem</i> which is used to specify the identifier
+      of a meem to include in the subsystem. These identifiers are used when declaring meems
+      (see below).
+    </p>
+    <h5>The meem element</h5>
+    <p>
+      The <i>meem</i> element defines an instance of a meem to be created. Note: if a meem
+      is not listed in a <i>subsystem</i> then it will not be created. The <i>meem</i>
+      element has a single attribute <i>id</i> which is used to set the identifier for the
+      meem in its MeemDefinition. The <i>id</i> is also used to refer to this meem within the
+      XML document.
+    </p>
+    <p>The <i>meem</i> element has the following child elements:</p>
+    <table cellspacing="0" cellpadding="5">
+      <tr>
+        <th>Element</th><th>Description</th>
+      </tr>
+      <tr>
+        <td>description</td>
+        <td>A textual description of the meem</td>
+      </tr>
+      <tr>
+        <td>definition</td>
+        <td>
+          Specifies the MeemDefinition for the meem: either a MeemDefinitionProvider
+          or a list of Wedges.
+        </td>
+      </tr>
+      <tr>
+        <td>configuration</td>
+        <td>Declares the configuration properties for each of the meem's wedges</td>
+      </tr>
+      <tr>
+        <td>dependencies</td>
+        <td>A list of dependencies that this meem has on other meems</td>
+      </tr>
+      <tr>
+        <td>paths</td>
+        <td>A list of hyperspace paths that this meem should be placed into</td>
+      </tr>
+    </table>
+    <p>
+      The following XML fragment shows an example of a <i>meem</i> element:
+    </p>
+    <pre>
+      &lt;meem id="Test Feedback"&gt;
+        &lt;description&gt;
+          A UI Feedback
+        &lt;/description&gt;
+    
+        &lt;definition&gt;
+          &lt;wedge id="FeedbackPanel" class="org.openmaji.implementation.example.ui.tutorial.gui.FeedbackDisplayWedge"&gt;
+            &lt;facet id="linearInput" original-id="linear" /&gt;
+            &lt;facet id="binaryInput" original-id="binary" /&gt;
+            &lt;facet id="containerOutput" original-id="container" /&gt;
+          &lt;/wedge&gt;
+        &lt;/definition&gt;
+    
+        &lt;configuration&gt;
+          &lt;wedge id="FeedbackPanel"&gt;
+            &lt;property name="width" type="integer"&gt;320&lt;/property&gt;
+            &lt;property name="height" type="integer"&gt;240&lt;/property&gt;
+            &lt;property name="label"&gt;TEST&lt;/property&gt;
+          &lt;/wedge&gt;
+        &lt;/configuration&gt;
+    
+        &lt;dependencies&gt;
+          &lt;dependency facet-id="containerOutput" type="strong" scope="distributed" lifetime="permanent"&gt;
+            &lt;other-meem path="hyperspace:/application/${application}/ui/frame" facet-id="containerInput"/&gt;
+          &lt;/dependency&gt;
+    
+          &lt;dependency facet-id="binaryInput" type="strong" scope="distributed" lifetime="permanent"&gt;
+            &lt;other-meem path="hyperspace:/application/${application}/automation/loopbackBinary" facet-id="binaryOutput"/&gt;
+          &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+    
+        &lt;paths&gt;
+          &lt;path&gt;/application/${application}/ui/feedback&lt;/path&gt;
+        &lt;/paths&gt;
+      &lt;/meem&gt;
+    </pre>
+    <h4>Example XML Deployment files</h4>
+    <p>
+      The file <a href="gui-example-deployment.xml">gui-example-deployment.xml</a>
+      located in this directory is used by the XML Deployment meem that is shipped
+      as part of this meemkit.
+    </p>
+    <p>
+      To use this example deployment file create an instance of the XML Deployment Meem
+      by dragging it from the meem toolkit and dropping it onto a worksheet, configure it with
+      the full pathname of the file <i>gui-example-deployment.xml</i> and then
+      make the meem go to the READY lifecycle state. It will create all the meems specified
+      in the XML file, place them into a subsystem, configure them and
+      create all appropriate dependencies. When it has finished you should see a simple
+      Swing GUI that toggles a loopback binary meem.
+    </p>
+    <h4>Notes And Suggestions</h4>
+    <p>
+      The XML Deployment Meem processes the XML file everytime it changes to the
+      READY lifecycle state. It is recommended that you destroy the deployment meem once it
+      has performed its duty.
+    </p>
+  </body>
+</html>
+
+
+
+
+
+

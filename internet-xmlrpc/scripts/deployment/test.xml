@@ -1,0 +1,116 @@
+<meem-deployment
+	name="RpcTest"
+	description="Deployment file XMLRPC test meems"
+	version="0.1"
+	author="Warren Bloomer">
+
+	<summary>
+		Deployment file XMLRPC test meems
+	</summary>
+	
+	<site-deployment name="base"/>
+
+	<subsystem name="${application}">
+		<meem id="loopbackBinary0"/>
+		<meem id="loopbackBinary1"/>
+		<meem id="loopbackBinary2"/>
+		<meem id="loopbackBinary3"/>
+		<meem id="loopbackBinary4"/>
+		<meem id="loopbackBinary5"/>
+		<meem id="loopbackBinary6"/>
+		<meem id="loopbackBinary7"/>
+		<meem id="loopbackBinary8"/>
+		<meem id="loopbackBinary9"/>
+		<meem id="loopbackBinary10"/>
+	</subsystem>
+
+	<meem id="loopbackBinary0">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary0</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary1">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary1</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary2">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary2</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary3">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary3</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary4">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary4</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary5">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary5</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary6">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary6</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary7">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary7</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary8">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary8</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary9">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary9</path>
+		</paths>	
+	</meem>
+	<meem id="loopbackBinary10">
+		<definition>
+			<definition id="Binary" class="com.majitek.meemkit.automation.loopback.LoopbackBinaryMeem"/>
+		</definition>
+		<paths>
+			<path>/work/test/rpc/loopbackBinary10</path>
+		</paths>	
+	</meem>
+
+</meem-deployment>

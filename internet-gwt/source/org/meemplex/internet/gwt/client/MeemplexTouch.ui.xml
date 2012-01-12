@@ -1,0 +1,90 @@
+<ui:UiBinder 
+	xmlns:ui='urn:ui:com.google.gwt.uibinder' 
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' 
+	xmlns:gwt="urn:import:org.meemplex.internet.gwt.client.widget"
+>
+	<ui:style>
+		.footerScroll {
+			overflow-y: hidden;
+			background-color: #000;
+		}
+	</ui:style>
+	<g:DockLayoutPanel unit="PX">
+	
+		<g:north size="50">
+			<g:HorizontalPanel ui:field="header" styleName="header">
+				<g:HTML><h1>Magik Forest</h1></g:HTML>
+				<!-- 
+				<gwt:ClockWidget ui:field="clockWidget" />
+				 -->
+			</g:HorizontalPanel>
+		</g:north>
+		
+		<g:south size="90">
+			<g:ScrollPanel addStyleNames="{style.footerScroll}">
+				<gwt:FilterSelector ui:field="filterSelector"></gwt:FilterSelector>
+			</g:ScrollPanel>
+		</g:south>
+		<!-- 
+		<g:west size="9.5">
+			<gwt:CategoryGroup>
+				<gwt:TestWidget name="Lights"      symbol="Li" class="alkali" number="54" />
+				<gwt:TestWidget name="Windows"     symbol="Wi" class="lanthanoid" number="44" />
+				<gwt:TestWidget name="Locks"       symbol="Lo" class="transition" number="23" />
+				<gwt:TestWidget name="Auto Lights" symbol="Al" class="metalloid" number="99" />
+				<gwt:TestWidget number="24" />
+				<gwt:TestWidget number="53" />
+			</gwt:CategoryGroup>
+		</g:west>
+ -->		
+		<g:center>
+			<g:ScrollPanel width="100%">
+				<g:FlowPanel ui:field="contentPanel">
+					<gwt:CategoryGroup ui:field="widgetGroup">
+	
+						<!--  test widget -->
+						<gwt:BinaryToggleButton name="Kitchen Light"    meemPath="hyperSpace:/site/stanebrae/function/light/house/switch/kit1flouro0" addStyleNames="kit1 light" />
+						<gwt:BinaryButton name="Kitchen Light 2"    meemPath="hyperSpace:/site/stanebrae/function/light/house/switch/kit1flouro0" addStyleNames="kit1 light" />
+	
+						<!-- house-wide widgets -->
+						<gwt:GroupButton name="All Lights"      meemPath="hyperSpace:/site/stanebrae/function/light/allHouseLights" addStyleNames="house light" />
+						<!-- 
+						<gwt:GroupButton name="All Auto-Lights" meemPath="hyperSpace:/site/stanebrae/function/light/allAutoLights" addStyleNames="house light" />
+						 -->
+						<gwt:GroupButton name="All Blinds"      meemPath="hyperSpace:/site/stanebrae/function/blockout/allBlockout" onText="open" offText="close" addStyleNames="house blind" />
+						<gwt:GroupButton name="External Locks"  meemPath="hyperSpace:/site/stanebrae/function/security/allExternalLocks" onText="lock" offText="unlock" addStyleNames="house lock" />
+						<gwt:BinaryButton name="Gate"           meemPath="hyperSpace:/site/stanebrae/function/security/gateTemporary" onText="open" offText="close" addStyleNames="house gate" />
+						
+						<!-- bedroom 1 widgets  -->
+						<gwt:GroupButton name="Bed1 Lights"    meemPath="hyperSpace:/site/stanebrae/location/bed1/allLights" addStyleNames="bed1 light" />
+						<!-- 
+						<gwt:GroupButton name="Ensuite Lights"    meemPath="hyperSpace:/site/stanebrae/location/ens1/allLights" addStyleNames="bed1 light" />
+						<gwt:BinaryToggleButton name="Bed1 Auto-Lights"    meemPath="hyperSpace:/site/stanebrae/ui/bed1/autoLights" addStyleNames="bed1 light" />
+						-->
+						<gwt:GroupButton name="Bed1 Blinds"    meemPath="hyperSpace:/site/stanebrae/location/bed1/allBlockout" onText="open" offText="close" addStyleNames="bed1 blind" />
+						<gwt:GroupButton name="Bed1 Locks"    meemPath="hyperSpace:/site/stanebrae/location/bed1/exteriorLocks" onText="lock" offText="unlock" addStyleNames="bed1 lock" />
+						
+						<!-- bedroom 2 widgets -->
+						<gwt:GroupButton name="Bed2 Lights"    meemPath="hyperSpace:/site/stanebrae/location/bed2/allLights" addStyleNames="bed2 light" />
+						<!-- 
+						<gwt:GroupButton name="Ensuite2 Lights"    meemPath="hyperSpace:/site/stanebrae/location/ens2/allLights" addStyleNames="bed2 light" />
+ 						<gwt:BinaryToggleButton name="Bed2 Auto-Lights"    meemPath="hyperSpace:/site/stanebrae/ui/bed2/autoLights" addStyleNames="bed2 light" />
+ 						-->
+						<gwt:BinaryToggleButton name="Bed2 Blockout"    meemPath="hyperSpace:/site/stanebrae/location/bed2/blockout/bed2smartglass0" onText="open" offText="close" addStyleNames="bed2 blind" />
+						<gwt:BinaryButton name="Bed2 Locks"    meemPath="hyperSpace:/site/stanebrae/location/bed2/lock/bed2extdoor0lock.nviLock" onText="lock" offText="unlock" addStyleNames="bed2 lock" />
+						
+						<!-- bedroom 3 widgets -->
+						<gwt:GroupButton name="Bed3 Lights"    meemPath="hyperSpace:/site/stanebrae/location/bed3/allLights" addStyleNames="bed3 light" />
+						<!-- 
+						<gwt:GroupButton name="Ensuite3 Lights"    meemPath="hyperSpace:/site/stanebrae/location/ens3/light/allLights" addStyleNames="bed3 light" />
+						<gwt:BinaryToggleButton name="Bed3 Auto-Lights"    meemPath="hyperSpace:/site/stanebrae/ui/bed3/autoLights" addStyleNames="bed3 light" />
+						-->
+						<gwt:BinaryToggleButton name="Bed3 Blockout"    meemPath="hyperSpace:/site/stanebrae/location/bed3/blockout/bed3smartglass0" onText="open" offText="close" addStyleNames="bed3 blind" />
+						<gwt:BinaryButton name="Bed3 Locks"    meemPath="hyperSpace:/site/stanebrae/location/bed3/lock/bed3extdoor0lock.nviLock" onText="lock" offText="unlock" addStyleNames="bed3 lock" />
+					</gwt:CategoryGroup>
+				</g:FlowPanel>
+			</g:ScrollPanel>
+		</g:center>
+		
+	</g:DockLayoutPanel>
+</ui:UiBinder>

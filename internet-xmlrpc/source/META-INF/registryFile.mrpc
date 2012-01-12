@@ -1,0 +1,31 @@
+// register default outbound bindings
+Outbound  org.openmaji.common.Binary                                 org.openmaji.implementation.rpc.binding.facet.OutboundBinary
+Outbound  org.openmaji.common.Linear                                 org.openmaji.implementation.rpc.binding.facet.OutboundLinear
+Outbound  org.openmaji.common.LinearList                             org.openmaji.implementation.rpc.binding.facet.OutboundLinearList
+Outbound  org.openmaji.common.Multistate                             org.openmaji.implementation.rpc.binding.facet.OutboundMultistate
+Outbound  org.openmaji.common.Unary                                  org.openmaji.implementation.rpc.binding.facet.OutboundUnary
+Outbound  org.openmaji.common.Variable                               org.openmaji.implementation.rpc.binding.facet.OutboundVariable
+Outbound  org.openmaji.common.VariableList                           org.openmaji.implementation.rpc.binding.facet.OutboundVariableList
+Outbound  org.openmaji.system.space.CategoryClient                   org.openmaji.implementation.rpc.binding.facet.OutboundCategoryClient
+Outbound  org.openmaji.system.space.Category                         org.openmaji.implementation.rpc.binding.facet.OutboundCategory
+Outbound  org.openmaji.system.meem.FacetClient                       org.openmaji.implementation.rpc.binding.facet.OutboundFacetClient
+Outbound  org.openmaji.meem.wedge.configuration.ConfigurationHandler org.openmaji.implementation.rpc.binding.facet.OutboundConfigurationHandler
+Outbound  org.openmaji.meem.wedge.configuration.ConfigurationClient  org.openmaji.implementation.rpc.binding.facet.OutboundConfigurationClient
+Outbound  org.openmaji.meem.wedge.lifecycle.LifeCycleClient          org.openmaji.implementation.rpc.binding.facet.OutboundLifeCycleClient
+Outbound  org.openmaji.meem.wedge.lifecycle.LifeCycle                org.openmaji.implementation.rpc.binding.facet.OutboundLifeCycle
+
+// register default inbound bindings
+Inbound   org.openmaji.common.Binary                                 org.openmaji.implementation.rpc.binding.facet.InboundBinary
+Inbound   org.openmaji.common.Linear                                 org.openmaji.implementation.rpc.binding.facet.InboundLinear
+Inbound   org.openmaji.common.LinearList                             org.openmaji.implementation.rpc.binding.facet.InboundLinearList
+Inbound   org.openmaji.common.Multistate                             org.openmaji.implementation.rpc.binding.facet.InboundMultistate
+Inbound   org.openmaji.common.Unary                                  org.openmaji.implementation.rpc.binding.facet.InboundUnary
+Inbound   org.openmaji.common.Variable                               org.openmaji.implementation.rpc.binding.facet.InboundVariable
+Inbound   org.openmaji.common.VariableList                           org.openmaji.implementation.rpc.binding.facet.InboundVariableList
+Inbound   org.openmaji.system.space.CategoryClient                   org.openmaji.implementation.rpc.binding.facet.InboundCategoryClient
+Inbound   org.openmaji.system.space.Category                         org.openmaji.implementation.rpc.binding.facet.InboundCategory
+Inbound   org.openmaji.system.meem.FacetClient                       org.openmaji.implementation.rpc.binding.facet.InboundFacetClient
+Inbound   org.openmaji.meem.wedge.configuration.ConfigurationHandler org.openmaji.implementation.rpc.binding.facet.InboundConfigurationHandler
+Inbound   org.openmaji.meem.wedge.configuration.ConfigurationClient  org.openmaji.implementation.rpc.binding.facet.InboundConfigurationClient
+Inbound   org.openmaji.meem.wedge.lifecycle.LifeCycleClient          org.openmaji.implementation.rpc.binding.facet.InboundLifeCycleClient
+Inbound   org.openmaji.meem.wedge.lifecycle.LifeCycle                org.openmaji.implementation.rpc.binding.facet.InboundLifeCycle

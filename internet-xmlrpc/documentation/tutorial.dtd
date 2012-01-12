@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    DTD for Majitek tutorial/documentation files
+-->
+
+<!ENTITY esys "EdgeSystem" >
+<!ENTITY esc  "EdgeSystem Console" >
+<!ENTITY im   "InterMajik" >
+<!ENTITY es   "EdgeServer" >
+<!ENTITY ms   "MeemSpace" >
+<!ENTITY hs   "HyperSpace" >
+<!ENTITY msr  "MeemServer" >
+<!ENTITY mst  "MeemStore" >
+<!ENTITY majitekurl  "http://www.majitek.com" >
+<!ENTITY storefronturl   "https://secure.majitek.com" >
+<!ENTITY jdkversion "1.4.x" >
+
+<!ELEMENT Book       (document+) >
+
+<!ELEMENT document   (header?, body) >
+<!ATTLIST document   root      CDATA     #IMPLIED >
+
+<!ELEMENT header     (style-sheet) >
+
+<!ELEMENT section-title 
+                     (#PCDATA | productname)* >
+
+<!ELEMENT section-subtitle 
+                     (#PCDATA | productname)* >
+
+<!ELEMENT style-sheet 
+                     (#PCDATA) >
+
+<!ELEMENT body       (page-heading | section-title | section-subtitle |
+                              tut-oview | tut-section | incl | code-samples |
+                              more-info)* >
+                              
+<!ELEMENT fragment   (tut-section | code-samples | more-info)* >
+
+<!ELEMENT incl       EMPTY >
+<!ATTLIST incl href  CDATA #REQUIRED >
+
+<!ELEMENT page-heading 
+                     (#PCDATA | inline-code | index-term | productname)* >
+
+<!ELEMENT tut-oview  (paragraph+) >
+
+<!ELEMENT tut-section 
+                     (section-heading | section-subheading | paragraph |
+                              code | indent-code | pre | image | codebox |
+                              glossary | index-phrase)* >
+
+<!ELEMENT glossary   (entry) >
+
+<!ELEMENT entry      (index-term*, term, def)+ >
+
+<!ELEMENT term       (#PCDATA) >
+
+<!ELEMENT productname       (#PCDATA) >
+
+<!ELEMENT def        (#PCDATA | iref | fig | table)* >
+
+<!--iref: internal ref to another glossary term-->
+<!ELEMENT iref       (#PCDATA) >
+
+<!--fig: source file for graphic-->
+<!ELEMENT fig        EMPTY >
+<!ATTLIST fig        src       CDATA     #REQUIRED >
+
+<!ELEMENT paragraph  (#PCDATA | usertype | inline-code | ordered-list |
+                              ordered-list-continue | unordered-list | emph |
+                              token | menu-selection | user-entry | note |
+                              image | inline-image | table | index-phrase |
+                              index-term | important | link | external-link |
+                              menu-cmd | inlinetext | reminder | productname)* >
+
+<!--code: When embedded in <item>, prefix with newline to avoid sub-item in
+ numbered list.-->
+<!ELEMENT code       (#PCDATA | hilite | block-hilite | index-term |
+                              index-phrase | token)* >
+
+<!ELEMENT indent-code 
+                     (#PCDATA | hilite | block-hilite | index-term |
+                              index-phrase | token)* >
+
+<!ELEMENT pre        (#PCDATA | hilite | block-hilite | newline)* >
+
+<!ELEMENT inline-code 
+                     (#PCDATA | token)* >
+
+<!ELEMENT section-heading 
+                     (#PCDATA | inline-code | productname)* >
+
+<!ELEMENT section-subheading 
+                     (#PCDATA | inline-code | index-term | productname)* >
+
+<!ELEMENT more-info  (unordered-list) >
+
+<!ELEMENT code-samples 
+                     (unordered-list) >
+
+<!ELEMENT unordered-list 
+                     (item+) >
+
+<!ELEMENT ordered-list 
+                     (item+) >
+
+<!ELEMENT ordered-list-continue 
+                     (item+) >
+
+<!ELEMENT item       (#PCDATA | link | external-link | menu-selection |
+                              user-entry | note | token | image | index-phrase
+                              | index-term | hilite | inline-code | code | emph |
+                              item | unordered-list | ordered-list | table |
+                              inline-image | menu-cmd | usertype |
+                              inlinetext | reminder | productname)* >
+
+<!ELEMENT link       (name, url?) >
+
+<!ELEMENT external-link 
+                     (name, exturl) >
+
+<!ELEMENT name       (#PCDATA) >
+
+<!ELEMENT reminder       (#PCDATA | emph)* >
+
+<!ELEMENT exturl     (#PCDATA) >
+
+<!ELEMENT url        (#PCDATA) >
+
+<!ELEMENT emph       (#PCDATA) >
+
+<!ELEMENT token      (#PCDATA) >
+
+<!ELEMENT menu-selection 
+                     (#PCDATA) >
+
+<!ELEMENT user-entry (#PCDATA) >
+
+<!ELEMENT note       (#PCDATA | inline-code | productname)* >
+
+<!ELEMENT important  (#PCDATA | inline-code | productname)* >
+
+<!ELEMENT image      EMPTY >
+<!ATTLIST image      file      CDATA     #REQUIRED
+                     dpi       CDATA   #FIXED "96"
+                     angle     (270)     #IMPLIED
+                     w         CDATA     #IMPLIED
+                     imgsize   CDATA     #IMPLIED
+                     import    CDATA     #IMPLIED
+                     crop      CDATA     #IMPLIED
+                     posn      CDATA     #IMPLIED
+                     entity    ENTITY    #IMPLIED
+                     rasterdpi  NMTOKEN   #IMPLIED
+                     alt       CDATA     #IMPLIED
+                     impsize   CDATA     #IMPLIED
+                     impby     (ref|copy)  #IMPLIED
+                     sideways  NMTOKEN   #IMPLIED
+                     impang    CDATA     #IMPLIED
+                     xoffset   CDATA     #IMPLIED
+                     yoffset   CDATA     #IMPLIED
+                     position  NMTOKEN   #IMPLIED
+                     align     NMTOKEN   #IMPLIED
+                     cropped   NMTOKEN   #IMPLIED
+                     float     NMTOKEN   #IMPLIED
+                     height    CDATA     #IMPLIED
+                     bloffset  CDATA     #IMPLIED
+                     nsoffset  CDATA     #IMPLIED >
+
+<!ELEMENT inline-image 
+                     EMPTY >
+<!ATTLIST inline-image 
+                     file      CDATA     #REQUIRED
+                     w         CDATA     #IMPLIED
+                     dpi       NMTOKEN   #FIXED "96"
+                     imgsize   CDATA     #IMPLIED
+                     align     CDATA     #IMPLIED
+                     ref       CDATA     #IMPLIED
+                     bloff     CDATA     #IMPLIED
+                     posn      CDATA     #IMPLIED
+                     txt       CDATA     #IMPLIED
+                     entity    ENTITY    #IMPLIED
+                     rasterdpi  NMTOKEN   #IMPLIED
+                     alt       CDATA     #IMPLIED
+                     impsize   CDATA     #IMPLIED
+                     impby     (ref|copy)  #IMPLIED
+                     sideways  NMTOKEN   #IMPLIED
+                     impang    CDATA     #IMPLIED
+                     xoffset   CDATA     #IMPLIED
+                     yoffset   CDATA     #IMPLIED
+                     position  NMTOKEN   #IMPLIED
+                     cropped   NMTOKEN   #IMPLIED
+                     float     NMTOKEN   #IMPLIED
+                     height    CDATA     #IMPLIED
+                     angle     CDATA     #IMPLIED
+                     bloffset  CDATA     #IMPLIED
+                     nsoffset  CDATA     #IMPLIED >
+
+<!--table: cwidths in form "2cm 3cm" (set values as required) 
+  are required for framemaker rendition, not
+ XSL. See Structured Apps Dev Guide p277.
+ e.g. <table cols="3" cwidths="2cm 2cm 5cm">
+ -->
+<!ELEMENT table      (th*, tbody) >
+<!ATTLIST table      cols      NMTOKEN   #REQUIRED
+                     cwidths   CDATA     #IMPLIED >
+
+<!ELEMENT th         (hrow+) >
+
+<!ELEMENT tbody      (row+) >
+
+<!ELEMENT row        (cell+) >
+
+<!ELEMENT hrow       (hcell+) >
+
+<!ELEMENT cell       (#PCDATA | inline-code | emph | inline-image | image | productname)* >
+
+<!ELEMENT hcell      (#PCDATA | inline-code | emph)* >
+
+<!ELEMENT codebox    (((pre))) >
+
+<!ELEMENT block-hilite 
+                     (#PCDATA) >
+
+<!ELEMENT hilite     (#PCDATA) >
+
+<!ELEMENT usertype   (#PCDATA) >
+
+<!ELEMENT menu-cmd   (#PCDATA) >
+
+<!ELEMENT index-term EMPTY >
+<!ATTLIST index-term 
+                     type      CDATA     #IMPLIED
+                     text      CDATA     #IMPLIED >
+
+<!ELEMENT index-phrase 
+                     EMPTY >
+<!ATTLIST index-phrase 
+                     txt       CDATA     #IMPLIED
+                     type      CDATA     #IMPLIED >
+
+<!ELEMENT inlinetext (#PCDATA) >
+
+<!ELEMENT newline    EMPTY >

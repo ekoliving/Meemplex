@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="Intermajik" uid="org.meemplex.intermajik.product" id="org.meemplex.intermajik.productintermajik" application="org.eclipse.ui.ide.workbench" version="1.0.0" useFeatures="false" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/openmaji-intermajik/feature_files/plugin_files/intermajik_lg.gif"/>
+   </aboutInfo>
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgsMac>-arch x86_64</programArgsMac>
+      <vmArgs>-Dorg.openmaji.properties=conf/meemServer_01.properties 
+-Dorg.openmaji.meemSpaceIdentifier=&quot;stanebrae&quot;
+-Xmx512M</vmArgs>
+      <vmArgsMac>-Dorg.openmaji.directory=/Users/stormboy/Projects/majiklab/openmaji-meemserver/
+-Djava.security.policy=/Users/stormboy/Projects/majiklab/openmaji-install/conf/security/all.policy
+-XstartOnFirstThread</vmArgsMac>
+   </launcherArgs>
+
+   <windowImages i16="/openmaji-intermajik/feature_files/plugin_files/intermajik16.gif" i32="/openmaji-intermajik/feature_files/plugin_files/intermajik32.gif" i128="/openmaji-intermajik/feature_files/plugin_files/intermajik_lg.gif"/>
+
+   <splash
+      location="org.openmaji.intermajik"
+      startupProgressRect="5,275,445,15" />
+   <launcher name="Intermajik">
+      <solaris/>
+      <win useIco="true">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+      <linux include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</linux>
+      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</macos>
+   </vm>
+
+   <plugins>
+      <plugin id="ch.qos.logback.classic"/>
+      <plugin id="ch.qos.logback.core"/>
+      <plugin id="ch.qos.logback.slf4j" fragment="true"/>
+      <plugin id="com.ibm.icu"/>
+      <plugin id="javax.activation"/>
+      <plugin id="javax.mail"/>
+      <plugin id="javax.servlet"/>
+      <plugin id="javax.servlet.jsp"/>
+      <plugin id="javax.transaction" fragment="true"/>
+      <plugin id="org.apache.ant"/>
+      <plugin id="org.apache.commons.el"/>
+      <plugin id="org.apache.commons.logging"/>
+      <plugin id="org.apache.jasper"/>
+      <plugin id="org.apache.lucene"/>
+      <plugin id="org.apache.lucene.analysis"/>
+      <plugin id="org.apache.lucene.core"/>
+      <plugin id="org.eclipse.ant.core"/>
+      <plugin id="org.eclipse.core.commands"/>
+      <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.databinding"/>
+      <plugin id="org.eclipse.core.databinding.observable"/>
+      <plugin id="org.eclipse.core.databinding.property"/>
+      <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.filesystem"/>
+      <plugin id="org.eclipse.core.filesystem.macosx" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.net"/>
+      <plugin id="org.eclipse.core.resources"/>
+      <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.auth"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.draw2d"/>
+      <plugin id="org.eclipse.ecf"/>
+      <plugin id="org.eclipse.ecf.filetransfer"/>
+      <plugin id="org.eclipse.ecf.identity"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer"/>
+      <plugin id="org.eclipse.ecf.provider.filetransfer.ssl" fragment="true"/>
+      <plugin id="org.eclipse.ecf.ssl" fragment="true"/>
+      <plugin id="org.eclipse.equinox.app"/>
+      <plugin id="org.eclipse.equinox.common"/>
+      <plugin id="org.eclipse.equinox.concurrent"/>
+      <plugin id="org.eclipse.equinox.http.jetty"/>
+      <plugin id="org.eclipse.equinox.http.servlet"/>
+      <plugin id="org.eclipse.equinox.p2.core"/>
+      <plugin id="org.eclipse.equinox.p2.engine"/>
+      <plugin id="org.eclipse.equinox.p2.metadata"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
+      <plugin id="org.eclipse.equinox.p2.repository"/>
+      <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.equinox.security"/>
+      <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
+      <plugin id="org.eclipse.gef"/>
+      <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.help.base"/>
+      <plugin id="org.eclipse.jface"/>
+      <plugin id="org.eclipse.jface.databinding"/>
+      <plugin id="org.eclipse.jface.text"/>
+      <plugin id="org.eclipse.net4j.jms.api"/>
+      <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.osgi.services"/>
+      <plugin id="org.eclipse.swt"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.text"/>
+      <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
+      <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.ide"/>
+      <plugin id="org.eclipse.ui.ide.application"/>
+      <plugin id="org.eclipse.ui.views"/>
+      <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.update.configurator"/>
+      <plugin id="org.meemplex.automation.cbus"/>
+      <plugin id="org.meemplex.automation.challenger"/>
+      <plugin id="org.meemplex.automation.core"/>
+      <plugin id="org.meemplex.automation.jandy"/>
+      <plugin id="org.meemplex.automation.lontalk"/>
+      <plugin id="org.meemplex.core"/>
+      <plugin id="org.meemplex.intermajik"/>
+      <plugin id="org.meemplex.intermajik.core"/>
+      <plugin id="org.meemplex.internet.core"/>
+      <plugin id="org.meemplex.internet.gwt"/>
+      <plugin id="org.meemplex.internet.rpc"/>
+      <plugin id="org.meemplex.internet.soap"/>
+      <plugin id="org.meemplex.meem"/>
+      <plugin id="org.meemplex.meemserver"/>
+      <plugin id="org.meemplex.system"/>
+      <plugin id="org.mortbay.jetty.server"/>
+      <plugin id="org.mortbay.jetty.util"/>
+      <plugin id="org.slf4j.api"/>
+   </plugins>
+
+   <configurations>
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.update.configurator" autoStart="true" startLevel="3" />
+      <plugin id="org.meemplex.automation.cbus" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.automation.challenger" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.automation.core" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.automation.jandy" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.automation.lontalk" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.core" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.intermajik" autoStart="false" startLevel="0" />
+      <plugin id="org.meemplex.intermajik.core" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.internet.core" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.internet.gwt" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.internet.rpc" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.internet.soap" autoStart="false" startLevel="0" />
+      <plugin id="org.meemplex.meem" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.meemserver" autoStart="true" startLevel="0" />
+      <plugin id="org.meemplex.system" autoStart="true" startLevel="0" />
+      <property name="osgi.noShutdown" value="true" />
+   </configurations>
+
+</product>

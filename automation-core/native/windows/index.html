@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>automation-core library</title>
+  </head>
+  <body>
+    <pre>
+RXTX isn't required for Windows.
+
+How to build the custom comms.jar for Windows
+---------------------------------------------
+
+Because the 2.0.2 windows version of javax.comm libraries from sun don't 
+work if you have a security manager installed, but the 2.0.3 solaris/sparc does,
+to make it work on windows, do the following:
+
+Download both 2.0.2 windows and 2.0.3 solaris/sparc versions of the javax.comm 
+libraries from http://java.sun.com/products/javacomm/downloads/index.html
+
+Unjar both versions of comm.jar into seperate directories.
+
+Copy 
+
+NotificationThread.class
+Win32Driver.class
+Win32ParallelPort.class
+Win32SerialPort.class
+Win32SerialInputStream.class
+Win32SerialOutputStream.class
+
+from the windows com/sun/comm/ directory into the corresponing solaris directory.
+
+Copy the relevant contents (ie: the digest info for the above files) from the 
+windows META-INF/Manifest file into the solaris manifest file.
+
+Rebuild comm.jar using the command
+
+jar cfm comm.jar META-INF\Manifest .
+
+This jar will now contain the windows driver and will work with a security manager
+installed.
+    </pre>
+  </body>
+</html>

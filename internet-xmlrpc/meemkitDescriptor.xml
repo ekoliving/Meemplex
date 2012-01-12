@@ -1,0 +1,77 @@
+<meemkit
+  name="internet-xmlrpc"
+  version="1.11"
+  author="Warren Bloomer"
+  company="Majitek International"
+  copyright="Copyright (c) 2004 - 2008 by Majitek International Pte. Ltd."
+  resourceClass="org.openmaji.implementation.rpc.images.Images">
+
+  <summary>
+    This meemkit is used by the tutorials and contains an RPC Server Meem.
+  </summary>
+  
+  <dependencies>
+    <dependentMeemkit name="automation-core" version="1.10" />
+    <dependentMeemkit name="internet-core" version="1.10" />
+  </dependencies>
+
+  <libraries>
+    <library name="jars/internet-xmlrpc.jar"/>
+    <library name="jars/library/commons-logging-1.1.jar" />
+    <library name="jars/library/xmlrpc-client-3.1.3.jar" />
+    <library name="jars/library/xmlrpc-server-3.1.3.jar" />
+    <library name="jars/library/ws-commons-util-1.0.2.jar" />
+    <library name="jars/library/xmlrpc-common-3.1.3.jar" />
+  </libraries>
+  
+  <meemview>
+    
+    <hierarchy>    
+      <category path="/"         name="internet" icon="example_domain_16.gif" />
+      <category path="/internet" name="xmlrpc"   icon="example_meemkit_16.gif"/>
+    </hierarchy>
+
+    <entry name="Maji XML-RPC Server" path="/internet/xmlrpc" icon="">
+      <wedge class="org.openmaji.implementation.server.http.EmbeddedJettyWedge" />
+      <wedge class="org.openmaji.implementation.rpc.server.MajiRpcServletWedge" />
+      <description overview="Embeded Maji XML-RPC server Meem">
+        <detail>A meem implementing a Maji XML-RPC server.</detail>
+      </description>
+    </entry>    
+    
+  </meemview>
+
+  <wedgeview>
+
+    <hierarchy>
+      <category path="/"         name="internet" icon="example_domain_16.gif" />
+      <category path="/internet" name="xmlrpc"   icon="example_meemkit_16.gif"/>
+    </hierarchy>
+
+
+	<!-- RPC Server Wedge -->
+
+	<entry name="XML-RPC Servlet Wedge" path="/internet/xmlrpc" icon="">
+      <wedge class="org.openmaji.implementation.rpc.server.MajiRpcServletWedge"/>
+      <description overview="XML-RPC Servlet Wedge">
+        <detail>A wedge implementing an XML-RPC servlet</detail>
+      </description>
+    </entry>
+
+<!-- 	  
+	<entry name="Maji UI Wedge" path="/internet/ui" icon="">
+      <wedge class="org.openmaji.implementation.rpc.server.ui.MajiUiServletWedge"/>
+      <description overview="Maji UI Wedge">
+        <detail>A wedge getting a list of Meems under a specific category.</detail>
+      </description>
+    </entry>
+	  
+	<entry name="UI Wedge" path="/internet/ui" icon="">
+      <wedge class="org.openmaji.implementation.rpc.server.ui.UiWedge"/>
+      <description overview="UI Wedge">
+        <detail>A wedge getting information of Applet class.</detail>
+      </description>
+    </entry>
+-->
+  </wedgeview>
+</meemkit>

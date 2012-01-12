@@ -1,0 +1,159 @@
+<meem-deployment
+	name="regexExample"
+	description="Regular Expression Meem Example"
+	version="0.1"
+	author="Ben Stringer">
+	
+	<summary>
+           This example demonstrates the use of the Dual Pattern Binary Regex meem. In this example, the meem
+           is used to detect the patterns "Open" and "Close" in a Loopback Variable meem, and toggle a feedback
+           UI element to show when these patterns are detected.
+
+           To "drive" the example, connect via beanshell and set values for the Loopback Variable as follows:
+
+               telnet localhost 6969
+               Login: system
+               Password: system99
+
+                 source("automation/variable.bsh");
+                 scd("/work/example/regexExample");
+
+                 m=sget("LoopbackVariable");
+                 v=getVariable(m);
+
+                 v.valueChanged(new StringValue(new String("Door 18 Open")));
+                 v.valueChanged(new StringValue(new String("Door 18 Closed")));
+                 v.valueChanged(new StringValue(new String("Door 18 Broken")));
+                 v.valueChanged(new StringValue(new String("Door 18 Open")));
+
+           Input containing "Open" should cause the Feedback UI to go green. 
+           Input containing "Close" should cause the Feedback UI to go red. 
+           Input containing neither pattern should have no effect on the feedback display.
+	
+
+	</summary>
+	
+	<prerequisite>
+		<!-- TODO handle required meemkits -->		
+		<meemkit name="core" version="1.0"/>
+		<meemkit name="automation-core" version="1.0"/>
+		<meemkit name="example" version="1.0"/>
+		<meemkit name="gui" version="0.2"/>
+		
+		<!-- TODO handle required Meems -->
+		<meem path="hyperspace:/work/example/regexExample"/>
+	</prerequisite>
+	
+	<subsystem name="regexExample">
+		<meem id="Basic Frame"/>
+		<meem id="Loopback Variable"/>
+		<meem id="Dual Pattern Binary Regex"/>
+		<meem id="Feedback Display"/>
+	</subsystem>
+	
+	<meem id="Basic Frame">
+		<description>
+			A UI Frame
+		</description>
+		
+		<definition>
+			<wedge id="Frame" class="org.openmaji.implementation.gui.ming.BasicFrameWedge">
+				<facet id="containerInput" original-id="mContainer" />
+			</wedge>
+			<wedge id="Layout" class="org.openmaji.implementation.gui.ming.layout.FlowLayoutWedge"/>
+		</definition>
+		
+		<configuration>
+			<wedge id="Frame">
+				<property name="title">Door state</property>
+				<property name="backgroundColor">160 160 160</property>
+			</wedge>
+		</configuration>
+
+		<paths>
+			<path>/work/example/${application}/BasicFrame</path>
+		</paths>
+	</meem>
+	
+	<meem id="Loopback Variable">
+		<description>
+			A loopback Variable
+		</description>
+
+		<definition>
+			<definition class="org.openmaji.implementation.automation.loopback.LoopbackVariableMeem"/>
+		</definition>
+
+		<paths>
+			<path>/work/example/${application}/LoopbackVariable</path>
+		</paths>
+	</meem>
+
+	
+	<meem id="Dual Pattern Binary Regex">
+		<description>
+			A regular expression matcher that returns true when one pattern is matched, and false when another is matched.
+		</description>
+		
+		<definition>
+			<wedge id="DualPatternBinaryRegex" class="org.openmaji.implementation.common.regex.DualPatternBinaryRegexWedge">
+			</wedge>
+		</definition>
+		
+		<configuration>
+			<wedge id="DualPatternBinaryRegex">
+				<property name="exactMatch" type="boolean">false</property>
+				<property name="truePattern" type="string">Open</property>
+				<property name="falsePattern" type="string">Close</property>
+			</wedge>
+		</configuration>
+		
+		<dependencies>
+			<dependency facet-id="variable" type="strong" scope="distributed" lifetime="permanent">
+				<other-meem path="hyperspace://work/example/${application}/LoopbackVariable" facet-id="variableOutput"/>
+			</dependency>
+		</dependencies>
+		
+		<paths>
+			<path>/work/example/${application}/DualPatternBinaryRegex</path>
+		</paths>
+	
+        </meem>
+
+	<meem id="Feedback Display">
+		<description>
+			Matcher Feedback
+		</description>
+		
+		<definition>
+			<wedge id="FeedbackPanel" class="org.openmaji.implementation.gui.ming.FeedbackDisplayWedge">
+				<facet id="linearInput" original-id="linear" />
+				<facet id="binaryInput" original-id="binary" />
+				<facet id="containerOutput" original-id="container" />
+			</wedge>
+		</definition>
+		
+		<configuration>
+			<wedge id="FeedbackPanel">
+				<property name="width" type="integer">320</property>
+				<property name="height" type="integer">240</property>
+				<property name="label">TEST</property>
+			</wedge>
+		</configuration>
+		
+		<dependencies>
+			<dependency facet-id="containerOutput" type="strong" scope="distributed" lifetime="permanent">
+				<other-meem path="hyperspace://work/example/${application}/BasicFrame" facet-id="containerInput"/>
+			</dependency>
+
+			<dependency facet-id="binaryInput" type="strong" scope="distributed" lifetime="permanent"> 
+				<other-meem path="hyperspace:/work/example/${application}/DualPatternBinaryRegex" facet-id="binaryClient"/>
+			</dependency>
+		</dependencies>
+		
+		<paths>
+			<path>/work/example/${application}/FeedbackDisplay</path>
+		</paths>
+	</meem>
+
+</meem-deployment>

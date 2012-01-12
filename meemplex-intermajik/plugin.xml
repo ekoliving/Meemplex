@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+<!--
+<plugin
+  id="org.openmaji.intermajik"
+  name="org.openmaji.intermajik"
+  version="1.1.0"
+  provider-name="Majitek"
+  class="org.openmaji.implementation.tool.eclipse.plugin.MajiPlugin">
+-->
+<!--
+  <runtime>
+    <library name="intermajik.jar">
+      <export name="*"/>
+    </library>
+  </runtime>
+  -->
+  <!--
+  <requires>
+    <import plugin="org.eclipse.core.runtime"/>
+  	<import plugin="org.eclipse.help.base"/>
+  	<import plugin="org.eclipse.core.resources"/>
+    <import plugin="org.eclipse.ui.ide"/>
+    <import plugin="org.eclipse.ui.views"/>
+    <import plugin="org.eclipse.jface.text"/>
+    <import plugin="org.eclipse.gef"/>
+    <import plugin="org.eclipse.draw2d"/>
+    <import plugin="org.eclipse.ui"/>
+    <import plugin="org.eclipse.help"/>
+    <import plugin="org.eclipse.swt"/>
+  </requires>
+  -->
+  
+   <!-- 
+      Don't touch the line below. The install build replaces it with the correct content
+   -->
+  <extension point="org.eclipse.help.toc"/>
+
+  <extension
+    point="org.eclipse.ui.editors">
+    <editor
+      name="Meem Configuration Editor"
+      default="true"
+      icon="icons/worksheet16.gif"
+      extensions="meemcfg"
+      contributorClass="org.openmaji.implementation.tool.eclipse.editor.kinetic.KINeticActionBarContributor"
+      class="org.openmaji.implementation.tool.eclipse.editor.kinetic.KINeticEditor"
+      id="Meem Configuration Editor">
+    </editor>
+  </extension>
+  <extension point="org.eclipse.ui.elementFactories">
+    <factory class="org.openmaji.implementation.tool.eclipse.util.MeemEditorInputFactory" id="org.openmaji.tool.eclipse.util.MeemEditorInputFactory" /> 
+  </extension>
+<!--   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="MeemDefinition Preferences"
+            class="org.openmaji.tool.eclipse.editor.common.preference.MeemDefinitionPreferencePage"
+            id="org.openmaji.tool.eclipse.editor.common.preference.MeemDefinitionPreferencePage">
+      </page>
+      <page
+            name="Maji System Preferences"
+            class="org.openmaji.tool.eclipse.maji.MajiSystemPreferencePage"
+            id="org.openmaji.tool.eclipse.maji.MajiSystemPreferencePage">
+      </page>
+   </extension>-->
+  <extension
+    point="org.eclipse.ui.views">
+    <view
+      name="MeemStore Browser"
+      icon="icons/view_meemstore.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.browser.meemstore.MeemStoreBrowserView"
+      id="org.openmaji.tool.eclipse.browser.meemstore.views.MeemStoreBrowserView">
+    </view>
+    <category
+      name="Meem"
+      id="MeemCategory">
+    </category>
+    <view
+      name="Space Browser"
+      icon="icons/view_space.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.browser.relationship.space.SpaceBrowserView"
+      id="org.openmaji.tool.eclipse.browser.relationship.space.SpaceBrowserView">
+    </view>
+    <view
+      name="Toolkit (Meems)"
+      icon="icons/meemkit.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.browser.patterns.toolkit.MeemView"
+      id="org.openmaji.tool.eclipse.browser.patterns.toolkit.MeemView">
+    </view>
+    <view
+      name="Toolkit (Wedges)"
+      icon="icons/wedgekit.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.browser.patterns.toolkit.WedgeView"
+      id="org.openmaji.tool.eclipse.browser.patterns.toolkit.WedgeView">
+    </view>
+    <view
+      name="Deployment View"
+      icon="icons/view_deployment.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.browser.relationship.deployment.DeploymentView"
+      id="org.openmaji.tool.eclipse.browser.relationship.deployment.DeploymentView">
+    </view>
+    <view
+      name="Maji System"
+      icon="icons/view_majisystem.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.maji.view.MajiView"
+      id="org.openmaji.tool.eclipse.maji.views.MajiView">
+    </view>
+    <view
+      name="MeemRegistry Browser"
+      icon="icons/view_meemregistry.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.browser.meemregistry.MeemRegistryBrowserView"
+      id="org.openmaji.tool.eclipse.browser.meemregistry.views.MeemRegistryView">
+    </view>
+    <view
+      name="Maji Log"
+      icon="icons/view_log.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.ui.view.log.MajiLogView"
+      id="org.openmaji.tool.eclipse.ui.view.log.MajiLogView">
+    </view>
+    <view
+      name="LifeCycleManager Browser"
+      icon="icons/view_lcm.gif"
+      category="MeemCategory"
+      class="org.openmaji.implementation.tool.eclipse.browser.lifecyclemanager.LifeCycleManagerBrowserView"
+      id="org.openmaji.tool.eclipse.browser.lifecyclemanager.views.LifeCycleManagerView">
+    </view>
+  </extension>
+  <extension
+    point="org.eclipse.ui.perspectives">
+    <perspective
+      name="InterMajik"
+      icon="icons/intermajik16.gif"
+      class="org.openmaji.implementation.tool.eclipse.plugin.perspective.MajiPerspective"
+      id="org.openmaji.tool.eclipse.majiperspective">
+    </perspective>
+  </extension>
+   
+  <extension point="org.eclipse.ui.actionSets">
+    <actionSet
+      id="org.openmaji.intermajik.BugReportActionSet"
+      label="Bug Report Toolbar"
+      visible="true"
+      description="Bug Report Toolbar">
+      <action id="org.openmaji.intermajik.actions.BugReportWizard"  
+        toolbarPath="Normal/IntermajikWizards"      
+        label="Report Bug"
+        tooltip="Report Bug"
+        icon="icons/bug_report.gif"
+        class="org.openmaji.implementation.tool.eclipse.ui.wizards.bugreport.OpenBugReportWizardAction"/>      
+    </actionSet>
+  </extension>
+  <extension
+        id="productintermajik"
+        point="org.eclipse.core.runtime.products">
+     <product
+           application="org.eclipse.ui.ide.workbench"
+           name="Intermajik">
+        <property
+              name="aboutImage"
+              value="feature_files/plugin_files/intermajik_lg.gif"/>
+        <property
+              name="windowImages"
+              value="feature_files/plugin_files/intermajik16.gif,feature_files/plugin_files/intermajik32.gif,feature_files/plugin_files/intermajik_lg.gif"/>
+        <property
+              name="appName"
+              value="Intermajik">
+        </property>
+        <property
+              name="startupProgressRect"
+              value="5,275,445,15">
+        </property>
+        <property
+              name="preferenceCustomization"
+              value="plugin_customization.ini">
+        </property>
+     </product>
+  </extension>
+</plugin>

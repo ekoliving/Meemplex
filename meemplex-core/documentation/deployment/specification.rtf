@@ -1,0 +1,100 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf430
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww9000\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0\b\fs28 \cf0 Meemplex Meem Deployment
+\b0\fs24 \
+\
+Deployment handles the creation of Meems and Meem Subsystems.  A Subsystem is a Lifecycle Manager for a collection of Meems.\
+\
+
+\b\fs26 Types
+\b0\fs24 \
+\
+Subsystem descriptor\
+	- subsystem name\
+	- set of meem descriptors\
+\
+Meem descriptor\
+	- meem structure: Wedges and Facets\
+	- configuration property values\
+	- dependencies\
+	- hyperspace locations\
+\
+
+\b\fs26 Process
+\b0\fs24 \
+\
+
+\i Batch process of descriptors
+\i0 \
+\
+1. Set of subsystem and meem descriptors sent to Deployment Meem\
+2. Deployment Meem told to process descriptors\
+\
+	for each subsystem to be deployed:\
+		if subsystem exists:\
+			connect subsystem\
+		else\
+			create subsystem meem\
+\
+	when subsystem meem is created:\
+		configure subsystem\
+		connect subsystem\
+	\
+	connect subsystem:\
+		set dependency to listen for meem entries in subsystem category\
+		once entries are received, create desired meems that are not yet in the subsystem\
+	\
+\
+
+\i Incremental addition of descriptors
+\i0 \
+\
+1. Meem descriptor added to set of deployment descriptors for a particular subsystem\
+\
+---\
+\
+commence()\
+	create dependency on  subsystemFactory\
+	create dependency on subsystemFactoryClient\
+\
+- subsystemFactory connected\
+- subsystemFactoryClient connected (assume content sent)\
+	for each desired subsystem\
+		-> subsystem already created?\
+			-> connectSubsystem() (listen for meems managed by subsystem)\
+		-> subsystem not created?\
+			-> create subsystem\
+\
+- subsystem created\
+	-> get subsystem configuration reference\
+\
+- subsystem configuration reference received\
+	-> configureSubsystem()\
+\
+- subsystem configured\
+	-> connectSubsystem() (listen for set of meems managed by subsystem)\
+\
+\
+- subsystem deployment descriptor added\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+\cf0 - subsystemFactory connected\
+- subsystemFactoryClient connected (assume content sent)\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+\cf0 	- create subsystem\
+\
+- reference to subsystem facet received\
+- all subsystem meems received\
+- desired meems exist that are not managed by subsystem\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+\cf0 	create meem\
+\
+- meem deployment descriptor added\
+	- add meemId to subsystem descriptor\
+	- add to desired meems set\
+	* if meem not already created, use subsystem reference to create meem\
+\
+}

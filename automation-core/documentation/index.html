@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+    
+    
+  <title>Using the Automation XML Deployment Meem</title>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+  <body>
+
+    
+<h2>Using the Automation XML Deployment Meem</h2>
+
+    
+<h4>Overview and Introduction</h4>
+
+    
+<p> The Automation XML Deployment Meem is located in the Meem Toolkit
+view under the "automation" Category and the "deployment" subCategory.
+You can drag this Meem onto a Worksheet and configure it with the full
+pathname of an XML document. When the Meem goes READY, it will attempt
+to create the Subsystems and Meems as specified. </p>
+
+    
+<p> This Meem includes the same Wedges that comprise the XML Deployment
+Meem, but with the addition of the AutomationDeploymentWedge.
+Therefore, this AutomationDeploymentMeem extends the functionality
+provided by the core DeploymentMeem with capabilities that are specific
+to Device Subsystems. Namely, the creation of Device Subsystems, the
+commissioning of Device Subsystems, and the creation of Device Meems
+using those Subsystems. This allows the specification of a deployment
+file that is much smaller and contains less information, because it is
+automation Device specific. </p>
+
+    
+<h4>The Details</h4>
+
+    
+<p>
+      The Automation XML Deployment Meem has the additional capability of being able to
+      create and then use Device Subsystems. It extends the set of known XML tags that
+      the XML Deployment Meem provides with additional tags. For details about the base
+      set of tags please refer to the documentation in the core Meemkit.
+    </p>
+
+    
+<p>
+      A Device Subsystem is a "commissioning Subsystem
+     ", which knows how to create all of the controller Meems for a particular automation protocol. It
+      also knows how to create Device Meems and correctly configure them and create the
+      appropriate Dependencies.</p>
+<p>The Device Meems can then be placed in HyperSpace within one or more
+Categories, potentially building a more sophisticated Automation Model
+based on multiple views of the same Device Meem. &nbsp;This approach
+can be used to easily create a large automation model that is
+compatible with the AutomationDesigner. </p>
+
+    
+<p>
+      To specify an automation Subsystem in an XML deployment file a new tag has been defined
+      as shown below:
+    </p>
+
+    
+<pre>      &lt;<span style="font-weight: bold;">device-subsystem</span> identifier="jandy" type="JandySubsystem"&gt;<br>        &lt;<span style="font-weight: bold;">property</span> ...... /&gt;<br>        &lt;<span style="font-weight: bold;">hyperspace-default-category</span> ..... /&gt;<br>        &lt;<span style="font-weight: bold;">meem</span> .... &gt;<br>          &lt;<span style="font-weight: bold;">paths</span>&gt;<br>            &lt;<span style="font-weight: bold;">path</span>&gt; .... &lt;/<span style="font-weight: bold;">path</span>&gt;<br>          &lt;/<span style="font-weight: bold;">paths</span>&gt;<br>        &lt;/<span style="font-weight: bold;">meem</span>&gt;<br>      &lt;/<span style="font-weight: bold;">device-subsystem</span>&gt;<br>    </pre>
+
+    
+<h5>The device-subsystem element</h5>
+
+    
+<p>
+      The AutomationDeploymentWedge processes all <i>device-subsystem</i> elements by creating a new Subsystem for each one. &nbsp;Optionally configuring it and then
+      changing its Subsystem state to STARTED and its commission state to COMMISSIONED. As a result
+      of commissioning, the Subsystem a number of controller Meems may be created whose LifeCycleManager will be the Subsystem.
+    </p>
+
+    
+<p>The <i>device-subsystem</i> has the following attributes:</p>
+
+    
+<table cellpadding="5" cellspacing="0">
+
+      <tbody>
+    <tr>
+
+        <th>Attribute</th>
+      <th>Required</th>
+      <th>Description</th>
+
+      </tr>
+
+      <tr>
+
+        <td>identifier</td>
+
+        <td>Yes</td>
+
+        <td>The Subsystem's Meemdefinition identifier is set to this</td>
+
+      </tr>
+
+      <tr>
+
+        <td>type</td>
+
+        <td>Yes</td>
+
+        <td>The type of Subsystem to create - the name of the Subsystem Meem in the Meemkit descriptor file</td>
+
+      </tr>
+
+    
+  </tbody>
+</table>
+
+    
+<p>
+      The <i>device-subsystem</i> element has the following different types of child element:
+    </p>
+
+    
+<table cellpadding="5" cellspacing="0">
+
+      <tbody>
+    <tr>
+
+        <th>Element</th>
+      <th>Number</th>
+      <th>Description</th>
+
+      </tr>
+
+      <tr>
+
+        <td>property</td>
+
+        <td>Any number</td>
+
+        <td>A configuration property for the Subsystem Meem</td>
+
+      </tr>
+
+      <tr>
+
+        <td>hyperspace-default-category</td>
+
+        <td>Zero or one</td>
+
+        <td>A HyperSpace Category into which all of this Subsystem's Device Meems will be placed</td>
+
+      </tr>
+
+      <tr>
+
+        <td>meem</td>
+
+        <td>Any number</td>
+
+        <td>Defines a Device Meem which the Subsystem will create</td>
+
+      </tr>
+
+    
+  </tbody>
+</table>
+
+    
+<h5>The property element</h5>
+
+    
+<p>
+      The <i>property</i> tag is used to configure a single configuration property of the Subsystem. It is exactly the
+      same as the property tag used by the XML Deployment Meem so please refer to the documentation
+      in the core Meemkit for details about this tag.
+    </p>
+
+    
+<h5>The hyperspace-default-category element</h5>
+
+    
+<p>
+      This tag has no attributes and no child elements. It specifies a Category in HyperSpace
+      where all device Meems created by the Subsystem are placed. It is an optional element but
+      if it is specified it must only be specified once.
+    </p>
+
+    
+<h5>The meem element</h5>
+
+    
+<p>
+      The <i>meem</i> element is used to specify a device Meem to be created by the Subsystem. Any number of these
+      elememts may be specified. The following XML fragment shows an example:
+    </p>
+
+    
+<pre>      &lt;<span style="font-weight: bold;">meem</span> identifier="jandy.spaHeater" type="JandyBinary"&gt;<br>        &lt;<span style="font-weight: bold;">device-description</span> address="spaht" description="Jandy Spa Heater" /&gt;<br>      &lt;/<span style="font-weight: bold;">meem</span>&gt;    </pre>
+
+    
+<p>
+      Once the Subsystem has been commissioned, the AutomationDeploymentWedge
+      will ask the Subsystem to create a new Meem for each of these tags. After the Subsystem
+      has created each Meem it will configure its address and description,
+      create any required Dependencies, place it into the READY lifecycle state, and
+      optionally place it into HyperSpace.
+    </p>
+
+    
+<p>
+      The <i>meem</i> element has the following attributes:
+    </p>
+
+    
+<table cellpadding="5" cellspacing="0">
+
+      <tbody>
+    <tr>
+
+        <th>Attribute</th>
+      <th>Required</th>
+      <th>Description</th>
+
+      </tr>
+
+      <tr>
+
+        <td>identifier</td>
+
+        <td>Yes</td>
+
+        <td>The Device Meem's Meemdefinition identifier is set to this value</td>
+
+      </tr>
+
+      <tr>
+
+        <td>type</td>
+
+        <td>Yes</td>
+
+        <td>The type of Device Meem to create - the name of the Meem in the Meemkit descriptor file</td>
+
+      </tr>
+
+    
+  </tbody>
+</table>
+
+    
+<p>
+      The <i>meem</i> element has a&nbsp;child element called <i>device-description</i>.
+      The <i>device-description</i> has no child elements.
+    </p>
+
+    
+<table cellpadding="5" cellspacing="0">
+
+      <tbody>
+    <tr>
+
+        <th>Attribute</th>
+      <th>Required</th>
+      <th>Description</th>
+
+      </tr>
+
+      <tr>
+
+        <td>address</td>
+
+        <td>No</td>
+
+        <td>The address of the Device</td>
+
+      </tr>
+
+      <tr>
+
+        <td>description</td>
+
+        <td>No</td>
+
+        <td>A textual description of the device - possibly used by a user interface</td>
+
+      </tr>
+
+    
+  </tbody>
+</table>
+
+    
+<p>
+      The <i>meem</i> element has an optional child element called&nbsp;<i>paths</i>.
+      The <span style="font-style: italic;">paths</span> element functions exactly as it does in the standard DeploymentMeem and can have zero or more <span style="font-style: italic;">path</span>
+child elements. &nbsp;Each path is an additional HyperSpace MeemPath, which
+be used to reference the Device Meem. &nbsp;This allows multiple views of
+the same Device Meem, e.g. by Device type or Device location and so on. &nbsp;The <span style="font-style: italic;">path</span> element has no attributes or child elements. &nbsp;The <span style="font-style: italic;">path</span> element content is the fully-qualified HyperSpace MeemPath that refers to the Device Meem.</p>
+<pre>      &lt;<span style="font-weight: bold;">meem</span> identifier="jandy.spaHeater" type="JandyBinary"&gt;<br>        &lt;<span style="font-weight: bold;">device-description</span> address="spaht" description="Jandy Spa Heater" /&gt;<br>        &lt;<span style="font-weight: bold;">paths</span>&gt;<br>            &lt;<span style="font-weight: bold;">path</span>&gt;/automationBuilder/device/A01&lt;<span style="font-weight: bold;">/path</span>&gt;<br>            &lt;<span style="font-weight: bold;">path</span>&gt;/automationBuilder/room/pool/A01&lt;<span style="font-weight: bold;">/path</span>&gt;<br>        &lt;<span style="font-weight: bold;">/paths</span>&gt;<br>      &lt;/<span style="font-weight: bold;">meem</span>&gt;</pre>
+<h4>An Example Deployment</h4>
+
+    
+<p>
+      The following XML fragment is an example of a <i>device-subsystem</i>.
+It will result in the creation of a JandySubsystem complete with all of
+the controller Meems plus two Binary Device Meems and a single Linear
+Device Meem. The three Device Meems will be placed into the HyperSpace
+Category <i>/work/site/stanebrae/jandy</i>
+    </p>
+
+    
+<pre>    &lt;<span style="font-weight: bold;">device-subsystem</span> identifier="jandy" type="JandySubsystem"&gt;<br>      &lt;<span style="font-weight: bold;">property</span> wedge="JandySubsystemWedge" name="host" type="string" value="localhost" /&gt;<br>      &lt;<span style="font-weight: bold;">property</span> wedge="JandySubsystemWedge" name="port" type="integer" value="5201" /&gt;<br>      &lt;<span style="font-weight: bold;">hyperspace-default-category</span>&gt;/work/site/stanebrae/jandy&lt;/<span style="font-weight: bold;">hyperspace-default-category</span>&gt;<br>      &lt;<span style="font-weight: bold;">Meem</span> identifier="jandy.spa" type="JandyBinary"&gt;<br>        &lt;<span style="font-weight: bold;">device-description address</span>="spa" description="Jandy Spa Pump" /&gt;<br>      &lt;/<span style="font-weight: bold;">meem</span>&gt;<br>      &lt;<span style="font-weight: bold;">meem</span> identifier="jandy.spaHeater" type="JandyBinary"&gt;<br>        &lt;<span style="font-weight: bold;">device-description</span> address="spaht" description="Jandy Spa Heater" /&gt;<br>      &lt;/<span style="font-weight: bold;">meem</span>&gt;<br>      &lt;<span style="font-weight: bold;">meem</span> identifier="jandy.spaSetpoint" type="JandyLinear"&gt;<br>        &lt;<span style="font-weight: bold;">device-description</span> address="spasp" description="Jandy Spa Setpoint" /&gt;<br>      &lt;/<span style="font-weight: bold;">meem</span>&gt;<br>    &lt;/<span style="font-weight: bold;">device-subsystem</span>&gt;<br>    </pre>
+
+    
+<p>
+      Here is a complete <a href="example-deployment.xml">example deployment</a> for your
+      viewing pleasure.
+    </p>
+
+  
+</body>
+</html>

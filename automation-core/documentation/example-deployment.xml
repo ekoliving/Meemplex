@@ -1,0 +1,79 @@
+<meem-deployment
+  name="example"
+  description="Example Maji automation deployment"
+  version="0.1"
+  author="Chris Kakris">
+
+  <!-- Create a generic subsystem and place the XML RPC server meem into it -->
+
+  <subsystem name="xmlrpc">
+    <meem id="xmlrpc.majiRPCServer"/>
+  </subsystem>
+
+  <!-- Create a generic subsystem and place the jandy emulator into it -->
+
+ 	<subsystem name="emulator">
+    <meem id="jandy.emulator"/>
+  </subsystem>
+
+  <!-- The Jandy subsystem a some meems. These meems will use the jandy emulator -->
+
+  <device-subsystem identifier="jandy" type="JandySubsystem">
+    <property wedge="JandySubsystemWedge" name="host" type="string" value="localhost" />
+    <property wedge="JandySubsystemWedge" name="port" type="integer" value="5201" />
+    <hyperspace-default-category>/work/site/stanebrae/jandy</hyperspace-default-category>
+    <meem identifier="jandy.spa" type="JandyBinary">
+      <device-description address="spa" description="Jandy Spa Pump" />
+    </meem>
+    <meem identifier="jandy.spaHeater" type="JandyBinary">
+      <device-description address="spaht" description="Jandy Spa Heater" />
+    </meem>
+    <meem identifier="jandy.spaSetpoint" type="JandyLinear">
+      <device-description address="spasp" description="Jandy Spa Setpoint" />
+    </meem>
+  </device-subsystem>
+
+  <!-- Create the CBus subsystem and a couple of meems -->
+
+  <device-subsystem identifier="cbus" type="CBusSubsystem">
+    <property wedge="CBusSubsystemWedge" name="serverAddress" type="string" value="cgate" />
+    <property wedge="CBusSubsystemWedge" name="requestPort" type="integer" value="20023" />
+    <property wedge="CBusSubsystemWedge" name="responsePort" type="integer" value="20025" />
+    <hyperspace-default-category>/work/site/stanebrae/cbus</hyperspace-default-category>
+    <meem identifier="cbus.kit1downlight1" type="CBusLinear">
+      <device-description address="1/56/162" description="Kitchen Downlight 1" />
+    </meem>
+    <meem identifier="cbus.kit1flouro0" type="CBusBinary">
+      <device-description address="1/56/170" description="Kitchen Flouro 0" />
+    </meem>
+  </device-subsystem>
+
+  <!-- An emulator for the jandy pool controller. This meem is placed into a subsystem -->
+
+  <meem id="jandy.emulator">
+		<description>
+			This meem is used to emulate a Jandy pool control system
+		</description>
+		<definition>
+			<definition class="com.majitek.meemkit.automation.jandy.meem.JandyEmulatorMeem"/>
+		</definition>
+		<paths>
+			<path>/work/site/${application}/jandy/jandy.emulator</path>
+		</paths>
+	</meem>
+
+  <!-- XMLRPC Server meem to allow XMLRPC clients to communicate with meems -->
+
+  <meem id="xmlrpc.majiRPCServer">
+    <description>
+      XMLRPC meem for bridging with MagicRock
+    </description>
+    <definition>
+      <wedge id="EmbeddedJettyWedge" class="com.majitek.maji.rpc.server.EmbeddedJettyWedge"/>
+    </definition>
+    <paths>
+      <path>/work/site/${application}/xmlrpc/xmlrpc.majiRPCServer</path>
+    </paths>
+  </meem>
+
+</meem-deployment>

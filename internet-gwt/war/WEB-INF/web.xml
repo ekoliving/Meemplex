@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns:javaee="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<servlet>
+		<servlet-name>JerseyServletAdaptor</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>org.meemplex.internet.rs.FacetApplication</param-value>
+		</init-param>
+		<init-param>
+			<!-- enable use of "X-HTTP-Method-Override" header -->
+			<!-- enable gzip compression in the request -->
+			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+			<param-value>com.sun.jersey.api.container.filter.PostReplaceFilter;com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+		</init-param>
+		<init-param>
+			<!-- enable gzip compression in the response -->
+			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+			<param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>meemRpcServlet</servlet-name>
+		<servlet-class>org.meemplex.internet.gwt.server.MeemGwtServlet</servlet-class>
+		<init-param>
+			<javaee:description>The number of seconds of inactivity before a Session is invalidated</javaee:description>
+			<javaee:param-name>sessionTimeout</javaee:param-name>
+			<javaee:param-value>120</javaee:param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>JerseyServletAdaptor</servlet-name>
+		<url-pattern>/rs/*</url-pattern>
+	</servlet-mapping>
+
+
+	<servlet-mapping>
+		<servlet-name>meemRpcServlet</servlet-name>
+		<url-pattern>/meemplex_gwt/rpc</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+</web-app>

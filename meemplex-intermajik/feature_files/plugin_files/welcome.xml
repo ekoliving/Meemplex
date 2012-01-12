@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<welcomePage 
+  title="InterMajik IDE"
+  format="wrap">
+
+<intro>Welcome to InterMajik IDE, brought to you by the Maji team at Pagan Labs. </intro>
+
+<item><b>Intermajik Build: </b> PRODUCTTAG
+See the <topic id="/org.openmaji.intermajik/html/release-notes/index.html">Release Notes</topic> for more detail.</item>
+
+<item><b>Documentation</b>
+Go straight to the <topic id="/org.openmaji.intermajik/html/index.html">InterMajik Documentation</topic></item>
+
+<item><b>Getting Started</b>
+Many InterMajik-specific features can be found in the InterMajik menu, in the top-left. This
+includes Login/Logout, Worksheet creation, Bug Reporting and Documentation.
+
+Logging in:
+Until you have logged in, you will not be able to use InterMajik.  Use the 
+"Login InterMajik" button in the Space Browser or Toolkit to select login.  
+To logout, use the "down arrow" menu in the Space Browser, or the "InterMajik" menu.
+
+There are three accounts provided, "system" has global write access, "owner" has limited write access
+and "guest" has no write access.
+
+Login:   system      Password:   system99
+Login:   owner        Password:   owner99
+Login:   guest         Password:   guest99
+
+Creating a worksheet:
+Log in as the user "owner".
+Switch to the Space Browser view and navigate to '/user/owner/'.  Right click on the "owner" category and select 'Add Worksheet'. 
+Enter a name for the new worksheet.  The new worksheet will automatically open in the Kinetic Editor.
+
+Creating Meems:
+Meems can be dragged from the Toolkit and dropped in a worksheet.
+You can also use the tool palette on the left side of the Kinetic Editor to create new Meems, then add wedges to these meems dragged from the Toolkit.
+Use the connection tool (or SHIFT-mouse1) to create dependencies.
+
+Adding a Wedge:
+To add a wedge to a meem, you need to change it's life cycle state from ready to loaded.
+To do this, use the life cycle state icon on the top right of the meem (in it's detailed view).
+You can then drag a wedge from the Toolkit onto the meem. Then use the lifecycle icon to make
+the meem "ready" again.
+
+Revisiting a worksheet:
+To re-open the worksheet, double click on it in the Space Browser.
+</item>
+</welcomePage>

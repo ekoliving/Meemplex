@@ -1,0 +1,436 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="transform-browser.xsl"?>
+<!DOCTYPE document SYSTEM "tutorial.dtd" >
+
+<document root=".">
+<header>
+
+<style-sheet>./stylesheet.css</style-sheet>
+</header>
+<body>
+<page-heading>XML-RPC Interface for non-Maji Applications</page-heading>
+<tut-oview><paragraph>
+In this topic you will learn how to use the XML-RPC interface for connecting non-Maji 
+applications to applications developed in the Maji framework.
+</paragraph>
+</tut-oview>
+
+<tut-section>
+<index-phrase txt="XML-RPC"/>
+<index-phrase txt="Non-Maji applications, interfacing via XML-RPC"/>
+<section-subheading></section-subheading>
+<paragraph> 
+The Maji RPC API provides a way for non-Maji applications to interact with a Maji system.
+Currently a Java API is provided, but in the future C++, Javascript, PHP and other 
+languages may be supported.</paragraph>
+<paragraph>The non-Maji application interacts with Facets in Maji via 
+bindings.  These bindings then communicate over XML-RPC as the following diagram
+illustrates.</paragraph>
+<image file="images/xmlrpc-01.gif" dpi="96"/>
+</tut-section>
+
+<tut-section>
+<section-heading>How to Use XML-RPC with Maji</section-heading>
+<index-phrase txt="XML-RPC, using with Maji"/>
+<section-subheading>Creating and Configuring a Maji RPC Server</section-subheading>
+<paragraph>In order for RPC clients to connect to a Maji system, 
+a Maji RPC Server Meem must be created.  
+This Meem starts a server that the clients connect to and interact with.</paragraph>
+<paragraph>To create a <inline-code>MajiRPCServerMeem</inline-code>,
+<ordered-list>
+    <item>Start Intermajik and create a worksheet in a suitable Category</item>
+    <item>In the Meem Toolkit, navigate to gateway | rpc</item>
+    <item>Drag MajiRPCServer onto your worksheet</item>
+    <item>Configure the Server using the settings in the following table.</item>
+</ordered-list>
+<table cols="2" cwidths="4cm 8cm">
+    <th>
+        <hrow>
+            <hcell>Property</hcell>
+            <hcell>Description</hcell>
+        </hrow>
+    </th>
+    <tbody>
+        <row>
+            <cell>port</cell>
+            <cell>The IP port for the Server to listen on</cell>
+        </row>
+        <row>
+            <cell>useSSL</cell>
+            <cell>Whether SSL should be used.  You should use SSL 
+to prevent your information from being viewed by unauthorised users on the network.</cell>
+        </row>
+        <row>
+            <cell>sslKeystore</cell>
+            <cell>The path to the keystore which contains the certificate for the server. 
+This is used when  the useSSL property is set to true.  
+The key used is stored under the "jetty" alias</cell>
+        </row>
+        <row>
+            <cell>sslPassword</cell>
+            <cell>The password to use for accessing the keystore</cell>
+        </row>
+        <row>
+            <cell>sslKeyPassword</cell>
+            <cell>The password required for accessing the key for "jetty"</cell>
+        </row>
+        <row>
+            <cell>needClientAuth</cell>
+            <cell>Whether client are required to authenticate themselves with a certificate.</cell>
+        </row>                                        
+    </tbody>
+</table>
+</paragraph>
+<paragraph>
+
+</paragraph>
+<section-subheading>Using Java Client Bindings for RPC</section-subheading>
+<index-phrase txt="MajiRPCClient object"/>
+<index-phrase txt="RPC - MajiRPCClient object"/>
+<paragraph>Create a MajiRPCClient object and set the username, password
+and address of the RPC server as follows:
+</paragraph>
+<codebox>
+<pre>
+    MajiRPCClient rpcClient = new MajiRPCClient();
+    rpcClient.setUsername("myusername");
+    rpcClient.setPassword("secret");
+    rpcClient.setAddress("http://myhost:8000/maji/rpc");
+</pre>
+</codebox>
+</tut-section>
+<tut-section>
+<section-heading>Creating Bindings</section-heading>
+<index-phrase txt="RPC bindings"/>
+<paragraph>A binding is required for each Facet that the client application is to interact with.  
+Bindings are either inbound or outbound.  Inbound bindings receive messages from the outbound 
+Facets of Meems on the Maji Server, while outbound bindings send messages to the inbound 
+Facets of Meems on a Maji Server.</paragraph>
+<section-subheading>Outbound Bindings</section-subheading>
+
+<paragraph>The <inline-code>BindingFactory</inline-code> is used to create an outbound binding:</paragraph>
+<code>Binary outbound = (Binary) BindingFactory.createOutbound(Binary.class);
+</code>
+<paragraph>You must also set the properties of the facet you wish to receive information 
+from and configure the binding to send events to the RPC client as the following
+code shows.</paragraph>
+<codebox>
+<pre>
+    
+    //  The MeemPath may be a Hyperspace address or an address in MeemRegistry
+    outbound.setMeemPath("hyperspace:/user/guest/test/LoopbackBinary");
+    // The Facet identifier is the name of the Facet on the Meem to bind to
+    outbound.setFacetId("binaryInput");
+    // Configure the binding to send events to the RPCClient which, in turn, 
+    // sends the messages to the Maji Server
+    outbound.setFacetEventReceiver(rpcClient);
+</pre>
+</codebox>   
+
+<section-subheading>Inbound Bindings</section-subheading>
+<paragraph>The <inline-code>BindingFactory</inline-code> is also used to create an 
+inbound binding to the outbound Facet in the Maji server,
+
+</paragraph>
+<codebox>
+<pre>
+    Binary inbound = (Binary) BindingFactory.createInbound(Binary.class);
+    // Set the MeemPath to the Meem on the Maji Server    
+    inbound.setMeemPath("hyperspace:/user/guest/test/LoopbackBinary");
+    // Set the FacetId to the name of the Facet within the Meem to bind to:
+    inbound.setFacetId("binaryOutput");
+    // Configure the binding to receive events from the RPCClient that 
+    // receives messages from the Maji Server:
+    inbound.setFacetEventSender(rpcClient);
+</pre>
+</codebox>
+</tut-section>
+
+<tut-section>
+<section-heading>Meem Lifecycle State</section-heading>
+
+<paragraph>Programs can listen to the MajiRPCClient for the status of the Facets that are bound. This will
+enable you to find out whether the Meem has been located and resolved and what the 
+lifecycle state of the Meem is.</paragraph>
+
+<paragraph>
+	The <inline-code>MajiRPCClient</inline-code> implements the <inline-code>FacetHealthEventSender</inline-code> interface.
+
+	This means that you may create an object that implements <inline-code>FacetHealthListener</inline-code> and 
+	tell <inline-code>MajiRPCClient</inline-code> to send events to it by calling
+	<inline-code>MajiRPCClient.addFacetHealthListener(FacetHealthListener listener)</inline-code>
+</paragraph>
+<paragraph>
+	To remove the listener, call
+	<inline-code>MajiRPCClient.removeFacetHealthListener(FacetHealthListener listener)</inline-code>
+</paragraph>
+
+<paragraph>
+MajiRPCClient will send FacetHealthEvents for each Facet.  
+These events can be used to determine the following states of a binding:
+	<unordered-list>
+    <item>RPC disconnected</item>
+    <item>Meem not resolved</item>
+	<item>Meem resolved</item>
+	<item>Facet resolved</item>
+	</unordered-list>
+</paragraph>
+<paragraph>
+	It is intended that Lifecycle state will also be delivered via the FacetHealthListener interface.
+</paragraph>
+</tut-section>
+
+<tut-section>
+<section-heading>Creating and Registering new Bindings</section-heading>
+<index-phrase txt="RPC bindings - creating and registering"/>
+<section-subheading>Creating Outbound Bindings</section-subheading>
+
+<paragraph>Outbound bindings are required to translate parameters of method calls in the Facet 
+interface to types that can be sent via XML-RPC.  The types that can be sent over XML-RPC 
+are shown in the following table.
+<table cols="2" cwidths="4cm 8cm">
+    <th>
+        <hrow>
+            <hcell>XML-RPC data type</hcell>
+            <hcell>Corresponding Java type</hcell>
+        </hrow>
+    </th>
+    <tbody>
+        <row>
+            <cell>i4 or int</cell>
+            <cell>java.lang.Integer</cell>
+        </row>
+        <row>
+            <cell>boolean</cell>
+            <cell>java.lang.Boolean</cell>
+        </row>
+        <row>
+            <cell>string</cell>
+            <cell>java.lang.String</cell>
+        </row>
+        <row>
+            <cell>double</cell>
+            <cell>java.lang.Double</cell>
+        </row>
+        <row>
+            <cell>dateTime.iso8601</cell>
+            <cell>java.util.Date</cell>
+        </row>
+        <row>
+            <cell>struct</cell>
+            <cell>java.util.Hashtable</cell>
+        </row>
+        <row>
+            <cell>array</cell>
+            <cell>java.util.Vector</cell>
+        </row>
+        <row>
+            <cell>base64</cell>
+            <cell>byte[]</cell>
+        </row>
+    </tbody>
+</table>
+An outbound binding must subclass <inline-code>OutboundBinding</inline-code>.
+The developer must implement the methods of the Facet interface relevant to the binding.  
+The bodies of the methods make a call to the send method of the 
+<inline-code>OutboundBinding</inline-code> superclass:
+</paragraph>
+
+<code>
+    send(String methodName, Object[] parameters)
+</code>
+<paragraph>
+as the following example shows:
+</paragraph>
+<codebox>
+<pre>
+    public void valueChanged(Position p) {
+
+      Object value = null;
+      if (p instanceof IntegerPosition) {
+        value = new Integer(p.intValue());
+      }
+      else {
+        value = new Double(p.doubleValue());
+      }
+      send("valueChanged", new Object[] { value });
+      }
+</pre>
+</codebox>
+
+<section-subheading>Creating Inbound Bindings</section-subheading>
+
+<paragraph>An inbound binding must subclass <inline-code>InboundBinding</inline-code>.
+The constructor must make a call to <inline-code>setFacetClass(Class)</inline-code> to set
+the Facet interface this binding relates to, for example:
+</paragraph>
+<code>    setFacetClass(Linear.class);</code>
+
+<paragraph>The following methods must be implemented on the outbound binding:
+<unordered-list>
+    <item>Methods for adding and removing listeners for the particular facet type.  
+These merely call <inline-code>addListener(Facet)</inline-code> and 
+<inline-code>removeListener(Facet)</inline-code> of <inline-code>InboundBinding</inline-code></item>
+    <item>The <inline-code>invoke(String method, Object[] params)</inline-code>  method.  
+This will make calls to an object that is available from the <inline-code>InboundBinding</inline-code> 
+superclass called proxy.  This proxy may be cast to the <inline-code>FacetClass</inline-code>
+that was set wiht the <inline-code>setFacetClass()</inline-code> method.
+The method translates the parameters to the method that were sent over XML-RPC into 
+the appropriate parameters for the method call.</item>
+</unordered-list>
+The following code fragment illustrates the above points.
+</paragraph>
+<codebox>
+<pre>
+    protected void invoke(String method, Object[] params) {
+      if ("valueChanged".equals(method) ) {
+        Position position = null;
+        Object arg = params[0];
+        if (arg instanceof Integer) {
+          position = new IntegerPosition(((Integer)arg).intValue());
+        }
+        else if (arg instanceof Double) {
+          position = new FloatPosition(((Double)arg).floatValue());
+        }
+    			<block-hilite>
+        ((Linear)proxy).valueChanged(position);</block-hilite>
+      }
+    }
+</pre>
+</codebox>    
+<paragraph>As an alternative to calling method on the proxy, the code may call 
+<inline-code>invokeOnListeners(String method, Object[] params)</inline-code>.
+The following code fragment is equivalent to the one given above.</paragraph>
+<codebox>
+    <pre>
+    protected void invoke(String method, Object[] params) {
+      if ("valueChanged".equals(method) ) {
+        Position position = null;
+        Object arg = params[0];
+        if (arg instanceof Integer) {
+          position = new IntegerPosition(((Integer)arg).intValue());
+        }
+        else if (arg instanceof Double) {
+          position = new FloatPosition(((Double)arg).floatValue());
+        }
+    			<block-hilite>
+        invokeOnListeners(method, new Object[] { position });</block-hilite>
+      }
+    }
+</pre>
+</codebox>    
+</tut-section>
+
+<tut-section>
+<section-subheading>Registering Bindings</section-subheading>
+<index-phrase txt="RPC bindings - registering"/>
+<paragraph>The binding registry is used by the Maji Server to locate bindings for 
+particular Facet classes. A developer may register new Bindings with the 
+<inline-code>BindingFactory</inline-code>.  
+The new bindings may be registered by entering in META-INF/registryFile.mrpc:
+</paragraph>
+<codebox>
+<pre>
+    // register default outbound bindings
+    Outbound org.openmaji.common.Binary            com.majitek.maji.rpc.binding.facet.OutboundBinary
+    Outbound org.openmaji.common.Linear            com.majitek.maji.rpc.binding.facet.OutboundLinear
+    Outbound org.openmaji.common.LinearList        com.majitek.maji.rpc.binding.facet.OutboundLinearList
+    Outbound org.openmaji.common.Variable          com.majitek.maji.rpc.binding.facet.OutboundVariable
+    Outbound org.openmaji.common.VariableList      com.majitek.maji.rpc.binding.facet.OutboundVariableList
+    Outbound net.majitek.maji.system.space.CategoryClient com.majitek.maji.rpc.binding.facet.OutboundCategoryClient
+    
+    // register default inbound bindings
+    Inbound org.openmaji.common.Binary            com.majitek.maji.rpc.binding.facet.InboundBinary
+    Inbound org.openmaji.common.Linear            com.majitek.maji.rpc.binding.facet.InboundLinear
+    Inbound org.openmaji.common.LinearList        com.majitek.maji.rpc.binding.facet.InboundLinearList
+    Inbound org.openmaji.common.Variable          com.majitek.maji.rpc.binding.facet.InboundVariable
+    Inbound org.openmaji.common.VariableList      com.majitek.maji.rpc.binding.facet.InboundVariableList
+    Inbound net.majitek.maji.system.space.CategoryClient com.majitek.maji.rpc.binding.facet.InboundCategoryClient
+</pre>
+</codebox>
+<paragraph>Alternatively you may register the bindings programmatically:</paragraph>
+<codebox>
+<pre>
+    BindingSPIImpl bindingSPI = new BindingSPIImpl();
+    bindingSPI.registerOutbound(facetClass bindingClass)
+    bindingSPI.registerInbound(facetClass, bindingClass)
+    ...
+    BindingFactory.register(bindingSPI);
+</pre>
+</codebox>
+</tut-section>
+
+<tut-section>
+<section-heading>RPC Example</section-heading>
+	<index-phrase txt="RPC Panel - Example"/>
+<paragraph>
+A sample RPC client may be found at 
+<inline-code>com/majitek/maji/rpc/tutorial/RPCPanel.java</inline-code> in
+the MeemKit distribution or in InterMajik Help.
+</paragraph>
+
+<paragraph>
+The client connects to an RPC server running in Maji and binds to particular Facets in Maji.
+To set up the Meems in Intermajik,
+<ordered-list>
+<item>Create a worksheet called <inline-code>test</inline-code> at 
+<inline-code>hyperspace:/user/guest</inline-code></item>
+<item>Create the Meems as shown in the following diagram.</item>
+</ordered-list>
+</paragraph>
+<paragraph>
+Note the hyperspace path of the Meems is the same as the one that is used in the client source 
+code for locating Meems.
+</paragraph>
+<image file="images/worksheet.png" dpi="96"/>
+<section-subheading>Client configuration</section-subheading>
+
+<paragraph>
+The sample client code is in the documentation directory of the gateway-rpc Meemkit.  
+It is located at <inline-code>gateway-rpc/documentation/source/com/maji/rpc/tutorial/RPCPanel.java</inline-code>
+</paragraph>
+
+<paragraph>
+The class for the sample RPC client is <inline-code>com.majitek.maji.rpc.tutorial.RPCPanel</inline-code>.  
+It may be compiled with the command:
+</paragraph>
+<code>javac com.majitek.maji.rpc.tutorial.RPCPanel</code>
+<paragraph>
+The classpath must contain the following JARs in order to compile and run the example.
+</paragraph>
+<code>
+[...]/meemkits/installed/gateway-rpc/jars/meemkit-gateway-rpc.jar
+[...]/meemkits/installed/gateway-rpc/jars/lib/xmlrpc-1.2-b1.jar
+[...]/meemkits/installed/core/jars/meemkit-core.jar
+</code>
+<paragraph>
+Check the settings of the <inline-code>MajiRPCClient</inline-code> and <inline-code>Bindings</inline-code>.
+The address set in majiRPCClient should match the host and port number of the 
+<inline-code>MajiRPCServer</inline-code> and should end with "/maji/rpc", as per the 
+following example:
+</paragraph>
+<code>    http://localhost:8000/maji/rpc</code>
+<paragraph>In the figure above, the port setting can be seen in the property sheet containing the
+properties for the MajiRPCServer Meem.</paragraph>
+<paragraph>
+Also note that:
+<unordered-list>
+    <item>The MeemPaths set for each Binding must match the Hyperspace paths of the Meems</item>
+    <item>The Facet Identifiers must match those of the Meems’ Facets.</item>
+</unordered-list>
+</paragraph>
+
+<image file="images/demo.png" dpi="96"/>
+</tut-section>
+<code-samples>
+    <unordered-list>
+        <item>
+        <link>
+            <name>RPCPanel</name>
+            <url>RPCPanel-src</url>
+        </link>
+        </item>
+    </unordered-list>
+</code-samples>
+</body>
+</document>

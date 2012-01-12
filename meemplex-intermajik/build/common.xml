@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Majitek common build targets" default="build" basedir=".">
+
+  <property name="bootclasspath" value=""/>
+  <property name="javacFailOnError" value="true"/>
+  <property name="javacDebugInfo" value="on"/>
+  <property name="javacVerbose" value="false"/>
+
+  <target name="init" depends="local_init">
+    <!-- 
+      This _must_ be inheritted/set in sub-projects: 
+      <property name="full.name" value="maji"/>
+
+      This may be inheritted/set in sub-projects: 
+      <property name="plugin" value="org.openmaji"/>
+
+    -->
+    
+    <property name="project.folder" value="."/>
+    <property name="version.suffix" value="_1.1.0"/>
+    
+    <!-- this is the filename that is defined in plugin.xml -->
+    <property name="full.name.plugin" value="${plugin}${version.suffix}"/>
+    <property name="full.name.feature" value="${feature}${version.suffix}"/>
+    <property name="source.folder" value="${project.folder}/source"/>
+    <property name="build.folder.source" value="${project.folder}/build/classes"/>
+    <property name="build.folder.jars" value="${project.folder}/build/jars"/>
+    <property name="build.folder.update" value="${project.folder}/build/update"/>
+    <property name="build.folder.update.plugin" value="${build.folder.update}/plugins"/>
+    <property name="build.folder.update.feature" value="${build.folder.update}/features"/>
+    <property name="build.folder.zip" value="${project.folder}/build/zip"/>
+    <property name="build.folder.javadoc" value="${project.folder}/build/javadoc"/>
+    <property name="build.folder.meemkit" value="${project.folder}/build/meemkit"/>
+    <property name="descriptor.folder" value="${project.folder}"/>
+    <property name="maji.jars.folder" value="${env.MAJITEK_HOME}/majitek-source/build"/>
+    <property name="majitek.jars.maji.folder" value="${env.MAJITEK_HOME}/majitek-jars/maji"/>
+    <property name="majitek.meemkit.sdk.exploded.folder" value="${env.MAJITEK_HOME}/majitek-meemkit-sdk-exploded/lib"/>
+    <available file="${maji.jars.folder}" property="maji.jars.folder.exists"/>
+    <property name="temp.folder" value="${project.folder}/temp.folder"/>
+  </target>
+
+  <target name="local_init" />  <!-- This gets over-ridden by sub-project's version -->
+
+  <target name="clean" depends="init" description="Clean the plug-in: ${plugin} of all the classes, zips and jars created.">
+    <delete dir="${build.folder.source}"/>
+    <delete dir="${build.folder.jars}"/>
+    <delete dir="${build.folder.zip}"/>
+    <delete dir="${build.folder.update}"/>
+    <delete dir="${build.folder.javadoc}"/>
+    <delete dir="${build.folder.meemkit}"/>
+  </target>
+
+  <target name="build.source" depends="init" description="Build source.">
+    <mkdir dir="${build.folder.source}"/>
+  
+    <!-- compile the source code -->
+    <javac destdir="${build.folder.source}" source="1.5" target="1.5" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bootclasspath}">
+      <classpath refid="build.classpath"/>
+      <src path="${source.folder}/"/>
+    </javac>
+    <!-- copy necessary resources -->
+    <copy todir="${build.folder.source}">
+      <fileset dir="${source.folder}/" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="build.source.jar" depends="init" description="Create jar: ${full.name}.jar.">
+    <antcall target="build.source"/>
+    <mkdir dir="${build.folder.jars}"/>
+    <jar jarfile="${build.folder.jars}/${full.name}.jar" basedir="${build.folder.source}"/>
+<!--
+    <signjar jar="${build.folder.jars}/${full.name}.jar" keystore="${env.MAJITEK_HOME}/majitek-source/keystore/signing-keys" alias="signing-key-rc2" storepass="chickenshop"/>
+-->
+  </target>
+
+  <target name="install.maji.jar" depends="build.source.jar" description="Install jar in majitek-jars/maji: ${full.name}.jar.">
+    <echo message="Copied ${full.name}.jar to ${majitek.jars.maji.folder}" />
+    <copy file="${build.folder.jars}/${full.name}.jar" todir="${majitek.jars.maji.folder}"/>
+    <echo message="Copied ${full.name}.jar to ${majitek.meemkit.sdk.exploded.folder}" />
+    <copy file="${build.folder.jars}/${full.name}.jar" todir="${majitek.meemkit.sdk.exploded.folder}"/>
+  </target>
+  
+  <target name="build">
+    <antcall target="build.source.jar"/>
+  </target>
+
+  <target name="prepare.imce" depends="build,init" description="Copy files needed to build IMCE, with only the core meemkit">
+    <copy todir="${destination}">
+      <fileset dir="${build.folder.source}" />
+    </copy>
+  </target>
+
+  <target name="prepare.maji.api.jar" depends="build,init" description="Copy files needed to build a meemServer jar">
+    <copy todir="${destination}">
+      <fileset dir="${build.folder.source}" />
+    </copy>
+  </target>
+
+  <target name="prepare.meem.server.jar" depends="build,init" description="Copy files needed to build a meemServer jar">
+    <copy todir="${destination}">
+      <fileset dir="${build.folder.source}" />
+    </copy>
+  </target>
+
+  <target name="javadoc" depends="init" description="Generate Javadoc">
+    <mkdir dir="${build.folder.javadoc}"/>
+    <javadoc destdir="${build.folder.javadoc}" failonerror="true" packagenames="*">
+      <classpath refid="build.classpath"/>
+      <sourcepath>
+        <pathelement location="${source.folder}"/>
+      </sourcepath>
+    </javadoc>
+  </target>
+    
+  <target name="javadoc.api" depends="init" description="Generate API Javadoc">
+    <mkdir dir="${build.folder.javadoc}"/>
+    <javadoc destdir="${build.folder.javadoc}" failonerror="true" packagenames="net.majitek.*">
+      <classpath refid="build.classpath"/>
+      <sourcepath>
+        <pathelement location="${source.folder}"/>
+      </sourcepath>
+    </javadoc>
+  </target>
+
+  <target name="build.plugin.update" depends="init">
+    <mkdir dir="${build.folder.update}" />
+    <antcall target="build.update.plugin.jar"/>
+    <antcall target="build.update.feature.jar"/>
+    <antcall target="build.update.feature.plugin.jar"/>
+  </target>
+
+  <target name="build.update.plugin.jar" depends="init" description="Build the plug-in: ${plugin} for an update site.">
+    <delete dir="${temp.folder}"/>
+    <mkdir dir="${temp.folder}"/>
+    <antcall target="build.source.jar"/>
+    <antcall target="copy.files.plugin">
+      <param name="destination.temp.folder" value="${temp.folder}/${full.name}/"/>
+    </antcall>
+    <mkdir dir="${build.folder.update.plugin}"/>
+    <jar jarfile="${build.folder.update.plugin}/${full.name.plugin}.jar" basedir="${temp.folder}/${full.name}" filesonly="false" update="no"/>
+    <delete dir="${temp.folder}"/>
+  </target>  
+    
+  <target name="build.update.feature.jar" depends="init" description="Build the feature: ${plugin} for an update site.">                 <delete dir="${temp.folder}"/>
+    <mkdir dir="${temp.folder}"/>
+    <antcall target="copy.files.feature">
+      <param name="destination.temp.folder" value="${temp.folder}/"/>
+    </antcall>
+    <mkdir dir="${build.folder.update.feature}"/>
+    <jar jarfile="${build.folder.update.feature}/${full.name.feature}.jar" basedir="${temp.folder}" filesonly="false" update="no"/>
+    <delete dir="${temp.folder}"/>
+  </target>
+
+  <target name="build.update.feature.plugin.jar" depends="init" description="Build the feature (branding)  plug-in: ${plugin} for an update site.">
+    <delete dir="${temp.folder}"/>
+    <mkdir dir="${temp.folder}"/>
+    <antcall target="copy.files.feature.plugin">
+      <param name="destination.temp.folder" value="${temp.folder}/${full.name}/"/>
+    </antcall>
+    <mkdir dir="${build.folder.update.plugin}"/>
+    <jar jarfile="${build.folder.update.plugin}/${full.name.feature}.jar" basedir="${temp.folder}/${full.name}" filesonly="false" update="no"/>
+    <delete dir="${temp.folder}"/>
+  </target>
+
+  <target name="build.plugin.zip" depends="init" description="Create a zip containing all the elements for the plug-in: ${plugin}.">
+    <delete dir="${temp.folder}"/>
+    <mkdir dir="${temp.folder}"/>
+    <antcall target="build.source.jar"/>
+    <antcall target="copy.files.plugin">
+      <param name="destination.temp.folder" value="${temp.folder}/plugins/${full.name.plugin}/"/>
+    </antcall>
+    <antcall target="copy.files.feature">
+      <param name="destination.temp.folder" value="${temp.folder}/features/${full.name.plugin}/"/>
+   </antcall>
+    <mkdir dir="${build.folder.zip}"/>
+    <zip zipfile="${build.folder.zip}/${full.name.plugin}.zip" basedir="${temp.folder}" filesonly="false" update="no"/>
+    <delete dir="${temp.folder}"/>
+  </target>
+
+  <target name="copy.files.plugin" depends="init" if="destination.temp.folder">
+    <copy file="${build.folder.jars}/${full.name}.jar" todir="${destination.temp.folder}"/>
+    <copy todir="${destination.temp.folder}">
+      <fileset dir="${project.folder}" includes="fragment.xml"/>
+    </copy>
+  </target>  
+
+  <target name="copy.files.feature" depends="init" if="destination.temp.folder">
+    <copy todir="${destination.temp.folder}" flatten="true">
+      <fileset dir="${project.folder}" includes="feature_files/*" excludes="feature_files/plugin_files"/>
+    </copy>
+  </target>
+
+  <target name="copy.files.feature.plugin" depends="init" if="destination.temp.folder">
+    <copy todir="${destination.temp.folder}" flatten="true">
+      <fileset dir="${project.folder}" includes="feature_files/plugin_files/*"/>
+    </copy>
+  </target>
+    
+  <target name="build.all">
+    <antcall target="build.source.jar"/>
+    <antcall target="build.plugin.update"/>
+  </target>
+  
+  <target name="update" depends="init">
+    <cvs command="update -d" dest="${project.folder}" quiet="true"/>
+  </target>
+  
+  <target name="test" depends="build.source" description="Test Majitek Framework">
+    <java classname="com.foo.Main" failonerror="true" fork="true">
+      <classpath>
+        <pathelement location="."/>
+      </classpath>
+      <!-- Pass some args, perhaps: -->
+      <arg value="-myfile"/>
+      <!-- Will be given as an absolute path: -->
+      <arg file="myfile.txt"/>
+    </java>   
+  </target>
+  
+  <target name="eclipse.setup" depends="init" description="Setup eclipse project">
+    <copy todir="${project.folder}">
+      <fileset dir="eclipse" defaultexcludes="no">
+        <include name=".project"/>
+        <include name=".cvsignore"/>
+        <include name=".classpath"/>
+        <include name="fragment.xml"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="eclipse.update" depends="init">    
+    <!--
+    <copy todir="${update.root.folder}">
+      <fileset dir="${build.folder.update}"/>
+    </copy>
+    -->
+  </target>  
+  
+  <target name="build.site.xml" depends="init">
+    <!--
+      <feature url="features/org.openmaji.intermajik_0.0.2.jar" id="org.openmaji.intermajik" version="0.0.2"/>
+    -->
+    <echo file="${site.xml.file}" append="true">
+       &lt;feature url="features/${full.name.feature}.jar" id="${feature}" version="${version.suffix}"/&gt;
+    </echo>
+  </target>
+
+
+  <target name="prepare.install" depends="init" if="destination.folder">  
+    <mkdir dir="${destination.folder}/plugins/${full.name.plugin}"/>
+    <antcall target="copy.files.plugin">
+      <param name="destination.temp.folder" value="${destination.folder}/plugins/${full.name.plugin}/"/>
+    </antcall>
+  </target>
+
+  <target name="test-christos" depends="build.source">
+    <junit showoutput="on">
+      <formatter type="brief" usefile="false"/>
+      <test name="net.majitek.domain.automation.common.test.PositionTest"/>
+      <test name="net.majitek.domain.automation.common.test.FloatPositionTest"/>
+      <test name="net.majitek.domain.automation.common.test.IntegerPositionTest"/>
+    </junit>
+  </target>
+
+  <target name="test-all" depends="build.source">
+    <junit showoutput="on">
+      <formatter type="brief" usefile="false"/>
+      <batchtest>
+        <fileset dir="${source.folder}">
+          <include name="**/*Test*.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="meemkit.script" depends="init" description="Create meemkit scrips" >
+    <!-- Generate an install script from a descriptor -->
+    <xslt in="${descriptor.folder}/meemkitDescriptor.xml" out="${build.folder.meemkit}/${domain}${short.name}MeemkitInstall.bsh" extension=".bsh" style="${env.MAJITEK_HOME}/majitek-source/meemkit.xsl">
+      <outputproperty name="indent" value="no"/>
+    </xslt>
+  </target>
+
+  <target name="meemkit" depends="init,build" description="Create a Meemkit" >
+    <mkdir dir="${build.folder.zip}" />
+    <zip destfile="${build.folder.zip}/${short.name}.zip">
+      <!-- <zipfileset dir="${build.folder.meemkit}" prefix="scripts/beanshell/meemkit/${domain}/${short.name}" excludes="**/CVS" /> -->
+      <zipfileset dir="${build.folder.jars}" prefix="eclipse/plugins/${full.name}" excludes="**/CVS" />
+      <!-- zipfileset dir="${project.folder}/lib" prefix="eclipse/plugins/${full.name}/lib" excludes="**/CVS" / -->
+      <zipfileset dir="${project.folder}" includes="fragment.xml" prefix="eclipse/plugins/${full.name}" />
+      <zipfileset dir="${descriptor.folder}" includes="meemkitDescriptor.xml" prefix="scripts/beanshell/meemkit/${full.name}" />
+    </zip>
+  </target>
+
+</project>

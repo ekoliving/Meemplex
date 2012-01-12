@@ -1,0 +1,23 @@
+Meem JS
+=======
+
+Could we create a Javascript binding to Meemplex?
+
+
+// namespace
+var Meemplex = window.Meemplex || {};
+
+Meemplex.Facet = ...
+Meemplex.
+
+
+function MyWedge() {
+
+	this.binaryOutput = new Facet(Binary);
+
+	this.binaryInput = function() {
+			valueChanged(b) {
+				// do something with value
+			}
+		}
+} 

@@ -1,0 +1,186 @@
+ body {
+  margin: 0.50cm 0.50cm 0.50cm 0.50cm;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+  color : #022C50;
+  font-size: 10pt;
+  background-color : #FFFFFF;
+  border : 7px solid #4E90DB;
+}
+
+a {
+    color : #650011;
+}
+
+div.text {
+  margin: 0.5cm;
+  /* text-indent: 3em; */
+}
+
+div.pre {
+	margin: 1.00cm 1.00cm 1.00cm 1.00cm;
+	background-color: #EEEEEE;
+	font-weight: bold;
+	background: #EEEEEE;
+}
+
+span.generated {
+  color: #3E73FA;
+}
+
+span.typed {
+  color: #009E00;
+  font-size: 9pt;
+}
+
+span.OLDinlineCode {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 9pt;
+}
+span.inlineCode {
+  font-family: "Courier New", Courier, mono;
+  font-style: normal;
+  font-size: 9pt;  
+}
+
+span.menuSelection {
+	font-weight: normal;
+}
+
+span.note {
+  font-style: italic;
+  text-decoration: underline;
+}
+
+span.italic {
+  font-style: italic;
+}
+div.paragraph, div.todo, div.indentPara {
+  font-size : 10pt;
+  margin-bottom : 10px;
+  padding : 2px;
+}
+
+div.todo {
+  color: red;
+  font-weight: bold;
+  font-size: 10pt;
+	border-top : 1px solid #FF0000;
+	border-left : 1px solid #FF0000;
+	border-right : 1px solid #FF0000;
+	border-bottom : 1px solid #FF0000;
+}
+div.indentPara {
+	margin-left : 3em;
+}
+
+div.tutorialIndex {
+  border: thin solid black;
+  margin: 0.9cm;
+  padding: 0.9cm;
+  background-color: #ddddff;
+  color: #8000c0;
+  text-align: right;
+  font-family: Arial;
+}
+
+div.pageHeading {
+	font-family: Verdana, sans-serif, helvetica, arial;
+	font-size: 14pt;
+	font-style: normal;
+	background-color:#4E90DB;
+	color: #FFFFFF;
+	font-weight: bolder;
+	border-top : 8px solid #4E90DB;
+	border-left : 8px solid #4E90DB;
+	border-right : 8px solid #4E90DB;
+	border-bottom : 8px solid #4E90DB;
+}
+
+div.sectionHeading {
+	color: white;
+	text-align: left;
+	font-family: Verdana, sans-serif, helvetica, arial;
+	font-size: 11pt;
+	background-color:#4E90DB;
+	margin-top : 20px;
+	border-top : 8px solid #4E90DB;
+	border-left : 8px solid #4E90DB;
+	border-right : 8px solid #4E90DB;
+	border-bottom : 8px solid #4E90DB;
+	width : 98%;
+	font-weight: bolder;
+}
+
+div.sectionSubHeading {
+	color: #000099;
+	text-align: left;
+	font-family: Verdana, sans-serif, helvetica, arial;
+	font-size: 12pt;
+	background-color:#white;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	font-weight: bolder;
+}
+
+div.tableHeadText {
+	color: #FFFFFF;
+	text-align: center;
+	font-family: Verdana, sans-serif, helvetica, arial;
+	font-size: 10pt;
+	font-weight: bolder;
+	background-color:#4E90DB;
+}
+
+div.code {
+  font-family: "Courier New", Courier, mono;
+  font-size: 10pt;
+  font-style: normal;
+  font-weight: normal;
+  margin-left: 3em;
+  }
+div.revisionOld {
+  background-color: #C0FFFF;
+  }
+  
+div.revisionNew {
+  background-color: #FFFFC0;
+  }
+
+span.codeEmph {
+  font-family: "Courier New", Courier, mono;
+  font-size: 10pt;
+  font-weight: bold;
+  color: #660000;
+}
+span.button {
+	color: #000000;
+	font-family: sans-serif, helvetica, arial;
+	font-size: 10pt;
+}
+
+span.userEntry {
+  font-family: "Courier New", Courier, mono;
+  font-style: normal;
+}
+
+span.emph {
+  font-weight: bold;
+}
+
+span.token {
+  text-decoration: underline
+}
+
+div.codeIndent {
+  font-family: "Courier New", Courier, mono;
+  font-size: 10pt;
+  font-style: normal;
+  font-weight: normal;
+	margin: 8px 4px 4px 12px;
+  }
+
+span.txt {
+  font-size: 10pt;
+}

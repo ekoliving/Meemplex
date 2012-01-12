@@ -1,0 +1,19 @@
+<meem-deployment name="html" description="Sample HTML UI Deployment" version="0.1" author="Chris Kakris">
+  <summary>
+  </summary>
+  <category path="/work/example/html" />
+  <subsystem name="xmlrpc">
+    <meem id="xmlrpcserver"/>
+  </subsystem>
+  <meem id="xmlrpcserver">
+    <description>XMLRPC meem for generating an html user interface</description>
+    <!-- Point your browser to http://localhost:8000/maji/html -->
+    <definition>
+      <wedge id="EmbeddedJettyWedge" class="com.majitek.maji.rpc.server.EmbeddedJettyWedge"/>
+      <wedge id="MajiHtmlServletWedge" class="com.majitek.maji.rpc.server.html.MajiHtmlServletWedge" />
+    </definition>
+    <paths>
+      <path>/work/site/${application}/xmlrpc/xmlrpcserver</path>
+    </paths>
+  </meem>
+</meem-deployment>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="internet-xmlrpc" default="meemkit" basedir=".">
+  <property environment="env"/> 
+	
+  <import file="../openmaji-install/meemkits/sdk/build_meemkit.xml" />
+	
+  <target name="init_custom">
+    <property name="meemkit.name" value="internet-xmlrpc"/>
+    <property name="package.name" value="org.openmaji.*"/>
+    <property name="project.dir" value="."/>
+
+    <path id="project.class.path">
+      <pathelement location="../openmaji-install/lib/maji/maji-meem.jar" />
+      <pathelement location="../openmaji-install/lib/maji/maji-system.jar" />
+      <pathelement location="../openmaji-core/build/artifacts/jars/openmaji-core.jar"/>
+      <pathelement location="../internet-core/build/artifacts/jars/internet-core.jar"/>
+
+      <pathelement location="../openmaji-install/lib/jetty/servlet-api-2.5-20081211.jar" />
+      <pathelement location="../openmaji-install/lib/swzoo.jar" />
+      <pathelement location="./library/commons-logging-1.1.jar" />
+      <pathelement location="./library/xmlrpc-client-3.1.3.jar" />
+      <pathelement location="./library/xmlrpc-server-3.1.3.jar" />
+      <pathelement location="./library/ws-commons-util-1.0.2.jar" />
+      <pathelement location="./library/xmlrpc-common-3.1.3.jar" />
+
+    </path>
+  </target>
+</project>
