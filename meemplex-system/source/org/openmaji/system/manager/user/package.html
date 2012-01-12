@@ -1,0 +1,87 @@
+<html>
+  <head>
+  </head>
+  <body>
+  <p>
+  This package contains the facets implemented by the user manager meem, which has the Hyperspace path
+  "hyperspace:/" + MeemServer.spi.getEssentialMeemsCategoryLocation() + "/userManager".
+  </p>
+    <p>
+      Both the GroupMapper and the GroupManagement facets should be used in conjunction with request response
+      if they are to be used correctly. The example below shows how this might work in the case of the GroupMapper
+      facet:
+      <pre>
+      class GroupMappingWedge implements Wedge, GroupMapper
+      {
+          RequestContext           requestContext;
+
+          DependencyHandlerConduit dependencyHandlerConduit; 
+          ErrorHandler             requestErrorConduit = new ErrorConduitImpl();
+
+          GroupMapper              userGroupMapperClient;
+
+          public void commence() 
+          { 
+              // 
+              // add dependency for making request 
+              // 
+              requestDependencyAttribute = new DependencyAttribute(DependencyType.STRONG, Scope.LOCAL, userManagerMeem, "userGroupMapper");
+
+              dependencyHandlerConduit.addDependency("userGroupMapperClient", requestDependencyAttribute, LifeTime.PERMANENT);
+
+              // 
+              // add dependency for getting the response 
+              // 
+              responseDependencyAttribute = new DependencyAttribute(DependencyType.STRONG, Scope.LOCAL, userManagerMeem, "userGroupMapperClient");
+
+              dependencyHandlerConduit.addDependency("groupMapper", responseDependencyAttribute, LifeTime.PERMANENT); 
+          }
+
+          // 
+          // normal wedge inbound facet 
+          // 
+          public void listGroups() 
+          {
+              requestContext.beginRequest(timeout, new Object());
+
+              userGroupMapperClient.memberAdded(group, userName); 
+          }
+
+          // 
+          // wedge inbound response facet
+          // 
+          public void groupMap(Map groups)
+          {
+              if (requestContext.getCurrentRequest() != null) 
+              {
+                  Iterator groupIt = groups.keySet().iterator();
+                  while (groupIt.hasNext())
+                  {
+                      String   groupName = (String)groupIt.hasNext();
+                      Iterator memberIt = ((Set)groups.get(groupName)).iterator();
+                      System.err.print("Group " + groupName + ":");
+                      while (memberIt.hasNext())
+                      {
+                          System.err.print(" " + memberIt.next());
+                      }
+                  }
+              } 
+              else 
+              { 
+                  System.err.println("attempt to use response facet when not in request!"); 
+              } 
+          }
+
+          public static class ErrorConduitImpl 
+              implements ErrorHandler 
+          { 
+              public void thrown(Exception e) 
+              {
+                  System.err.println("Getting a current list of groups and members failed: " + e.toString()); 
+              }
+          }
+      }
+      </pre>
+    </p>
+  </body>
+</html>

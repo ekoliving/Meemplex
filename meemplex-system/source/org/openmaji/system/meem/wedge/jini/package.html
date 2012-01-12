@@ -1,0 +1,56 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <p>
+The Jini wedge package is provided to allow people to create meems which can also publish Jini services.
+</p>
+<p>
+In the simplest case the meem definition for a meem providing a Jini service
+would be just an application wedge and the Exporter wedge. So the meem 
+definition might be created like:
+<pre>
+	meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(new Class[] { Exporter.class, MyJiniServiceWedge.class });
+</pre>
+</p>
+<p>
+MyJiniService would then either be the appropriate java.rmi.Remote object or be the producer of java.rmit.Remote objects which were passed to the <code>exportableServiceConduit</code> via a conduit definition included in <code>MyJiniServiceWedge</code>.
+</p>
+<p>
+By way of a brief example, we could imagine a simple service implementing the
+following RMI capable interface:
+<pre>
+import java.io.Serializable;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+/**
+ * A service that prepends "Hello" to the passed in name.
+ */
+public interface SayHello
+    extends Remote, Serializable
+{
+    public String sayHello(String name)
+        throws RemoteException;
+}
+</pre>
+In the case where the wedge was producing service objects, but did not provide
+the service itself, the wedge would publish the service to the meemserver and subsequently to Jini with the following code:
+<pre>
+    exportableServiceConduit.serviceAdded("helloService", new SayHelloImplementation(), null);
+</pre>
+and withdraw it by calling:
+<pre>
+    exportableServiceConduit.serviceRemoved("helloService");
+</pre>
+alternately, if the wedge class is also providing the service, rather than <code>SayHelloImplementation</code> we would just pass <code>this</code>. The <code>exportableServiceConduit</code> is declared as:
+<pre>
+    public ExportableServiceConduit  exportableServiceConduit;
+</pre>
+<p>
+Jini also provides the facility to provide entry descriptors for services it
+publishes. The final parameter in the <code>serviceAdded</code> method above is provided
+for this purpose and if used should consist of a list of <code>net.jini.core.entry.Entry objects</code>.
+    </p>
+  </body>
+</html>
