@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Meemplex Meem
+Bundle-SymbolicName: org.meemplex.meem
+Bundle-Version: 1.0.0.1
+Bundle-Vendor: Sugar Coding
+DynamicImport-Package: *
+Export-Package: org.meemplex.meem,
+ org.meemplex.service.model,
+ org.openmaji.meem,
+ org.openmaji.meem.conduit,
+ org.openmaji.meem.definition,
+ org.openmaji.meem.filter,
+ org.openmaji.meem.session,
+ org.openmaji.meem.space,
+ org.openmaji.meem.wedge.configuration,
+ org.openmaji.meem.wedge.dependency,
+ org.openmaji.meem.wedge.error,
+ org.openmaji.meem.wedge.lifecycle,
+ org.openmaji.meem.wedge.reference,
+ org.openmaji.spi,
+ org.openmaji.utility,
+ org.openmaji.utility.uid
+Bundle-ClassPath: build/classes/

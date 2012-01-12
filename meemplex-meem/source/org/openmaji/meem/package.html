@@ -1,0 +1,97 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <p>
+      Maji distributed component and it's constituent pieces. 
+    </p>
+    <p>
+      A complete Maji system consists of a number of modules ...
+      <ul>
+        <li>
+          Maji Meem API - Packages used for developing a Meem
+        </li>
+        <li>
+          Maji System API - Packages used for developing a system of Meems
+        </li>
+        <li>
+          Maji Server implementation - An environment for running Meem systems
+        </li>
+        <li>
+          MeemKit(s) - Domain specific collection of existing Meem patterns
+        </li>
+      </ul>
+    </p>
+    <p>
+      The <i>org.openmaji.meem</i> packages define the <b>Maji Meem API</b>.
+      The following description is a general introduction to Meems, which
+      are specified by this API.
+      More specific documentation can be found in the individual packages
+      and class files that comprise the Maji Meem API.
+    </p>
+    <p>
+      A <b>Meem</b> is a self-contained, self-describing, distributed
+      component that is strongly encapsulated behind <b>Facet</b>s,
+      i.e. Java interfaces, that are implemented by one or more <b>Wedges</b>,
+      i.e. Java implementation.
+      All systems components of the Maji system are themselves Meems.
+    </p>
+    <p>
+      The Meem programming model can be considered from both "within the Meem",
+      i.e. internal or local, and "between Meems", i.e. external or remote.
+      In both cases, method invocations are fully asynchronous and don't
+      have "return values", i.e. all methods return void.
+      This is best thought of as an event based model, in which method
+      invocations are used as a convenient way of sending and receiving events.
+      All required functionality is usually abstracted behind Java interfaces
+      that appear as either Facets (external) or Conduits (internal).
+    </p>
+    <p>
+      The Meem's meta-information describes all of the constituent pieces that
+      are used to assemble a functioning Meem.
+      This Meem definition can be viewed and updated whilst the Meem is loaded
+      in a JVM.  
+      This means that Meems within a Maji system can be developed and changed,
+      without having to stop the complete distributed system.
+    </p>
+    <p>
+      Functionality specified by the Maji system as being required by every
+      Meem, e.g. life cycle and persistence, is defined by system Facets and
+      implemented by system Wedges.
+      Much of this functionality is made available locally via system defined
+      <b>Conduit</b>s.
+      This pluggable functionality is automatically provided by the system
+      once the Meem is assembled.
+      This means that an application developer needs only to define and
+      implement Facets, Wedges and Conduits, specific to the application needs.
+    </p>
+    <p>
+      The local programming model is "design-by-composition", in which the
+      required functionality is abstracted using Java interfaces.
+      All of the Java implementation is contained in the Wedges.
+      Meem assembly uses the <b>MeemDefinition</b> to load all of the Meem's
+      pieces into a singular and complete distributed component.
+      A given Wedge can communicate within the Meem by creating it's own
+      Conduits or by using the Conduits of other Wedges within the same Meem.
+    </p>
+    <p>
+      The remote programming model is "componentized design-by-interface" and
+      by dynamically building relationships between Meems that handle failure.
+      Unidirectional <b>Dependencies</b> between two Meems with similarly
+      typed Facets can be created at any time.
+      The direction of the information flow is determined by the connection of
+      an outbound Facet to an inbound Facet.
+      Various system Wedges deal with the management of Dependencies between
+      Meems, including registration, location, one-to-many, many-to-one,
+      authentication, encryption and partial failure. 
+    </p>
+    <p>
+      Collections of Meems can be organized and viewed in many different ways.
+      Some views are related to development processes, e.g. deployment, other
+      views are specific to a given application domain.
+      Within a Maji system, a Space consists of numerous <b>Categories</b>,
+      each of which may contain a collection of relevant Meems.
+      Any Meem may simultaneously be categoried in multiple, different ways.
+    </p>
+  </body>
+</html>
