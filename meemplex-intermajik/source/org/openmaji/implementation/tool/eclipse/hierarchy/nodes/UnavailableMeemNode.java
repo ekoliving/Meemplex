@@ -1,9 +1,9 @@
 /*
  * @(#)UnavailableMeemNode.java
  * Created on 24/06/2005
- * Copyright 2005 by Majitek Limited.  All Rights Reserved.
+ * Copyright 2005 by EkoLiving Pty Ltd.  All Rights Reserved.
  *
- * This software is the proprietary information of Majitek Limited.
+ * This software is the proprietary information of EkoLiving Pty Ltd.
  * Use is subject to license terms.
  */
 
