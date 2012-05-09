@@ -64,7 +64,7 @@ public class MajiPlugin extends AbstractUIPlugin {
 
 	public Job startMajiJob = new StartMajiJob();;
 
-	public Job startMeemkitManagerJob;
+	//public Job startMeemkitManagerJob;
 
 	public static final String KINETIC_EDITOR = "Meem Configuration Editor";
 
@@ -116,7 +116,7 @@ public class MajiPlugin extends AbstractUIPlugin {
 		
 		
 		// force loading of awt in main thread toolkit to workaround mac OSX hang issue with SWT and AWT
-		//java.awt.Toolkit.getDefaultToolkit();
+		java.awt.Toolkit.getDefaultToolkit();
 
 		// Check if this is the first time the plugin has been run
 		checkFirstRun();
@@ -129,6 +129,7 @@ public class MajiPlugin extends AbstractUIPlugin {
 		menubar.insert(0, createInterMajikMenu());
 		 
 		startMajiJob.schedule();
+		
 	}
 
 	/**

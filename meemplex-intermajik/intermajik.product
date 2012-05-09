@@ -13,11 +13,9 @@
    <launcherArgs>
       <programArgsMac>-arch x86_64</programArgsMac>
       <vmArgs>-Dorg.openmaji.properties=conf/meemServer_01.properties 
--Dorg.openmaji.meemSpaceIdentifier=&quot;stanebrae&quot;
+-Dorg.openmaji.meemSpaceIdentifier=&quot;smart&quot;
 -Xmx512M</vmArgs>
-      <vmArgsMac>-Dorg.openmaji.directory=/Users/stormboy/Projects/majiklab/openmaji-meemserver/
--Djava.security.policy=/Users/stormboy/Projects/majiklab/openmaji-install/conf/security/all.policy
--XstartOnFirstThread</vmArgsMac>
+      <vmArgsMac>-XstartOnFirstThread</vmArgsMac>
    </launcherArgs>
 
    <windowImages i16="/openmaji-intermajik/feature_files/plugin_files/intermajik16.gif" i32="/openmaji-intermajik/feature_files/plugin_files/intermajik32.gif" i128="/openmaji-intermajik/feature_files/plugin_files/intermajik_lg.gif"/>
@@ -111,18 +109,13 @@
       <plugin id="org.eclipse.ui.views"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.update.configurator"/>
-      <plugin id="org.meemplex.automation.cbus"/>
-      <plugin id="org.meemplex.automation.challenger"/>
       <plugin id="org.meemplex.automation.core"/>
-      <plugin id="org.meemplex.automation.jandy"/>
-      <plugin id="org.meemplex.automation.lontalk"/>
       <plugin id="org.meemplex.core"/>
       <plugin id="org.meemplex.intermajik"/>
       <plugin id="org.meemplex.intermajik.core"/>
       <plugin id="org.meemplex.internet.core"/>
       <plugin id="org.meemplex.internet.gwt"/>
       <plugin id="org.meemplex.internet.rpc"/>
-      <plugin id="org.meemplex.internet.soap"/>
       <plugin id="org.meemplex.meem"/>
       <plugin id="org.meemplex.meemserver"/>
       <plugin id="org.meemplex.system"/>
@@ -134,18 +127,13 @@
    <configurations>
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.update.configurator" autoStart="true" startLevel="3" />
-      <plugin id="org.meemplex.automation.cbus" autoStart="true" startLevel="0" />
-      <plugin id="org.meemplex.automation.challenger" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.automation.core" autoStart="true" startLevel="0" />
-      <plugin id="org.meemplex.automation.jandy" autoStart="true" startLevel="0" />
-      <plugin id="org.meemplex.automation.lontalk" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.core" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.intermajik" autoStart="false" startLevel="0" />
       <plugin id="org.meemplex.intermajik.core" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.internet.core" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.internet.gwt" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.internet.rpc" autoStart="true" startLevel="0" />
-      <plugin id="org.meemplex.internet.soap" autoStart="false" startLevel="0" />
       <plugin id="org.meemplex.meem" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.meemserver" autoStart="true" startLevel="0" />
       <plugin id="org.meemplex.system" autoStart="true" startLevel="0" />
