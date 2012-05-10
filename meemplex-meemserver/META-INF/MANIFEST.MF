@@ -6,7 +6,9 @@ Bundle-Version: 1.0.0.1
 Bundle-Vendor: Sugar Coding
 DynamicImport-Package: *
 Eclipse-BuddyPolicy: registered
-Export-Package: org.jdom,
+Export-Package: javax.mail,
+ javax.mail.internet,
+ org.jdom,
  org.meemplex.server,
  org.openmaji.common,
  org.openmaji.implementation.common,
