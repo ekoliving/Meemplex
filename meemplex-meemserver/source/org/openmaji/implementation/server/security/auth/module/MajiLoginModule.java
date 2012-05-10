@@ -85,7 +85,7 @@ public class MajiLoginModule implements LoginModule {
 	 * @see javax.security.auth.spi.LoginModule#login()
 	 */
 	public boolean login() throws LoginException {
-		// get Maji Authentication Jini Service
+		// get Maji Authentication Service
 		Authenticator authService = AuthenticatorLookupWedge.getAuthenticator();
 
 		if (authService == null) {

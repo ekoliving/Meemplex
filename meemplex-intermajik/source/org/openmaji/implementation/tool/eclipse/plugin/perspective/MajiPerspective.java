@@ -1,9 +1,9 @@
 /*
  * @(#)MajiPerspective.java
  *
- * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ * Copyright 2003 by EkoLiving Pty Ltd.  All Rights Reserved.
  *
- * This software is the proprietary information of Majitek Limited.
+ * This software is the proprietary information of EkoLiving Pty Ltd.
  * Use is subject to license terms.
  */
 
@@ -50,7 +50,7 @@ public class MajiPerspective implements IPerspectiveFactory {
 		IFolderLayout bottomRight = layout.createFolder("bottomRight", IPageLayout.BOTTOM, 0.66f, editorArea);
 		bottomRight.addView(IPageLayout.ID_PROP_SHEET);
 		bottomRight.addView("org.openmaji.implementation.tool.eclipse.ui.view.log.MajiLogView");
-		bottomRight.addView("org.openmaji.implementation.tool.eclipse.views.beanshell.BeanshellView");
+		//bottomRight.addView("org.openmaji.implementation.tool.eclipse.views.beanshell.BeanshellView");
 
 //		IWorkbenchPage page = MajiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 //

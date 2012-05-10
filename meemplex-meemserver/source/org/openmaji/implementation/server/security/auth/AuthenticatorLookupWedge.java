@@ -66,7 +66,7 @@ public class AuthenticatorLookupWedge implements Wedge,  MeemDefinitionProvider,
 	private ServiceDiscoveryManager serviceDiscoveryManager = null;
 	private LookupCache             lookupCache             = null;
 
-	private static Class[] serviceInterfaces = new Class[] { Authenticator.class };
+	private static Class<?>[] serviceInterfaces = new Class[] { Authenticator.class };
 
 	private static ServiceTemplate serviceTemplate = new ServiceTemplate(null, serviceInterfaces, null);
 

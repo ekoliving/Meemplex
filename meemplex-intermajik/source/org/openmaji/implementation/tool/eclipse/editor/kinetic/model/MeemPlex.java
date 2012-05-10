@@ -1,9 +1,9 @@
 /*
  * @(#)MeemPlex.java
  * Created on 23/05/2003
- * Copyright 2003 by Majitek Limited.  All Rights Reserved.
+ * Copyright 2003 by EkoLiving Pty Ltd.  All Rights Reserved.
  *
- * This software is the proprietary information of Majitek Limited.
+ * This software is the proprietary information of EkoLiving Pty Ltd.
  * Use is subject to license terms.
  */
 

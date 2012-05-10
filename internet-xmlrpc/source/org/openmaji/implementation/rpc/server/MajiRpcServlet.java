@@ -57,7 +57,7 @@ public class MajiRpcServlet extends HttpServlet {
 
 	public static final String PARAM_TRACE = "trace";
 	
-	private boolean trace = true;
+	private boolean trace = false;
 	
 	private String        servletInfo = "Maji RPC Servlet";
 	

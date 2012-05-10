@@ -167,10 +167,10 @@
            name="Intermajik">
         <property
               name="aboutImage"
-              value="feature_files/plugin_files/intermajik_lg.gif"/>
+              value="/openmaji-intermajik/feature_files/plugin_files/intermajik_lg.gif"/>
         <property
               name="windowImages"
-              value="feature_files/plugin_files/intermajik16.gif,feature_files/plugin_files/intermajik32.gif,feature_files/plugin_files/intermajik_lg.gif"/>
+              value="/openmaji-intermajik/feature_files/plugin_files/intermajik16.gif,/openmaji-intermajik/feature_files/plugin_files/intermajik32.gif,/openmaji-intermajik/feature_files/plugin_files/intermajik_lg.gif"/>
         <property
               name="appName"
               value="Intermajik">
