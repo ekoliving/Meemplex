@@ -9,9 +9,7 @@ Export-Package:
  org.openmaji.implementation.intermajik.images,
  org.openmaji.implementation.intermajik.model,
  org.openmaji.implementation.intermajik.worksheet
-Require-Bundle: org.meemplex.meem;bundle-version="1.0.0",
- org.meemplex.system;bundle-version="1.0.0",
- org.meemplex.meemserver;bundle-version="1.0.0"
+Require-Bundle: org.meemplex.meemserver;bundle-version="1.0.0"
 Webapp-Context: meemplex
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.osgi.framework;version="1.6.0"
