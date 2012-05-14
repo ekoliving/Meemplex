@@ -137,7 +137,9 @@ public class MeemplexActivator implements BundleActivator {
 			System.setProperty(PROP_HOME, meemplexPath);
 		}
 		System.setProperty("java.security.policy", meemplexPath + "/conf/security/all.policy");
-		System.setProperty("org.openmaji.properties", "conf/meemServer_01.properties");
+		if (System.getProperty("org.openmaji.properties") == null) {
+			System.setProperty("org.openmaji.properties", "conf/meemServer_01.properties");
+		}
 
 		MeemEngineLauncher.instance().launch();
 	}

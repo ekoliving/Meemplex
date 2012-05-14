@@ -80,10 +80,10 @@ public class JiniServicesWedge implements Wedge, JiniServices, MeemDefinitionPro
 			process = runtime.exec(args);
 			LogTools.info(logger, "commence() - " + processName + " started");
 
-			if (Common.TRACE_ENABLED && Common.TRACE_JINI_SERVICES) {
+			//if (Common.TRACE_ENABLED && Common.TRACE_JINI_SERVICES) {
 				StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), processName);
 				errorGobbler.start();
-			}
+			//}
 			StreamGobbler inputGobbler = new StreamGobbler(process.getInputStream(), processName);
 			inputGobbler.start();
 		}

@@ -31,6 +31,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
+import java.security.ProtectionDomain;
 import java.util.Enumeration;
 
 import net.jini.admin.Administrable;
@@ -151,8 +152,18 @@ public class JiniStarter2 {
 			LogTools.error(logger, "commence() - failed to launch reggie", ex);
 		}
 		
-		LogTools.info(logger, "Got protection domain: " + JiniStarter2.class.getProtectionDomain());
-
+		if (true) {
+			ProtectionDomain protectionDomain = JiniStarter2.class.getProtectionDomain();
+			LogTools.info(logger, "Got protection domain: " + protectionDomain);
+			LogTools.info(logger, "protection domain classname: " + protectionDomain.getClass().getCanonicalName());
+			LogTools.info(logger, JiniStarter2.class + " has classloader: " + JiniStarter2.class.getClassLoader());
+			LogTools.info(logger, JiniStarter2.class + " has classloader: " + JiniStarter2.class.getClassLoader());
+			
+			if (protectionDomain instanceof org.eclipse.osgi.framework.adaptor.BundleProtectionDomain) {
+				//new ProtectionDomain(protectionDomain.getCodeSource(), protectionDomain.getPermissions(), classloader, protectionDomain.getPrincipals());
+				LogTools.info(logger, "Bundle: " + ((org.eclipse.osgi.framework.adaptor.BundleProtectionDomain)protectionDomain).getBundle());
+			}
+		}
 	}
 
 	

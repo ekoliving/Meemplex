@@ -7,6 +7,7 @@
 <!-- 
 		<provider>oracle.toplink.essentials.PersistenceProvider</provider>
 		 -->
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		 
 		<class>org.openmaji.implementation.server.space.meemstore.jpa.MeemEntity</class>
 		<class>org.openmaji.implementation.server.space.meemstore.jpa.WedgeEntity</class>
@@ -14,13 +15,13 @@
 		<class>org.openmaji.implementation.server.space.meemstore.jpa.ContentEntity</class>
 
 		<properties>
-		
-			<property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/test" />
-			<property name="toplink.jdbc.user" value="root" />
-			<property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver" />
-			<property name="toplink.jdbc.password" value="" />
-
-			<property name="toplink.ddl-generation" value="create-tables" />
+<!-- 		
+			<property name="eclipselink.jdbc.url" value="jdbc:mysql://localhost:3306/test" />
+			<property name="eclipselink.jdbc.user" value="root" />
+			<property name="eclipselink.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="eclipselink.jdbc.password" value="" />
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+ -->
 		</properties>
 	</persistence-unit>
 </persistence>
