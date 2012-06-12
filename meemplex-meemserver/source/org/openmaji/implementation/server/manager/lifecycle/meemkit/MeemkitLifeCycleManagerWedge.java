@@ -39,12 +39,13 @@ import org.openmaji.system.meemserver.MeemServer;
 import org.openmaji.system.request.RequestContext;
 import org.openmaji.system.request.RequestCreationException;
 import org.openmaji.system.utility.MeemUtility;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, Wedge, MeemDefinitionProvider {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final boolean DEBUG = false;
 
@@ -99,7 +100,7 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 	public void commence() {
 		String meemServerName = MeemServer.spi.getName();
 		meemCore.getMeemStructure().getMeemAttribute().setIdentifier(meemServerName);
-		LogTools.info(logger, "commence() - server=[" + meemServerName + "]");
+		logger.log(Level.INFO, "commence() - server=[" + meemServerName + "]");
 	}
 
 	public void conclude() {
@@ -112,14 +113,14 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 
 	public void detailsChanged(String[] names, URL[] descriptorLocations) {
 		if (DEBUG) {
-			LogTools.info(logger, "detailsChanged()");
+			logger.log(Level.INFO, "detailsChanged()");
 		}
 		totalMeemkits += names.length;
 
 		for (int i = 0; i < names.length; i++) {
 			String name = names[i];
 			if (DEBUG) {
-				LogTools.info(logger, "detailsChanged() name=" + name);
+				logger.log(Level.INFO, "detailsChanged() name=" + name);
 			}
 			URL descriptorLocation = null;
 			if (descriptorLocations != null) {

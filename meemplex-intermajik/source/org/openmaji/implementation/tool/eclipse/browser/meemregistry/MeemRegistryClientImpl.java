@@ -15,6 +15,7 @@ package org.openmaji.implementation.tool.eclipse.browser.meemregistry;
 import java.util.TreeSet;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 

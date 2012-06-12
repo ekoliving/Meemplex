@@ -10,6 +10,7 @@ package org.openmaji.implementation.rpc.test;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.common.Binary;
@@ -38,10 +39,10 @@ public class BinaryTester {
 		try {
 			BinaryTester tester = new BinaryTester();
 			
-			logger.info("creating client...");
+			logger.log(Level.INFO, "creating client...");
 			tester.getMajiRPCClient();
 			
-			logger.info("create client");
+			logger.log(Level.INFO, "create client");
 			Thread.sleep(1);
 			
 			InboundBinary inboundBinary = tester.getInboundBinary();
@@ -51,32 +52,32 @@ public class BinaryTester {
 			Thread.sleep(1000);
 			
 			Boolean value = false;
-			logger.info("setting value to " + value);
+			logger.log(Level.INFO, "setting value to " + value);
 			binary.valueChanged(value);
 			Thread.sleep(1000);
 			
 			value = !value;
-			logger.info("setting value to " + value);
+			logger.log(Level.INFO, "setting value to " + value);
 			binary.valueChanged(value);
 			Thread.sleep(1000);
 			
 			value = !value;
-			logger.info("setting value to " + value);
+			logger.log(Level.INFO, "setting value to " + value);
 			binary.valueChanged(value);
 			Thread.sleep(1000);
 			
 			value = !value;
-			logger.info("setting value to " + value);
+			logger.log(Level.INFO, "setting value to " + value);
 			binary.valueChanged(value);
 			Thread.sleep(1000);
 			
 			value = !value;
-			logger.info("setting value to " + value);
+			logger.log(Level.INFO, "setting value to " + value);
 			binary.valueChanged(value);
 			
 			Thread.sleep(10000);
 			
-			logger.info("complete.");
+			logger.log(Level.INFO, "complete.");
 			
 			tester.getMajiRPCClient().stop();
 		}
@@ -104,7 +105,7 @@ public class BinaryTester {
 	
 			inboundBinary.addBinaryFacet(new Binary() {
 				public void valueChanged(boolean value) {
-					logger.info("got value: " + value);
+					logger.log(Level.INFO, "got value: " + value);
 				}
 			});
 		}

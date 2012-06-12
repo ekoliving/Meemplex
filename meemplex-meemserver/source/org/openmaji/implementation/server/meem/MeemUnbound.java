@@ -37,9 +37,10 @@ import org.openmaji.system.manager.registry.MeemRegistryGateway;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.resolver.MeemResolver;
 import org.openmaji.system.space.resolver.MeemResolverClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -52,7 +53,7 @@ public class MeemUnbound implements Meem, Serializable {
 	
 	private static final long serialVersionUID = 901389287298742L;
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private final MeemPath meemPath;
 
@@ -355,7 +356,7 @@ public class MeemUnbound implements Meem, Serializable {
 
 		public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (isDone()) {
-				LogTools.info(logger, "Can not queue invocations. Proxy has resolved Meem");
+				logger.log(Level.INFO, "Can not queue invocations. Proxy has resolved Meem");
 				return null;
 			}
 
@@ -399,10 +400,10 @@ public class MeemUnbound implements Meem, Serializable {
 						invocation.method.invoke(MeemUnbound.this, invocation.args);
 					}
 					catch (InvocationTargetException e) {
-						LogTools.info(logger, "Problem invoking meem method", e);
+						logger.log(Level.INFO, "Problem invoking meem method", e);
 					}
 					catch (IllegalAccessException e) {
-						LogTools.info(logger, "Problem invoking meem method", e);
+						logger.log(Level.INFO, "Problem invoking meem method", e);
 					}
 				}
 			}

@@ -29,7 +29,8 @@ import org.openmaji.system.meemserver.MeemServer;
 import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.system.space.meemstore.*;
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author  Andy Gelme
@@ -57,7 +58,7 @@ public class ExtractMeemWedge
 
   private boolean gotCategoryContentSent = false;
   
-  private static Logger logger = LogFactory.getLogger();
+  private static Logger logger = Logger.getAnonymousLogger();
   
   public MeemClientConduit meemClientConduit;
   
@@ -187,8 +188,8 @@ public class ExtractMeemWedge
     MeemDefinition meemDefinition) {
 
     if (meemDefinition == null) {
-      LogTools.warn(
-        logger,
+      logger.log(
+        Level.WARNING,
         "Ignoring Meem with no MeemDefinition " +
         "(it's probably the EssentialLifeCycleManager): " +
         meemPath

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -86,7 +87,7 @@ public class MeemGwtServlet extends RemoteServiceServlet implements MeemGwtRpcSe
 	    }
 	    
 		if (this.trace) {
-			logger.info("starting MeemGwtService at: " + config.getServletContext().getContextPath() + " - " + config.getServletContext().getRealPath("/"));
+			logger.log(Level.INFO, "starting MeemGwtService at: " + config.getServletContext().getContextPath() + " - " + config.getServletContext().getRealPath("/"));
 		}
 
 	    start();
@@ -161,7 +162,7 @@ public class MeemGwtServlet extends RemoteServiceServlet implements MeemGwtRpcSe
 							serializableParams[i++] = (Serializable) parser.parse(param);
 						}
 						catch (ParseException e) {
-							logger.info("Could not parse JSON value: " + param);
+							logger.log(Level.INFO, "Could not parse JSON value: " + param);
 						}
 					}
 					
@@ -438,7 +439,7 @@ public class MeemGwtServlet extends RemoteServiceServlet implements MeemGwtRpcSe
 							SessionHandler handler = (SessionHandler) sessionHandlers.get(key);
 							if ( (handler != null) && handler.isStale() ) {
 								if (trace) {
-									logger.info("++++ cleaning up session: " + key + " ++++");
+									logger.log(Level.INFO, "++++ cleaning up session: " + key + " ++++");
 								}
 								handler.cleanup();
 								sessionHandlers.remove(key);
@@ -450,7 +451,7 @@ public class MeemGwtServlet extends RemoteServiceServlet implements MeemGwtRpcSe
 						wait(timeout);
 					}
 					catch (InterruptedException ex) {
-//						LogTools.info(logger, "++++ session monitor interrupted ++++");
+//						logger.log(Level.INFO, "++++ session monitor interrupted ++++");
 						running = false;
 					}
 				}

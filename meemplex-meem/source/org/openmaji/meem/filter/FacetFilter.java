@@ -119,7 +119,7 @@ public final class FacetFilter implements Filter, Serializable {
    */
   public FacetFilter(
 	String facetIdentifier,
-	Class  specification,
+	Class<?>  specification,
 	Direction direction) {
 
 	this.facetIdentifier = facetIdentifier;
@@ -169,7 +169,7 @@ public final class FacetFilter implements Filter, Serializable {
    */
   public boolean match(
     String 		facetIdentifier,
-    Class  	specification,
+    Class<?>  	specification,
     Direction	direction) 
   {
 

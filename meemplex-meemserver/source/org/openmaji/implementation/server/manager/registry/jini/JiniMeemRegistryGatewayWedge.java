@@ -33,9 +33,10 @@ import org.openmaji.system.manager.registry.MeemRegistryClient;
 import org.openmaji.system.manager.registry.MeemRegistryGateway;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -110,8 +111,8 @@ public class JiniMeemRegistryGatewayWedge implements Wedge, MeemRegistryGateway 
 		}
 	};
 
-	private static final Logger logger = LogFactory.getLogger();
-	private static final int LOG_LEVEL = Common.getLogLevelVerbose();
+	private static final Logger logger = Logger.getAnonymousLogger();
+	private static final Level LOG_LEVEL = Common.getLogLevelVerbose();
 
 	private static JiniMeemRegistryGatewayWedge instance = null;
 
@@ -152,12 +153,12 @@ public class JiniMeemRegistryGatewayWedge implements Wedge, MeemRegistryGateway 
 
 	public static void addRemoteRegistry(Meem registryMeem) {
 		if (registries.containsKey(registryMeem.getMeemPath())) {
-			LogTools.trace(logger, LOG_LEVEL, "addRemoteRegistry(): ignoring - already present - " + registryMeem.getMeemPath());
+			logger.log(LOG_LEVEL, "addRemoteRegistry(): ignoring - already present - " + registryMeem.getMeemPath());
 			return;
 		}
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMREGISTRY) {
-			LogTools.trace(logger, LOG_LEVEL, "addRemoteRegistry(): " + registryMeem.getMeemPath());
+			logger.log(LOG_LEVEL, "addRemoteRegistry(): " + registryMeem.getMeemPath());
 		}
 		
 		registries.put(registryMeem.getMeemPath(), registryMeem);
@@ -176,7 +177,7 @@ public class JiniMeemRegistryGatewayWedge implements Wedge, MeemRegistryGateway 
 	
 	public static void removeRemoteRegistry(Meem registryMeem) {
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMREGISTRY) {
-			LogTools.trace(logger, LOG_LEVEL, "removeRemoteRegistry(): " + registryMeem.getMeemPath());
+			logger.log(LOG_LEVEL, "removeRemoteRegistry(): " + registryMeem.getMeemPath());
 		}
 
 		registries.remove(registryMeem.getMeemPath());

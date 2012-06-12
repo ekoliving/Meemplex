@@ -3,6 +3,7 @@ package org.openmaji.implementation.network;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -106,7 +107,7 @@ public class WakeOnLan implements Runnable {
 		}
 		catch (Throwable t) {
 			t.printStackTrace();
-			logger.warning(t.getMessage());
+			logger.log(Level.WARNING, t.getMessage());
 		}
 	}
 
@@ -201,10 +202,10 @@ public class WakeOnLan implements Runnable {
 			socket.send(packet);
 			socket.close();
 
-			logger.info("Wake " + macAddress + " packet broadcast on " + broadcastAddress);
+			logger.log(Level.INFO, "Wake " + macAddress + " packet broadcast on " + broadcastAddress);
 		}
 		catch (Exception e) {
-			logger.info("Failed to send Wake-on-LAN packet: " + e);
+			logger.log(Level.INFO, "Failed to send Wake-on-LAN packet: " + e);
 		}
 	}
 

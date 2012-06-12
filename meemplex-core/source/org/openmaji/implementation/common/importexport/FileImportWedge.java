@@ -22,7 +22,8 @@ import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.space.CategoryEntry;
 
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author  Andy Gelme
@@ -39,7 +40,7 @@ public class FileImportWedge
   
   private ObjectInputStream objectInputStream = null;
   
-  private static Logger logger = LogFactory.getLogger(); 
+  private static Logger logger = Logger.getAnonymousLogger(); 
   
 /* ---------- Configuration section ---------------------------------------- */
 
@@ -163,8 +164,8 @@ public class FileImportWedge
       importExportContentConduit.contentSent();
     }
     catch (Exception exception) {
-      LogTools.error(
-        logger, "Importing from file: " + inputFile, exception
+      logger.log(
+        Level.WARNING, "Importing from file: " + inputFile, exception
       );
 
       importExportContentConduit.contentFailed(
@@ -183,7 +184,7 @@ public class FileImportWedge
           new ObjectInputStream(new FileInputStream(inputFile));
       }
       catch (IOException ioException) {
-        LogTools.error(logger, "Reading file: " + inputFile, ioException);
+        logger.log(Level.WARNING, "Reading file: " + inputFile, ioException);
       }
     }
   }

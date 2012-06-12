@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.Common;
@@ -119,7 +120,7 @@ public class MeemInvocationSource implements InvocationHandler
 		}
 
 //		if (Common.TRACE_ENABLED) {
-//			logger.info("--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
+//			logger.log(Level.INFO, "--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
 //		}
 		
 		synchronized (references) {
@@ -201,10 +202,10 @@ public class MeemInvocationSource implements InvocationHandler
 					}
 					
 //					if (Common.TRACE_ENABLED) {
-//						logger.info("--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
+//						logger.log(Level.INFO, "--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
 //					}
 //					if (Common.TRACE_ENABLED) {
-//						logger.info("... to: " + targetMeemPath + " : " + facet.getIdentifier() + " . " + method.getName());
+//						logger.log(Level.INFO, "... to: " + targetMeemPath + " : " + facet.getIdentifier() + " . " + method.getName());
 //					}
 					
 					invocation.invoke(reference.getTarget(), errorHandlerConduit);

@@ -32,7 +32,8 @@ import org.openmaji.meem.definition.MeemDefinitionFactory;
 import org.openmaji.meem.definition.MeemDefinitionProvider;
 import org.openmaji.meem.wedge.lifecycle.*;
 import org.openmaji.system.meem.core.MeemCore;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -44,7 +45,7 @@ public class AuthenticatorExporterWedge
 	implements Wedge, MeemDefinitionProvider, MajiConstants
 {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	
 	//private static final String AUTHENTICATOR_EXPORTER_COMPONENT = "org.openmaji.implementation.server.security.auth.AuthenticatorService";
@@ -181,10 +182,10 @@ public class AuthenticatorExporterWedge
 			}
 		}
 		catch (Exception exception) {
-		  LogTools.error(logger, "Exporting AuthenticatorService: " + exception, exception);
+		  logger.log(Level.WARNING, "Exporting AuthenticatorService: " + exception, exception);
 		}
 
-		LogTools.info(logger, "Jini Service registered: " + uuid);
+		logger.log(Level.INFO, "Jini Service registered: " + uuid);
 
 	}
 
@@ -235,19 +236,19 @@ public class AuthenticatorExporterWedge
 		String majitekDirectory = System.getProperty(Common.PROPERTY_MAJI_HOME);
 
 		if (majitekDirectory == null) {
-			LogTools.info(logger, "Can not create authentication service.  Majitek directory not set.");
+			logger.log(Level.INFO, "Can not create authentication service.  Majitek directory not set.");
 			return null;
 		}
 		
 		String keyStoreName = System.getProperty(USER_KEYSTORE_NAME);
 		if (keyStoreName == null) {
-			LogTools.info(logger, "Can not create authentication service. Unable to find key store name.");
+			logger.log(Level.INFO, "Can not create authentication service. Unable to find key store name.");
 			return null;
 		} 
 		
 		String keyStorePasswd = System.getProperty(USER_KEYSTORE_PASSWD);
 		if (keyStorePasswd == null) {
-			LogTools.info(logger, "Can not create authentication service. Unable to find key store password.");
+			logger.log(Level.INFO, "Can not create authentication service. Unable to find key store password.");
 			return null;
 		} 
 

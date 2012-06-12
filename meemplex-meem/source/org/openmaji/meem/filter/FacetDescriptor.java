@@ -18,7 +18,7 @@ public class FacetDescriptor implements Filter, Serializable
 {
 	private static final long serialVersionUID = -1178365040590887015L;
 
-	public FacetDescriptor(String facetIdentifier, Class specification)
+	public FacetDescriptor(String facetIdentifier, Class<?> specification)
 	{
 		this.facetIdentifier = facetIdentifier;
 		this.specification = specification;

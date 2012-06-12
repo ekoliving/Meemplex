@@ -10,6 +10,7 @@
 package org.openmaji.implementation.tool.eclipse.ui.view;
 
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -49,7 +50,7 @@ import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.system.gateway.ServerGateway;
 import org.openmaji.system.manager.user.AuthenticatorStatus;
 import org.openmaji.system.meemserver.MeemServer;
-import org.swzoo.log2.core.LogTools;
+
 
 
 /**
@@ -400,7 +401,7 @@ abstract public class SecurityView extends ViewPart {
 		  for ( int i = 0; i < names.length; i++ ) {
 		    if ( names[i].equals("openmaji-core") ) {
 				if (DEBUG) {
-					logger.info("classloader loaded");
+					logger.log(Level.INFO, "classloader loaded");
 				}
 
 		    	classLoaderLoaded = true;
@@ -435,7 +436,7 @@ abstract public class SecurityView extends ViewPart {
   	
 		public void authenticatorLocated() {
 			if (DEBUG) {
-				logger.info("authenticator located");
+				logger.log(Level.INFO, "authenticator located");
 			}
 			authenticatorLocated = true;
 			changeLoginButton();
@@ -443,7 +444,7 @@ abstract public class SecurityView extends ViewPart {
 		
 		public void authenticatorLost() {
 			if (DEBUG) {
-				logger.info("authenticator lost");
+				logger.log(Level.INFO, "authenticator lost");
 			}
 			authenticatorLocated = false;
 			changeLoginButton();

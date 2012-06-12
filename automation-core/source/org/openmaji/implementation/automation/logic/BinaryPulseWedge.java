@@ -16,9 +16,10 @@ import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.common.Binary;
 import org.openmaji.diagnostic.Debug;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Sends a true/false pulse to 2 different binary outputs.  If the input to this wedge is true,
@@ -26,7 +27,7 @@ import org.swzoo.log2.core.Logger;
  */
 
 public class BinaryPulseWedge implements Wedge {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/* ---------------- facets ------------------- */
 	
@@ -85,7 +86,7 @@ public class BinaryPulseWedge implements Wedge {
 		public synchronized void valueChanged(boolean value) {
 			binaryStateConduit.valueChanged(value);
 			if (debugLevel > 0) {
-				LogTools.info(logger, "Start of pulse, sent a '" + value + "' value");
+				logger.log(Level.INFO, "Start of pulse, sent a '" + value + "' value");
 			}
 
 			binaryOnOutput.valueChanged(value);
@@ -115,7 +116,7 @@ public class BinaryPulseWedge implements Wedge {
 		public void run() {
 			binaryOnOutput.valueChanged(false);
 			if (debugLevel > 0) {
-				LogTools.info(logger, "End of pulse, sent a 'false' value to binaryOnOutput");
+				logger.log(Level.INFO, "End of pulse, sent a 'false' value to binaryOnOutput");
 			}
 		}
 	}
@@ -126,7 +127,7 @@ public class BinaryPulseWedge implements Wedge {
 		public void run() {
 			binaryOffOutput.valueChanged(false);
 			if (debugLevel > 0) {
-				LogTools.info(logger, "End of pulse, sent a 'false' value to binaryOffOutput");
+				logger.log(Level.INFO, "End of pulse, sent a 'false' value to binaryOffOutput");
 			}
 		}
 	}

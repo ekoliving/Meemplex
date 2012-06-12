@@ -12,7 +12,7 @@
  * - Include voting to correctly maintain the Meem's LifeCycleState.
  * - Persist the MeemContent whenever the SocketConfiguration changes.
  * - Replace "ErrorHandler reference" hack with a proper Conduit.
- * - Consider throwing RuntimeException instead of LogTools.error(),
+ * - Consider throwing RuntimeException instead of logger.log(Level.WARNING,),
  *   once thread decoupling is correctly utilized everywhere.
  * - conclude() effectively blocks for MULTICAST_SOCKET_TIMEOUT seconds.
  */
@@ -24,6 +24,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.common.StringValue;
@@ -155,7 +156,7 @@ public class StringMulticastSocketAdapterWedge
       }
     }
 
-    logger.info( "run() - Multicast receiver thread concluded on UDP port: " + port);
+    logger.log(Level.INFO,  "run() - Multicast receiver thread concluded on UDP port: " + port);
   }
 
   /**
@@ -179,7 +180,7 @@ public class StringMulticastSocketAdapterWedge
       workerThread.setDaemon(true);
       workerThread.start();
       lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(),true);
-      logger.info( "commence() - Multicast receiver started on UDP port: " + port);
+      logger.log(Level.INFO,  "commence() - Multicast receiver started on UDP port: " + port);
     }
     catch (IOException ioException) {
       errorHandlerConduit.thrown(ioException);
@@ -205,7 +206,7 @@ public class StringMulticastSocketAdapterWedge
       catch (InterruptedException interruptedException) {}
 
       if (workerThread.isAlive()) {
-    	  logger.info("conclude() - Unable to terminate Multicast worker Thread");
+    	  logger.log(Level.INFO, "conclude() - Unable to terminate Multicast worker Thread");
       }
       else {
         try {

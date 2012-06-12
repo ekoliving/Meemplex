@@ -40,7 +40,8 @@ import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.system.space.resolver.MeemResolverClient;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -52,8 +53,8 @@ import org.swzoo.log2.core.*;
 
 public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 {
-	private static final Logger logger = LogFactory.getLogger();
-	public static final int LOG_LEVEL = Common.getLogLevelVerbose();
+	private static final Logger logger = Logger.getAnonymousLogger();
+	public static final Level LOG_LEVEL = Common.getLogLevelVerbose();
 	private static boolean DEBUG = false;
 
 	public MeemCore meemCore;
@@ -311,7 +312,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 	{
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER)
 		{
-			LogTools.trace(logger, LOG_LEVEL,
+			logger.log(LOG_LEVEL,
 				"pathResolved() searchMeemPath: " + searchMeemPath + " resolvedMeemPath: " + resolvedMeemPath);
 		}
 
@@ -352,7 +353,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 	{
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER)
 		{
-			LogTools.trace(logger, LOG_LEVEL,
+			logger.log(LOG_LEVEL,
 				"handleEntryResolved() newEntryPath: " + newEntryPath + " MeemPath: " + path);
 		}
 
@@ -378,7 +379,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 
 				if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER)
 				{
-					LogTools.trace(logger, LOG_LEVEL, "handleEntryResolved() locateMeem():" + path);
+					logger.log(LOG_LEVEL, "handleEntryResolved() locateMeem():" + path);
 				}
 
 				// start watching for it
@@ -405,7 +406,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 	{
 		if (meem == null)
 		{
-			LogTools.error(logger, "handleMeemRegistered() Got null meem for " + meemPath);
+			logger.log(Level.WARNING, "handleMeemRegistered() Got null meem for " + meemPath);
 			return;
 		}
 		List<MonitorDetail> monitors = null;
@@ -446,7 +447,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 	{
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER)
 		{
-			LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "entryRemoved: " + removedEntryPath);
+			logger.log(MeemResolverWedge.LOG_LEVEL, "entryRemoved: " + removedEntryPath);
 		}
 
 		for (MeemPath meemPath : meemPaths) 
@@ -503,7 +504,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER)
 		{
-			LogTools.trace(logger, LOG_LEVEL, "createCategoryMonitor(): " + entryName + " : " + fullMeemPath);
+			logger.log(LOG_LEVEL, "createCategoryMonitor(): " + entryName + " : " + fullMeemPath);
 		}
 
 		CategoryMonitorMapPair pair = categoryMonitorTree.getCategoryMonitorMapPair(categoryPath);
@@ -580,7 +581,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 		public void entriesAdded(CategoryEntry[] newEntries)
 		{
 			if (DEBUG) {
-				LogTools.info(logger, "entriesAdded: " + newEntries);
+				logger.log(Level.INFO, "entriesAdded: " + newEntries);
 			}
 			this.entries = newEntries;
 		}
@@ -645,7 +646,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 		public void proceed(Meem meem)
 		{
 			if (DEBUG) {
-				LogTools.info(logger, "proceeding with meem: " + meem + " remaining: " + tok.countTokens());
+				logger.log(Level.INFO, "proceeding with meem: " + meem + " remaining: " + tok.countTokens());
 			}
 			
 			if (tok.hasMoreTokens())
@@ -654,7 +655,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 				Filter filter = new ExactMatchFilter(entryName);
 
 				if (DEBUG) {
-					LogTools.info(logger, "getting entry, " + entryName + ", of " + meem);
+					logger.log(Level.INFO, "getting entry, " + entryName + ", of " + meem);
 				}
 				
 				this.categoryClientTarget = meemCore.getLimitedTargetFor(this, CategoryClient.class);
@@ -752,7 +753,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 
 			if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER)
 			{
-				LogTools.trace(logger, LOG_LEVEL,
+				logger.log(LOG_LEVEL,
 					"handleMeemRegistered() " + meem.getMeemPath() + " : monitors: " + monitors);
 			}
 			

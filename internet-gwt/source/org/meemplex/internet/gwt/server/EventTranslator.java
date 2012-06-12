@@ -3,6 +3,7 @@ package org.meemplex.internet.gwt.server;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
@@ -92,7 +93,7 @@ public class EventTranslator {
 				result = array.toString();
 			}
 			catch (Exception e) {
-				logger.info("could not marshal array: " + object);
+				logger.log(Level.INFO, "could not marshal array: " + object);
 			}
 		}
 		else if (object instanceof Collection<?>) {

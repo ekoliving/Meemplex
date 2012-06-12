@@ -45,9 +45,10 @@ import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.openmaji.system.utility.CategoryUtility;
 import org.openmaji.system.utility.MeemUtility;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -59,7 +60,7 @@ import org.swzoo.log2.core.Logger;
  * @author Chris Kakris
  */
 public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryClient {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public static boolean DEBUG = true;
 
@@ -132,7 +133,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 	public void addSubsystemDefinition(MeemDefinition meemDefinition) {
 		String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 		if (identifier == null || identifier.length() == 0) {
-			LogTools.error(logger, "addSubsystemDefinition() - identifier not set in meemDefinition: " + meemDefinition);
+			logger.log(Level.WARNING, "addSubsystemDefinition() - identifier not set in meemDefinition: " + meemDefinition);
 			return;
 		}
 
@@ -145,7 +146,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 	public void removeSubsystemDefinition(MeemDefinition meemDefinition) {
 		String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 		if (identifier == null || identifier.length() == 0) {
-			LogTools.error(logger, "removeSubsystemDefinition() - identifier not set in meemDefinition: " + meemDefinition);
+			logger.log(Level.WARNING, "removeSubsystemDefinition() - identifier not set in meemDefinition: " + meemDefinition);
 			return;
 		}
 
@@ -162,22 +163,22 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 		String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 
 		if (identifier == null) {
-			LogTools.info(logger, "Can not create a subsystem will a null identifier");
+			logger.log(Level.INFO, "Can not create a subsystem will a null identifier");
 			return;
 		}
 
 		if (DEBUG) {
-			LogTools.info(logger, "creating a subsystem: " + identifier + " - " + meemDefinition);
+			logger.log(Level.INFO, "creating a subsystem: " + identifier + " - " + meemDefinition);
 		}
 
 		if (!installedCategoryConnected) {
-			LogTools.info(logger, "Installed subsystem category not connected.  Not creating subsystem, " + identifier);
+			logger.log(Level.INFO, "Installed subsystem category not connected.  Not creating subsystem, " + identifier);
 			// TODO queue up meem definition for creation
 			return;
 		}
 
 		if (meems.get(identifier) != null) {
-			LogTools.info(logger, "Could not create sub-system \"" + identifier + "\" because it already exists");
+			logger.log(Level.INFO, "Could not create sub-system \"" + identifier + "\" because it already exists");
 		}
 		else {
 			lifeCycleManagerConduit.createMeem(meemDefinition, LifeCycleState.READY);
@@ -200,7 +201,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 			}
 		}
 
-		LogTools.error(logger, "destroyMeem() - Unknown Meem: " + meem.getMeemPath());
+		logger.log(Level.WARNING, "destroyMeem() - Unknown Meem: " + meem.getMeemPath());
 	}
 
 	/* ------------------- private methods ------------------------------------ */
@@ -261,7 +262,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 	private class LifeCycleManagerClientConduit implements LifeCycleManagerClient {
 		public void meemCreated(Meem meem, String identifier) {
 			if (DEBUG) {
-				LogTools.info(logger, "meemCreated: " + identifier + " : " + meem);
+				logger.log(Level.INFO, "meemCreated: " + identifier + " : " + meem);
 			}
 
 			// added by Warren 11/10/2006 to expediate entry into meems list
@@ -269,7 +270,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 			if (identifier.equals("unidentified")) {
 				// TODO Work out why this is happening and fix it
-				LogTools.error(logger, "meemCreated() - why is identifier=[" + identifier + "] for meem=[" + meem.getMeemPath().getLocation() + "]");
+				logger.log(Level.WARNING, "meemCreated() - why is identifier=[" + identifier + "] for meem=[" + meem.getMeemPath().getLocation() + "]");
 				return;
 			}
 
@@ -293,7 +294,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 		public void meemDestroyed(Meem meem) {
 			if (DEBUG) {
-				LogTools.info(logger, "meemDestroyed: " + meem);
+				logger.log(Level.INFO, "meemDestroyed: " + meem);
 			}
 			removeSubsystemFromInstalledCategory(meem);
 			subsystemFactoryClient.subsystemDestroyed(meem);
@@ -301,14 +302,14 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 		public void meemTransferred(Meem meem, LifeCycleManager targetLifeCycleManager) {
 			if (DEBUG) {
-				LogTools.info(logger, "meemTransferred: " + meem);
+				logger.log(Level.INFO, "meemTransferred: " + meem);
 			}
 			Meem lcmMeem = (Meem) targetLifeCycleManager;
 
 			if (lcmMeem.getMeemPath().equals(meemCore.getMeemPath())) {
 
 				if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-					LogTools.trace(logger, Common.getLogLevelVerbose(), "meemTransferred (Added) " + meem);
+					logger.log(Common.getLogLevelVerbose(), "meemTransferred (Added) " + meem);
 				}
 
 				// send meemDefinition to subsystemFactoryClient
@@ -324,7 +325,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 			}
 			else {
 				if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-					LogTools.trace(logger, Common.getLogLevelVerbose(), "meemTransferred (Removed) " + meem);
+					logger.log(Common.getLogLevelVerbose(), "meemTransferred (Removed) " + meem);
 				}
 				removeSubsystemFromInstalledCategory(meem);
 			}
@@ -339,7 +340,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 					String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 
 					if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-						LogTools.trace(logger, Common.getLogLevelVerbose(), "removeSubsystemFromInstalledCategory " + meem + " identifier = " + identifier);
+						logger.log(Common.getLogLevelVerbose(), "removeSubsystemFromInstalledCategory " + meem + " identifier = " + identifier);
 					}
 
 					getInstalledCategory().removeEntry(identifier);
@@ -395,7 +396,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 				CategoryEntry entry = entries[i];
 				MeemDefinition definition = meemUtility.getMeemDefinition(entry.getMeem());
 				if (definition == null) {
-					LogTools.error(logger, "entriesAdded() - why does MeemUtility return null as a definition for meem " + entry.getName() + " : " + entry.getMeem());
+					logger.log(Level.WARNING, "entriesAdded() - why does MeemUtility return null as a definition for meem " + entry.getName() + " : " + entry.getMeem());
 				}
 				else {
 					//        TODO Remove this next line once MeemUtility has been fixed
@@ -451,12 +452,12 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 		for (int i = 0; i < entries.length; i++) {
 			CategoryEntry entry = entries[i];
 			if (DEBUG) {
-				LogTools.info(logger, "Adding subsystem category entry: " + entry.getName());
+				logger.log(Level.INFO, "Adding subsystem category entry: " + entry.getName());
 			}
 			meems.put(entry.getName(), entry.getMeem());
 
 			if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-				LogTools.trace(logger, Common.getLogLevelVerbose(), entry.getName() + " added to subsystem category");
+				logger.log(Common.getLogLevelVerbose(), entry.getName() + " added to subsystem category");
 			}
 
 		}
@@ -469,7 +470,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 			meems.remove(entry.getName());
 
 			if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-				LogTools.trace(logger, Common.getLogLevelVerbose(), entry.getName() + " removed from subsystem category");
+				logger.log(Common.getLogLevelVerbose(), entry.getName() + " removed from subsystem category");
 			}
 
 			subsystemFactoryClient.subsystemDestroyed(meem);
@@ -478,7 +479,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 	public void entryRenamed(CategoryEntry oldEntry, CategoryEntry newEntry) {
 		if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), oldEntry.getName() + " renamed to " + newEntry.getName() + " in subsystem category");
+			logger.log(Common.getLogLevelVerbose(), oldEntry.getName() + " renamed to " + newEntry.getName() + " in subsystem category");
 		}
 
 		meems.remove(oldEntry.getName());

@@ -17,30 +17,30 @@ public class MeemMessage {
 	/**
 	 * sequence
 	 */
-	private long messageId;
+	public long messageId;
 	
 	/**
 	 * MeemPath of the Meem this message is to/from.
 	 */
-	private Object meemPath;
+	public Object meemPath;
 
 	/**
 	 * The name of the Facet on the meem this message is to/from
 	 */
-	private String facetId;
+	public String facetId;
 	
 	/**
 	 * The type of Facet. This defines the methods and parameters that are possible.
 	 */
-	private String facetType;
+	public String facetType;
 
 	/**
 	 * The method of the message
 	 */
-	private String method;
+	public String method;
 
 	/**
 	 * Parameters of the message
 	 */
-	private List<Object> params;
+	public List<Object> params;
 }

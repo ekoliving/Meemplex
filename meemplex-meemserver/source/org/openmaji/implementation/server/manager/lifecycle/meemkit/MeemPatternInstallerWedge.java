@@ -35,12 +35,13 @@ import org.openmaji.system.presentation.ResourceExporter;
 import org.openmaji.system.space.Category;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.openmaji.system.utility.CategoryUtility;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final boolean DEBUG = false;
 
@@ -99,7 +100,7 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 			numberPatternMeems = numberPatternMeems + descriptor.getWedgeDescriptors().length;
 		}
 
-		LogTools.info(logger, "installPatterns() - name=[" + descriptor.getHeader().getName() + "] installed " + numberPatternMeems + " pattern meems into toolkit");
+		logger.log(Level.INFO, "installPatterns() - name=[" + descriptor.getHeader().getName() + "] installed " + numberPatternMeems + " pattern meems into toolkit");
 	}
 
 	/**
@@ -142,9 +143,9 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 			return;
 		for (int i = 0; i < entries.length; i++) {
 			if (entries[i] == null) {
-				LogTools.error(logger, "Unable to install all Meems / Wedges in this MeemKit.");
-				LogTools.error(logger, "MeemKit descriptor has incomplete or poorly formed XML.");
-				LogTools.error(logger, "Previous log messages may provide clues.");
+				logger.log(Level.WARNING, "Unable to install all Meems / Wedges in this MeemKit.");
+				logger.log(Level.WARNING, "MeemKit descriptor has incomplete or poorly formed XML.");
+				logger.log(Level.WARNING, "Previous log messages may provide clues.");
 				continue;
 			}
 			MeemkitEntryDescriptor entry = entries[i];
@@ -175,13 +176,13 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 		}
 		catch (Exception ex) {
 			String message = "Unable to obtain MeemDefinition from '" + className + "': " + ex.getMessage();
-			LogTools.error(logger, message);
+			logger.log(Level.WARNING, message);
 			errorHandlerConduit.thrown(new Exception(message));
 			return;
 		}
 
 		if (md == null) {
-			LogTools.error(logger, "MeemDefinitionFactory unable to create meemdefinition for '" + entry.getName() + "'");
+			logger.log(Level.WARNING, "MeemDefinitionFactory unable to create meemdefinition for '" + entry.getName() + "'");
 			return;
 		}
 
@@ -246,7 +247,7 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 
 		configureMeem(meem, entry);
 
-		LogTools.trace(logger, 10, "createToolkitEntry() " + path);
+		logger.log(Level.FINE, "createToolkitEntry() " + path);
 	}
 
 	/**
@@ -345,14 +346,14 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 				buffer.append(wedges[i]);
 				buffer.append(']');
 			}
-			LogTools.error(logger, buffer.toString());
+			logger.log(Level.WARNING, buffer.toString());
 		}
 		*/
 		else {
 			configureMeem(meem, entry);
 		}
 
-		LogTools.trace(logger, 10, "createToolkitEntryFromWedges() " + path);
+		logger.log(Level.FINE, "createToolkitEntryFromWedges() " + path);
 	}
 
 	private void configureMeem(Meem meem, MeemkitEntryDescriptor entry) {
@@ -391,11 +392,11 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 			resourceClass = Class.forName(resourceClassName);
 		}
 		catch (ClassNotFoundException classNotFoundException) {
-			LogTools.error(logger, "Class Not Found in MeemKit: " + path + ", ClassName: " + resourceClassName);
+			logger.log(Level.WARNING, "Class Not Found in MeemKit: " + path + ", ClassName: " + resourceClassName);
 			return;
 		}
 		catch (UnsupportedClassVersionError unsupportedClassVersionError) {
-			LogTools.error(logger, "Unsupported Class Version in MeemKit: " + path + ", ClassName: " + resourceClassName);
+			logger.log(Level.WARNING, "Unsupported Class Version in MeemKit: " + path + ", ClassName: " + resourceClassName);
 			return;
 		}
 
@@ -414,7 +415,7 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 		ConfigurationIdentifier ci = new ConfigurationIdentifier("MeemSystemWedge", "meemIdentifier");
 		ch.valueChanged(ci, entry.getName());
 
-		LogTools.trace(logger, 10, "createToolkitCategory() " + path);
+		logger.log(Level.FINE, "createToolkitCategory() " + path);
 	}
 
 	/**
@@ -441,7 +442,7 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 			numberPatternMeems = numberPatternMeems + descriptor.getWedgeDescriptors().length;
 		}
 
-		LogTools.info(logger, "uninstallPatterns() - name=[" + descriptor.getHeader().getName() + "] uninstalled " + numberPatternMeems + " pattern meems from toolkit");
+		logger.log(Level.INFO, "uninstallPatterns() - name=[" + descriptor.getHeader().getName() + "] uninstalled " + numberPatternMeems + " pattern meems from toolkit");
 	}
 
 	/**
@@ -508,30 +509,30 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 
 		Meem patternMeem = Meem.spi.get(childMeemPath);
 		if (patternMeem == null) {
-			LogTools.error(logger, "remove() - unable to get pattern meem " + childPathName);
+			logger.log(Level.WARNING, "remove() - unable to get pattern meem " + childPathName);
 			return;
 		}
 
 		Meem parentMeem = Meem.spi.get(parentMeemPath);
 		if (parentMeem == null) {
-			LogTools.error(logger, "remove() - unable to get parent meem " + parentPathName);
+			logger.log(Level.WARNING, "remove() - unable to get parent meem " + parentPathName);
 			return;
 		}
 		Category category = CategoryUtility.spi.get().getCategory(parentMeem);
 		if (category == null) {
-			LogTools.error(logger, "remove() - unable to get category meem " + parentPathName);
+			logger.log(Level.WARNING, "remove() - unable to get category meem " + parentPathName);
 			return;
 		}
 
 		LifeCycle lifeCycle = (LifeCycle) ReferenceHelper.getTarget(patternMeem, "lifeCycle", LifeCycle.class);
 		if (lifeCycle == null) {
-			LogTools.error(logger, "remove() - unable to change '" + childName + "' to ABSENT state");
+			logger.log(Level.WARNING, "remove() - unable to change '" + childName + "' to ABSENT state");
 			return;
 		}
 
 		category.removeEntry(childName);
 		lifeCycle.changeLifeCycleState(LifeCycleState.ABSENT);
-		LogTools.trace(logger, 10, "remove() - " + childPathName);
+		logger.log(Level.FINE, "remove() - " + childPathName);
 	}
 
 	/* ------------------------------------------------------------------------ */

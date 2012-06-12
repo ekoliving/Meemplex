@@ -24,7 +24,8 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.definition.*;
 import org.openmaji.meem.wedge.error.ErrorHandler;
 import org.openmaji.system.manager.thread.ThreadManager;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Peter
@@ -34,7 +35,7 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 
 	public ErrorHandler errorHandlerConduit;
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final ThreadGroup poolThreadGroup = new ThreadGroup("Maji Thread Pool");
 
@@ -82,7 +83,7 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 			MINIMUM_POOL_THREADS = Math.max(ACTIVE_THREADS + 5, ACTIVE_THREADS * 2);
 		}
 
-		LogTools.info(logger, "Initialising " + poolThreadGroup.getName() + " with " + ACTIVE_THREADS + " active thread(s)");
+		logger.log(Level.INFO, "Initialising " + poolThreadGroup.getName() + " with " + ACTIVE_THREADS + " active thread(s)");
 
 		synchronized (readyRunnables) {
 			totalThreadCount = MINIMUM_POOL_THREADS;

@@ -47,9 +47,10 @@ import org.openmaji.system.meemserver.MeemServer;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.DOMBuilder;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -141,7 +142,7 @@ import org.swzoo.log2.core.Logger;
  * @author Warren Bloomer
  */
 public class XmlReaderWedge implements Wedge {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	private static final String PROPERTY_MEEMSPACEID = "org.openmaji.meemSpaceIdentifier";
 
@@ -263,13 +264,13 @@ public class XmlReaderWedge implements Wedge {
 			doSetFilename(filename);
 		}
 		catch (Exception e) {
-			LogTools.error(logger, "Could not determine filepaths", e);
+			logger.log(Level.WARNING, "Could not determine filepaths", e);
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 			return;
 		}
 
 		if (filepaths == null) {
-			LogTools.error(logger, "Unable to go READY: filename property not set");
+			logger.log(Level.WARNING, "Unable to go READY: filename property not set");
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 			return;
 		}
@@ -280,7 +281,7 @@ public class XmlReaderWedge implements Wedge {
 		Element rootElement = null;
 		boolean deployed = false;
 		if (DEBUG) {
-			LogTools.info(logger, "Current file index: " + indexOfCurrentFile + ", length: " + filepaths.length);
+			logger.log(Level.INFO, "Current file index: " + indexOfCurrentFile + ", length: " + filepaths.length);
 		}
 		
 		while (indexOfCurrentFile < filepaths.length) {
@@ -297,11 +298,11 @@ public class XmlReaderWedge implements Wedge {
 		if (deployed) {
 			progressConduit.reset();
 			try {
-				LogTools.info(logger, "Processing " + filepaths[indexOfCurrentFile]);
+				logger.log(Level.INFO, "Processing " + filepaths[indexOfCurrentFile]);
 				rootElement = readXMLFile(filepaths[indexOfCurrentFile]);
 			}
 			catch (Exception ex) {
-				LogTools.error(logger, "Error processing deployment file, unable to go READY: " + ex.getMessage());
+				logger.log(Level.WARNING, "Error processing deployment file, unable to go READY: " + ex.getMessage());
 				lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 				return;
 			}
@@ -371,8 +372,8 @@ public class XmlReaderWedge implements Wedge {
 			properties.put("${application}", matcher.group(1));
 			properties.put("${version}", matcher.group(2));
 			if (debugLevel > 0) {
-				LogTools.info(logger, "Processing a meem deployment document");
-				LogTools.info(logger, "${application}=" + matcher.group(1) + " ${version}=" + matcher.group(2));
+				logger.log(Level.INFO, "Processing a meem deployment document");
+				logger.log(Level.INFO, "${application}=" + matcher.group(1) + " ${version}=" + matcher.group(2));
 			}
 		}
 	}
@@ -385,7 +386,7 @@ public class XmlReaderWedge implements Wedge {
 		boolean deployed = true;
 		Pattern pattern = Pattern.compile("\\s*<site-deployment\\s*name=\"(.*)\".*");
 		String sitename = System.getProperty("org.openmaji.meemSpaceIdentifier").trim();
-		//LogTools.info(logger, "deploy-site is "+sitename);
+		//logger.log(Level.INFO, "deploy-site is "+sitename);
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(filePath));
 			String text;
@@ -400,7 +401,7 @@ public class XmlReaderWedge implements Wedge {
 			}
 		}
 		catch (IOException ioe) {
-			LogTools.error(logger, "Error processing deployment file, unable to go READY: " + ioe.getMessage());
+			logger.log(Level.WARNING, "Error processing deployment file, unable to go READY: " + ioe.getMessage());
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 		}
 
@@ -484,7 +485,7 @@ public class XmlReaderWedge implements Wedge {
 
 		for (int i = 0; i < xmlReader.filepaths.length; i++) {
 
-			LogTools.info(logger, "Processing " + xmlReader.filepaths[i]);
+			logger.log(Level.INFO, "Processing " + xmlReader.filepaths[i]);
 			xmlReader.readXMLFile(xmlReader.filepaths[i]);
 		}
 		xmlReader.hashCode();
@@ -519,7 +520,7 @@ public class XmlReaderWedge implements Wedge {
 		
 		public void reset() {
 			if (DEBUG) {
-				LogTools.info(logger, "reset progress");
+				logger.log(Level.INFO, "reset progress");
 			}
 			completion = 0;
 			current = 0;
@@ -528,15 +529,15 @@ public class XmlReaderWedge implements Wedge {
 		public synchronized void addCompletionPoints(int points) {
 			completion = completion + points;
 			if (DEBUG) {
-				LogTools.info(logger, "addCompletionPoints: " + points);
-				LogTools.info(logger, "  progress: " + current + "/" + completion);
+				logger.log(Level.INFO, "addCompletionPoints: " + points);
+				logger.log(Level.INFO, "  progress: " + current + "/" + completion);
 			}
 		}
 
 		public synchronized void addProgressPoints(int points) {
 			if (DEBUG) {
-				LogTools.info(logger, "Updating progress: " + (current + points) + "/" + completion);
-				//LogTools.info(logger, "  current: " + current + ", completion = " + completion);
+				logger.log(Level.INFO, "Updating progress: " + (current + points) + "/" + completion);
+				//logger.log(Level.INFO, "  current: " + current + ", completion = " + completion);
 			}
 			current = current + points;
 			if (current >= completion) {

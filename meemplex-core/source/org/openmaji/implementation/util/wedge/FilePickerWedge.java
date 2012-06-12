@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -227,12 +228,12 @@ public class FilePickerWedge implements Wedge, SpeedControl, WedgeDefinitionProv
 			images = temp;
 			index = 0;
 			Arrays.sort(images);
-			logger.info("Found " + images.length + " images in '" + directory + "'");
+			logger.log(Level.INFO, "Found " + images.length + " images in '" + directory + "'");
 		}
 
 		if (images.length == 0) {
 			if (debugLevel > 0) {
-				logger.info("No files matched");
+				logger.log(Level.INFO, "No files matched");
 			}
 			return;
 		}
@@ -258,7 +259,7 @@ public class FilePickerWedge implements Wedge, SpeedControl, WedgeDefinitionProv
 		}
 
 		if (debugLevel > 0) {
-			logger.info(images[index]);
+			logger.log(Level.INFO, images[index]);
 		}
 
 		StringBuffer fileAsUrl = new StringBuffer();

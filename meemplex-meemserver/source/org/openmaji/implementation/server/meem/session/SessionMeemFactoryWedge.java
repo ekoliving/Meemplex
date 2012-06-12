@@ -19,7 +19,8 @@ import org.openmaji.system.manager.lifecycle.LifeCycleManager;
 import org.openmaji.system.manager.lifecycle.LifeCycleManagerClient;
 import org.openmaji.system.meem.session.SessionMeemFactory;
 import org.openmaji.system.meem.session.SessionMeemFactoryClient;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -27,7 +28,7 @@ import org.swzoo.log2.core.*;
  */
 public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFactory {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	/** Outbound client facet for returning the newly created session meem 
 	 * instance and associated errors */
 	
@@ -70,7 +71,7 @@ public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFacto
 	public void createSessionMeem() {
 		
 		if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-			LogTools.trace(logger, Common.getLogLevel(), "Request recieved to create session meem...");		
+			logger.log(Common.getLogLevel(), "Request recieved to create session meem...");		
 		}
 
 		// grab the meem definition from the abstract provider
@@ -82,7 +83,7 @@ public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFacto
 		
 		if ((ident == null) || (ident == "")) {
 			
-			LogTools.error(logger, "No base identifier provided in meem definition");		
+			logger.log(Level.WARNING, "No base identifier provided in meem definition");		
 			
 			// TODO: throw a CreateException on the error facet
 			
@@ -93,7 +94,7 @@ public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFacto
 		meemdef.getMeemAttribute().setIdentifier(ident);
 				
 		if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-			LogTools.trace(logger, Common.getLogLevel(), "Creating session meeem " + id);		
+			logger.log(Common.getLogLevel(), "Creating session meeem " + id);		
 		}
 		lifeCycleManagerConduit.createMeem(meemdef, LifeCycleState.READY);
 		
@@ -106,7 +107,7 @@ public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFacto
 	public void destroySessionMeem(MeemPath mp) {
 		
 		if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-			LogTools.trace(logger, Common.getLogLevel(), "Request recieved to destroy session meem...");	
+			logger.log(Common.getLogLevel(), "Request recieved to destroy session meem...");	
 		}
 		
 		Vector mManagedMeemsList = new Vector();
@@ -119,7 +120,7 @@ public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFacto
 			Meem m = (Meem) it.next();
 			if (m.getMeemPath().equals(mp)) {
 				if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-					LogTools.trace(logger, Common.getLogLevel(), "Destroying session meeem...");
+					logger.log(Common.getLogLevel(), "Destroying session meeem...");
 				}
 				lifeCycleManagerConduit.destroyMeem(m);
 			}
@@ -146,7 +147,7 @@ public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFacto
 			// held by the subsystem.
 			
 			if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-				LogTools.trace(logger, Common.getLogLevel(), "Created session meem...");		
+				logger.log(Common.getLogLevel(), "Created session meem...");		
 			}
 			mManagedMeems.add(meem);		
 			fSessionClient.sessionMeemCreated(meem.getMeemPath());
@@ -159,7 +160,7 @@ public abstract class SessionMeemFactoryWedge implements Wedge, SessionMeemFacto
 		public void meemDestroyed(Meem meem) {
 
 			if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-				LogTools.trace(logger, Common.getLogLevel(), "Destroyed session meem...");		
+				logger.log(Common.getLogLevel(), "Destroyed session meem...");		
 			}
 			mManagedMeems.remove(meem);		
 			fSessionClient.sessionMeemDestroyed(meem.getMeemPath());

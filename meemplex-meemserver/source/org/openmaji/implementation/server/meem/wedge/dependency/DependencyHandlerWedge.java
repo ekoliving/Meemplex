@@ -30,9 +30,10 @@ import org.openmaji.meem.wedge.dependency.*;
 import org.openmaji.meem.wedge.lifecycle.*;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.reference.*;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -45,8 +46,8 @@ import org.swzoo.log2.core.Logger;
  */
 public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 
-	private static final int LOG_LEVEL = Common.getLogLevelVerbose();
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Level LOG_LEVEL = Common.getLogLevelVerbose();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	private static final boolean DEBUG = false;
 
 	public MeemCore meemCore;
@@ -247,7 +248,7 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 			FacetImpl facetImpl = getFacetImpl(sourceFacetIdentifier);
 	
 			if (facetImpl == null) {
-				LogTools.warn(logger, "No facet with identifier \"" + sourceFacetIdentifier + "\". Unable to create dependency.");
+				logger.log(Level.WARNING, "No facet with identifier \"" + sourceFacetIdentifier + "\". Unable to create dependency.");
 				return;
 			}
 	
@@ -330,7 +331,7 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 		}
 
 		if (Common.TRACE_ENABLED && Common.TRACE_DEPENDENCY) {
-			LogTools.trace(logger, LOG_LEVEL,
+			logger.log(LOG_LEVEL,
 				"dependencyAdded() SourceMeem = " + meemCore.getMeemPath()
 					+ " FacetId: " + sourceFacetIdentifier
 					+ " DepAttr: " + dependencyAttribute
@@ -345,7 +346,7 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 	protected synchronized void doRemoveDependency(final DependencyAttribute dependencyAttribute, boolean permanent) {
 
 		if (DEBUG) {
-			LogTools.info(logger, "Removing dependency (" + permanent + "): " + dependencyAttribute);
+			logger.log(Level.INFO, "Removing dependency (" + permanent + "): " + dependencyAttribute);
 		}
 		
 		boolean removed = false;
@@ -369,7 +370,7 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 			}
 			if (client == null) {
 				// something is weird. we don't know about the DependencyAttribute. Lets just return
-				LogTools.info(logger, "Problem removing dependency.  DependencyAttribute is not in transient or persistent collection.");
+				logger.log(Level.INFO, "Problem removing dependency.  DependencyAttribute is not in transient or persistent collection.");
 				return;
 			}
 
@@ -393,14 +394,14 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 		}
 
 		if (Common.TRACE_ENABLED && Common.TRACE_DEPENDENCY) {
-			LogTools.trace(logger, LOG_LEVEL, "dependencyRemoved() DepAttr: " + oldDependencyAttribute);
+			logger.log(LOG_LEVEL, "dependencyRemoved() DepAttr: " + oldDependencyAttribute);
 		}
 	}
 	
 	private void doUpdateDependency(DependencyAttribute dependencyAttribute) {
 		
 		if (DEBUG) {
-			LogTools.info(logger, "doUpdateDependency: " + dependencyAttribute);
+			logger.log(Level.INFO, "doUpdateDependency: " + dependencyAttribute);
 		}
 
 		FacetConnectable desc = (FacetConnectable) transientDependencies.get(dependencyAttribute);
@@ -408,7 +409,7 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 			desc = (FacetConnectable) persistentDependencies.get(dependencyAttribute);
 		}
 		if (desc == null) {
-			LogTools.info(logger, "Can not update dependency. Not found");
+			logger.log(Level.INFO, "Can not update dependency. Not found");
 			return;
 		}
 		
@@ -430,7 +431,7 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 			currentVote = allDependenciesResolved;
 
 			if (Common.TRACE_ENABLED && Common.TRACE_DEPENDENCY) {
-				LogTools.trace(logger, LOG_LEVEL, "checkStrongDependenciesResolved() voting : "
+				logger.log(LOG_LEVEL, "checkStrongDependenciesResolved() voting : "
 					+ allDependenciesResolved + " : " + meemCore.getMeemPath());
 			}
 

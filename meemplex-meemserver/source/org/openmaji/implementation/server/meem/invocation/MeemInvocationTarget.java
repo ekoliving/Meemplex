@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.security.GeneralSecurityException;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -177,7 +178,7 @@ public class MeemInvocationTarget implements InvocationHandler, Serializable
 //		if (Common.TRACE_ENABLED) {
 //			Object meemId = meemCoreImpl.getMeemStructure().getMeemAttribute().getIdentifier();
 //			meemId = meemId == null || meemId.toString().isEmpty() ? meemPath : meemId;
-//			logger.info("<-- in:  " + meemId + " : " + facetIdentifier + " . " + method.getName());
+//			logger.log(Level.INFO, "<-- in:  " + meemId + " : " + facetIdentifier + " . " + method.getName());
 //		}
 
 		if (decClass == Meem.class && args == null)
@@ -405,7 +406,7 @@ public class MeemInvocationTarget implements InvocationHandler, Serializable
 //						if (Common.TRACE_ENABLED) {
 //							Object meemId = meemCoreImpl.getMeemStructure().getMeemAttribute().getIdentifier();
 //							meemId = meemId == null || meemId.toString().isEmpty() ? meemPath : meemId;
-//							logger.info("<-- in:  " + meemId + " : " + facetIdentifier + " . " + invocation.getMethod().getName());
+//							logger.log(Level.INFO, "<-- in:  " + meemId + " : " + facetIdentifier + " . " + invocation.getMethod().getName());
 //						}
 						
 						invocation.invoke(target, errorHandlerConduit);
@@ -466,5 +467,5 @@ public class MeemInvocationTarget implements InvocationHandler, Serializable
 //		}
 	}
 	
-//	private static final Logger logger = LogFactory.getLogger();
+//	private static final Logger logger = Logger.getAnonymousLogger();
 }

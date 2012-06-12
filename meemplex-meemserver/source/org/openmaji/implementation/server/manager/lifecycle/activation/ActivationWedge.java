@@ -15,6 +15,7 @@ package org.openmaji.implementation.server.manager.lifecycle.activation;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.manager.lifecycle.LifeCycleManagerMisc;
@@ -121,7 +122,7 @@ public class ActivationWedge implements Wedge {
 		public void meemBuilt(MeemPath meemPath, Meem meem, int requestId) {
 			if (requestId == WEDGE_ID) {
 				if (DEBUG) {
-					logger.info("matches WEDGE_ID: " + meemPath + " - " + requestId);
+					logger.log(Level.INFO, "matches WEDGE_ID: " + meemPath + " - " + requestId);
 				}
 				
 				if (meem != null) {

@@ -5,9 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -39,7 +40,7 @@ import org.swzoo.log2.core.Logger;
 
 public class UserProperties
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   public static final String USER_PROPERTIES_FILE = "maji";
 
@@ -64,7 +65,7 @@ public class UserProperties
       File file = new File(userPropertiesFilename);
       if ( file.exists() == false )
       {
-        LogTools.error(logger,"getInstance() - property 'org.openmaji.userProperties' set to non-existent '"+file+"'");
+        logger.log(Level.WARNING, "getInstance() - property 'org.openmaji.userProperties' set to non-existent '"+file+"'");
       }
       return new UserProperties(file);
     }
@@ -127,7 +128,7 @@ public class UserProperties
     }
     catch ( IOException ex )
     {
-      LogTools.error(logger,"getProperties() - unable to read "+file);
+      logger.log(Level.WARNING, "getProperties() - unable to read "+file);
       return null;
     }
     finally

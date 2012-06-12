@@ -10,6 +10,7 @@
 package org.openmaji.implementation.tool.eclipse.browser.relationship.deployment.controllers;
 
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.jface.action.Action;
@@ -102,7 +103,7 @@ public class MeemController extends Controller {
 	protected SubsystemProxy getParentSubsystem() {
 		Node parent = getNode().getParent();
 		if(!(parent instanceof SubsystemNode)) {
-			logger.info("parent is: " + parent);
+			logger.log(Level.INFO, "parent is: " + parent);
 			return null;
 		}
 		return ((SubsystemNode)parent).getSubsystem();
@@ -111,7 +112,7 @@ public class MeemController extends Controller {
 	private void remove() {
 		SubsystemProxy subsystem = getParentSubsystem();
 		if (subsystem == null) {
-			logger.info("Cannot remove from category because parent is not a category"); 
+			logger.log(Level.INFO, "Cannot remove from category because parent is not a category"); 
 		}
 		else {
 			//subsystem.removeEntry(getNode().getText());

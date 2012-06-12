@@ -14,9 +14,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -42,7 +43,7 @@ import org.swzoo.log2.core.Logger;
 
 public class VariableListWedge implements VariableList, Wedge
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   /**
    * Variable client (out-bound Facet)
@@ -59,7 +60,7 @@ public class VariableListWedge implements VariableList, Wedge
        */
       public void sendContent(Object target, Filter filter)
       {
-        if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"sendContent() - invoked");
+        if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
         VariableList variableList = (VariableList) target;
         Value[] initialContent = ( valueList == null ? new Value[0] : valueList );
         variableList.valueChanged(initialContent);
@@ -97,7 +98,7 @@ public class VariableListWedge implements VariableList, Wedge
 
   public void valueChanged(Value[] valueList)
   {
-    if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on in-bound facet");
+    if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on in-bound facet");
     variableListControlConduit.valueChanged(valueList);
   }
 
@@ -118,7 +119,7 @@ public class VariableListWedge implements VariableList, Wedge
      */
 
     public void valueChanged(Value[] newValueList) {
-      if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on VariableListStateConduit");
+      if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on VariableListStateConduit");
       valueList = newValueList;
       variableListClient.valueChanged(valueList);
     }

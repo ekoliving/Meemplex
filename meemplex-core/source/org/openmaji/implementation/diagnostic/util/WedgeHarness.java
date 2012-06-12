@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.meemplex.meem.Conduit;
@@ -100,7 +101,7 @@ public class WedgeHarness {
 				try {
 					Object value = field.get(wedge);
 					if (value == null) {
-						logger.info("Got outbound Conduit: " + field);
+						logger.log(Level.INFO, "Got outbound Conduit: " + field);
 						
 						// create a proxy
 						InvocationHandler handler = new TestInvocationHandler(conduitName, field.getType());
@@ -112,7 +113,7 @@ public class WedgeHarness {
 						field.set(wedge, value);
 					}
 					else {
-						logger.info("Got inbound Conduit: " + field);
+						logger.log(Level.INFO, "Got inbound Conduit: " + field);
 					}
 				}
 				catch (IllegalAccessException e) {
@@ -131,7 +132,7 @@ public class WedgeHarness {
 				Object value = field.get(wedge);
 
 				if (value == null &&  Facet.class.isAssignableFrom(field.getType())) {
-					logger.info("Got outbound Facet: " + field);
+					logger.log(Level.INFO, "Got outbound Facet: " + field);
 					
 					// create a proxy
 					InvocationHandler handler = new TestInvocationHandler(field.getName(), field.getType());

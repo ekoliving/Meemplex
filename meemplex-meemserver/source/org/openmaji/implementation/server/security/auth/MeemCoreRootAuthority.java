@@ -47,9 +47,10 @@ import org.openmaji.implementation.server.Common;
 import org.openmaji.system.meem.hook.security.AccessLevel;
 import org.openmaji.system.meem.hook.security.GroupPrincipal;
 import org.openmaji.system.meem.hook.security.Principals;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -64,7 +65,7 @@ public class MeemCoreRootAuthority
     /**
      * Create the per-class Software Zoo Logging V2 reference.
      */
-    private static final Logger logger = LogFactory.getLogger();
+    private static final Logger logger = Logger.getAnonymousLogger();
 	private static final String SECURITY_MANAGER_PROPERTIES =  "org.openmaji.security";
 	
 	public static final String 	KEYSTORE_NAME               = SECURITY_MANAGER_PROPERTIES + ".KeyStore";
@@ -338,7 +339,7 @@ public class MeemCoreRootAuthority
 		private boolean isValidSubject(Subject subject)
 		{
 			if (subject == null) {
-				LogTools.info(logger, "Subject is null", new Exception());
+				logger.log(Level.INFO, "Subject is null", new Exception());
 				return false;
 			}
 			
@@ -353,7 +354,7 @@ public class MeemCoreRootAuthority
 			Set	principals = subject.getPrincipals(X500Principal.class);
 	    	
 			if (principals.size() == 0) {
-				LogTools.info(logger, "Subject has no X500 Principal: " + subject.getClass() + " : " + subject);
+				logger.log(Level.INFO, "Subject has no X500 Principal: " + subject.getClass() + " : " + subject);
 //				new Exception().printStackTrace();
 				return false;
 			}
@@ -369,9 +370,9 @@ public class MeemCoreRootAuthority
 	        		Set	certs = subject.getPublicCredentials(CertPath.class);
 	        		if (certs.size() == 0) {
 	        			
-	        			LogTools.info(logger, "Subject does not have a certificate path: " + id);
+	        			logger.log(Level.INFO, "Subject does not have a certificate path: " + id);
 	                    Set certificates = subject.getPublicCredentials(X509Certificate.class);
-	        			LogTools.info(logger, "But has " + certificates.size() + " certificates" );	   
+	        			logger.log(Level.INFO, "But has " + certificates.size() + " certificates" );	   
 	        			
 	        			return false;
 
@@ -386,7 +387,7 @@ public class MeemCoreRootAuthority
 //	                        }
 //	                    }
 //	                    catch (Exception e) {
-//	                        LogTools.error(logger, "Could not validate user: " + e, e);
+//	                        logger.log(Level.WARNING, "Could not validate user: " + e, e);
 //	                        return false;
 //	                    }
 	        		}
@@ -399,7 +400,7 @@ public class MeemCoreRootAuthority
 	                        }
 	                    }
 	                    catch (Exception e) {
-	                        LogTools.error(logger, "Could not validate user, " + id + ": " + e.getMessage());
+	                        logger.log(Level.WARNING, "Could not validate user, " + id + ": " + e.getMessage());
 	                        return false;
 	                    }
 
@@ -687,8 +688,8 @@ public class MeemCoreRootAuthority
 					cert.checkValidity(new Date(System.currentTimeMillis()
 							+ (1000 * 60 * 60 * 24 * GRACE_PERIOD)));
 
-					LogTools.error(
-							logger, 
+					logger.log(Level.WARNING,
+							 
 							"MeemSpace certificate expired on "
 							+ cert.getNotAfter() + " please renew before "
 							+ GRACE_PERIOD + " days have past."
@@ -698,8 +699,8 @@ public class MeemCoreRootAuthority
 				catch (Exception ex) {
                     if ( firstTime == false ) {
                       firstTime = true;
-                      LogTools.warn(
-                          logger, 
+                      logger.log(
+                           Level.WARNING,
                           "MeemSpace certificate expired on " + cert.getNotAfter() + " - installation invalid, " + 
                           "but TEMPORARILY ignored.  Thank your friendly neighbourhood Maji developer"
                       );
@@ -707,8 +708,8 @@ public class MeemCoreRootAuthority
           return true;
 					
 					/*
-					LogTools.error(
-							logger, 
+					logger.log(Level.WARNING,
+							 
 							"MeemSpace certificate expired on "
 							+ cert.getNotAfter() + " - installation invalid."
 						);
@@ -717,7 +718,7 @@ public class MeemCoreRootAuthority
 				}
 			}
 			catch (Exception e) {
-				LogTools.error(logger, "Certificate not valid: " + e);
+				logger.log(Level.WARNING, "Certificate not valid: " + e);
 				return false;
 			}
 		}

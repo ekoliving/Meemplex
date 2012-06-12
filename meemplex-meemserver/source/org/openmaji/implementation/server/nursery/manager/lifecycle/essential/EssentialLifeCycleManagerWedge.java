@@ -45,7 +45,8 @@ import org.openmaji.system.meemserver.controller.MeemServerController;
 import org.openmaji.system.space.meemstore.MeemContentClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 import org.openmaji.utility.uid.UID;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -144,7 +145,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge,EssentialLifeCycleM
 		// be restored from persistent storage
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Registering Essential Meems");
+			logger.log(logLevel, "Registering Essential Meems");
 		}
 
 		MeemRegistry meemRegistryFacet = (MeemRegistry) meemRegistryMeemCore.getTarget("meemRegistry");
@@ -168,7 +169,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge,EssentialLifeCycleM
 		//	Pass 2. Set the meems lifeCycleManger
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Setting Essential Meems LifeCycleManager");
+			logger.log(logLevel, "Setting Essential Meems LifeCycleManager");
 		}
 
 		meemIterator = essentialMeemCores.values().iterator();
@@ -184,7 +185,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge,EssentialLifeCycleM
 		//	Pass 4. Activate and make ready. This will cause the meems to commence
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Making Essential Meems ready");
+			logger.log(logLevel, "Making Essential Meems ready");
 		}
 
 		meemIterator = essentialMeemCores.values().iterator();
@@ -253,8 +254,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge,EssentialLifeCycleM
 			control.addAccess(Principals.OTHER, AccessLevel.READ_WRITE);
 
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(
-					logger,
+				logger.log(
 					logLevel,
 					"Created essential Meem: " + meemDefinition.getMeemAttribute().getIdentifier() + " : " + meemPath);
 			}
@@ -403,12 +403,12 @@ public class EssentialLifeCycleManagerWedge implements Wedge,EssentialLifeCycleM
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static int logLevel = Common.getLogLevel();
+	private static Level logLevel = Common.getLogLevel();
 
 }

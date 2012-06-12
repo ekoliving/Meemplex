@@ -2,8 +2,6 @@ package org.meemplex.meem;
 
 import java.util.Stack;
 
-import javax.security.auth.Subject;
-
 /**
  * This is a context object that may be included as an annotated object.
  * 
@@ -20,7 +18,7 @@ public class MessageContext {
 	/**
 	 * The Subject who initiated the last message.
 	 */
-	private Subject callingSubject;
+	//private Subject callingSubject;
 
 	
 	public void setMessageStack(Stack<Message> messageStack) {

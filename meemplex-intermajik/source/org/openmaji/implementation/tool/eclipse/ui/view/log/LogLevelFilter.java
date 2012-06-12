@@ -16,8 +16,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.openmaji.implementation.tool.eclipse.plugin.MajiPlugin;
-import org.swzoo.log2.core.LogEvent;
-import org.swzoo.log2.core.LogPayload;
 
 
 /**
@@ -40,19 +38,19 @@ public class LogLevelFilter extends ViewerFilter {
 	 */
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		// allow all non trace events
-		Boolean trace = (Boolean)((LogEvent)element).payload.get(LogPayload.TRACE);
-		if (trace == null || !trace.booleanValue())
-			return true;
-		
-		if (showTrace) {
-			// filter by trace level	
-			Object value = ((LogEvent)element).payload.get(LogPayload.LEVEL);
-			if (value instanceof Integer) {
-				int level = ((Integer) value).intValue();
-				if (level < traceLevel)
-					return true;
-			}
-		}
+//		Boolean trace = (Boolean)((LogEvent)element).payload.get(LogPayload.TRACE);
+//		if (trace == null || !trace.booleanValue())
+//			return true;
+//		
+//		if (showTrace) {
+//			// filter by trace level	
+//			Object value = ((LogEvent)element).payload.get(LogPayload.LEVEL);
+//			if (value instanceof Integer) {
+//				int level = ((Integer) value).intValue();
+//				if (level < traceLevel)
+//					return true;
+//			}
+//		}
 		return false;
 	}
 	

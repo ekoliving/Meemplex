@@ -8,6 +8,7 @@
  */
 package org.openmaji.meem.definition;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -35,7 +36,7 @@ public class WedgeDefinitionUtility {
 
 	FacetDefinition facetDefinition = wedgeDefinition.getFacetDefinition(oldFacetIdentifier);
 	if (facetDefinition == null) {
-		logger.info("renameFacetIdentifier() - No facet with identifier of '"+oldFacetIdentifier+"'");		
+		logger.log(Level.INFO, "renameFacetIdentifier() - No facet with identifier of '"+oldFacetIdentifier+"'");		
 	}
 	else {
 	      FacetAttribute facetAttribute = facetDefinition.getFacetAttribute();          

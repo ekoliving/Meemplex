@@ -39,9 +39,10 @@ import org.openmaji.system.meem.wedge.reference.MeemClientConduit;
 import org.openmaji.system.meemserver.MeemServer;
 import org.openmaji.system.space.Category;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -93,7 +94,7 @@ public class MeemServerWedge implements Wedge, MeemServer {
 
 				if (subsystemCategoryMeemPath == null) {
 					if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-						LogTools.trace(logger, logLevel, "Creating the Subsystem Category");
+						logger.log(logLevel, "Creating the Subsystem Category");
 					}
 	
 					MeemDefinition categoryMeemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(Category.class);
@@ -103,7 +104,7 @@ public class MeemServerWedge implements Wedge, MeemServer {
 
 				if (worksheetLCMMeemPath == null) {
 					if (Common.TRACE_ENABLED && Common.TRACE_SUBSYSTEM) {
-						LogTools.trace(logger, logLevel, "Creating the Worksheet LifeCycleManager");
+						logger.log(logLevel, "Creating the Worksheet LifeCycleManager");
 					}
 	
 					MeemDefinition worksheetLCMMeemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(WorksheetLifeCycleManagerMeem.class);
@@ -131,7 +132,7 @@ public class MeemServerWedge implements Wedge, MeemServer {
 			{
 				if (Common.TRACE_ENABLED && Common.TRACE_MEEMSERVER)
 				{
-					LogTools.trace(logger, logLevel, "Worksheet LifeCycleManager Meem created: " + meem.getMeemPath());
+					logger.log(logLevel, "Worksheet LifeCycleManager Meem created: " + meem.getMeemPath());
 				}
 
 				worksheetLCMMeemPath = meem.getMeemPath();
@@ -168,7 +169,7 @@ public class MeemServerWedge implements Wedge, MeemServer {
 			{
 				if (Common.TRACE_ENABLED && (Common.TRACE_SUBSYSTEM || Common.TRACE_MEEMSERVER))
 				{
-					LogTools.trace(logger, logLevel, "SubsystemFactory Meem created: " + meem.getMeemPath());
+					logger.log(logLevel, "SubsystemFactory Meem created: " + meem.getMeemPath());
 				}
 				
 				subsystemCategory.addEntry(subsystemFactoryIdentifier, meem);
@@ -177,12 +178,12 @@ public class MeemServerWedge implements Wedge, MeemServer {
 
 		public void meemDestroyed(Meem meem)
 		{
-			LogTools.error(logger, "The MeemServer meems should never be destroyed");
+			logger.log(Level.WARNING, "The MeemServer meems should never be destroyed");
 		}
 
 		public void meemTransferred(Meem meem, LifeCycleManager targetLifeCycleManager)
 		{
-			LogTools.error(logger, "The MeemServer meems should never be transferred");
+			logger.log(Level.WARNING, "The MeemServer meems should never be transferred");
 		}
 	};
 	
@@ -219,11 +220,11 @@ public class MeemServerWedge implements Wedge, MeemServer {
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static final int logLevel = Common.getLogLevel();
+	private static final Level logLevel = Common.getLogLevel();
 }

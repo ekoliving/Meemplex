@@ -30,8 +30,8 @@ public class CollectionUtility {
    * @return Monitored HashMap instance
    */
 
-  public static HashMap createHashMap() {
-    HashMap hashMap = new HashMap();
+  public static <T, V> HashMap<T, V> createHashMap() {
+    HashMap<T, V> hashMap = new HashMap<T, V>();
 
     return(hashMap);
   }
@@ -42,8 +42,8 @@ public class CollectionUtility {
    * @return Monitored HashSet instance
    */
 
-  public static HashSet createHashSet() {
-    HashSet hashSet = new HashSet();
+  public static <T> HashSet<T> createHashSet() {
+    HashSet<T> hashSet = new HashSet<T>();
 
     return(hashSet);
   }
@@ -54,8 +54,8 @@ public class CollectionUtility {
    * @return Monitored Hashtable instance
    */
 
-  public static Hashtable createHashtable() {
-    Hashtable hashtable = new Hashtable();
+  public static <T, V> Hashtable<T, V> createHashtable() {
+    Hashtable<T, V> hashtable = new Hashtable<T, V>();
 
     return(hashtable);
   }
@@ -66,8 +66,8 @@ public class CollectionUtility {
    * @return Monitored LinkedHashMap instance
    */
 
-  public static LinkedHashMap createLinkedHashMap() {
-    LinkedHashMap linkedHashMap = new LinkedHashMap();
+  public static <T, V> LinkedHashMap<T, V> createLinkedHashMap() {
+    LinkedHashMap<T, V> linkedHashMap = new LinkedHashMap<T, V>();
 
     return(linkedHashMap);
   }
@@ -78,8 +78,8 @@ public class CollectionUtility {
    * @return Monitored LinkedHashSet instance
    */
 
-  public static LinkedHashSet createLinkedHashSet() {
-    LinkedHashSet linkedHashSet = new LinkedHashSet();
+  public static <T> LinkedHashSet<T> createLinkedHashSet() {
+    LinkedHashSet<T> linkedHashSet = new LinkedHashSet<T>();
 
     return(linkedHashSet);
   }
@@ -90,8 +90,8 @@ public class CollectionUtility {
    * @return Monitored Vector instance
    */
 
-  public static Vector createVector() {
-    Vector vector = new Vector();
+  public static <T> Vector<T> createVector() {
+    Vector<T> vector = new Vector<T>();
 
     return(vector);
   }
@@ -118,8 +118,7 @@ public class CollectionUtility {
   public static boolean equals(
 		    Collection<?> collection1,
 		    Collection<?> collection2) {
-
-	  return (collection1.containsAll(collection2) && collection2.containsAll(collection1));
+	  return (collection1.containsAll(collection2) && collection2.size() == collection1.size());
   }
  
 }

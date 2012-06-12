@@ -38,9 +38,10 @@ import net.jini.admin.Administrable;
 import net.jini.config.Configuration;
 import net.jini.config.ConfigurationProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.utility.PropertiesLoader;
@@ -50,7 +51,7 @@ import com.sun.jini.start.ServiceDescriptor;
 import com.sun.jini.tool.ClassServer;
 
 public class JiniStarter2 {
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 
 	/** the property name for the NIC to bind to */
 	public static final String PROPERTY_JINI_NIC = "org.openmaji.jini.nic";
@@ -108,36 +109,36 @@ public class JiniStarter2 {
 	 * Start the jini services.
 	 */
 	public void commence() {
-		LogTools.info(logger, "commencing...");
+		logger.log(Level.INFO, "commencing...");
 
 		if ( !validateEnvironment() ) {
 			return;
 		}
 
-		LogTools.info(logger, "checking class-server port...");
+		logger.log(Level.INFO, "checking class-server port...");
 		
 		// start the class server
 		if (portNotBound(hostPort)) {
-			LogTools.info(logger, "starting class-server...");
+			logger.log(Level.INFO, "starting class-server...");
 			try {
 				classServer = new ClassServer(hostPort, jiniJarDir + "-dl", false, false);
 			}
 			catch (IOException e) {
-				LogTools.error(logger, "commence() - failed to launch ClassServer. ", e);
+				logger.log(Level.WARNING, "commence() - failed to launch ClassServer. ", e);
 			}
 			classServer.start();
 		}
 
 		// start reggie
 		try {
-			LogTools.info(logger, "starting reggie...");
+			logger.log(Level.INFO, "starting reggie...");
 
 			System.setProperty(PROPERTY_HTTP_URL, "http://" + hostAddress + ":" + hostPort);
 			System.setProperty(PROPERTY_JINI_CONFIG, jiniConfigDir);
 			System.setProperty(PROPERTY_JINI_JARS, jiniJarDir);
 			System.setProperty(PROPERTY_REGGIE_POLICY, policyFile);
 
-			LogTools.info(logger, policyFile + " : " + jiniConfigDir + " : " + jiniJarDir);
+			logger.log(Level.INFO, policyFile + " : " + jiniConfigDir + " : " + jiniJarDir);
 
 			Configuration configuration = ConfigurationProvider.getInstance(new String[] { jiniConfigFile });
 			ServiceDescriptor[] descs = (ServiceDescriptor[])  configuration.getEntry("com.sun.jini.start", "serviceDescriptors", ServiceDescriptor[].class, null);
@@ -149,19 +150,19 @@ public class JiniStarter2 {
 
 		}
 		catch (Exception ex) {
-			LogTools.error(logger, "commence() - failed to launch reggie", ex);
+			logger.log(Level.WARNING, "commence() - failed to launch reggie", ex);
 		}
 		
 		if (true) {
 			ProtectionDomain protectionDomain = JiniStarter2.class.getProtectionDomain();
-			LogTools.info(logger, "Got protection domain: " + protectionDomain);
-			LogTools.info(logger, "protection domain classname: " + protectionDomain.getClass().getCanonicalName());
-			LogTools.info(logger, JiniStarter2.class + " has classloader: " + JiniStarter2.class.getClassLoader());
-			LogTools.info(logger, JiniStarter2.class + " has classloader: " + JiniStarter2.class.getClassLoader());
+			logger.log(Level.INFO, "Got protection domain: " + protectionDomain);
+			logger.log(Level.INFO, "protection domain classname: " + protectionDomain.getClass().getCanonicalName());
+			logger.log(Level.INFO, JiniStarter2.class + " has classloader: " + JiniStarter2.class.getClassLoader());
+			logger.log(Level.INFO, JiniStarter2.class + " has classloader: " + JiniStarter2.class.getClassLoader());
 			
 			if (protectionDomain instanceof org.eclipse.osgi.framework.adaptor.BundleProtectionDomain) {
 				//new ProtectionDomain(protectionDomain.getCodeSource(), protectionDomain.getPermissions(), classloader, protectionDomain.getPrincipals());
-				LogTools.info(logger, "Bundle: " + ((org.eclipse.osgi.framework.adaptor.BundleProtectionDomain)protectionDomain).getBundle());
+				logger.log(Level.INFO, "Bundle: " + ((org.eclipse.osgi.framework.adaptor.BundleProtectionDomain)protectionDomain).getBundle());
 			}
 		}
 	}
@@ -216,15 +217,15 @@ public class JiniStarter2 {
 		jiniConfigFile = jiniConfigDir + START_REGGIE_CONFIG;
 
 		if (new File(jiniConfigFile).exists() == false) {
-			LogTools.info(logger, "validateEnvironment() - Unable to locate reggie config at: " + jiniConfigFile);
+			logger.log(Level.INFO, "validateEnvironment() - Unable to locate reggie config at: " + jiniConfigFile);
 			return false;
 		}
 		if (new File(jiniJarDir).exists() == false) {
-			LogTools.info(logger, "validateEnvironment() - Unable to locate jini jars at: " + jiniJarDir);
+			logger.log(Level.INFO, "validateEnvironment() - Unable to locate jini jars at: " + jiniJarDir);
 			return false;
 		}
 		if (new File(policyFile).exists() == false) {
-			LogTools.info(logger, "validateEnvironment() - Unable to locate policy file at: " + policyFile);
+			logger.log(Level.INFO, "validateEnvironment() - Unable to locate policy file at: " + policyFile);
 			return false;
 		}
 
@@ -243,7 +244,7 @@ public class JiniStarter2 {
 				address = InetAddress.getByName(hostAddress);
 			}
 			catch (UnknownHostException ex) {
-				LogTools.error(logger, "validateHostAndPort() - Unknown host " + hostAddress);
+				logger.log(Level.WARNING, "validateHostAndPort() - Unknown host " + hostAddress);
 				return false;
 			}
 		}
@@ -251,7 +252,7 @@ public class JiniStarter2 {
 			try {
 				NetworkInterface ni = NetworkInterface.getByName(nicName);
 				if (ni == null) {
-					LogTools.error(logger, "validateHostAndPort() - no nic with name: " + nicName);
+					logger.log(Level.WARNING, "validateHostAndPort() - no nic with name: " + nicName);
 					return false;
 				}
 				Enumeration<InetAddress> addressEnum = ni.getInetAddresses();
@@ -261,7 +262,7 @@ public class JiniStarter2 {
 				}
 			}
 			catch (SocketException ex) {
-				LogTools.error(logger, "validateHostAndPort() - problem getting nic " + nicName);
+				logger.log(Level.WARNING, "validateHostAndPort() - problem getting nic " + nicName);
 				return false;
 			}
 		}
@@ -273,13 +274,13 @@ public class JiniStarter2 {
 				hostAddress = address.getHostAddress();
 			}
 			catch (IOException ex) {
-				LogTools.error(logger, "validateHostAndPort() - Unable to determine my local address");
+				logger.log(Level.WARNING, "validateHostAndPort() - Unable to determine my local address");
 				return false;
 			}
 		}
 
 		if (address.isLoopbackAddress()) {
-			LogTools.error(logger, "validateHostAndPort() - Your hostname is set to localhost. Can't proceed");
+			logger.log(Level.WARNING, "validateHostAndPort() - Your hostname is set to localhost. Can't proceed");
 			return false;
 		}
 
@@ -287,12 +288,12 @@ public class JiniStarter2 {
 		try {
 			NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
 			if (networkInterface == null) {
-				LogTools.error(logger, "validateHostAndPort() - no network interface with address " + hostAddress);
+				logger.log(Level.WARNING, "validateHostAndPort() - no network interface with address " + hostAddress);
 				return false;
 			}
 		}
 		catch (SocketException ex) {
-			LogTools.error(logger, "validateHostAndPort() - unable to determine network interface");
+			logger.log(Level.WARNING, "validateHostAndPort() - unable to determine network interface");
 			return false;
 		}
 
@@ -301,7 +302,7 @@ public class JiniStarter2 {
 				hostPort = Integer.parseInt(temp);
 			}
 			catch (NumberFormatException ex) {
-				LogTools.error(logger, "validateHostAndPort() - property '" + PROPERTY_JINI_PORT + "' is not an integer");
+				logger.log(Level.WARNING, "validateHostAndPort() - property '" + PROPERTY_JINI_PORT + "' is not an integer");
 				return false;
 			}
 		}
@@ -309,7 +310,7 @@ public class JiniStarter2 {
 			hostPort = DEFAULT_PORT;
 		}
 
-		LogTools.info(logger, "validateHostAndPort() - using address=[" + hostAddress + "] and port=[" + hostPort + "]");
+		logger.log(Level.INFO, "validateHostAndPort() - using address=[" + hostAddress + "] and port=[" + hostPort + "]");
 		return true;
 	}
 

@@ -18,10 +18,10 @@ import java.io.IOException;
 import org.openmaji.implementation.server.utility.PropertiesLoader;
 import org.openmaji.implementation.server.utility.PropertyUtility;
 import org.openmaji.system.genesis.Genesis;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
-import org.swzoo.log2.util.ConfigurableLogFactory;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -60,7 +60,7 @@ import org.swzoo.log2.util.ConfigurableLogFactory;
 
 public class LaunchMeemServer {
 
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * An optional System property that indicates that the properties used by this Launcher be displayed.
@@ -103,11 +103,6 @@ public class LaunchMeemServer {
 			PropertyUtility.dumpProperties(System.getProperties());
 		}
 
-		// Logger may have been affected by changes to system properties
-
-		ConfigurableLogFactory.setConfiguration(System.getProperties(), null);
-		logger = LogFactory.getLogger();
-
 		// ----------------------------------
 		// Complete MeemServer initialization establishing out initial subject
 
@@ -133,7 +128,7 @@ public class LaunchMeemServer {
 		boolean failure = false;
 
 		if (args.length > 0) {
-			LogTools.warn(logger, "main() - command line arguments ignored");
+			logger.log(Level.WARNING, "main() - command line arguments ignored");
 		}
 
 		LaunchMeemServer launcher = new LaunchMeemServer();

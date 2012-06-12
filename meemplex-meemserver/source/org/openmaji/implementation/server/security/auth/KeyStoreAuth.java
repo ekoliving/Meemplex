@@ -19,9 +19,10 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 
 import org.openmaji.implementation.server.security.auth.module.SubjectDetails;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -30,7 +31,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class KeyStoreAuth {
 	
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	private String keystorePassword = null;
 	
@@ -85,7 +86,7 @@ public class KeyStoreAuth {
 			// get private key
 			Key key = keyStore.getKey(username, password);
 			if (key == null || !(key instanceof PrivateKey)) {
-				LogTools.warn(logger, "Could not get user details. No key for " + username);
+				logger.log(Level.WARNING, "Could not get user details. No key for " + username);
 				return subjectDetails;
 			}
 		    
@@ -105,16 +106,16 @@ public class KeyStoreAuth {
 			subjectDetails = new SubjectDetails(certChain, (PrivateKey)key, username, groupPrincipals, groupCredentials);
 		}
 		catch (KeyStoreException ex) {
-			LogTools.warn(logger, "Could not get user details. " + ex.getMessage());
+			logger.log(Level.WARNING, "Could not get user details. " + ex.getMessage());
 		}
 		catch (NoSuchAlgorithmException ex) {
-			LogTools.warn(logger, "Could not get user details. " + ex.getMessage());
+			logger.log(Level.WARNING, "Could not get user details. " + ex.getMessage());
 		}
 		catch (UnrecoverableKeyException ex) {
-			LogTools.warn(logger, "Could not get user details. " + ex.getMessage());
+			logger.log(Level.WARNING, "Could not get user details. " + ex.getMessage());
 		}
 		catch (CertificateEncodingException ex) {
-			LogTools.warn(logger, "Could not construct user details. " + ex.getMessage());			
+			logger.log(Level.WARNING, "Could not construct user details. " + ex.getMessage());			
 		}
 	    
 		return subjectDetails;
@@ -135,19 +136,19 @@ public class KeyStoreAuth {
 			lastModified = keyStoreFile.lastModified();
 		}
 		catch (KeyStoreException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (FileNotFoundException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (IOException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (CertificateException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);			
+			logger.log(Level.WARNING, "Could not load keystore", ex);			
 		}
 	}
 	

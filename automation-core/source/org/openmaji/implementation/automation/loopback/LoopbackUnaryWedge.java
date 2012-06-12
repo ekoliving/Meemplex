@@ -4,12 +4,13 @@ import org.openmaji.implementation.automation.DebugFlag;
 import org.openmaji.meem.Wedge;
 import org.openmaji.common.Unary;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LoopbackUnaryWedge implements Wedge{
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 	/*
 	 * inbound conduit
 	 */
@@ -31,7 +32,7 @@ public class LoopbackUnaryWedge implements Wedge{
 
 	    public synchronized void valueChanged()
 	    {
-	      if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on UnaryControlConduit");
+	      if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on UnaryControlConduit");
 	      unaryStateConduit.valueChanged();
 	    }
 	  }

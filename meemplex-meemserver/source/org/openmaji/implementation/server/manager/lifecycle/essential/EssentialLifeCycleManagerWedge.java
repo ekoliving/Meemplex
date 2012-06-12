@@ -56,7 +56,8 @@ import org.openmaji.system.meemserver.controller.MeemServerController;
 import org.openmaji.system.space.meemstore.MeemContentClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 import org.openmaji.utility.uid.UID;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -146,7 +147,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 		control.addAccess(Principals.OTHER, AccessLevel.READ_WRITE);
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Created essential Meem: " + EssentialLifeCycleManager.spi.getIdentifier() + " : " + meemPath);
+			logger.log(logLevel, "Created essential Meem: " + EssentialLifeCycleManager.spi.getIdentifier() + " : " + meemPath);
 		}
 	}
 
@@ -170,7 +171,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 		// be restored from persistent storage
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Registering Essential Meems");
+			logger.log(logLevel, "Registering Essential Meems");
 		}
 
 		MeemRegistry meemRegistryFacet = (MeemRegistry) meemRegistryMeemCore.getTarget("meemRegistry");
@@ -188,7 +189,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 		// Pass 2. Set the meems lifeCycleManger
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Setting Essential Meems LifeCycleManager");
+			logger.log(logLevel, "Setting Essential Meems LifeCycleManager");
 		}
 
 		meemIterator = essentialMeemCores.values().iterator();
@@ -204,7 +205,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 		// Pass 4. Activate and make ready. This will cause the meems to commence
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Making Essential Meems ready");
+			logger.log(logLevel, "Making Essential Meems ready");
 		}
 
 		meemIterator = essentialMeemCores.values().iterator();
@@ -246,7 +247,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 	 * class. The only person to have this is Genesis.
 	 */
 	public void createEssentialMeem(MeemDefinition meemDefinition, LifeCycleState initialState) throws IllegalArgumentException {
-		//LogTools.info(logger, "creating essential meem: " + meemDefinition);
+		//logger.log(Level.INFO, "creating essential meem: " + meemDefinition);
 		
 		if (modeCommenced) {
 			// This should never get called as the LifeCycleManager Facet isn't exposed on this wedge
@@ -272,7 +273,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 			control.addAccess(Principals.OTHER, AccessLevel.READ_WRITE);
 
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "Created essential Meem: " + meemDefinition.getMeemAttribute().getIdentifier() + " : " + meemPath);
+				logger.log(logLevel, "Created essential Meem: " + meemDefinition.getMeemAttribute().getIdentifier() + " : " + meemPath);
 			}
 
 			if (meemCore.isA(MeemRegistry.class) && meemDefinition.getMeemAttribute().getIdentifier().equals(MeemRegistry.spi.getIdentifier())) {
@@ -348,13 +349,13 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 
 		}
 		catch (Exception e) {
-			LogTools.error(logger, "Unable to get access to licence key: " + e.toString());
+			logger.log(Level.WARNING, "Unable to get access to licence key: " + e.toString());
 
 			return false;
 		}
 
 		if (privateKey == null) {
-			LogTools.warn(logger, "No license key - this meem server has not been licensed");
+			logger.log(Level.WARNING, "No license key - this meem server has not been licensed");
 
 			return false;
 		}
@@ -497,7 +498,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 	 * @see org.openmaji.implementation.server.manager.lifecycle.meemkit.MeemkitLifeCycleManagerClient#classLoadingCompleted()
 	 */
 	public void classLoadingCompleted() {
-		LogTools.info(logger, "Meemkit classloaders started");
+		logger.log(Level.INFO, "Meemkit classloaders started");
 		meemkitLCMStarted = true;
 		startSelf();
 	}
@@ -508,12 +509,12 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static final int logLevel = Common.getLogLevel();
+	private static final Level logLevel = Common.getLogLevel();
 
 }

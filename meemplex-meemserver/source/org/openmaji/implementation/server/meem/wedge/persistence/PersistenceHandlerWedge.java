@@ -13,6 +13,7 @@
 package org.openmaji.implementation.server.meem.wedge.persistence;
 
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.meem.wedge.lifecycle.SystemLifeCycleClientAdapter;
@@ -64,7 +65,7 @@ public class PersistenceHandlerWedge implements ManagedPersistenceHandler, Wedge
 	public void persist() 
 	{
 		if (DEBUG) {
-			logger.info("persisting meem: " + meemCore.getMeemPath());
+			logger.log(Level.INFO, "persisting meem: " + meemCore.getMeemPath());
 		}
 		if (meemCore.getMeemStore() == null) 
 		{
@@ -82,7 +83,7 @@ public class PersistenceHandlerWedge implements ManagedPersistenceHandler, Wedge
 	public void restore()
 	{
 		if (DEBUG) {
-			logger.info("restoring meem: " + meemCore.getMeemPath());
+			logger.log(Level.INFO, "restoring meem: " + meemCore.getMeemPath());
 		}
 		persistenceConduit.restore();
 	}
@@ -107,7 +108,7 @@ public class PersistenceHandlerWedge implements ManagedPersistenceHandler, Wedge
         {
         	if (reference == null)
         	{
-				logger.info("no meemStore reference found can't persist!");
+				logger.log(Level.INFO, "no meemStore reference found can't persist!");
 				return;
         	}
         	

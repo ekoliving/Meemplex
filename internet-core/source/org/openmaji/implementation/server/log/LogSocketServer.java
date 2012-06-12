@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -142,7 +143,7 @@ public class LogSocketServer implements LogListener, Runnable {
 		}
 		else {
 			if (DEBUG) {
-				logger.info("acceptThread already running");
+				logger.log(Level.INFO, "acceptThread already running");
 			}
 		}
 
@@ -184,25 +185,25 @@ public class LogSocketServer implements LogListener, Runnable {
 	protected void accept() {
 		try {
 			if (DEBUG) {
-				logger.info("accepting...");
+				logger.log(Level.INFO, "accepting...");
 			}
 			Socket socket = serverSocket.accept();
 
 			if (DEBUG) {
-				logger.info("accepted, creating SocketWriter...");
+				logger.log(Level.INFO, "accepted, creating SocketWriter...");
 			}
 			
 			SocketWriter writer = new SocketWriter(socket);
 			
 			if (DEBUG) {
-				logger.info("adding SocketWriter...");
+				logger.log(Level.INFO, "adding SocketWriter...");
 			}
 			
 			addSocketWriter(writer);
 			writer.start();
 
 			if (DEBUG) {
-				logger.info("finished accepting");
+				logger.log(Level.INFO, "finished accepting");
 			}
 		}
 		catch (IOException ex) {
@@ -253,7 +254,7 @@ public class LogSocketServer implements LogListener, Runnable {
 					}
 
 					if (DEBUG) {
-						logger.info("writing message to socket: " + str);
+						logger.log(Level.INFO, "writing message to socket: " + str);
 					}
 					
 					// write info down socket	
@@ -274,13 +275,13 @@ public class LogSocketServer implements LogListener, Runnable {
 				}
 				catch (IOException ex) {
 					if (DEBUG) {
-						logger.info("IOException writing to socket. " + ex);
+						logger.log(Level.INFO, "IOException writing to socket. " + ex);
 					}
 					runningThread = null;
 				}
 			}
 			if (DEBUG) {
-				logger.info("Server socket writer is no longer running");
+				logger.log(Level.INFO, "Server socket writer is no longer running");
 			}
 			// remove this handler from the list of handlers
 			try {
@@ -305,7 +306,7 @@ public class LogSocketServer implements LogListener, Runnable {
 		
 		public void stop() {
 			if (DEBUG) {
-				logger.info("stopping SocketReader...");
+				logger.log(Level.INFO, "stopping SocketReader...");
 			}
 			synchronized (messageQueue) {
 				runningThread = null;
@@ -315,7 +316,7 @@ public class LogSocketServer implements LogListener, Runnable {
 		
 		public void sendMessage(String message) {
 			if (DEBUG) {
-				logger.info("adding message to sender queue: " + message);
+				logger.log(Level.INFO, "adding message to sender queue: " + message);
 			}
 			// add to local queue
 			synchronized(messageQueue) {

@@ -10,7 +10,6 @@ package org.openmaji.meem.definition;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import org.openmaji.utility.CollectionUtility;

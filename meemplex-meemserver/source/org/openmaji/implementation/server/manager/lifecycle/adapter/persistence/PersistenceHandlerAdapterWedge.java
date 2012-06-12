@@ -33,9 +33,10 @@ import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceClient;
 import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceHandler;
 import org.openmaji.system.meem.wedge.reference.MeemClientCallback;
 import org.openmaji.system.meem.wedge.reference.MeemClientConduit;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -122,7 +123,7 @@ public class PersistenceHandlerAdapterWedge implements Wedge, FilterChecker, Per
 		 * 
 		 */
 		public void persist(Meem meem) {
-			//LogTools.info(logger,  "persisting the meem: " + meem);
+			//logger.log(Level.INFO,  "persisting the meem: " + meem);
 			DependencyAttribute persistDependencyAttribute =
 				new DependencyAttribute(
 					DependencyType.WEAK,
@@ -149,7 +150,7 @@ public class PersistenceHandlerAdapterWedge implements Wedge, FilterChecker, Per
 		public void dependencyConnected(DependencyAttribute dependencyAttribute) {
 //			System.err.println("PersistenceHandlerAdapterConduit.dependencyConnected: " + dependencyAttribute);
 			if (dependencyAttribute == null) {
-				LogTools.error(logger, " *** DependencyAttribute is null ***");
+				logger.log(Level.WARNING, " *** DependencyAttribute is null ***");
 			}
 			
 			boolean removed = persistDependencyAttributes.remove(dependencyAttribute);
@@ -222,7 +223,7 @@ public class PersistenceHandlerAdapterWedge implements Wedge, FilterChecker, Per
 	 */
 	public void restored(MeemPath meemPath) {
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Restored: " + meemPath);
+			logger.log(logLevel, "Restored: " + meemPath);
 		}
 
 		meems.remove(meemPath);
@@ -269,11 +270,11 @@ public class PersistenceHandlerAdapterWedge implements Wedge, FilterChecker, Per
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static final int logLevel = Common.getLogLevelVerbose();
+	private static final Level logLevel = Common.getLogLevelVerbose();
 }

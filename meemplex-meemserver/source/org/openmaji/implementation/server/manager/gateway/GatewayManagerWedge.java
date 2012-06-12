@@ -9,6 +9,7 @@
 
 package org.openmaji.implementation.server.manager.gateway;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.meem.core.MeemCoreImpl;
@@ -40,7 +41,7 @@ public class GatewayManagerWedge implements GatewayManager, MeemDefinitionProvid
 	public GatewayManagerWedge() {
 		count++;
 		if (count > 2) {
-			logger.info("attempt to create extra gateway manager.");
+			logger.log(Level.INFO, "attempt to create extra gateway manager.");
 			throw new IllegalArgumentException("attempt to create extra gateway manager.");
 		}
 		gatewayManagerWedgeSingleton = this;

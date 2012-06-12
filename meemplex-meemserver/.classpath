@@ -48,7 +48,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jline-2.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/swzoo.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jini/classserver.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jini/jini-core.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">

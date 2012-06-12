@@ -22,9 +22,10 @@ import org.openmaji.common.Position;
 import org.openmaji.diagnostic.Debug;
 import org.openmaji.util.PositionHelper;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The SlowLoopbackLinearWedge is like a LoopbackLinearWedge except that it zeroes in
@@ -38,7 +39,7 @@ import org.swzoo.log2.core.Logger;
 
 public class SlowLoopbackLinearWedge implements Wedge
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
   private static final int DEFAULT_REFRESH_PERIOD = 2000;
   private static final FloatPosition DEFAULT_POSITION = new FloatPosition(0.0f,0.1f,-100,100);
 
@@ -136,7 +137,7 @@ public class SlowLoopbackLinearWedge implements Wedge
       {
         if ( debugLevel > 0 )
         {
-          LogTools.info(logger,"background thread terminating");
+          logger.log(Level.INFO, "background thread terminating");
         }
         backgroundThread = null;
         return;
@@ -147,7 +148,7 @@ public class SlowLoopbackLinearWedge implements Wedge
       {
         if ( debugLevel > 0 )
         {
-          LogTools.info(logger,"reached desired position - background thread terminating");
+          logger.log(Level.INFO, "reached desired position - background thread terminating");
         }
         backgroundThread = null;
         return;

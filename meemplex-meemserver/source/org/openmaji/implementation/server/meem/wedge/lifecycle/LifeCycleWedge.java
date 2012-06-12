@@ -15,6 +15,7 @@ package org.openmaji.implementation.server.meem.wedge.lifecycle;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.Common;
@@ -159,7 +160,7 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 	 */
 	public void changeLifeCycleState(LifeCycleState newState) {
 
-		//LogTools.info(logger, "meem changing LC state: " + meemCore.getMeemPath() + " - " + newState);
+		//logger.log(Level.INFO, "meem changing LC state: " + meemCore.getMeemPath() + " - " + newState);
 		
 		// make sure the state is changing
 		if (newState.equals(currentState))
@@ -313,7 +314,7 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 		{
 			if (reference == null)
 			{
-				logger.info("no lifeCycleManager reference found can't destroy self!");
+				logger.log(Level.INFO, "no lifeCycleManager reference found can't destroy self!");
 				return;
 			}
         	

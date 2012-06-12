@@ -1,5 +1,6 @@
 package org.openmaji.implementation.util.wedge;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.common.Value;
@@ -114,7 +115,7 @@ public class DynamicDeviceWedge implements Wedge {
 	
 	protected void commence() {
 		if (DEBUG) {
-			logger.info("commencing...");
+			logger.log(Level.INFO, "commencing...");
 		}
 		// check lease time
 		if (leaseChecker == null) {
@@ -125,7 +126,7 @@ public class DynamicDeviceWedge implements Wedge {
 	
 	protected void conclude() {
 		if (DEBUG) {
-			logger.info("concluding...");
+			logger.log(Level.INFO, "concluding...");
 		}
 		//leaseChecker.stop();
 	}
@@ -135,7 +136,7 @@ public class DynamicDeviceWedge implements Wedge {
 	
 	private void setName(String name) {
 		if (DEBUG) {
-			logger.info("setting name: parentCategory=" + parentCategory + ", deviceName=" + deviceName);
+			logger.log(Level.INFO, "setting name: parentCategory=" + parentCategory + ", deviceName=" + deviceName);
 		}
 		if (deviceName != null) {
 			parentCategory.removeEntry(deviceName);

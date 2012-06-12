@@ -12,9 +12,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * MultistateWedge is used to maintain the state of Multistate type information.
  * It is intended to work in conjunction with another Wedge that provides a specific 
@@ -24,7 +25,7 @@ import org.swzoo.log2.core.Logger;
  * 
  */
 public class MultistateWedge implements Multistate, Wedge{
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 	/*
 	 * Multistate outbound Facet
 	 */
@@ -37,7 +38,7 @@ public class MultistateWedge implements Multistate, Wedge{
 	     * @param filter           No Filters are currently implemented
 	     */
 	    public synchronized void sendContent(Object target, Filter filter){
-			if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"sendContent() - invoked");
+			if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
 	        ((Multistate) target).stateChanged(state);
 	    }
 	};
@@ -54,7 +55,7 @@ public class MultistateWedge implements Multistate, Wedge{
 
 	/* ---------- Multistate Facet method(s) --------------------------------------- */
 	 public synchronized void stateChanged(State state){
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"stateChanged() - invoked on inbound facet");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "stateChanged() - invoked on inbound facet");
 	    multistateControlConduit.stateChanged(state);
 	 }
 
@@ -66,9 +67,9 @@ public class MultistateWedge implements Multistate, Wedge{
 	 */
 	 class MultistateStateConduit implements Multistate{
 		 public synchronized void stateChanged(State newState){
-			 if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"stateChanged() - invoked on MultistateStateConduit");
+			 if ( DebugFlag.TRACE ) logger.log(Level.FINE, "stateChanged() - invoked on MultistateStateConduit");
 			 state = newState;
-			 //LogTools.info(logger,"Current state is "+state.getState());
+			 //logger.log(Level.INFO, "Current state is "+state.getState());
 			 multistateClient.stateChanged(state);
 	    }
 	  }

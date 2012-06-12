@@ -41,9 +41,10 @@ import org.openmaji.system.meem.definition.DefinitionFactory;
 import org.openmaji.system.meem.wedge.lifecycle.LifeCycleManagementClient;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.Category;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -98,7 +99,7 @@ public class LifeCycleManagerHelper {
 	public static Meem createMeemAtPath(MeemDefinition meemDefinition, MeemPath meemPath, LifeCycleState initialState) throws RuntimeException {
 		Meem resolvedMeem = MeemPathResolverHelper.getInstance().resolveMeemPath(meemPath);
 		if (resolvedMeem != null) {		// Meem at this path already created.  Assume it's the one we want to create.  Return this meem.
-			//LogTools.trace(logger, 10, "Meem already exists at " + meemPath + ". Not creating a new one, but returning that meem.");
+			//logger.log(10, "Meem already exists at " + meemPath + ". Not creating a new one, but returning that meem.");
 			return resolvedMeem;
 		}
 		else {
@@ -201,7 +202,7 @@ public class LifeCycleManagerHelper {
 				lifeCycleManager = pigeonHole.get(timeout);
 			}
 			catch (TimeoutException ex) {
-				LogTools.info(logger, "Timeout waiting for LifecycleManager", ex);
+				logger.log(Level.INFO, "Timeout waiting for LifecycleManager", ex);
 				lifeCycleManager = null;
 			}
 			finally {
@@ -266,7 +267,7 @@ public class LifeCycleManagerHelper {
 		try {
 			return pigeonHole.get(timeout);
 		} catch (TimeoutException ex) {
-			LogTools.info(logger, "Timeout waiting for CreateMeemTask", ex);
+			logger.log(Level.INFO, "Timeout waiting for CreateMeemTask", ex);
 			return null;
 		}
 		finally {
@@ -301,7 +302,7 @@ public class LifeCycleManagerHelper {
 	private static final long timeout = 60000;
 
 	/** Logger for the class */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	
 	public static class LifeCycleManagerClientImpl implements LifeCycleManagerClient {
@@ -313,7 +314,7 @@ public class LifeCycleManagerHelper {
 			try {
 				return ((Meem) meemHole.get(timeout));
 			} catch (TimeoutException ex) {
-				LogTools.info(logger, "Timeout waiting for LifecycleManager", ex);
+				logger.log(Level.INFO, "Timeout waiting for LifecycleManager", ex);
 				return null;
 			}
 		}
@@ -331,7 +332,7 @@ public class LifeCycleManagerHelper {
 		}
 
 		/** Logger for the class */
-		private static final Logger logger = LogFactory.getLogger();
+		private static final Logger logger = Logger.getAnonymousLogger();
 	}
 	
 	public static class LifeCycleManagementClientImpl implements LifeCycleManagementClient {

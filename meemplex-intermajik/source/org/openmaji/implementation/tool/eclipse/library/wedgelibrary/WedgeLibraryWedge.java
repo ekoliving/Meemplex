@@ -14,6 +14,7 @@ package org.openmaji.implementation.tool.eclipse.library.wedgelibrary;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -169,9 +170,9 @@ public class WedgeLibraryWedge implements WedgeLibrary, Wedge {
 			meemDefinition.addWedgeDefinition(wedgeDefinition);
 
 		} catch (WedgeIntrospectorException e) {
-			LogTools.error(logger, "Exception while introspecting class: " + className, e);
+			logger.log(Level.WARNING, "Exception while introspecting class: " + className, e);
 		} catch (ClassNotFoundException e) {
-			LogTools.error(logger, "Class not found: " + className, e);
+			logger.log(Level.WARNING, "Class not found: " + className, e);
 		}
 
 		return meemDefinition;
@@ -185,7 +186,7 @@ public class WedgeLibraryWedge implements WedgeLibrary, Wedge {
 		{
 			if (reference == null)
 			{
-				LogTools.error(logger, "no managedPersistenceHandler found can't persist!");
+				logger.log(Level.WARNING, "no managedPersistenceHandler found can't persist!");
 				return;
 			}
 			

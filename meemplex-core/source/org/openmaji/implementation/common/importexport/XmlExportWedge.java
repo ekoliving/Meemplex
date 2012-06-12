@@ -30,7 +30,8 @@ import org.openmaji.meem.wedge.lifecycle.*;
 import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.space.CategoryEntry;
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,7 +48,7 @@ public class XmlExportWedge
   
   private Document     document;
   
-  private static Logger logger = LogFactory.getLogger(); 
+  private static Logger logger = Logger.getAnonymousLogger(); 
 
   
   public XmlExportWedge() {
@@ -105,13 +106,13 @@ public class XmlExportWedge
 	    outputStream.close();
   	}
   	catch (IOException ioException) {
-      	LogTools.error(logger, "Problem opening or writing to URL: " + outputURL, ioException);
+      	logger.log(Level.WARNING, "Problem opening or writing to URL: " + outputURL, ioException);
   	}
   	catch (TransformerConfigurationException ex) {
-  		LogTools.error(logger, "Problem with XML tranformer configuration", ex);
+  		logger.log(Level.WARNING, "Problem with XML tranformer configuration", ex);
   	}
   	catch (TransformerException ex) {
-  		LogTools.error(logger, "Problem with XML tranformation", ex);  		
+  		logger.log(Level.WARNING, "Problem with XML tranformation", ex);  		
   	}
   	finally {
         outputStream = null;
@@ -151,14 +152,14 @@ public class XmlExportWedge
     }
 
     public void contentSent() {
-      LogTools.info(logger, "Export complete: " + outputURL+ " [" + meemCount + " Meems]");
+      logger.log(Level.INFO, "Export complete: " + outputURL+ " [" + meemCount + " Meems]");
       
       conclude();
     }
 
     public void contentFailed(String reason) {
 
-      LogTools.info(logger, "Export failed: " + outputURL);
+      logger.log(Level.INFO, "Export failed: " + outputURL);
 
       conclude();
     }
@@ -172,7 +173,7 @@ public class XmlExportWedge
 	
 	  	}
 	  	catch (ParserConfigurationException ex) {
-	  		LogTools.error(logger, "Could not create export document.", ex);
+	  		logger.log(Level.WARNING, "Could not create export document.", ex);
 	  	}
   	}
   }

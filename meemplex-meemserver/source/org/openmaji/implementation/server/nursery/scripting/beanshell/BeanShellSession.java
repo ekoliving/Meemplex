@@ -15,6 +15,7 @@ package org.openmaji.implementation.server.nursery.scripting.beanshell;
 import java.io.*;
 import java.net.Socket;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mortbay.io.WriterOutputStream;
@@ -222,7 +223,7 @@ public class BeanShellSession extends SecureSession {
 				consoleReader.setPrompt(getPrompt());
 				while (true) {
 					String line = consoleReader.readLine();
-					logger.info("got string : " + line);
+					logger.log(Level.INFO, "got string : " + line);
 					try {
 						Object result = interpreter.eval(line);
 						consoleReader.println("" + result);

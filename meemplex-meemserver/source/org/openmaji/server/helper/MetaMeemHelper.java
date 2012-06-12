@@ -231,7 +231,7 @@ public class MetaMeemHelper
 		public void addDependencyAttribute(String facetKey, DependencyAttribute dependencyAttribute)
 		{
 			if (lastFacetDefinition == null) {
-				//LogTools.info(logger, "cannot add DependencyAttribute. No 'lastFacetDefinition'");
+				//logger.log(Level.INFO, "cannot add DependencyAttribute. No 'lastFacetDefinition'");
 				return;
 			}
 			

@@ -20,9 +20,10 @@ import org.openmaji.rpc.binding.FacetHealthEvent;
 import org.openmaji.rpc.binding.MeemEvent;
 import org.openmaji.rpc.binding.Names;
 import org.openmaji.rpc.binding.NoSessionException;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles incoming RPC calls.
@@ -34,7 +35,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class RpcHandler implements RpcMessageHandler {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	private HashMap<String, SessionHandler> sessionHandlers = new HashMap<String, SessionHandler>();
 	
@@ -97,18 +98,18 @@ public class RpcHandler implements RpcMessageHandler {
 	 */
 	public String beginSession(String sessionId) {
 		if (trace) {
-			LogTools.info(logger, "begin session: \"" + sessionId + "\"");
+			logger.log(Level.INFO, "begin session: \"" + sessionId + "\"");
 		}
 
 		try {
 			SessionHandler sessionHandler = getSessionHandler(sessionId, true);
 			
-			//LogTools.info(logger, "beginning session: client \"" + sessionId + "\", server \"" + sessionHandler.getSessionId() + "\"");
+			//logger.log(Level.INFO, "beginning session: client \"" + sessionId + "\", server \"" + sessionHandler.getSessionId() + "\"");
 			
 			return sessionHandler.getSessionId();
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"beginSession()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"beginSession()\"", ex);
 			throw ex;
 		}
 	}
@@ -124,7 +125,7 @@ public class RpcHandler implements RpcMessageHandler {
 
 		try {
 			if (trace) {
-				LogTools.info(logger, "ending session: \"" + sessionId + "\"");
+				logger.log(Level.INFO, "ending session: \"" + sessionId + "\"");
 			}
 
 			SessionHandler sessionHandler = getSessionHandler(sessionId, false);
@@ -138,7 +139,7 @@ public class RpcHandler implements RpcMessageHandler {
 			return "";
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"endSession()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"endSession()\"", ex);
 			throw ex;
 		}
 	}
@@ -159,7 +160,7 @@ public class RpcHandler implements RpcMessageHandler {
 	{
 		try {
 			if (trace) { 
-				LogTools.info(logger, "sending message for " + sessionId + ": " + facetId + "." + methodName);
+				logger.log(Level.INFO, "sending message for " + sessionId + ": " + facetId + "." + methodName);
 			}
 			
 			// check if session created, and create if not.
@@ -175,7 +176,7 @@ public class RpcHandler implements RpcMessageHandler {
 			return sessionHandler.getSessionId();
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"send()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"send()\"", ex);
 			throw ex;
 		}
 	}
@@ -202,7 +203,7 @@ public class RpcHandler implements RpcMessageHandler {
 			return result;
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"receive()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"receive()\"", ex);
 			throw ex;
 		}
 	}
@@ -215,7 +216,7 @@ public class RpcHandler implements RpcMessageHandler {
 	 */
 	public List<Map<String, Object>> receiveMany(String sessionId) {
 		if (trace) {
-			LogTools.info(logger, "receiveMany: \"" + sessionId + "\"");
+			logger.log(Level.INFO, "receiveMany: \"" + sessionId + "\"");
 		}
 
 		try {
@@ -241,7 +242,7 @@ public class RpcHandler implements RpcMessageHandler {
 			return result;
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"receive()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"receive()\"", ex);
 			throw ex;
 		}
 	}
@@ -258,7 +259,7 @@ public class RpcHandler implements RpcMessageHandler {
 	{
 		try {
 			if (trace) {
-				LogTools.info(logger, "Session " + sessionId + ", registering facet: " + meemPath + ":" + facetId);
+				logger.log(Level.INFO, "Session " + sessionId + ", registering facet: " + meemPath + ":" + facetId);
 			}
 			SessionHandler sessionHandler = getSessionHandler(sessionId, false);
 			if (sessionHandler == null) {
@@ -268,7 +269,7 @@ public class RpcHandler implements RpcMessageHandler {
 			return sessionHandler.getSessionId();
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"register()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"register()\"", ex);
 			throw ex;
 		}
 	}
@@ -284,7 +285,7 @@ public class RpcHandler implements RpcMessageHandler {
 	{
 		try {
 			if (trace) {
-				LogTools.info(logger, "deregistering facet: " + meemPath + ":" + facetId);
+				logger.log(Level.INFO, "deregistering facet: " + meemPath + ":" + facetId);
 			}
 			SessionHandler sessionHandler = getSessionHandler(sessionId, false);			
 			if (sessionHandler == null) {
@@ -294,7 +295,7 @@ public class RpcHandler implements RpcMessageHandler {
 			return sessionHandler.getSessionId();
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"deregister()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"deregister()\"", ex);
 			throw ex;
 		}
 	}
@@ -308,7 +309,7 @@ public class RpcHandler implements RpcMessageHandler {
 	{
 		try {
 			if (trace) {
-				LogTools.info(logger, "Session " + sessionId + ", registering facet: " + meemPath + ":" + facetId);
+				logger.log(Level.INFO, "Session " + sessionId + ", registering facet: " + meemPath + ":" + facetId);
 			}
 			SessionHandler sessionHandler = getSessionHandler(sessionId, false);
 			if (sessionHandler == null) {
@@ -318,7 +319,7 @@ public class RpcHandler implements RpcMessageHandler {
 			return sessionHandler.getSessionId();
 		}
 		catch (RuntimeException ex) {
-			LogTools.info(logger, "Got runtime exception in \"registerOutbound()\"", ex);
+			logger.log(Level.INFO, "Got runtime exception in \"registerOutbound()\"", ex);
 			throw ex;
 		}
 	}
@@ -332,7 +333,7 @@ public class RpcHandler implements RpcMessageHandler {
 		throws NoSessionException
 	{
 		if (trace) {
-			LogTools.info(logger, "interrupting session: " + sessionId);
+			logger.log(Level.INFO, "interrupting session: " + sessionId);
 		}
 		
 		SessionHandler sessionHandler = getSessionHandler(sessionId, false);
@@ -463,7 +464,7 @@ public class RpcHandler implements RpcMessageHandler {
 							Object key = ids[i];
 							SessionHandler handler = (SessionHandler) sessionHandlers.get(key);
 							if ( (handler != null) && handler.isStale() ) {
-//								LogTools.info(logger, "++++ cleaning up session: " + key + " ++++");
+//								logger.log(Level.INFO, "++++ cleaning up session: " + key + " ++++");
 								handler.cleanup();
 								sessionHandlers.remove(key);
 							}
@@ -474,13 +475,13 @@ public class RpcHandler implements RpcMessageHandler {
 						wait(timeout);
 					}
 					catch (InterruptedException ex) {
-//						LogTools.info(logger, "++++ session monitor interrupted ++++");
+//						logger.log(Level.INFO, "++++ session monitor interrupted ++++");
 						running = false;
 					}
 				}
 			}
 			catch (Exception ex) {
-				LogTools.info(logger, "Exception in SessionMonitor", ex);				
+				logger.log(Level.INFO, "Exception in SessionMonitor", ex);				
 			}
 		}
 		

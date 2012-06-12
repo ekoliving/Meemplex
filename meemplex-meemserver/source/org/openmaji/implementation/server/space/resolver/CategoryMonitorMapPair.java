@@ -19,9 +19,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openmaji.implementation.server.Common;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -33,7 +34,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class CategoryMonitorMapPair {
 	
-	static private Logger logger = LogFactory.getLogger();
+	static private Logger logger = Logger.getAnonymousLogger();
 	
 	private CategoryMonitor categoryMonitor;
 	private Map children = Collections.synchronizedMap(new HashMap());
@@ -44,7 +45,7 @@ public class CategoryMonitorMapPair {
 
 	public void addChild(String entryName, CategoryMonitor categoryMonitor) {
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-			LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "addChild(): " + entryName + " : " + categoryMonitor);
+			logger.log(MeemResolverWedge.LOG_LEVEL, "addChild(): " + entryName + " : " + categoryMonitor);
 		}
 		
 		children.put(entryName, new CategoryMonitorMapPair(categoryMonitor));
@@ -52,7 +53,7 @@ public class CategoryMonitorMapPair {
 
 	public void removeChild(String entryName) {
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-			LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "removeChild(): " + entryName + " : " + this);
+			logger.log(MeemResolverWedge.LOG_LEVEL, "removeChild(): " + entryName + " : " + this);
 		}
 		
 		synchronized(children) {
@@ -75,7 +76,7 @@ public class CategoryMonitorMapPair {
 
 	public void removeChildren() {
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-			LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "removeChildren(): " + this);
+			logger.log(MeemResolverWedge.LOG_LEVEL, "removeChildren(): " + this);
 		}
 		Set keys;
 		synchronized (children) {

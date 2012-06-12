@@ -1,8 +1,9 @@
 package org.openmaji.implementation.common;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
@@ -10,14 +11,14 @@ import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.util.CategoryEntryConsumer;
 
 public class CategoryEntryConsumerWedge implements Wedge, CategoryEntryConsumer{
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	/**
 	 * CategoryEntryConsumer Outbound
 	 */
 	public CategoryEntryConsumer entryConsumerClient;
 	public final ContentProvider entryConsumerClientProvider=new ContentProvider(){
 		public synchronized void sendContent(Object target, Filter filter){
-			if(DebugFlag.TRACE)LogTools.trace(logger,20,"sendContent() - invoked");
+			if(DebugFlag.TRACE)logger.log(Level.FINE, "sendContent() - invoked");
 			if(entry!=null){
 				((CategoryEntryConsumer)target).entry(entry);
 			};
@@ -41,7 +42,7 @@ public class CategoryEntryConsumerWedge implements Wedge, CategoryEntryConsumer{
 	public CategoryEntryConsumer entryConsumerStateConduit = new EntryConsumerStateConduit();
 
 	public synchronized void entry(CategoryEntry entry) {	    	      
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"entry() - invoked on in-bound facet");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "entry() - invoked on in-bound facet");
 	    entryConsumerControlConduit.entry(entry);
 	    
 	}
@@ -49,7 +50,7 @@ public class CategoryEntryConsumerWedge implements Wedge, CategoryEntryConsumer{
 	class EntryConsumerStateConduit implements CategoryEntryConsumer {
 
 	    public synchronized void entry(CategoryEntry newEntry) {
-	      if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"entry() - invoked on CategoryEntryConsumerStateConduit");
+	      if ( DebugFlag.TRACE ) logger.log(Level.FINE, "entry() - invoked on CategoryEntryConsumerStateConduit");
 	      entry = newEntry;
 	      entryConsumerClient.entry(entry);
 	    }

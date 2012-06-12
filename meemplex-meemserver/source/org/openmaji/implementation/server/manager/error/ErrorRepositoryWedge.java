@@ -14,9 +14,12 @@ import java.util.Map.Entry;
 import org.openmaji.implementation.server.request.Request;
 import org.openmaji.implementation.server.request.RequestStack;
 import org.openmaji.implementation.server.request.RequestTracker;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+
+import java.util.logging.Level;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.meem.*;
 import org.openmaji.meem.definition.*;
@@ -39,7 +42,7 @@ import org.openmaji.system.meem.wedge.reference.MeemClientConduit;
  */
 public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker, MeemDefinitionProvider {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	public MeemContext meemContext;
 	
@@ -111,7 +114,7 @@ public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker,
 	 */
 	public void thrown(Throwable throwable) {
 		// log it
-		LogTools.error(logger, "Error thrown", throwable);
+		logger.log(Level.WARNING, "Error thrown", throwable);
 		
 		// get the current request stack
 		RequestStack requestStack = (RequestStack) RequestTracker.getRequestStack().clone();

@@ -1,9 +1,11 @@
 package org.meemplex.automation.core;
 
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.meemplex.system.MeemkitService;
+import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.manager.lifecycle.meemkit.MeemkitUtility;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.osgi.framework.BundleActivator;
@@ -34,12 +36,11 @@ public class AutomationCoreActivator implements BundleActivator {
 	 * 
 	 */
 	public void start(BundleContext bc) throws Exception {
-		logger.info("Starting " + bc.getBundle().getSymbolicName());
-		
+		if (Common.TRACE_ENABLED) {
+			logger.log(Level.INFO, "Starting " + bc.getBundle().getSymbolicName());
+		}
 		this.bundleContext = bc;
-		
-		// register meemkit service
-		meemkitRegistration = bc.registerService(MeemkitService.class, meemkitService, null);
+		this.meemkitRegistration = bc.registerService(MeemkitService.class, meemkitService, null);		// register meemkit service
 	}
 
 	/**

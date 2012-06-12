@@ -11,9 +11,10 @@ package org.openmaji.implementation.server.meem.session;
 import java.util.*;
 
 import org.openmaji.implementation.server.Common;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import org.openmaji.meem.*;
@@ -34,7 +35,7 @@ import org.openmaji.system.request.RequestCreationException;
  */
 public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryClient {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/** The context for request/response tracking */
 	
@@ -99,21 +100,21 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 			while (ita.hasNext()) {
 				DependencyAttribute dat = (DependencyAttribute) ita.next();
 				if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-					LogTools.trace(logger, Common.getLogLevel(), "Removing session meem factory dependency " + dat);
+					logger.log(Common.getLogLevel(), "Removing session meem factory dependency " + dat);
 				}
 				dependencyHandlerConduit.removeDependency(dat);
 			}
 			
 			// Add the session meem to the cache 
 			if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-				LogTools.trace(logger, Common.getLogLevel(), "caching newly created session meempath");
+				logger.log(Common.getLogLevel(), "caching newly created session meempath");
 			}
 			mCachedSessionMeems.put(mFactoryRequest.getMeemPath(), sessionmp);
 			cSessionMeemCreatorClientConduit.sessionMeemCreated(sessionmp);
 						
 		}
 		else {
-			LogTools.warn(logger, "unexpected session meem created");
+			logger.log(Level.WARNING, "unexpected session meem created");
 			cSessionMeemCreatorClientConduit.sessionMeemCreationError(new MajiException("Unexpected session meem creation reported"));
 			
 		}
@@ -146,17 +147,17 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 			
 			if ("createSessionFactoryDependencies".equals(context)) {
 				
-				LogTools.error(logger, "Failed to create session factory dependencies: " + e.getMessage());
+				logger.log(Level.WARNING, "Failed to create session factory dependencies: " + e.getMessage());
 				cSessionMeemCreatorClientConduit.sessionMeemCreationError(new MajiException("Error setting up dependencies remote session factory", e));
 			}
 			else if ("createSessionMeem".equals(context)) {
 
-				LogTools.error(logger, "Failed to create session meem: " + e.getMessage());
+				logger.log(Level.WARNING, "Failed to create session meem: " + e.getMessage());
 				cSessionMeemCreatorClientConduit.sessionMeemCreationError(new MajiException("Error creating remote session meem instance", e));
 
 			}
 			else {
-				LogTools.error(logger, "Unknown request error caught: " + context + " " + e.getMessage());
+				logger.log(Level.WARNING, "Unknown request error caught: " + context + " " + e.getMessage());
 				
 			}
 		}
@@ -187,7 +188,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 				if (sessionmp != null) {
 					
 					if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-						LogTools.trace(logger, Common.getLogLevel(), "retrieving cached session meem");
+						logger.log(Common.getLogLevel(), "retrieving cached session meem");
 					}
 					cSessionMeemCreatorClientConduit.sessionMeemCreated(sessionmp);
 				}
@@ -199,7 +200,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 				else {
 					// Connection to another meem already established - throw an error to exit.
 					if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-						LogTools.trace(logger, Common.getLogLevel(), "session meem creator client already connected to remote factory");
+						logger.log(Common.getLogLevel(), "session meem creator client already connected to remote factory");
 					}
 					cSessionMeemCreatorClientConduit.sessionMeemCreationError(new MajiException("session meem creator client already connected to remote factory"));
 					return;
@@ -213,7 +214,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 				try {
 					requestContext.begin(60000, "createSessionFactoryDependencies");
 					if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-						LogTools.trace(logger, Common.getLogLevel(), "Establishing dependencies to session meem");
+						logger.log(Common.getLogLevel(), "Establishing dependencies to session meem");
 					}
 				}
 				catch (RequestCreationException e) {
@@ -227,7 +228,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 				mFactoryRequest = new FactoryRequestObject(factorymp);
 				
 				if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-					LogTools.trace(logger, Common.getLogLevel(), "setting up dependencies to session meem factory");
+					logger.log(Common.getLogLevel(), "setting up dependencies to session meem factory");
 				}
 				
                 Meem factoryMeem = Meem.spi.get(factorymp);
@@ -311,13 +312,13 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 			
 			if (isgone == false) {
 				if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-					LogTools.trace(logger, Common.getLogLevel(), "Dependency attribute could not be found for removal: " + da);
-					LogTools.trace(logger,Common.getLogLevel(), "Number of attributes held: " + mOutstandingDependencies.size());
+					logger.log(Common.getLogLevel(), "Dependency attribute could not be found for removal: " + da);
+					logger.log(Common.getLogLevel(), "Number of attributes held: " + mOutstandingDependencies.size());
 				}
 			}
 			else {
 				if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-					LogTools.trace(logger, Common.getLogLevel(), "Outstanding dependency attribute removed: " + da);
+					logger.log(Common.getLogLevel(), "Outstanding dependency attribute removed: " + da);
 				}
 			}
 			
@@ -396,7 +397,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 			else {
 				
 				if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-					LogTools.trace(logger, Common.getLogLevel(), "Dependency connected to session factory..." + depatt);
+					logger.log(Common.getLogLevel(), "Dependency connected to session factory..." + depatt);
 				}
 				// attempt to remove the dependency from the outstanding list
 				// if the dependency does not apply to this wedge, it will be
@@ -416,7 +417,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 						// Create the request for creating the session meem
 						requestContext.begin(30000, "createSessionMeem");
 						if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-							LogTools.trace(logger, Common.getLogLevel(), "Dependencies established: creating session meem");
+							logger.log(Common.getLogLevel(), "Dependencies established: creating session meem");
 						}
 					}
 					catch (RequestCreationException e) {
@@ -455,7 +456,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 		// remote session factory to destroy the meem
 		
 		if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-			LogTools.trace(logger, Common.getLogLevel(), "Shutting down session factory client....");
+			logger.log(Common.getLogLevel(), "Shutting down session factory client....");
 		}
 		Iterator it = mCachedSessionMeems.keySet().iterator();
 		
@@ -471,7 +472,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 			while (ita.hasNext()) {
 				DependencyAttribute dat = (DependencyAttribute) ita.next();
 				if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-					LogTools.trace(logger, Common.getLogLevel(), "Removing session meem factory dependency " + dat);
+					logger.log(Common.getLogLevel(), "Removing session meem factory dependency " + dat);
 				}
 				dependencyHandlerConduit.removeDependency(dat);
 			}
@@ -483,7 +484,7 @@ public class SessionMeemFactoryClientWedge implements Wedge, SessionMeemFactoryC
 		// current request is re-initialised
 		
 		if (Common.TRACE_ENABLED && Common.TRACE_LICENSING) {
-			LogTools.trace(logger, Common.getLogLevel(), "Emptying cached sessions....");
+			logger.log(Common.getLogLevel(), "Emptying cached sessions....");
 		}
 		//Hashtable mCachedSessionMeems = new Hashtable();
 		

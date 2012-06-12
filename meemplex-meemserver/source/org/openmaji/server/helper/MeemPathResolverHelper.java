@@ -27,9 +27,10 @@ import org.openmaji.system.manager.registry.MeemRegistryGateway;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.resolver.MeemResolver;
 import org.openmaji.system.space.resolver.MeemResolverClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -77,7 +78,7 @@ public class MeemPathResolverHelper
 		}
 		catch (TimeoutException ex)
 		{
-			LogTools.info(logger, "Timeout waiting for Meem for the MeemPath", ex);
+			logger.log(Level.INFO, "Timeout waiting for Meem for the MeemPath", ex);
 			return null;
 		}
 		finally
@@ -108,7 +109,7 @@ public class MeemPathResolverHelper
 		}
 		catch (TimeoutException ex)
 		{
-			LogTools.info(logger, "Timeout waiting for Meem for the MeemPath", ex);
+			logger.log(Level.INFO, "Timeout waiting for Meem for the MeemPath", ex);
 			return null;
 		}
 		finally
@@ -199,5 +200,5 @@ public class MeemPathResolverHelper
 	private static final long timeout = 60000;
 
 	/** Logger for the class */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

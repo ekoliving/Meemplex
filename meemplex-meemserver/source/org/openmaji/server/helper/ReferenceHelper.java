@@ -24,9 +24,10 @@ import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -50,7 +51,7 @@ public class ReferenceHelper
 	private static final long timeout = Long.parseLong(System.getProperty(PIGEONHOLE_TIMEOUT, "30000"));
 
 	/** Logger for the class */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	public static <T extends Facet> T getTarget(Meem meem, String facetIdentifier, Class<T> specification)
 	{
@@ -68,7 +69,7 @@ public class ReferenceHelper
 		}
 		catch (TimeoutException ex)
 		{
-			LogTools.info(logger, "Timeout waiting for Reference", ex);
+			logger.log(Level.INFO, "Timeout waiting for Reference", ex);
 			return null;
 		}
 		finally

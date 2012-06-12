@@ -33,7 +33,8 @@ import org.openmaji.system.manager.registry.MeemRegistry;
 import org.openmaji.system.manager.registry.MeemRegistryClient;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -109,12 +110,12 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 	 */
 
 	public void registerMeem(Meem meem) {
-		//LogTools.info(logger, "registerMeem(): " + meem);
+		//logger.log(Level.INFO, "registerMeem(): " + meem);
 
 		MeemPath meemPath = meem.getMeemPath();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMREGISTRY) {
-			LogTools.trace(logger, logLevel, "registerMeem(): " + meemPath + " : " + meem);
+			logger.log(logLevel, "registerMeem(): " + meemPath + " : " + meem);
 		}
 
 		if (meemPath == null) {
@@ -122,7 +123,7 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 		}
 
 		if (meemPath.isDefinitive() == false) {
-			LogTools.warn(logger, "Can't register Meem with a non-storage MeemPath: " + meem);
+			logger.log(Level.WARNING, "Can't register Meem with a non-storage MeemPath: " + meem);
 		}
 
 		Meem oldMeem = (Meem) meems.put(meemPath, meem);
@@ -153,7 +154,7 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 
 		if (oldMeem != null) {
 			if (Common.TRACE_ENABLED && Common.TRACE_MEEMREGISTRY) {
-				LogTools.trace(logger, logLevel, "deregisterMeem(): " + meemPath + " : " + meem);
+				logger.log(logLevel, "deregisterMeem(): " + meemPath + " : " + meem);
 			}
 
 			meemRegistryClient.meemDeregistered(meem);
@@ -202,11 +203,11 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static final int logLevel = Common.getLogLevelVerbose();
+	private static final Level logLevel = Common.getLogLevelVerbose();
 }

@@ -11,6 +11,7 @@ package org.openmaji.implementation.server.meem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.Common;
@@ -210,7 +211,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 		final Facet target = reference.getTarget();
 
 //		if (Common.TRACE_ENABLED) {
-//			logger.info("adding outbound reference on " + getMeemPath() + " to " + reference);
+//			logger.log(Level.INFO, "adding outbound reference on " + getMeemPath() + " to " + reference);
 //		}
 		
 		ContentClient contentClient = getContentClientFromTarget(target);
@@ -280,7 +281,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 		}
 		catch (ContentException e) {
 			
-			logger.info("ContentException on " + meemCore.getMeemPath() + " : " + e.getMessage());
+			logger.log(Level.INFO, "ContentException on " + meemCore.getMeemPath() + " : " + e.getMessage());
 			contentClient.contentFailed(e.getMessage());
 		}
 	}
@@ -289,7 +290,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 
     if ( reference == null )
     {
-      logger.warning("removeOutboundReference() invoked with a null reference");
+      logger.log(Level.WARNING, "removeOutboundReference() invoked with a null reference");
       return;
     }
 
@@ -304,7 +305,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 			}
 		}
 		catch (ContentException e) {
-			logger.info("ContentException: " + e.getMessage());
+			logger.log(Level.INFO, "ContentException: " + e.getMessage());
 		}
 	}
 

@@ -10,6 +10,7 @@ package org.openmaji.meem.wedge.lifecycle;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.meem.MeemContext;

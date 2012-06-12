@@ -15,9 +15,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // TODO Implement inter-Wedge value updating, as soon as the inter-Wedge listener
 //      pattern has been completed within the MeemBuilder. 
@@ -52,7 +53,7 @@ import org.swzoo.log2.core.Logger;
 
 public class LinearWedge implements Linear, Wedge
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   /**
    * Linear client (out-bound Facet)
@@ -69,7 +70,7 @@ public class LinearWedge implements Linear, Wedge
        */
       public synchronized void sendContent(Object target, Filter filter)
       {
-        if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"sendContent() - invoked");
+        if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
         ((Linear) target).valueChanged(position);
       }
   };
@@ -105,7 +106,7 @@ public class LinearWedge implements Linear, Wedge
 
   public synchronized void valueChanged(Position position)
   {
-    if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on in-bound facet");
+    if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on in-bound facet");
     linearControlConduit.valueChanged(position);
   }
 
@@ -130,7 +131,7 @@ public class LinearWedge implements Linear, Wedge
 
     public synchronized void valueChanged(Position newPosition)
     {
-      if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on LinearStateConduit");
+      if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on LinearStateConduit");
       position = newPosition;
       linearClient.valueChanged(position);
     }

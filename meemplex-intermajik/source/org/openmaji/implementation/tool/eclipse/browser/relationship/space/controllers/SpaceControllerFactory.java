@@ -41,7 +41,7 @@ public class SpaceControllerFactory extends ControllerFactory {
 			return new UnavailableMeemController((UnavailableMeemNode) node);
 		}
 		else {
-			//LogTools.info(logger, "tried to create Controller for unknown node: " + node);
+			//logger.log(Level.INFO, "tried to create Controller for unknown node: " + node);
 		}
 		return null;
 	}

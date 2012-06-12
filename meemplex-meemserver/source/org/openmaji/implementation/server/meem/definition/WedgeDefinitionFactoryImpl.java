@@ -64,13 +64,11 @@ public class WedgeDefinitionFactoryImpl implements WedgeDefinitionFactory {
    * @return WedgeDefinition for the Wedge specified by the Class
    */
 
-  public WedgeDefinition createWedgeDefinition(
-    Class wedgeSpecification) {
+  public WedgeDefinition createWedgeDefinition(Class<?> wedgeSpecification) {
 
     WedgeDefinition wedgeDefinition = null;
 
-    wedgeSpecification =
-      majiSystemProvider.getImplementation(wedgeSpecification);
+    wedgeSpecification = majiSystemProvider.getImplementation(wedgeSpecification);
 
     if (WedgeDefinitionProvider.class.isAssignableFrom(wedgeSpecification)) {
       try {
@@ -92,8 +90,7 @@ public class WedgeDefinitionFactoryImpl implements WedgeDefinitionFactory {
     return(wedgeDefinition);
   }
   
-  public WedgeDefinition inspectWedgeDefinition(
-    Class wedgeSpecification) {
+  public WedgeDefinition inspectWedgeDefinition(Class<?> wedgeSpecification) {
       
     try {
       return(WedgeIntrospector.getWedgeDefinition(wedgeSpecification));

@@ -162,7 +162,7 @@ public interface MeemUtility
 	 *         {
      *  			if (reference == null)
      *  			{
-     *  				LogTools.error(logger, "no category found!");
+     *  				logger.log(Level.WARNING, "no category found!");
      *  				return;
      *   			}
 	 *

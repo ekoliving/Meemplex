@@ -204,7 +204,7 @@ public class InboundBinding extends FacetBinding implements FacetEventListener {
 			invokeOnListeners(method, params);
 		}
 		catch (NoSuchMethodException ex) {
-//			LogTools.info(logger, "Problem finding method for invocation: " + methodName, ex);
+//			logger.log(Level.INFO, "Problem finding method for invocation: " + methodName, ex);
 		}
 	}
 	
@@ -217,16 +217,16 @@ public class InboundBinding extends FacetBinding implements FacetEventListener {
 		synchronized (listeners) {
 			Iterator<Facet> listenerIter = listeners.iterator();
 			while (listenerIter.hasNext()) {
-				//LogTools.info(logger, "invoking method + " + method + " on listener");
+				//logger.log(Level.INFO, "invoking method + " + method + " on listener");
 				Object target = listenerIter.next();
 				try {
 					method.invoke(target, args);
 				}
 				catch (IllegalAccessException ex) {
-//					LogTools.info(logger, "No access to invoke method: " + method, ex);
+//					logger.log(Level.INFO, "No access to invoke method: " + method, ex);
 				}
 				catch (InvocationTargetException ex) {
-//					LogTools.info(logger, "Problem invoking method: " + method, ex.getCause());
+//					logger.log(Level.INFO, "Problem invoking method: " + method, ex.getCause());
 				}
 			}
 		}

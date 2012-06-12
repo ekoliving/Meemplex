@@ -52,9 +52,10 @@ import org.openmaji.meem.wedge.configuration.ConfigurationSpecification;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.utility.CollectionUtility;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -85,12 +86,12 @@ public class WedgeImpl {
 	/**
 	 * Collection of inbound Facets
 	 */
-	private Map<String, InboundFacetImpl> inboundFacets = new HashMap<String, InboundFacetImpl>();
+	private Map<String, InboundFacetImpl<?>> inboundFacets = new HashMap<String, InboundFacetImpl<?>>();
 
 	/**
 	 * Collection of outbound facets
 	 */
-	private Map<String, OutboundFacetImpl> outboundFacets = new HashMap<String, OutboundFacetImpl>();
+	private Map<String, OutboundFacetImpl<?>> outboundFacets = new HashMap<String, OutboundFacetImpl<?>>();
 
 	/**
 	 * Implementation class instance
@@ -189,7 +190,8 @@ public class WedgeImpl {
 	}
 
 	/**
-	 * Setup special fields of the wedge, like MeemContext and Conduits
+	 * Setup special fields of the wedge that are not defined in the WedgeDefinition. 
+	 * These fields include MeemCore, MeemContext, RequestContext and Conduits (and ConfigurationSpecifications?)
 	 * 
 	 * @param implementation
 	 */
@@ -203,15 +205,19 @@ public class WedgeImpl {
 				Field field = fields[i];
 				String fieldName = field.getName();
 
-				if (fieldName.equals("meemCore") && field.getType().equals(MeemCore.class)) {
+				// MeemCore
+				if ( (field.getAnnotation(MeemContext.class) != null || fieldName.equals("meemCore")) && field.getType().equals(MeemCore.class)) {
 					field.set(implementation, meemCore);
 				}
-				else if (field.getAnnotation(MeemContext.class) != null || fieldName.equals("meemContext")) {
+				// MeemContext
+				else if ( (field.getAnnotation(MeemContext.class) != null || fieldName.equals("meemContext")) && field.getType().equals(org.openmaji.meem.MeemContext.class)) {
 					field.set(implementation, new MeemContextImpl(meemCore, this));
 				}
+				// RequestContext
 				else if (fieldName.equals("requestContext")) {
 					field.set(implementation, new RequestContextImpl(meemCore, meemCore.getMeemPath()));
 				}
+				// Conduit
 				else if (field.getAnnotation(Conduit.class) != null || fieldName.endsWith("Conduit")) {
 					String conduitName = fieldName;
 					if (fieldName.endsWith("Conduit")) {
@@ -245,6 +251,7 @@ public class WedgeImpl {
 
 					field.set(implementation, conduit);
 				}
+				// ConfigurationSpec
 				else if (Modifier.isPublic(field.getModifiers()) && field.getType() == ConfigurationSpecification.class) {
 					ConfigurationSpecification spec = (ConfigurationSpecification) field.get(implementation);
 					String valueName = field.getName().substring(0, field.getName().length() - "Specification".length());
@@ -283,11 +290,11 @@ public class WedgeImpl {
 				field = wedgeImplClass.getClass().getField(fieldName);
 			}
 			catch (SecurityException e) {
-				LogTools.error(logger, "Exception while getting field [" + fieldName + "]", e);
+				logger.log(Level.WARNING, "Exception while getting field [" + fieldName + "]", e);
 				continue;
 			}
 			catch (NoSuchFieldException e) {
-				LogTools.error(logger, "Exception while getting field[" + fieldName + "]", e);
+				logger.log(Level.WARNING, "Exception while getting field[" + fieldName + "]", e);
 				continue;
 			}
 
@@ -296,11 +303,11 @@ public class WedgeImpl {
 					field.set(wedgeImplClass, fieldValue);
 				}
 				catch (IllegalArgumentException e) {
-					LogTools.error(logger, "Exception while setting field [" + fieldName + "] value [" + fieldValue + "]", e);
+					logger.log(Level.WARNING, "Exception while setting field [" + fieldName + "] value [" + fieldValue + "]", e);
 					continue;
 				}
 				catch (IllegalAccessException e) {
-					LogTools.error(logger, "Exception while setting field [" + fieldName + "] value [" + fieldValue + "]", e);
+					logger.log(Level.WARNING, "Exception while setting field [" + fieldName + "] value [" + fieldValue + "]", e);
 					continue;
 				}
 			}
@@ -333,11 +340,11 @@ public class WedgeImpl {
 				field = implementation.getClass().getField(fieldName);
 			}
 			catch (SecurityException e) {
-				LogTools.error(logger, "Exception while getting field [" + fieldName + "]", e);
+				logger.log(Level.WARNING, "Exception while getting field [" + fieldName + "]", e);
 				continue;
 			}
 			catch (NoSuchFieldException e) {
-				LogTools.error(logger, "Exception while getting field[" + fieldName + "]", e);
+				logger.log(Level.WARNING, "Exception while getting field[" + fieldName + "]", e);
 				continue;
 			}
 
@@ -350,7 +357,7 @@ public class WedgeImpl {
 					// if (fieldValue != null) {
 					// synchronized(fieldValue) {
 					// if (!(fieldValue instanceof Serializable)) {
-					// LogTools.error(logger, "Field [" + fieldName + "] is not Serializable");
+					// logger.log(Level.WARNING, "Field [" + fieldName + "] is not Serializable");
 					// continue;
 					// }
 					//
@@ -369,11 +376,11 @@ public class WedgeImpl {
 						ois.close();
 					}
 					catch (IOException e) {
-						LogTools.error(logger, "IOException while copying field [" + fieldName + "]", e);
+						logger.log(Level.WARNING, "IOException while copying field [" + fieldName + "]", e);
 						continue;
 					}
 					catch (ClassNotFoundException e) {
-						LogTools.error(logger, "ClassNotFoundException while copying field [" + fieldName + "]", e);
+						logger.log(Level.WARNING, "ClassNotFoundException while copying field [" + fieldName + "]", e);
 						continue;
 					}
 
@@ -381,11 +388,11 @@ public class WedgeImpl {
 					// }
 				}
 				catch (IllegalArgumentException e) {
-					LogTools.error(logger, "Exception while getting field [" + fieldName + "] value", e);
+					logger.log(Level.WARNING, "Exception while getting field [" + fieldName + "] value", e);
 					continue;
 				}
 				catch (IllegalAccessException e) {
-					LogTools.error(logger, "Exception while getting field [" + fieldName + "] value", e);
+					logger.log(Level.WARNING, "Exception while getting field [" + fieldName + "] value", e);
 					continue;
 				}
 
@@ -410,7 +417,7 @@ public class WedgeImpl {
 	 * @param inboundFacetImpl
 	 *            Run-time Facet model
 	 */
-	public void addInboundFacet(String facetIdentifier, InboundFacetImpl inboundFacetImpl) {
+	public void addInboundFacet(String facetIdentifier, InboundFacetImpl<?> inboundFacetImpl) {
 		inboundFacets.put(facetIdentifier, inboundFacetImpl);
 	}
 
@@ -430,7 +437,7 @@ public class WedgeImpl {
 	 * @param outboundFacetImpl
 	 *            Run-time Facet model
 	 */
-	public void addOutboundFacet(String facetIdentifier, OutboundFacetImpl outboundFacetImpl) {
+	public void addOutboundFacet(String facetIdentifier, OutboundFacetImpl<?> outboundFacetImpl) {
 		try {
 			FacetOutboundAttribute attr = (FacetOutboundAttribute) outboundFacetImpl.getFacetAttribute();
 			Field field = this.implementation.getClass().getField(attr.getWedgePublicFieldName());
@@ -458,8 +465,8 @@ public class WedgeImpl {
 	 * 
 	 * @return Iterator for all of the Facets
 	 */
-	public Collection<FacetImpl> getFacets() {
-		ArrayList<FacetImpl> facets = new ArrayList<FacetImpl>();
+	public Collection<FacetImpl<?>> getFacets() {
+		ArrayList<FacetImpl<?>> facets = new ArrayList<FacetImpl<?>>();
 		facets.addAll(this.getInboundFacets());
 		facets.addAll(this.getOutboundFacets());
 		return facets;
@@ -526,12 +533,12 @@ public class WedgeImpl {
 		return wedgeAttribute;
 	}
 
-	public Collection<OutboundFacetImpl> getOutboundFacets() {
-		return new ArrayList<OutboundFacetImpl>(outboundFacets.values());
+	public Collection<OutboundFacetImpl<?>> getOutboundFacets() {
+		return new ArrayList<OutboundFacetImpl<?>>(outboundFacets.values());
 	}
 
-	public Collection<InboundFacetImpl> getInboundFacets() {
-		return new ArrayList<InboundFacetImpl>(inboundFacets.values());
+	public Collection<InboundFacetImpl<?>> getInboundFacets() {
+		return new ArrayList<InboundFacetImpl<?>>(inboundFacets.values());
 	}
 
 	/**
@@ -647,6 +654,6 @@ public class WedgeImpl {
 		return (getClass().getName() + "[" + "implementation=" + implementation + ", systemWedge=" + systemWedge + ", inboundFacets=" + inboundFacets + ", outboundFacets=" + outboundFacets + "]");
 	}
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 }

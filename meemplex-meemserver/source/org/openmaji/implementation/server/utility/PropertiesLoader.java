@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.Common;
@@ -82,7 +83,7 @@ public class PropertiesLoader
 	    }
     }
     catch (URISyntaxException e) {
-    	logger.info("Login config property. " + loginConfigUrl + ", is not a valid URI");
+    	logger.log(Level.INFO, "Login config property. " + loginConfigUrl + ", is not a valid URI");
     }
    
     // make meemstore location absolute

@@ -14,9 +14,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -41,7 +42,7 @@ import org.swzoo.log2.core.Logger;
 
 public class LinearListWedge implements LinearList, Wedge
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   /**
    * Variable client (out-bound Facet)
@@ -59,7 +60,7 @@ public class LinearListWedge implements LinearList, Wedge
        */
       public void sendContent(Object target, Filter filter)
       {
-        if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"sendContent() - invoked");
+        if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
         LinearList linearList = (LinearList) target;
         Position[] initialContent = ( valueList == null ? new Position[0] : valueList );
         linearList.valueChanged(initialContent);
@@ -97,7 +98,7 @@ public class LinearListWedge implements LinearList, Wedge
 
   public void valueChanged(Position[] valueList)
   {
-    if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on in-bound facet");
+    if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on in-bound facet");
     linearListControlConduit.valueChanged(valueList);
   }
 
@@ -118,7 +119,7 @@ public class LinearListWedge implements LinearList, Wedge
      */
 
     public void valueChanged(Position[] newLinearList) {
-      if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on LinearListStateConduit");
+      if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on LinearListStateConduit");
       valueList = newLinearList;
       linearListClient.valueChanged(valueList);
     }

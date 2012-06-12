@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -97,7 +98,7 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 	public SessionHandler(String sessionId) {
 		this.sessionId = sessionId;
 		this.subject   = Subject.getSubject(AccessController.getContext());
-//		LogTools.info(logger, "created session with Subject: " + subject);
+//		logger.log(Level.INFO, "created session with Subject: " + subject);
 		running = true;
 	}
 	
@@ -116,7 +117,7 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 	 */
 	public void send(String meemPath, String facetId, String classname, String methodName, Object[] args) {
 
-//		LogTools.info(logger, "in send()...");
+//		logger.log(Level.INFO, "in send()...");
 		
 //		if ( !subject.equals( Subject.getSubject(AccessController.getContext()) ) ) {
 //			throw new SecurityException("invalid Subject");
@@ -136,7 +137,7 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 			binding.facetEvent(event);
 //		}
 //		catch (ClassNotFoundException ex) {
-//			LogTools.info(logger, "class not found for \"" + classname + "\"");
+//			logger.log(Level.INFO, "class not found for \"" + classname + "\"");
 //		}
 	}
 	
@@ -185,7 +186,7 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 		}
 
 		if (trace) {
-			logger.info("Sending event to client: " + event);
+			logger.log(Level.INFO, "Sending event to client: " + event);
 		}
 		return event;
 	}
@@ -222,7 +223,7 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 			// check if new request coming in. if so, leave events behind
 			if (receiveCount > 1 ) {
 				if (trace) {
-					logger.info("this \"receive\" call has been knocked off. Returning events to queue");
+					logger.log(Level.INFO, "this \"receive\" call has been knocked off. Returning events to queue");
 				}
 				outboundQueue.addAll(0, new ArrayList<MeemEvent>(events));	// add a copy of the list to the queue
 				events.clear();			// clear the list that is returned to the client
@@ -238,7 +239,7 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 		}
 		
 		if (trace) {
-			logger.info("Sending events to client: " + events);
+			logger.log(Level.INFO, "Sending events to client: " + events);
 		}
 
 		return events;
@@ -258,7 +259,7 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 //			throw new SecurityException("invalid Subject");
 //		}
 		if (trace) {
-			logger.info("registering: " + meemPath + ":" + facetId + ":" + classname);
+			logger.log(Level.INFO, "registering: " + meemPath + ":" + facetId + ":" + classname);
 		}
 		
 		getOutboundBinding(meemPath, facetId, classname);		
@@ -367,8 +368,8 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 	 * 
 	 */
 	public boolean isStale() {
-//		LogTools.info(
-//				logger, 
+//		logger.log(Level.INFO,
+//				 
 //				"in isStale() with time of " + ( (System.currentTimeMillis() - lastAccessed) / 1000) + " seconds"
 //			);
 		
@@ -384,21 +385,21 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 	public void facetEvent(FacetEvent event) {
 
 		if (trace) {
-			logger.info("Got facet event: " + event);
+			logger.log(Level.INFO, "Got facet event: " + event);
 		}
 		
 		// add to outbound queue
 		synchronized (outboundQueue) {
 			outboundQueue.add(event);
 			if (trace) {
-				logger.info("Event addded to queue: " + outboundQueue.size());
+				logger.log(Level.INFO, "Event addded to queue: " + outboundQueue.size());
 			}
 			
 			// if the queue is larger than allowed, drop the oldest event
 			if (outboundQueue.size() > maxQueueSize) {
 				MeemEvent eventObject = outboundQueue.remove(0);
 				if (trace) {
-					logger.info("Outbound queue larger than " + maxQueueSize + ". Removed " + eventObject);
+					logger.log(Level.INFO, "Outbound queue larger than " + maxQueueSize + ". Removed " + eventObject);
 				}
 			}
 			outboundQueue.notifyAll();			
@@ -413,21 +414,21 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 	 */
 	public void facetHealthEvent(FacetHealthEvent event) {
 		if (trace) {
-			logger.info("Got facet health event: " + event);
+			logger.log(Level.INFO, "Got facet health event: " + event);
 		}
 
 		synchronized (outboundQueue) {
 			outboundQueue.add(event);
 			
 			if (trace) {
-				logger.info("HealthEvent addded to queue: " + outboundQueue.size());
+				logger.log(Level.INFO, "HealthEvent addded to queue: " + outboundQueue.size());
 			}
 			
 			// if the queue is larger than allowed, drop the oldest event
 			if (outboundQueue.size() > maxQueueSize) {
 				MeemEvent eventObject = outboundQueue.remove(0);
 				if (trace) {
-					logger.info("Outbound queue larger than " + maxQueueSize + ". Removed " + eventObject);
+					logger.log(Level.INFO, "Outbound queue larger than " + maxQueueSize + ". Removed " + eventObject);
 				}
 			}
 			outboundQueue.notifyAll();			
@@ -471,18 +472,18 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 					outboundBindings.put(key, binding);
 				}
 				catch (URISyntaxException ex) {
-					logger.info("MeemPath URI not valid: \"" + meemPath + "\"");				
+					logger.log(Level.INFO, "MeemPath URI not valid: \"" + meemPath + "\"");				
 				}
 				catch (ClassNotFoundException ex) {
-					logger.info("Could not locate class \"" + classname + "\"");
+					logger.log(Level.INFO, "Could not locate class \"" + classname + "\"");
 				}
 				catch (ClassCastException ex) {
-					logger.info("Class is not a Facet \"" + classname + "\"");
+					logger.log(Level.INFO, "Class is not a Facet \"" + classname + "\"");
 				}
 			}
 			else {
 				if (trace) {
-					logger.info("using existing binding: " + binding);
+					logger.log(Level.INFO, "using existing binding: " + binding);
 				}
 			}
 		}
@@ -514,13 +515,13 @@ public class SessionHandler implements SessionMessageHandler, FacetEventListener
 					inboundBindings.put(key, binding);
 				}
 				catch (URISyntaxException ex) {
-					logger.info("MeemPath URI not valid: \"" + meemPath + "\"");				
+					logger.log(Level.INFO, "MeemPath URI not valid: \"" + meemPath + "\"");				
 				}
 				catch (ClassNotFoundException ex) {
-					logger.info("Could not locate class \"" + classname + "\"");
+					logger.log(Level.INFO, "Could not locate class \"" + classname + "\"");
 				}
 				catch (ClassCastException ex) {
-					logger.info("Class is not a Facet \"" + classname + "\"");
+					logger.log(Level.INFO, "Class is not a Facet \"" + classname + "\"");
 				}
 			}
 		}

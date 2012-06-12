@@ -52,9 +52,10 @@ import org.openmaji.system.utility.CategoryUtility;
 import org.openmaji.system.utility.MeemUtility;
 
 import org.jdom.Element;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This wedge processes a DOM representing an XML deployment configuation file. It processes the DOM and constructs a list of deployment descriptors which it passes onto other
@@ -64,7 +65,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/* ------------------ conduits --------------------- */
 
@@ -188,7 +189,7 @@ public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 				descriptor = theclass.newInstance();
 			}
 			catch (Exception ex) {
-				LogTools.error(logger, "Unable to instantiate " + theclass.getName() + " for tag " + tag + ": " + ex.getMessage());
+				logger.log(Level.WARNING, "Unable to instantiate " + theclass.getName() + " for tag " + tag + ": " + ex.getMessage());
 				return;
 			}
 			descriptor.processElement(element);
@@ -283,7 +284,7 @@ public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 	private MeemDefinition getMeemDefinition(String id, Element definitionElement) {
 
 		if (debugLevel > 0) {
-			LogTools.info(logger, "creating meem definition for " + id);
+			logger.log(Level.INFO, "creating meem definition for " + id);
 		}
 
 		MeemDefinition meemDefinition = meemDefinitionFactory.createMeemDefinition(new Class[0]);
@@ -310,7 +311,7 @@ public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 					}
 				}
 				catch (ClassNotFoundException e) {
-					LogTools.info(logger, "Could not find class", e);
+					logger.log(Level.INFO, "Could not find class", e);
 				}
 			}
 
@@ -341,20 +342,20 @@ public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 					meemDefinition.addWedgeDefinition(wedgeDefinition);
 				}
 				catch (ClassNotFoundException e) {
-					LogTools.info(logger, "Could not find class", e);
+					logger.log(Level.INFO, "Could not find class", e);
 				}
 			}
 		}
 		catch (IllegalArgumentException ex) {
-			LogTools.error(logger, "Class not found", ex);
+			logger.log(Level.WARNING, "Class not found", ex);
 			return null;
 		}
 		catch (IllegalAccessException ex) {
-			LogTools.error(logger, "No access to create instance", ex);
+			logger.log(Level.WARNING, "No access to create instance", ex);
 			return null;
 		}
 		catch (InstantiationException ex) {
-			LogTools.error(logger, "Could not instatiate class", ex);
+			logger.log(Level.WARNING, "Could not instatiate class", ex);
 			return null;
 		}
 
@@ -435,7 +436,7 @@ public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 					MeemPath meemPath = parseMeemPath(pathString);
 
 					if (debugLevel > 0) {
-						LogTools.info(logger, "adding dependency: " + localFacetId + "->" + meemPath + "/" + remoteFacetId + ". " + lifeTime);
+						logger.log(Level.INFO, "adding dependency: " + localFacetId + "->" + meemPath + "/" + remoteFacetId + ". " + lifeTime);
 					}
 
 					DependencyAttribute dependencyAttribute = new DependencyAttribute(dependencyType, scope, meemPath, remoteFacetId, filter, contentRequired);
@@ -445,7 +446,7 @@ public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 					dependencies.add(descriptor);
 				}
 				catch (URISyntaxException ex) {
-					LogTools.error(logger, "malformed uri", ex);
+					logger.log(Level.WARNING, "malformed uri", ex);
 				}
 			}
 		}
@@ -477,7 +478,7 @@ public class XmlDeploymentProcessorWedge implements Wedge, DomProcessor {
 				MeemPath categoryPath = MeemPath.spi.create(Space.HYPERSPACE, categoryName);
 				CategoryUtility.spi.get().getCategory(hyperspaceMeem, categoryPath); // Create the category
 				if (debugLevel > 0) {
-					LogTools.info(logger, "path: " + categoryPath);
+					logger.log(Level.INFO, "path: " + categoryPath);
 				}
 				createdCategories.add(categoryName);
 			}

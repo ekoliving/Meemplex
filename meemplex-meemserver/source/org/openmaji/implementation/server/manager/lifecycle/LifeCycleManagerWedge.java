@@ -47,9 +47,10 @@ import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.lifecycle.LifeCycleManagement;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.utility.uid.UID;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -81,7 +82,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			}
 			else if (filter instanceof CreateMeemFilter) {
 				if (DEBUG) {
-					LogTools.info(logger, "creating meem through outboundfilter");
+					logger.log(Level.INFO, "creating meem through outboundfilter");
 				}
 				
 				CreateMeemFilter createMeemFilter = (CreateMeemFilter) filter;
@@ -283,7 +284,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		Meem meem = newMeemCore.getSelf();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Meem built. Identifier: " + meemDefinition.getMeemAttribute().getIdentifier() + " MeemPath: " + newMeemCore.getMeemPath() + " LCM: " + meemCore.getMeemPath());
+			logger.log(logLevel, "Meem built. Identifier: " + meemDefinition.getMeemAttribute().getIdentifier() + " MeemPath: " + newMeemCore.getMeemPath() + " LCM: " + meemCore.getMeemPath());
 		}
 
 		putMeem(newMeemCore.getMeemPath(), newMeemCore);
@@ -294,14 +295,14 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		((MeemCoreImpl) newMeemCore).initialize(meemCore.getMeemRegistry(), meemCore.getSelf(), null, meemCore.getThreadManager(), null, meemCore.getMeemStore());
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Meem initialized. " + newMeemCore.getMeemPath());
+			logger.log(logLevel, "Meem initialized. " + newMeemCore.getMeemPath());
 		}
 
 		LifeCycleManagement lifeCycleManagementFacet = (LifeCycleManagement) newMeemCore.getTarget("lifeCycleManagement");
 		lifeCycleManagementFacet.changeParentLifeCycleManager((LifeCycleManager) meemCore.getTarget("lifeCycleManager"));
 
 		if (DEBUG) {
-			LogTools.info(logger,  "make meem loaded: " + meemPath + " - " + requestId);
+			logger.log(Level.INFO,  "make meem loaded: " + meemPath + " - " + requestId);
 		}
 		// make it loaded
 		unregisteredMeems.put(meemPath, new Integer(requestId));
@@ -333,7 +334,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			return;
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Unloading Meem : " + meemPath);
+			logger.log(logLevel, "Unloading Meem : " + meemPath);
 		}
 
 		// remove LifeCycle Reference
@@ -413,12 +414,12 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		 */
 		public void lifeCycleStateChanged(LifeCycleTransition transition) {
 			if (meem == null) {
-				// LogTools.warn(logger, "lifeCycleStateChanged(): meem is null ");
+				// logger.log(Level.WARNING, "lifeCycleStateChanged(): meem is null ");
 				return;
 			}
 
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "lifeCycleStateChanged: meem " + meem + " : " + transition);
+				logger.log(logLevel, "lifeCycleStateChanged: meem " + meem + " : " + transition);
 			}
 
 			if (transition.equals(LifeCycleTransition.LOADED_DORMANT)) {
@@ -427,7 +428,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.info(logger, "Content failed adding LC ref : " + reason);
+			logger.log(Level.INFO, "Content failed adding LC ref : " + reason);
 		}
 
 		public void contentSent() {
@@ -447,7 +448,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			DependencyAttribute dependencyAttribute = (DependencyAttribute) changeLCMDependencyAttributes.remove(meem.getMeemPath());
 			if (dependencyAttribute != null) {
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "parentLifeCycleManagerChanged: removing dependency");
+					logger.log(logLevel, "parentLifeCycleManagerChanged: removing dependency");
 				}
 				dependencyHandlerConduit.removeDependency(dependencyAttribute);
 			}
@@ -497,13 +498,13 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static final int logLevel = Common.getLogLevelVerbose();
+	private static final Level logLevel = Common.getLogLevelVerbose();
 
 	/* ----------- LifeCycleManagerMisc Conduit ---------------- */
 
@@ -514,7 +515,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		 */
 		public void buildMeem(MeemPath meemPath, MeemDefinition meemDefinition, int requestId) {
 			if (DEBUG) {
-				LogTools.info(logger,  "LifeCycleManagerConduitImpl: building meem: " + meemPath + " - " + requestId);
+				logger.log(Level.INFO,  "LifeCycleManagerConduitImpl: building meem: " + meemPath + " - " + requestId);
 			}
 			constructMeem(meemPath, meemDefinition, requestId);
 		}
@@ -524,7 +525,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		 */
 		public void addLifeCycleReference(Meem meem) {
 			if (DEBUG) {
-				LogTools.info(logger,  "LifeCycleManagerConduitImpl: addLifeCycleReference: " + meem.getMeemPath());
+				logger.log(Level.INFO,  "LifeCycleManagerConduitImpl: addLifeCycleReference: " + meem.getMeemPath());
 			}
 			
 			LifeCycleClient lifeCycleClient = new MyLifeCycleClient(meem);
@@ -539,7 +540,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			Integer requestId = (Integer) unregisteredMeems.get(meem.getMeemPath());
 			if (requestId != null) {
 				if (DEBUG) {
-					LogTools.info(logger,  "registerMeem: " + meem.getMeemPath());
+					logger.log(Level.INFO,  "registerMeem: " + meem.getMeemPath());
 				}
 				registerMeem(meem);
 			}
@@ -627,10 +628,10 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			if (registerMeemDependencyAttributes.containsKey(dependencyAttribute)) {
 				Meem meem = (Meem) registerMeemDependencyAttributes.get(dependencyAttribute);
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "Registering " + meem);
+					logger.log(logLevel, "Registering " + meem);
 				}
 				if (DEBUG) {
-					LogTools.info(logger, "registering meem: " + meem + " on " + meemRegistry + " proxy to " + meemCore.getMeemRegistry());
+					logger.log(Level.INFO, "registering meem: " + meem + " on " + meemRegistry + " proxy to " + meemCore.getMeemRegistry());
 				}
 				meemRegistry.registerMeem(meem);
 			}
@@ -666,7 +667,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		public void lifeCycleStateChanged(MeemPath meemPath, LifeCycleTransition transition) {
 			Integer requestId = (Integer) unregisteredMeems.get(meemPath);
 			if (DEBUG) {
-				LogTools.info(logger, "lifeCycleStateChanged: " + meemPath + " - " + transition + " - " + requestId);
+				logger.log(Level.INFO, "lifeCycleStateChanged: " + meemPath + " - " + transition + " - " + requestId);
 			}
 			if (requestId != null) {
 				int currentStateIndex = LifeCycleState.STATES.indexOf(transition.getCurrentState());
@@ -674,7 +675,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 
 				if (currentStateIndex >= loadedStateIndex) {
 					if (DEBUG) {
-						LogTools.info(logger, "notify that meem built " + meemPath);
+						logger.log(Level.INFO, "notify that meem built " + meemPath);
 					}
 					lifeCycleManagerMiscClientConduit.meemBuilt(meemPath, getMeem(meemPath), requestId.intValue());
 				}
@@ -700,7 +701,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		if (registeredMeems.remove(meem) == true) {
 
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "meemDeregistered Meem : " + meem.getMeemPath());
+				logger.log(logLevel, "meemDeregistered Meem : " + meem.getMeemPath());
 			}
 
 			unloadMeem(meem.getMeemPath());
@@ -718,7 +719,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			dependencyHandlerConduit.removeDependency(meemRegistryClientDependencyAttribute);
 
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "Got MeemRegistered " + meem);
+				logger.log(logLevel, "Got MeemRegistered " + meem);
 			}
 			Integer requestId = (Integer) unregisteredMeems.remove(meem.getMeemPath());
 			if (requestId != null) {

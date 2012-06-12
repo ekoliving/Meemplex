@@ -44,7 +44,8 @@ import org.openmaji.system.manager.registry.MeemRegistryGateway;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.meem.wedge.reference.MeemClientConduit;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -70,8 +71,8 @@ public class MeemRegistryGatewayWedge
 
   public synchronized void commence() {
     if (meemRegistryGatewayWedgeSingleton != null) {
-      LogTools.error(
-        logger,
+      logger.log(Level.WARNING,
+        
         "Another MeemRegistryGateway Meem already commenced. " +
         "Self-destruct sequence initiated !"
       );
@@ -176,13 +177,13 @@ public class MeemRegistryGatewayWedge
 	{
 		if (registryList.contains(registryMeem))
 		{
-			LogTools.trace(logger, logLevelVerbose, "addRegistry(): ignoring - already present - " + registryMeem.getMeemPath());
+			logger.log(logLevelVerbose, "addRegistry(): ignoring - already present - " + registryMeem.getMeemPath());
 			return;
 		}
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMREGISTRY)
 		{
-			LogTools.trace(logger, logLevelVerbose, "addRegistry(): " + registryMeem.getMeemPath());
+			logger.log(logLevelVerbose, "addRegistry(): " + registryMeem.getMeemPath());
 		}
 
 		//
@@ -442,7 +443,7 @@ public class MeemRegistryGatewayWedge
 		
 		private void start() {
 			if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-				LogTools.trace(logger, logLevelVerbose, "*** watching: " + scopedMeemPath);
+				logger.log(logLevelVerbose, "*** watching: " + scopedMeemPath);
 			}
 
 			listening = true;
@@ -532,11 +533,11 @@ public class MeemRegistryGatewayWedge
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   /**
    * Acquire the Maji system-wide verbose logging level.
    */
 
-  private static final int logLevelVerbose = Common.getLogLevelVerbose();
+  private static final Level logLevelVerbose = Common.getLogLevelVerbose();
 }

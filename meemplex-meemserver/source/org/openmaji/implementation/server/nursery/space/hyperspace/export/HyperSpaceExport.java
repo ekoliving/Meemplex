@@ -36,9 +36,10 @@ import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceClient;
 import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceHandler;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -127,7 +128,7 @@ public class HyperSpaceExport implements ManagedPersistenceClient, MeemDefinitio
 				try {
 					exportedMeem.content = (MeemContent) contentHole.get(timeout);
 				} catch (TimeoutException ex) {
-					LogTools.info(logger, "Timout waiting for MeemContent", ex);
+					logger.log(Level.INFO, "Timout waiting for MeemContent", ex);
 				}
 
 				// remove ourselves as a persistanceClient
@@ -147,7 +148,7 @@ public class HyperSpaceExport implements ManagedPersistenceClient, MeemDefinitio
 				try {
 					exportedMeem.definition = (MeemDefinition) definitionHole.get(timeout);
 				} catch (TimeoutException ex) {
-					LogTools.info(logger, "Timeout waiting for MeemDefinition", ex);
+					logger.log(Level.INFO, "Timeout waiting for MeemDefinition", ex);
 				}
 
 				meemStoreMeem.removeOutboundReference(meemDefinitionClientReference);
@@ -189,5 +190,5 @@ public class HyperSpaceExport implements ManagedPersistenceClient, MeemDefinitio
 	}
 
 	/** Logger for the class */
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 }

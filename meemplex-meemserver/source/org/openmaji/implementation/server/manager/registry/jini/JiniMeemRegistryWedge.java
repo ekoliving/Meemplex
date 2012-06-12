@@ -47,7 +47,7 @@ import org.openmaji.system.meem.wedge.remote.RemoteMeemClient;
  */
 public class JiniMeemRegistryWedge implements Wedge, JiniMeemRegistry, MeemDefinitionProvider {
 
-	//private static final Logger logger = LogFactory.getLogger();
+	//private static final Logger logger = Logger.getAnonymousLogger();
 	
 	public MeemCore meemCore;
 
@@ -287,7 +287,7 @@ public class JiniMeemRegistryWedge implements Wedge, JiniMeemRegistry, MeemDefin
 						// -mg- this seems to happen a bit to frequently for my liking. 
 						// work out why this is happening and how to handle it properly.
 						// maybe check the type of exception - if a "no such object in table" - trash it, if a connect exception, keep it
-//						LogTools.error(logger, "Exception while notifying clients about " + smartProxyMeem.getMeemPath(), e);
+//						logger.log(Level.WARNING, "Exception while notifying clients about " + smartProxyMeem.getMeemPath(), e);
 					}
 				}
 			}
@@ -303,7 +303,7 @@ public class JiniMeemRegistryWedge implements Wedge, JiniMeemRegistry, MeemDefin
 							client.meemDeregisteredRemote(smartProxyMeem);
 						}
 					} catch (RemoteException e) {
-//						LogTools.error(logger, "Exception while notifying contentClients about " + smartProxyMeem.getMeemPath(), e);
+//						logger.log(Level.WARNING, "Exception while notifying contentClients about " + smartProxyMeem.getMeemPath(), e);
 					}
 				}
 			}

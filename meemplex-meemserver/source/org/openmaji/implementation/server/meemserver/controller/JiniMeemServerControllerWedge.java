@@ -31,9 +31,10 @@ import org.openmaji.system.meem.FacetItem;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meemserver.MeemServer;
 import org.openmaji.system.space.Category;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -46,7 +47,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class JiniMeemServerControllerWedge implements Wedge, JiniLookupClient {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
@@ -67,7 +68,7 @@ public class JiniMeemServerControllerWedge implements Wedge, JiniLookupClient {
 
 		jiniLookupConduit.startLookup(facetItem, false);
 
-		LogTools.info(logger, "MeemServer Jini lookup initiated ...");
+		logger.log(Level.INFO, "MeemServer Jini lookup initiated ...");
 	}
 
 	public void conclude() {
@@ -136,10 +137,10 @@ public class JiniMeemServerControllerWedge implements Wedge, JiniLookupClient {
 				String newMeemServerName = (String) value;
 
 				if (!addedToCategory) {
-					LogTools.info(logger, "Adding " + newMeemServerName  + " : " + meem);
+					logger.log(Level.INFO, "Adding " + newMeemServerName  + " : " + meem);
 					categoryConduit.addEntry(newMeemServerName, meem);
 				} else {
-					LogTools.info(logger, "Renaming " + meemServerName  + " to  " + newMeemServerName);
+					logger.log(Level.INFO, "Renaming " + meemServerName  + " to  " + newMeemServerName);
 					categoryConduit.renameEntry(meemServerName, newMeemServerName);
 				}
 
@@ -157,7 +158,7 @@ public class JiniMeemServerControllerWedge implements Wedge, JiniLookupClient {
 
 
 		public void stop() {
-			LogTools.info(logger, "Removing " + meemServerName);
+			logger.log(Level.INFO, "Removing " + meemServerName);
 			categoryConduit.removeEntry(meemServerName);
 			
 			dependencyHandlerConduit.removeDependency(dependencyAttribute);

@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"id", "name", "description", "type", "facets", "properties"})
 public class MeemDescriptor extends Identifiable {
 	
-	private static final long serialVersionUID = 0L;
-
 	/**
 	 * A name given to the Meem
 	 */

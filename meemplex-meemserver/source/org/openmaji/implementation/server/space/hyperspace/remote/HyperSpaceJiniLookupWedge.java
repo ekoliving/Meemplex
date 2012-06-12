@@ -24,14 +24,15 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.server.helper.HyperSpaceHelper;
 import org.openmaji.system.meem.FacetItem;
 import org.openmaji.system.space.hyperspace.HyperSpace;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class HyperSpaceJiniLookupWedge implements Wedge, JiniLookupClient {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
@@ -43,7 +44,7 @@ public class HyperSpaceJiniLookupWedge implements Wedge, JiniLookupClient {
 
 		jiniLookupConduit.startLookup(facetItem, true);
 
-		LogTools.info(logger, "HyperSpace Jini lookup initiated ...");
+		logger.log(Level.INFO, "HyperSpace Jini lookup initiated ...");
 	}
 
 	public void conclude() {
@@ -51,13 +52,13 @@ public class HyperSpaceJiniLookupWedge implements Wedge, JiniLookupClient {
 	}
 
 	public void meemAdded(Meem meem) {
-		LogTools.info(logger, "... HyperSpace located: " + meem.getMeemPath());
+		logger.log(Level.INFO, "... HyperSpace located: " + meem.getMeemPath());
 
 		HyperSpaceHelper.getInstance().setHyperSpaceMeem(meem);
 	}
 
 	public void meemRemoved(Meem meem) {
-		LogTools.info(logger, "... HyperSpace removed");
+		logger.log(Level.INFO, "... HyperSpace removed");
 
 		HyperSpaceHelper.getInstance().setHyperSpaceMeem(null);
 	}

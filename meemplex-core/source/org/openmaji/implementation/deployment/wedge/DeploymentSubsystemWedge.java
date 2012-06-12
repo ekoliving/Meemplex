@@ -37,9 +37,10 @@ import org.openmaji.system.space.Category;
 import org.openmaji.system.utility.CategoryUtility;
 import org.openmaji.system.utility.MeemUtility;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -48,7 +49,7 @@ import org.swzoo.log2.core.Logger;
 public class DeploymentSubsystemWedge implements Wedge {
 
 	/** logger */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/** Meem context */
 	public MeemContext meemContext;
@@ -126,7 +127,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 					message.append(dependencyAttribute.getMeemPath());
 					message.append(".");
 					message.append(dependencyAttribute.getFacetIdentifier());
-					LogTools.info(logger, message.toString());
+					logger.log(Level.INFO, message.toString());
 				}
 			}
 		}
@@ -148,7 +149,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 
 				Category category = CategoryUtility.spi.get().getCategory(hyperspaceMeem, MeemPath.spi.create(Space.HYPERSPACE, categoryName));
 				if (category == null) {
-					LogTools.error(logger, "No category facet on meem: " + categoryName);
+					logger.log(Level.WARNING, "No category facet on meem: " + categoryName);
 				}
 				else {
 					category.addEntry(entryName, meem);
@@ -158,7 +159,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 						message.append(deploymentDescriptor.getId());
 						message.append(" -> ");
 						message.append(categoryName);
-						LogTools.info(logger, message.toString());
+						logger.log(Level.INFO, message.toString());
 					}
 				}
 			}
@@ -200,18 +201,18 @@ public class DeploymentSubsystemWedge implements Wedge {
 		public void createMeem(MeemDefinition meemDefinition, MeemDescription meemDescription) {
 			String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 			if (identifier == null || identifier.length() == 0) {
-				LogTools.error(logger, "createMeem() - identifier not set in MeemDefinition");
+				logger.log(Level.WARNING, "createMeem() - identifier not set in MeemDefinition");
 				return;
 			}
 			if (!(meemDescription instanceof MeemDeploymentDescriptor)) {
-				LogTools.error(logger, "createMeem() - meemDescription not MeemDeploymentDescriptor");
+				logger.log(Level.WARNING, "createMeem() - meemDescription not MeemDeploymentDescriptor");
 				return;
 			}
 
 			descriptions.put(identifier, (MeemDeploymentDescriptor) meemDescription);
 
 			if (debugLevel > 0) {
-				LogTools.info(logger, "creating meem: " + identifier);
+				logger.log(Level.INFO, "creating meem: " + identifier);
 			}
 			lifeCycleManagerConduit.createMeem(meemDefinition, LifeCycleState.LOADED);
 		}
@@ -228,7 +229,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 				StringBuffer message = new StringBuffer(20);
 				message.append("created: ");
 				message.append(identifier);
-				LogTools.info(logger, message.toString());
+				logger.log(Level.INFO, message.toString());
 			}
 
 			if (meemDescription != null) {
@@ -242,7 +243,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 		}
 
 		public void meemDestroyed(Meem arg0) {
-			//			LogTools.error(logger, "meemDestroyed() - TODO: finish this ?");
+			//			logger.log(Level.WARNING, "meemDestroyed() - TODO: finish this ?");
 		}
 
 		public void meemTransferred(Meem arg0, LifeCycleManager arg1) {
@@ -274,7 +275,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 					message.append(parameter.getConfigurationIdentifier());
 					message.append("] := ");
 					message.append(parameter.getValue());
-					LogTools.info(logger, message.toString());
+					logger.log(Level.INFO, message.toString());
 				}
 
 				target.valueChanged(parameter.getConfigurationIdentifier(), parameter.getValue());
@@ -289,7 +290,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.error(logger, "Error receiving the ConfigurationHandler facet of a managed meem: " + reason);
+			logger.log(Level.WARNING, "Error receiving the ConfigurationHandler facet of a managed meem: " + reason);
 		}
 	}
 
@@ -316,7 +317,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.error(logger, "Error receiving the LifeCycleLimit facet of managed meem: " + reason);
+			logger.log(Level.WARNING, "Error receiving the LifeCycleLimit facet of managed meem: " + reason);
 		}
 	}
 
@@ -343,7 +344,7 @@ public class DeploymentSubsystemWedge implements Wedge {
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.error(logger, "Error receiving the LifeCycle facet of managed meem: " + reason);
+			logger.log(Level.WARNING, "Error receiving the LifeCycle facet of managed meem: " + reason);
 		}
 	}
 

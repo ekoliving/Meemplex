@@ -3,6 +3,7 @@ package org.openmaji.implementation.util.wedge;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.common.StringValue;
@@ -192,7 +193,7 @@ public class DependencyManagerWedge implements Wedge, CategoryEntryConsumer {
 		removeDependencies();
 		this.currentEntry = entry;
 		if(debugLevel>0) {
-			logger.info("The dependency is set to "+entry.getName());
+			logger.log(Level.INFO, "The dependency is set to "+entry.getName());
 		}
 		addDependencies();
 		
@@ -217,7 +218,7 @@ public class DependencyManagerWedge implements Wedge, CategoryEntryConsumer {
 	private void removeDependencies() {
 		DependencyAttribute[] deps = (DependencyAttribute[]) dependencies.toArray(new DependencyAttribute[]{});
 		for (int i=0; i<deps.length; i++) {
-//			LogTools.info(logger, "Removing dependency: " + deps[i]);
+//			logger.log(Level.INFO, "Removing dependency: " + deps[i]);
 			dependencyHandlerConduit.removeDependency(deps[i]);
 		}
 	}
@@ -234,7 +235,7 @@ public class DependencyManagerWedge implements Wedge, CategoryEntryConsumer {
 					DependencyAttribute dependencyAttribute = 
 						new DependencyAttribute(dependencyType, Scope.DISTRIBUTED, currentEntry.getMeem(), facetId);
 					
-//					LogTools.info(logger, "Adding dependency: " + dependencyAttribute + " on local facet \"" + localFacetId + "\"");
+//					logger.log(Level.INFO, "Adding dependency: " + dependencyAttribute + " on local facet \"" + localFacetId + "\"");
 					
 					dependencyHandlerConduit.addDependency(localFacetId, dependencyAttribute, LifeTime.TRANSIENT);			
 				}

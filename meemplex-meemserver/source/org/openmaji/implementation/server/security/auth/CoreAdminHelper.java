@@ -49,16 +49,17 @@ import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Helper class for manipulating users, passwords, and groups.
  */
 public class CoreAdminHelper
 {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	static
 	{
@@ -191,7 +192,7 @@ public class CoreAdminHelper
 		try {
 			Certificate[] testCerts = userKeyStore.getCertificateChain(userID);
 			if (testCerts != null) {
-				LogTools.warn(logger, "User, \"" + userID + "\" already exists.  The certificate chain might not be updated");
+				logger.log(Level.WARNING, "User, \"" + userID + "\" already exists.  The certificate chain might not be updated");
 			}
 		}
 		catch (KeyStoreException e) {
@@ -199,7 +200,7 @@ public class CoreAdminHelper
 		
 		userKeyStore.setKeyEntry(userID, userKey.getPrivate(), userPass, chain);
 		
-		LogTools.info(logger, "User, \"" + userID + "\" added.");
+		logger.log(Level.INFO, "User, \"" + userID + "\" added.");
 		
 		userKeyStore.store();
         

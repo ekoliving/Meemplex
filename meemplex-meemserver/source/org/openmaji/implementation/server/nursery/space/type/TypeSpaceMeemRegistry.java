@@ -37,7 +37,8 @@ import org.openmaji.system.space.type.TypeSpace;
 import org.openmaji.system.space.type.TypeSpaceClient;
 import org.openmaji.system.spi.MajiSystemProvider;
 import org.openmaji.system.spi.SpecificationType;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -48,7 +49,7 @@ import org.swzoo.log2.core.*;
  */
 public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpace, FilterChecker {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private Vector<String> systemInterfaces = new Vector<String>();
 	
@@ -148,7 +149,7 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 	public void registerMeem(Meem meem) {
 		super.registerMeem(meem);
 		
-		LogTools.trace(logger, Common.getLogLevelVerbose(), "registerMeem: " + meem.getMeemPath());
+		logger.log(Common.getLogLevelVerbose(), "registerMeem: " + meem.getMeemPath());
 
 		reference = Reference.spi.create("metaMeemClient", new MetaMeemClient(meem.getMeemPath()), true, null);
 
@@ -188,7 +189,7 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 				addInterface(meemPath, interfaces[i].getName());
 
 		} catch (ClassNotFoundException e) {
-			LogTools.error(logger, "Error getting facet interface", e);
+			logger.log(Level.WARNING, "Error getting facet interface", e);
 		}
 	}
 
@@ -216,7 +217,7 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 			reverseInterfaceList.add(interfaceName);
 			
 			typeSpaceClient.entriesAdded(new CategoryEntry[] {new CategoryEntry(meemPath.toString(), Meem.spi.get(meemPath))});
-			// LogTools.trace(logger, Common.getLogLevelVerbose(), "interface added: " + interfaceName + " : " + meemPath);
+			// logger.log(Common.getLogLevelVerbose(), "interface added: " + interfaceName + " : " + meemPath);
 		}
 	}
 	

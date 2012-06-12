@@ -23,14 +23,15 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClient;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.system.meem.FacetItem;
 import org.openmaji.system.space.meemstore.MeemStore;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MeemStoreJiniLookupWedge implements Wedge, JiniLookupClient {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
@@ -43,7 +44,7 @@ public class MeemStoreJiniLookupWedge implements Wedge, JiniLookupClient {
 
 		jiniLookupConduit.startLookup(facetItem, true);
 
-		LogTools.info(logger, "MeemStore Jini lookup initiated ...");
+		logger.log(Level.INFO, "MeemStore Jini lookup initiated ...");
 
 	}
 
@@ -52,13 +53,13 @@ public class MeemStoreJiniLookupWedge implements Wedge, JiniLookupClient {
 	}
 
 	public void meemAdded(Meem meem) {
-		LogTools.info(logger, "... MeemStore located: " + meem.getMeemPath());
+		logger.log(Level.INFO, "... MeemStore located: " + meem.getMeemPath());
 
 		MeemStoreProxyWedge.setMeemStore(meem);
 	}
 
 	public void meemRemoved(Meem meem) {
-		LogTools.info(logger, "... MeemStore removed: " + meem.getMeemPath());
+		logger.log(Level.INFO, "... MeemStore removed: " + meem.getMeemPath());
 
 		MeemStoreProxyWedge.setMeemStore(null);
 	}

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.meemplex.meem.Conduit;
@@ -178,7 +179,7 @@ public class BinaryGroupWedge implements Binary, Wedge {
 		MeemPath callingMeemPath = (MeemPath) invocationContext.get(InvocationContext.CALLING_MEEM_PATH);
 		
 		if (debug) {
-			logger.info("valueChanged() - invoked on group binary in-bound facet from " + callingMeemPath);
+			logger.log(Level.INFO, "valueChanged() - invoked on group binary in-bound facet from " + callingMeemPath);
 		}
 
 		if (value) {
@@ -215,7 +216,7 @@ public class BinaryGroupWedge implements Binary, Wedge {
 		public void valueChanged(boolean newValue) {
 
 			if (debug) {
-				logger.info("valueChanged() - invoked on BinaryControlConduit");
+				logger.log(Level.INFO, "valueChanged() - invoked on BinaryControlConduit");
 			}
 			BinaryGroupWedge.this.value = newValue;
 			
@@ -253,7 +254,7 @@ public class BinaryGroupWedge implements Binary, Wedge {
 			
 			if (facetId.equals(BinaryGroupMeem.FACETID_GROUP_INPUT) && !dependenciesConnected.containsKey(dependencyAttribute)) {
 //				if (debug) {
-//					logger.info("dependencyAdded: " + facetId + " <-> " + dependencyAttribute);
+//					logger.log(Level.INFO, "dependencyAdded: " + facetId + " <-> " + dependencyAttribute);
 //				}
 				dependenciesConnected.put(dependencyAttribute, false);
 				numAdded++;
@@ -264,7 +265,7 @@ public class BinaryGroupWedge implements Binary, Wedge {
 		public void dependencyRemoved(DependencyAttribute dependencyAttribute) {
 			if (dependenciesConnected.containsKey(dependencyAttribute)) {
 //				if (debug) {
-//					logger.info("dependencyRemoved: " + dependencyAttribute);
+//					logger.log(Level.INFO, "dependencyRemoved: " + dependencyAttribute);
 //				}
 				dependenciesConnected.remove(dependencyAttribute);
 				numAdded--;
@@ -275,7 +276,7 @@ public class BinaryGroupWedge implements Binary, Wedge {
 		public void dependencyConnected(DependencyAttribute dependencyAttribute) {
 			if (dependenciesConnected.containsKey(dependencyAttribute)) {
 //				if (debug) {
-//					logger.info("dependencyConnected: " + dependencyAttribute);
+//					logger.log(Level.INFO, "dependencyConnected: " + dependencyAttribute);
 //				}
 				dependenciesConnected.put(dependencyAttribute, true);
 				numConnected++;
@@ -286,7 +287,7 @@ public class BinaryGroupWedge implements Binary, Wedge {
 		public void dependencyDisconnected(DependencyAttribute dependencyAttribute) {
 			if (dependenciesConnected.containsKey(dependencyAttribute)) {
 //				if (debug) {
-//					logger.info("dependencyConnected: " + dependencyAttribute);
+//					logger.log(Level.INFO, "dependencyConnected: " + dependencyAttribute);
 //				}
 				dependenciesConnected.put(dependencyAttribute, false);
 				numConnected--;

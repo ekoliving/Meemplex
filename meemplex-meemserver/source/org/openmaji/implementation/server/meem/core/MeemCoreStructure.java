@@ -40,6 +40,7 @@ package org.openmaji.implementation.server.meem.core;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.meem.FacetImpl;
@@ -96,13 +97,13 @@ public class MeemCoreStructure implements MeemStructure {
 	 * Collection of Inbound Facets
 	 */
 
-	private Map<String, InboundFacetImpl> inboundFacets = new HashMap<String, InboundFacetImpl>();
+	private Map<String, InboundFacetImpl<?>> inboundFacets = new HashMap<String, InboundFacetImpl<?>>();
 
 	/**
 	 * Collection of Outbound Facets
 	 */
 
-	private Map<String, OutboundFacetImpl> outboundFacets = new HashMap<String, OutboundFacetImpl>();
+	private Map<String, OutboundFacetImpl<?>> outboundFacets = new HashMap<String, OutboundFacetImpl<?>>();
 
 	/**
 	 * Collection of References to in-bound Facet Wedge invocationTargets
@@ -123,22 +124,21 @@ public class MeemCoreStructure implements MeemStructure {
 
 	/* ---------- MeemCoreStructure method(s) ---------------------------------- */
 
-	private FacetImpl getFacetImpl(String facetIdentifier) {
-		FacetImpl facetImpl = (FacetImpl) inboundFacets.get(facetIdentifier);
-
+	private FacetImpl<?> getFacetImpl(String facetIdentifier) {
+		FacetImpl<?> facetImpl = (FacetImpl<?>) inboundFacets.get(facetIdentifier);
 		if (facetImpl == null) {
-			facetImpl = (FacetImpl) outboundFacets.get(facetIdentifier);
+			facetImpl = (FacetImpl<?>) outboundFacets.get(facetIdentifier);
 		}
 
 		return facetImpl;
 	}
 
-	public InboundFacetImpl getInboundFacetImpl(String inboundFacetIdentifier) {
-		return (InboundFacetImpl) inboundFacets.get(inboundFacetIdentifier);
+	public InboundFacetImpl<?> getInboundFacetImpl(String inboundFacetIdentifier) {
+		return inboundFacets.get(inboundFacetIdentifier);
 	}
 
-	public OutboundFacetImpl getOutboundFacetImpl(String outboundFacetIdentifier) {
-		return (OutboundFacetImpl) outboundFacets.get(outboundFacetIdentifier);
+	public OutboundFacetImpl<?> getOutboundFacetImpl(String outboundFacetIdentifier) {
+		return outboundFacets.get(outboundFacetIdentifier);
 	}
 
 	// public synchronized Iterator getInvocationReferences()
@@ -212,7 +212,7 @@ public class MeemCoreStructure implements MeemStructure {
 				wedgeImpl = new WedgeImpl(meemCoreImpl, wedgeAttribute, systemWedgeFlag);
 			}
 			catch (ClassNotFoundException e) {
-				logger.info("Could not locate class: " + e.getLocalizedMessage());
+				logger.log(Level.INFO, "Could not locate class: " + e.getLocalizedMessage());
 			}
 		}
 		else {
@@ -262,7 +262,8 @@ public class MeemCoreStructure implements MeemStructure {
 
 		try {
 			if (facetAttribute.isDirection(Direction.INBOUND)) {
-				InboundFacetImpl inboundFacetImpl = new InboundFacetImpl(meemCoreImpl, wedgeImpl, (FacetInboundAttribute) facetAttribute);
+				@SuppressWarnings("rawtypes")
+				InboundFacetImpl<?> inboundFacetImpl = new InboundFacetImpl(meemCoreImpl, wedgeImpl, (FacetInboundAttribute) facetAttribute);
 	
 				// ------------------------------------------------------------------
 				// Update "invocation mapping" table for system Wedge in-bound Facets
@@ -283,7 +284,8 @@ public class MeemCoreStructure implements MeemStructure {
 				// invocationReferences = null;
 			}
 			else {
-				OutboundFacetImpl outboundFacetImpl = new OutboundFacetImpl(wedgeImpl, (FacetOutboundAttribute) facetAttribute);
+				@SuppressWarnings("rawtypes")
+				OutboundFacetImpl<?> outboundFacetImpl = new OutboundFacetImpl(wedgeImpl, (FacetOutboundAttribute) facetAttribute);
 	
 				wedgeImpl.addOutboundFacet(facetIdentifier, outboundFacetImpl);
 	
@@ -297,6 +299,10 @@ public class MeemCoreStructure implements MeemStructure {
 		return meemStructure.add(wedgeAttribute, facetAttribute);
 	}
 
+	/**
+	 * @deprecated use the DepdendencyHandler Wedge
+	 */
+	@Deprecated
 	public boolean add(FacetAttribute facetAttribute, DependencyAttribute dependencyAttribute) {
 
 		boolean success = meemStructure.add(facetAttribute, dependencyAttribute);
@@ -328,6 +334,10 @@ public class MeemCoreStructure implements MeemStructure {
 		return (meemStructure.update(facetAttribute));
 	}
 
+	/**
+	 * @deprecated use the DepdendencyHandler Wedge
+	 */
+	@Deprecated
 	public boolean update(DependencyAttribute dependencyAttribute) {
 
 		// -mg- fix this to handle dependency attribute updates
@@ -364,7 +374,7 @@ public class MeemCoreStructure implements MeemStructure {
 
 		String facetIdentifier = facetAttribute.getIdentifier();
 
-		FacetImpl facetImpl = getFacetImpl(facetIdentifier);
+		FacetImpl<?> facetImpl = getFacetImpl(facetIdentifier);
 
 		if (facetImpl != null) {
 			// ----------------------------------------------------
@@ -395,6 +405,10 @@ public class MeemCoreStructure implements MeemStructure {
 		return meemStructure.remove(facetAttribute);
 	}
 
+	/**
+	 * @deprecated use the DepdendencyHandler Wedge
+	 */
+	@Deprecated
 	public boolean remove(DependencyAttribute dependencyAttribute) {
 
 		boolean success = meemStructure.remove(dependencyAttribute);
@@ -415,6 +429,10 @@ public class MeemCoreStructure implements MeemStructure {
 		return (meemStructure.getFacetAttribute(facetKey));
 	}
 
+	/**
+	 * @deprecated use the DepdendencyHandler Wedge
+	 */
+	@Deprecated
 	public DependencyAttribute getDependencyAttribute(Serializable dependencyKey) {
 
 		return (meemStructure.getDependencyAttribute(dependencyKey));
@@ -429,15 +447,27 @@ public class MeemCoreStructure implements MeemStructure {
 		return (meemStructure.getFacetAttributeKeys(wedgeKey));
 	}
 
+	/**
+	 * @deprecated use the DepdendencyHandler Wedge
+	 */
+	@Deprecated
 	public Collection<Serializable> getDependencyAttributeKeys() {
 		return (meemStructure.getDependencyAttributeKeys());
 	}
 
+	/**
+	 * @deprecated use the DepdendencyHandler Wedge
+	 */
+	@Deprecated
 	public String getFacetKeyFromDependencyKey(Serializable dependencyKey) {
 
 		return (meemStructure.getFacetKeyFromDependencyKey(dependencyKey));
 	}
 
+	/**
+	 * @deprecated use the DepdendencyHandler Wedge
+	 */
+	@Deprecated
 	public Serializable getDependencyKeyFromFacetKey(String facetKey) {
 
 		return (meemStructure.getDependencyKeyFromFacetKey(facetKey));

@@ -464,7 +464,7 @@ abstract public class FacetProxy {
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.info(logger, "Failed to get facet target: " + reason);
+			logger.log(Level.INFO, "Failed to get facet target: " + reason);
 		}
 
 		public void contentSent() {

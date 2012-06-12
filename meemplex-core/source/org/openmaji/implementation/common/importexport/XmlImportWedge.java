@@ -22,7 +22,8 @@ import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.space.CategoryEntry;
 
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author  Andy Gelme
@@ -39,7 +40,7 @@ public class XmlImportWedge
   
   private ObjectInputStream objectInputStream = null;
   
-  private static Logger logger = LogFactory.getLogger(); 
+  private static Logger logger = Logger.getAnonymousLogger(); 
   
   
   public XmlImportWedge() {
@@ -176,8 +177,8 @@ public class XmlImportWedge
       importExportContentConduit.contentSent();
     }
     catch (Exception exception) {
-      LogTools.error(
-        logger, "Importing from URL: " + inputURL, exception
+      logger.log(
+        Level.WARNING, "Importing from URL: " + inputURL, exception
       );
 
       importExportContentConduit.contentFailed(
@@ -200,7 +201,7 @@ public class XmlImportWedge
           new ObjectInputStream(inputURL.openConnection().getInputStream());
       }
       catch (IOException ioException) {
-        LogTools.error(logger, "Reading URL: " + inputURL, ioException);
+        logger.log(Level.WARNING, "Reading URL: " + inputURL, ioException);
       }
     }
   }
@@ -228,7 +229,7 @@ public class XmlImportWedge
 			meemPath = MeemPath.spi.create(Space.TRANSIENT, hyperspaceURI.getPath());
 		}
 		else {
-			LogTools.info(logger, "Unknown meemspace in meempath: " + scheme);
+			logger.log(Level.INFO, "Unknown meemspace in meempath: " + scheme);
 		}
 
 		return meemPath;

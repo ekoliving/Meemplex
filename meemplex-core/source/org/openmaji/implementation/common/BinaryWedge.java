@@ -27,9 +27,10 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClient;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -58,7 +59,7 @@ import org.swzoo.log2.core.Logger;
 
 public class BinaryWedge implements Binary, Wedge {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Binary client (out-bound Facet)
@@ -74,7 +75,7 @@ public class BinaryWedge implements Binary, Wedge {
 		 */
 		public void sendContent(Object target, Filter filter) {
 			if (DebugFlag.TRACE) {
-				LogTools.trace(logger, 20, "sendContent() - invoked");
+				logger.log(Level.FINE, "sendContent() - invoked");
 			}
 			
 			// only send value if one has been received on the binaryStateConduit, 
@@ -123,7 +124,7 @@ public class BinaryWedge implements Binary, Wedge {
 	public synchronized void valueChanged(boolean value) {
 
 		if (DebugFlag.TRACE) {
-			LogTools.trace(logger, 20, "valueChanged() - invoked on in-bound facet");
+			logger.log(Level.FINE, "valueChanged() - invoked on in-bound facet");
 		}
 		binaryControlConduit.valueChanged(value);
 	}
@@ -149,7 +150,7 @@ public class BinaryWedge implements Binary, Wedge {
 		public synchronized void valueChanged(boolean newValue) {
 
 			if (DebugFlag.TRACE) {
-				LogTools.trace(logger, 20, "valueChanged() - invoked on BinaryStateConduit");
+				logger.log(Level.FINE, "valueChanged() - invoked on BinaryStateConduit");
 			}
 			BinaryWedge.this.value = newValue;
 			binaryClient.valueChanged(value);

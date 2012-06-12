@@ -1,5 +1,6 @@
 package org.openmaji.implementation.tool.eclipse.plugin;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -64,7 +65,7 @@ public class ActionStarter extends Action implements IWorkbenchWindowActionDeleg
     }
     catch ( ClassNotFoundException ex )
     {
-      logger.warning("Unable to load class '"+resourceClass+"'");
+      logger.log(Level.WARNING, "Unable to load class '"+resourceClass+"'");
       return null;
     }
 
@@ -86,19 +87,19 @@ public class ActionStarter extends Action implements IWorkbenchWindowActionDeleg
     }
     catch ( ClassNotFoundException ex )
     {
-    	logger.warning("Class not found '"+meemkitWizardDescriptor.getWizardClass()+"'");
+    	logger.log(Level.WARNING, "Class not found '"+meemkitWizardDescriptor.getWizardClass()+"'");
     }
     catch ( IllegalAccessException ex )
     {
-    	logger.warning("IllegalAccessException for '"+meemkitWizardDescriptor.getWizardClass()+"': "+ex.getMessage());
+    	logger.log(Level.WARNING, "IllegalAccessException for '"+meemkitWizardDescriptor.getWizardClass()+"': "+ex.getMessage());
     }
     catch ( InstantiationException ex )
     {
-    	logger.warning("Unable to instantiate '"+meemkitWizardDescriptor.getWizardClass()+"': "+ex.getMessage());
+    	logger.log(Level.WARNING, "Unable to instantiate '"+meemkitWizardDescriptor.getWizardClass()+"': "+ex.getMessage());
     }
     catch ( ClassCastException ex )
     {
-    	logger.warning("The class '"+meemkitWizardDescriptor.getWizardClass()+"' does not implement MeemkitWizard interface");
+    	logger.log(Level.WARNING, "The class '"+meemkitWizardDescriptor.getWizardClass()+"' does not implement MeemkitWizard interface");
     }
 
     if ( wizard == null )

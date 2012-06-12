@@ -53,9 +53,11 @@ import org.openmaji.automation.address.AddressSpecification;
 import org.openmaji.automation.device.DeviceDescription;
 import org.openmaji.diagnostic.Debug;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.implementation.deployment.ConfigurationParameter;
 import org.openmaji.implementation.deployment.Descriptor;
@@ -70,7 +72,7 @@ import org.openmaji.implementation.deployment.wedge.DeploymentProcessor;
  *
  */
 public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public MeemCore meemCore;
 
@@ -154,7 +156,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 	public void setDescriptors(Collection<Descriptor> allDescriptors) {
 		if (progress.getProgressPoint() < progress.getCompletionPoint()) {
-			LogTools.info(logger, "deployemeny already in progress");
+			logger.log(Level.INFO, "deployemeny already in progress");
 		}
 		
 		hyperspaceMeem = Meem.spi.get(MeemPath.spi.create(Space.HYPERSPACE, "/"));
@@ -177,7 +179,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 					DeviceMeemDescription desc = descs.remove(0);
 					for (DeviceMeemDescription desc2 : descs) {
 						if (desc.getIdentifier().equals(desc2.getIdentifier())) {
-							LogTools.info(logger, "Warning: non-unique identifier: " + desc.getIdentifier());
+							logger.log(Level.INFO, "Warning: non-unique identifier: " + desc.getIdentifier());
 						}
 					}
 				}
@@ -188,7 +190,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 				String categoryName = descriptor.getDefaultCategory();
 				if (!createdCategories.contains(categoryName)) {
 					if (debugLevel > 0) {
-						LogTools.info(logger, "path: " + categoryName);
+						logger.log(Level.INFO, "path: " + categoryName);
 					}
 					MeemPath categoryPath = MeemPath.spi.create(Space.HYPERSPACE, categoryName);
 					CategoryUtility.spi.get().getCategory(hyperspaceMeem, categoryPath); // Create the category
@@ -198,7 +200,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 		}
 		
 		if (DEBUG) {
-			LogTools.info(logger, "Got " + numberMeems + " automation meem descriptors to deploy");
+			logger.log(Level.INFO, "Got " + numberMeems + " automation meem descriptors to deploy");
 		}
 
 		// add more points to completion
@@ -213,12 +215,12 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 	 */
 	public void processDescriptors() {
 		if (DEBUG) {
-			LogTools.info(logger, "Processing " + numberMeems + " descriptors");
+			logger.log(Level.INFO, "Processing " + numberMeems + " descriptors");
 		}		
 
 		if (numberMeems == 0) {
 			if (debugLevel > 0) {
-				LogTools.info(logger, "No automation descriptors found in deployment file");
+				logger.log(Level.INFO, "No automation descriptors found in deployment file");
 			}
 			progressConduit.addProgressPoints(0);
 			return;
@@ -232,7 +234,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 			String categoryName = descriptor.getDefaultCategory();
 			if (!createdCategories.contains(categoryName)) {
 				if (debugLevel > 0) {
-					LogTools.info(logger, "path: " + categoryName);
+					logger.log(Level.INFO, "path: " + categoryName);
 				}
 				MeemPath categoryPath = MeemPath.spi.create(Space.HYPERSPACE, categoryName);
 				CategoryUtility.spi.get().getCategory(hyperspaceMeem, categoryPath); // Create the category
@@ -251,7 +253,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 	private void setupSubsystemFactoryDependency() {
 		if (DEBUG) {
-			LogTools.info(logger, "setupSubsystemFactoryDependency()");
+			logger.log(Level.INFO, "setupSubsystemFactoryDependency()");
 		}		
 
 		Facet facet = meemCore.getTargetFor(new SubsystemFactoryClientImpl(), SubsystemFactoryClient.class);
@@ -278,7 +280,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 	 */
 	private void setupSubsystemDependency(Meem meem, DeviceSubsystemDescriptor descriptor) {
 		if (DEBUG) {
-			LogTools.info(logger, "setupSubsystemDependency()");
+			logger.log(Level.INFO, "setupSubsystemDependency()");
 		}		
 
 		SubsystemClientImpl subsystemClient = new SubsystemClientImpl(descriptor);
@@ -292,7 +294,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 	private void createSubsystems() {
 		if (DEBUG) {
-			LogTools.info(logger, "createSubsystems(): " + descriptors.size());
+			logger.log(Level.INFO, "createSubsystems(): " + descriptors.size());
 		}		
 
 		Object[] items = descriptors.values().toArray();
@@ -304,7 +306,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 	private void createSubsystem(DeviceSubsystemDescriptor descriptor) {
 		if (DEBUG) {
-			LogTools.info(logger, "createSubsystem(): " + descriptor);
+			logger.log(Level.INFO, "createSubsystem(): " + descriptor);
 		}		
 
 		// check subsystem types
@@ -323,12 +325,12 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 			}
 		}
 
-		LogTools.error(logger, "No subsystem type '" + descriptor.getType() + "' found.  Is the meemkit that provides this subsystem type installed?");
+		logger.log(Level.WARNING, "No subsystem type '" + descriptor.getType() + "' found.  Is the meemkit that provides this subsystem type installed?");
 	}
 
 	private void configureSubsystem(Meem meem, String identifier) {
 		if (DEBUG) {
-			LogTools.info(logger, "configureSubsystem(): " + identifier);
+			logger.log(Level.INFO, "configureSubsystem(): " + identifier);
 		}		
 
 		DeviceSubsystemDescriptor descriptor = (DeviceSubsystemDescriptor) descriptors.get(identifier);
@@ -338,7 +340,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 	private void commissionSubsystem(Meem meem, DeviceSubsystemDescriptor descriptor) {
 		if (DEBUG) {
-			LogTools.info(logger, "commissionSubsystem(): " + descriptor);
+			logger.log(Level.INFO, "commissionSubsystem(): " + descriptor);
 		}		
 
 		MeemClientCallback callback = new CommissionSubsystemCallback();
@@ -386,13 +388,13 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 		public void subsystemStateChanged(SubsystemState subsystemState) { /* ignore */
 			if (DEBUG) {
-				LogTools.info(logger, "SubsystemClient.subsystemStateChanged(): " + subsystemState);
+				logger.log(Level.INFO, "SubsystemClient.subsystemStateChanged(): " + subsystemState);
 			}		
 		}
 
 		public void commissionStateChanged(CommissionState commissionState) {
 			if (DEBUG) {
-				LogTools.info(logger, "SubsystemClient.commissionStateChanged(): " + commissionState);
+				logger.log(Level.INFO, "SubsystemClient.commissionStateChanged(): " + commissionState);
 			}
 			synchronized (this) {
 				if (commissionState.equals(CommissionState.COMMISSIONED)) {
@@ -418,13 +420,13 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 		private void createMeem(DeviceMeemDescription dmd, Subsystem subsystem) {
 			if (DEBUG) {
-				LogTools.info(logger, "SubsystemClient.createMeem(): " + dmd);
+				logger.log(Level.INFO, "SubsystemClient.createMeem(): " + dmd);
 			}		
 			MeemDefinition meemDefinition = null;
 			MeemDescription meemDescription = null;
 
 			if (meemDefinitions == null) {
-				LogTools.info(logger, "No meemDefinitions, so cannot create meem for " + dmd);
+				logger.log(Level.INFO, "No meemDefinitions, so cannot create meem for " + dmd);
 				return;
 			}
 
@@ -439,7 +441,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 						newDeviceDescription = (DeviceDescription) deviceDescription.clone();
 					}
 					catch (CloneNotSupportedException ex) {
-						LogTools.error(logger, "Subsystem device description '" + deviceDescription + "' has not implemened clone()");
+						logger.log(Level.WARNING, "Subsystem device description '" + deviceDescription + "' has not implemened clone()");
 						return;
 					}
 					AddressSpecification addressSpecification = newDeviceDescription.getProtocol().getAddressSpecification();
@@ -452,7 +454,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 			}
 
 			if (meemDefinition == null) {
-				LogTools.error(logger, "Subsystem " + descriptor.getIdentifier() + " does not have a meem of type '" + dmd.getType() + "'");
+				logger.log(Level.WARNING, "Subsystem " + descriptor.getIdentifier() + " does not have a meem of type '" + dmd.getType() + "'");
 				return;
 			}
 
@@ -462,7 +464,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 		public void meemCreated(Meem meem, MeemDefinition meemDefinition) {
 			String identifier = meemDefinition.getMeemAttribute().getIdentifier();
-			LogTools.info(logger, "created: " + identifier);
+			logger.log(Level.INFO, "created: " + identifier);
 
 			if (category != null) {
 				category.addEntry(identifier, meem);
@@ -471,7 +473,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 			DeviceMeemDescription deviceMeemDescription = meemDefinitionDescriptionIndex.remove(identifier);
 
 			if (deviceMeemDescription == null) {
-				LogTools.error(logger, "meemCreated(): Couldn't find associated DeviceMeemDescription for " + identifier);
+				logger.log(Level.WARNING, "meemCreated(): Couldn't find associated DeviceMeemDescription for " + identifier);
 			}
 			else {
 				Iterator<String> hyperSpacePaths = deviceMeemDescription.getHyperSpacePaths().iterator();
@@ -486,7 +488,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 					Category category = CategoryUtility.spi.get().getCategory(hyperspaceMeem, MeemPath.spi.create(Space.HYPERSPACE, categoryName));
 
 					if (category == null) {
-						LogTools.error(logger, "No category facet on meem: " + categoryName);
+						logger.log(Level.WARNING, "No category facet on meem: " + categoryName);
 					}
 					else {
 						category.addEntry(entryName, meem);
@@ -496,7 +498,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 							message.append(identifier);
 							message.append(" -> ");
 							message.append(categoryName);
-							LogTools.info(logger, message.toString());
+							logger.log(Level.INFO, message.toString());
 						}
 					}
 				}
@@ -508,16 +510,16 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 		public void meemsAvailable(MeemDefinition[] meemDefinitions, MeemDescription[] meemDescriptions) {
 			if (DEBUG) {
 				String num = (meemDefinitions == null) ? "null" : (""+ meemDefinitions.length);
-				LogTools.info(logger, "SubsystemClient.meemsAvailable(): " + num);
+				logger.log(Level.INFO, "SubsystemClient.meemsAvailable(): " + num);
 			}		
 
 			if (meemDefinitions == null) {
-				LogTools.error(logger, "null meemDefinitions have been provided as available");
+				logger.log(Level.WARNING, "null meemDefinitions have been provided as available");
 				return;
 			}
 			for (int i = 0; i < meemDefinitions.length; i++) {
 				if (meemDefinitions[i].getMeemAttribute().getIdentifier() == null) {
-					LogTools.error(logger, "The subsystem " + descriptor.getIdentifier() + " has not set the identifier in its device meems MeemDefinitions");
+					logger.log(Level.WARNING, "The subsystem " + descriptor.getIdentifier() + " has not set the identifier in its device meems MeemDefinitions");
 					doNotUse = true;
 					return;
 				}
@@ -532,7 +534,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 	private class CommissionSubsystemCallback implements MeemClientCallback {
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-				LogTools.error(logger, "referenceProvided() - Meem has no wedges that implement 'Subsystem' facet");
+				logger.log(Level.WARNING, "referenceProvided() - Meem has no wedges that implement 'Subsystem' facet");
 				return;
 			}
 
@@ -556,7 +558,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-				LogTools.error(logger, "referenceProvided() - Meem has no wedges that implement 'ConfigurationHandler' facet");
+				logger.log(Level.WARNING, "referenceProvided() - Meem has no wedges that implement 'ConfigurationHandler' facet");
 				return;
 			}
 
@@ -614,7 +616,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 		public void definitionsAdded(MeemDefinition[] definitions) {
 			if (DEBUG) {
 				String num = (definitions == null) ? "null" : (""+definitions.length);
-				LogTools.info(logger, "SubsystemFactoryClient.definitionsAdded(): " + num);
+				logger.log(Level.INFO, "SubsystemFactoryClient.definitionsAdded(): " + num);
 			}		
 
 			if (definitions == null) {
@@ -628,7 +630,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 		public void definitionsRemoved(MeemDefinition[] definitions) { /* ignore */
 			if (DEBUG) {
 				String num = (definitions == null) ? "null" : (""+definitions.length);
-				LogTools.info(logger, "SubsystemFactoryClient.definitionsRemoved(): " + num);
+				logger.log(Level.INFO, "SubsystemFactoryClient.definitionsRemoved(): " + num);
 			}
 			
 			if (definitions == null) {
@@ -641,14 +643,14 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 		public void subsystemCreated(Meem meem, MeemDefinition meemDefinition) {
 			if (meemDefinition == null) {
-				LogTools.error(logger, "Received null MeemDefinition for subsystem meem: " + meem.getMeemPath());
+				logger.log(Level.WARNING, "Received null MeemDefinition for subsystem meem: " + meem.getMeemPath());
 				return;
 			}
 			
 			String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 			
 			if (DEBUG) {
-				LogTools.info(logger, "SubsystemFactoryClient.subsystemCreated(): " + identifier);
+				logger.log(Level.INFO, "SubsystemFactoryClient.subsystemCreated(): " + identifier);
 			}
 			
 			DeviceSubsystemDescriptor descriptor = (DeviceSubsystemDescriptor) descriptors.get(identifier);
@@ -660,18 +662,18 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 
 		public void subsystemDestroyed(Meem meem) { /* ignore */
 			if (DEBUG) {
-				LogTools.info(logger, "SubsystemFactoryClient.subsystemDestroyed()");
+				logger.log(Level.INFO, "SubsystemFactoryClient.subsystemDestroyed()");
 			}
 		}
 
 		public void contentSent() { /* ignore */
 			if (DEBUG) {
-				LogTools.info(logger, "SubsystemFactoryClient.contentSent()");
+				logger.log(Level.INFO, "SubsystemFactoryClient.contentSent()");
 			}			
 		}
 
 		public void contentFailed(String errorMessage) {
-			LogTools.error(logger, "Unable to obtain SubsystemFactory details: " + errorMessage);
+			logger.log(Level.WARNING, "Unable to obtain SubsystemFactory details: " + errorMessage);
 		}
 	}
 
@@ -753,7 +755,7 @@ public class AutomationDeploymentWedge implements Wedge, DeploymentProcessor {
 						sb.append(keys.next());
 						sb.append(", ");
 					}
-					LogTools.info(logger, "Remaining meems: " + sb);
+					logger.log(Level.INFO, "Remaining meems: " + sb);
 					
 					/*
 					try {

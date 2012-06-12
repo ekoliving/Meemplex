@@ -13,7 +13,8 @@
 
 package org.openmaji.implementation.server.space.meemspace;
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -41,8 +42,8 @@ public class MeemSpace {
       identifier = System.getProperty(PROPERTY_MEEMSPACE_IDENTIFIER);
 
       if (identifier == null) {
-        LogTools.warn(
-          logger,
+        logger.log(Level.WARNING, 
+          
           "MeemSpace Identifier not configured: " +
            PROPERTY_MEEMSPACE_IDENTIFIER
         );
@@ -58,5 +59,5 @@ public class MeemSpace {
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 }

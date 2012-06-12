@@ -102,7 +102,7 @@ public final class LifeCycleState implements Serializable {
 	 * List of available states
 	 */
 
-	public static final List STATES = Arrays.asList(new LifeCycleState[] {
+	public static final List<LifeCycleState> STATES = Arrays.asList(new LifeCycleState[] {
 		LifeCycleState.ABSENT, 
 		LifeCycleState.DORMANT, 
 		LifeCycleState.LOADED,

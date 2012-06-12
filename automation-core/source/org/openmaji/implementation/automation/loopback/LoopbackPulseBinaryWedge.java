@@ -16,9 +16,10 @@ import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.common.Binary;
 import org.openmaji.diagnostic.Debug;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The LoopbackPulseBinaryWedge will produce a pulse on the binaryStateConduit
@@ -30,7 +31,7 @@ import org.swzoo.log2.core.Logger;
 
 public class LoopbackPulseBinaryWedge implements Wedge
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
   public static final int DEFAULT_TRUE_PULSE_DURATION_MILLIS = 250;
   public static final int DEFAULT_FALSE_PULSE_DURATION_MILLIS = 250;
 
@@ -79,7 +80,7 @@ public class LoopbackPulseBinaryWedge implements Wedge
       binaryStateConduit.valueChanged(value);
       if ( debugLevel > 0 )
       {
-        LogTools.info(logger,"Start of pulse, sent a '"+value+"' value");
+        logger.log(Level.INFO, "Start of pulse, sent a '"+value+"' value");
       }
 
       if ( value )
@@ -114,7 +115,7 @@ public class LoopbackPulseBinaryWedge implements Wedge
       binaryStateConduit.valueChanged(false);
       if ( debugLevel > 0 )
       {
-        LogTools.info(logger,"End of pulse, sent a 'false' value");
+        logger.log(Level.INFO, "End of pulse, sent a 'false' value");
       }
     }
   }
@@ -128,7 +129,7 @@ public class LoopbackPulseBinaryWedge implements Wedge
       binaryStateConduit.valueChanged(true);
       if ( debugLevel > 0 )
       {
-        LogTools.info(logger,"End of pulse, sent a 'true' value");
+        logger.log(Level.INFO, "End of pulse, sent a 'true' value");
       }
     }
   }

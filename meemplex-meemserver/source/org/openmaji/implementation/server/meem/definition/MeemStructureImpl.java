@@ -24,9 +24,10 @@ package org.openmaji.implementation.server.meem.definition;
 import java.io.Serializable;
 import java.util.*;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.meem.definition.*;
 import org.openmaji.system.meem.definition.MeemStructure;
@@ -38,7 +39,7 @@ import org.openmaji.system.meem.definition.MeemStructureListener;
  * @author Kin Wong
  */
 public class MeemStructureImpl implements MeemStructure {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	private static final boolean DEBUG = false;
 
 	/** 
@@ -85,7 +86,7 @@ public class MeemStructureImpl implements MeemStructure {
 
 	public void clear() {
 		if (DEBUG) {
-			LogTools.info(logger, "clear()");
+			logger.log(Level.INFO, "clear()");
 		}
 		meem = null;
 		wedges.clear();
@@ -172,14 +173,14 @@ public class MeemStructureImpl implements MeemStructure {
 	 */
 	public boolean add(FacetAttribute facet, DependencyAttribute dependency) {
 		if (DEBUG) {
-			LogTools.info(logger, "adding dependency: " + facet.getIdentifier() + "->" + dependency);
+			logger.log(Level.INFO, "adding dependency: " + facet.getIdentifier() + "->" + dependency);
 		}
 		
 		
 		FacetEntry facetEntry = (FacetEntry)facets.get(facet.getIdentifier());
 		if(facetEntry == null) {
 			if (DEBUG) {
-				LogTools.info(logger, "Facet has not been defined: " + facet.getIdentifier());
+				logger.log(Level.INFO, "Facet has not been defined: " + facet.getIdentifier());
 			}
 			return false; // Facet has not been defined
 		}
@@ -187,7 +188,7 @@ public class MeemStructureImpl implements MeemStructure {
 /* TODO remove this section */
 		if(getDependencies().containsKey(dependency.getKey())) {
 			if (DEBUG) {
-				LogTools.info(logger, "Dependency already exists: " + dependency.getKey() + " => " + getDependencies().get(dependency.getKey()));
+				logger.log(Level.INFO, "Dependency already exists: " + dependency.getKey() + " => " + getDependencies().get(dependency.getKey()));
 			}
 			return false;	// Dependency already exists
 		}
@@ -270,7 +271,7 @@ public class MeemStructureImpl implements MeemStructure {
 	 */
 	public boolean update(DependencyAttribute dependency) {
 		if (DEBUG) {
-			LogTools.info(logger, "updating dependency: " + dependency);
+			logger.log(Level.INFO, "updating dependency: " + dependency);
 		}
 		
 /* TODO Remove this seciton */
@@ -347,7 +348,7 @@ public class MeemStructureImpl implements MeemStructure {
 	 */
 	public boolean remove(DependencyAttribute dependency) {
 		if (DEBUG) {
-			LogTools.info(logger, "removing dependency: " + dependency);
+			logger.log(Level.INFO, "removing dependency: " + dependency);
 		}
 		
 /* TODO remove this section  */
@@ -379,13 +380,13 @@ public class MeemStructureImpl implements MeemStructure {
 
 	public DependencyAttribute getDependencyAttribute(Serializable dependencyId) {
 		if (DEBUG) {
-			LogTools.info(logger, "getDependencyAttribute: " + dependencyId);
+			logger.log(Level.INFO, "getDependencyAttribute: " + dependencyId);
 		}
 		
 		DependencyEntry entry = (DependencyEntry)getDependencies().get(dependencyId);
 		if(entry == null) {
 			if (DEBUG) {
-				LogTools.info(logger, "could not located dependencyAttribute for " + dependencyId);
+				logger.log(Level.INFO, "could not located dependencyAttribute for " + dependencyId);
 			}
 			return null;
 		}
@@ -394,7 +395,7 @@ public class MeemStructureImpl implements MeemStructure {
 
 	public Collection<Serializable> getDependencyAttributeKeys() {
 		if (DEBUG) {
-			LogTools.info(logger, "getDependencyAttributeKeys");
+			logger.log(Level.INFO, "getDependencyAttributeKeys");
 		}
 		
 		return getDependencies().keySet();

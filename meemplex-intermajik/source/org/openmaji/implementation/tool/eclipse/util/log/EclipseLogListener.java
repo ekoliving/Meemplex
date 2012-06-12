@@ -12,8 +12,6 @@
  */
 package org.openmaji.implementation.tool.eclipse.util.log;
 
-import org.swzoo.log2.core.LogEvent;
-
 /**
  * <p>
  * ...
@@ -22,5 +20,5 @@ import org.swzoo.log2.core.LogEvent;
  * @version 1.0
  */
 public interface EclipseLogListener {
-	public void event(LogEvent event);
+//	public void event(LogEvent event);
 }

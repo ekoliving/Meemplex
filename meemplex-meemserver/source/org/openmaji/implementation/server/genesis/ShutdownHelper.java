@@ -14,7 +14,8 @@ import org.openmaji.meem.Meem;
 import org.openmaji.meem.wedge.lifecycle.*;
 import org.openmaji.server.helper.*;
 import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Peter
@@ -40,15 +41,15 @@ public class ShutdownHelper extends Thread {
 
 	public void run() {
 		System.err.println("Initiate shutdown ...");
-		// LogTools.info(logger, "Initiate shutdown ...");
+		// logger.log(Level.INFO, "Initiate shutdown ...");
 
 		if (ShutdownHelper.shutdownMaji()) {
 			System.err.println("... shutdown succeeded");
-			// LogTools.info(logger, "... shutdown succeeded");
+			// logger.log(Level.INFO, "... shutdown succeeded");
 		}
 		else {
 			System.err.println("... shutdown failed");
-			// LogTools.error(logger, "... shutdown failed");
+			// logger.log(Level.WARNING, "... shutdown failed");
 		}
 	}
 
@@ -58,7 +59,7 @@ public class ShutdownHelper extends Thread {
 	 */
 	public static boolean shutdownMaji() {
 		if (shutdownInitiated) {
-			LogTools.error(logger, "Shutdown already in progress");
+			logger.log(Level.WARNING, "Shutdown already in progress");
 			return false;
 		}
 
@@ -103,7 +104,7 @@ public class ShutdownHelper extends Thread {
 			return true;
 		}
 		else {
-			LogTools.error(logger, "Attempt by unprivileged user to shutdown.");
+			logger.log(Level.WARNING, "Attempt by unprivileged user to shutdown.");
 			return false;
 		}
 	}
@@ -114,5 +115,5 @@ public class ShutdownHelper extends Thread {
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

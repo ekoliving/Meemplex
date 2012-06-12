@@ -31,12 +31,13 @@ import org.openmaji.system.meem.wedge.reference.MeemClientConduit;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.openmaji.system.meemkit.core.MeemkitLibrary;
 import org.openmaji.system.meemkit.core.MeemkitLibraryExport;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MeemkitWedge implements Wedge, Meemkit, MeemDefinitionProvider {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public MeemCore meemCore;
 
@@ -60,11 +61,11 @@ public class MeemkitWedge implements Wedge, Meemkit, MeemDefinitionProvider {
 
 	public void commence() {
 		// myName = meemCore.getMeemStructure().getMeemAttribute().getIdentifier();
-		// LogTools.info(logger, "commence() - myName=["+myName+"]");
+		// logger.log(Level.INFO, "commence() - myName=["+myName+"]");
 	}
 
 	public void conclude() {
-		// LogTools.info(logger, "conclude() - myName=["+myName+"]");
+		// logger.log(Level.INFO, "conclude() - myName=["+myName+"]");
 		shutdownClassLoader();
 	}
 
@@ -122,7 +123,7 @@ public class MeemkitWedge implements Wedge, Meemkit, MeemDefinitionProvider {
 
 			setExportList(descriptor, baseURL);
 
-			LogTools.info(logger, "Meemkit ClassLoader Started [" + name + "]");
+			logger.log(Level.INFO, "Meemkit ClassLoader Started [" + name + "]");
 
 			// stop any meems that used previous instances of this meemkits classloader
 
@@ -202,7 +203,7 @@ public class MeemkitWedge implements Wedge, Meemkit, MeemDefinitionProvider {
 
 			SystemExportList.getInstance().removeClassLoader(meemkitClassLoader);
 
-			LogTools.info(logger, "Meemkit ClassLoader Shutdown [" + meemkitClassLoader.getMeemkitName() + "]");
+			logger.log(Level.INFO, "Meemkit ClassLoader Shutdown [" + meemkitClassLoader.getMeemkitName() + "]");
 
 			meemkitClassLoader = null;
 		}

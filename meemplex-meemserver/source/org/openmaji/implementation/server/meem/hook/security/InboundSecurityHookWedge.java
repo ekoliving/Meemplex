@@ -52,9 +52,10 @@ import org.openmaji.system.meem.hook.security.Principals;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -80,7 +81,7 @@ import org.swzoo.log2.core.Logger;
 public class InboundSecurityHookWedge 
 	implements InboundSecurityHook, Hook, AccessControl, Wedge, FilterChecker
 {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
     public MeemCore					meemCore;
     
@@ -93,7 +94,7 @@ public class InboundSecurityHookWedge
     {
         public void sendContent(Object target, Filter filter) throws ContentException {
             AccessControlClient     client = (AccessControlClient)target;
-//            LogTools.info(logger, "sending access control content");
+//            logger.log(Level.INFO, "sending access control content");
             
             Object template = null;
             if (filter != null && filter instanceof ExactMatchFilter) {
@@ -105,7 +106,7 @@ public class InboundSecurityHookWedge
                 Principal  p = (Principal)it.next();
                 
                 if (template == null || template.equals(p)) {
-//                    LogTools.info(logger, "sending access for " + p + " = " + principals.get(p));
+//                    logger.log(Level.INFO, "sending access for " + p + " = " + principals.get(p));
                     client.accessAdded(p, (AccessLevel)principals.get(p));
                 }                
             }
@@ -170,7 +171,7 @@ public class InboundSecurityHookWedge
 	 */
 	public void addAccess(Principal principal, AccessLevel level)
 	{
-//		LogTools.info(logger, "Add acces for " + principal + ". level = " + level);
+//		logger.log(Level.INFO, "Add acces for " + principal + ". level = " + level);
 		
 		principals.put(principal, level);
 
@@ -186,7 +187,7 @@ public class InboundSecurityHookWedge
 	 */
 	public void removeAccess(Principal principal)
 	{
-//		LogTools.info(logger, "Remove acces for " + principal + ".");
+//		logger.log(Level.INFO, "Remove acces for " + principal + ".");
 		
 		AccessLevel	level = null;
 		
@@ -218,12 +219,11 @@ public class InboundSecurityHookWedge
     	if ( !checkAccess(invocation) ) {
     		ReflectionInvocation reflectionInvocation = (ReflectionInvocation)invocation;
     		Method               method               = reflectionInvocation.getMethod();
-    		LogTools.info(
-    				logger, 
+    		logger.log(Level.INFO,
     				"no access for Subject on, \"" + meemCore.getMeemPath() + ":" + invocation.getFacetIdentifier() + "." + method.getName() + "\" - level = " + getCurrentAccessLevel(principals), 
     				new SecurityException("No Access")
     			);
-//    		LogTools.info(logger, reflectionInvocation.getDescription(true));
+//    		logger.log(Level.INFO, reflectionInvocation.getDescription(true));
     		return false;
     	}
 
@@ -440,7 +440,7 @@ public class InboundSecurityHookWedge
 
 		// TODO check for more specific system Facets
 
-//		LogTools.info(logger, "Can not add or remove reference on Facet, " + refFacetIdentifier);
+//		logger.log(Level.INFO, "Can not add or remove reference on Facet, " + refFacetIdentifier);
 
 		// no access granted, send "contentFailed"
 		Object refTarget = ref.getTarget();
@@ -449,7 +449,7 @@ public class InboundSecurityHookWedge
 			
 			client.contentFailed("subject has no permission");
 
-//			LogTools.info(logger, "Client notified of lack of access.");
+//			logger.log(Level.INFO, "Client notified of lack of access.");
 			// we've notified them, no need for an exception.
 			return false;
 		}

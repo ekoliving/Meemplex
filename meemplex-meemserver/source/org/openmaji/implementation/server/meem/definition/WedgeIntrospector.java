@@ -36,9 +36,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.definition.*;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.request.RequestContext;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Peter
@@ -66,13 +67,13 @@ public class WedgeIntrospector {
 		IGNORED_FIELDS.add(REQUEST_CONTEXT_FIELD_NAME);
 	}
 
-	public static void addFacetDefToWedgeDef(WedgeDefinition wedgeDefinition, Direction facetDirection, String facetIdentifier, Class<?> facetClass) {
+	public static void addFacetDefToWedgeDef(WedgeDefinition wedgeDefinition, Direction facetDirection, String facetIdentifier, String fieldName, Class<?> facetClass) {
 		FacetAttribute facetAttribute;
 		if (facetDirection == Direction.INBOUND) {
 			facetAttribute = new FacetInboundAttribute(facetIdentifier, facetClass.getName());
 		}
 		else {
-			facetAttribute = new FacetOutboundAttribute(facetClass.getName(), facetIdentifier);
+			facetAttribute = new FacetOutboundAttribute(facetIdentifier, facetClass.getName(), fieldName);
 		}
 
 		FacetDefinition facetDefinition = new FacetDefinition(facetAttribute);
@@ -101,7 +102,7 @@ public class WedgeIntrospector {
 	 */
 	public static WedgeDefinition getWedgeDefinition(Class<?> wedgeClass) throws WedgeIntrospectorException {
 		if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_INTROSPECTOR) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Build WedgeDefinition: " + wedgeClass.getName());
+			logger.log(Common.getLogLevelVerbose(), "Build WedgeDefinition: " + wedgeClass.getName());
 		}
 
 //		HashSet<String> facetsAdded = new HashSet<String>(); // Avoid adding duplicate Facets
@@ -118,7 +119,7 @@ public class WedgeIntrospector {
 		int wedgeModifiers = wedgeClass.getModifiers();
 		if (!Modifier.isPublic(wedgeModifiers) || Modifier.isAbstract(wedgeModifiers)) {
 			String message = "Wedge must be a 'public', non-'abstract' class: " + wedgeClass.getName();
-			LogTools.error(logger, message);
+			logger.log(Level.WARNING, message);
 			throw new WedgeIntrospectorException(message);
 		}
 
@@ -129,7 +130,7 @@ public class WedgeIntrospector {
 		}
 		catch (NoSuchMethodException e) {
 			String message = "Wedge must implement a 'public' default constructor: " + wedgeClass.getName();
-			LogTools.error(logger, message);
+			logger.log(Level.WARNING, message);
 			throw new WedgeIntrospectorException(message, e);
 		}
 
@@ -140,7 +141,7 @@ public class WedgeIntrospector {
 
 			if (finalizeMethod.getDeclaringClass() != Object.class) {
 				String message = "Wedge must not override finalize() from " + Object.class.getName() + ": " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 		}
@@ -150,7 +151,7 @@ public class WedgeIntrospector {
 		// Issue a warning if the wedge class does not implement the Wedge marker interface
 
 		if (!Wedge.class.isAssignableFrom(wedgeClass)) {
-			LogTools.warning(logger, "Wedge should implement " + Wedge.class.getName() + ": " + wedgeClass.getName());
+			logger.log(Level.WARNING, "Wedge should implement " + Wedge.class.getName() + ": " + wedgeClass.getName());
 		}
 
 		// Check that any context field is correctly declared
@@ -161,13 +162,13 @@ public class WedgeIntrospector {
 
 			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
 				String message = "The context field '" + CORE_FIELD_NAME + "' must be 'public', non-'static' and non-'final': " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 
 			if (contextField.getType() != CORE_FIELD_CLASS) {
 				String message = "The context field '" + CORE_FIELD_NAME + "' must be of type " + CORE_FIELD_CLASS.getName() + ": " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 		}
@@ -181,13 +182,13 @@ public class WedgeIntrospector {
 
 			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
 				String message = "The context field '" + CONTEXT_FIELD_NAME + "' must be 'public', non-'static' and non-'final': " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 
 			if (contextField.getType() != CONTEXT_FIELD_CLASS) {
 				String message = "The context field '" + CONTEXT_FIELD_NAME + "' must be of type " + CONTEXT_FIELD_CLASS.getName() + ": " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 		}
@@ -201,13 +202,13 @@ public class WedgeIntrospector {
 
 			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
 				String message = "The context field '" + REQUEST_CONTEXT_FIELD_NAME + "' must be 'public', non-'static' and non-'final': " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 
 			if (contextField.getType() != REQUEST_CONTEXT_FIELD_CLASS) {
 				String message = "The context field '" + REQUEST_CONTEXT_FIELD_NAME + "' must be of type " + REQUEST_CONTEXT_FIELD_CLASS.getName() + ": " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 		}
@@ -225,7 +226,7 @@ public class WedgeIntrospector {
 			wedgeClass.getField("lifeCycleClientConduit");
 		}
 		catch (NoSuchFieldException e) {
-			LogTools.warn(logger, "commence found but no lifeCycleConduit in " + wedgeClass.getName());
+			logger.log(Level.WARNING, "commence found but no lifeCycleConduit in " + wedgeClass.getName());
 		}
 		catch (NoSuchMethodException e) {
 			// ignore.
@@ -237,7 +238,7 @@ public class WedgeIntrospector {
 			wedgeClass.getField("lifeCycleClientConduit");
 		}
 		catch (NoSuchFieldException e) {
-			LogTools.warn(logger, "conclude found but no lifeCycleConduit in " + wedgeClass.getName());
+			logger.log(Level.WARNING, "conclude found but no lifeCycleConduit in " + wedgeClass.getName());
 		}
 		catch (NoSuchMethodException e) {
 			// ignore.
@@ -251,13 +252,13 @@ public class WedgeIntrospector {
 
 			if (!Modifier.isPublic(modifiers) || !Modifier.isStatic(modifiers) || !Modifier.isFinal(modifiers)) {
 				String message = "Manual WEDGE_DEFINITION must be 'public', 'static' and 'final': " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 
 			if (!WedgeDefinition.class.isAssignableFrom(manualWedgeDefinition.getType())) {
 				String message = "Manual WEDGE_DEFINITION must be of type " + WedgeDefinition.class.getName() + ": " + wedgeClass.getName();
-				LogTools.error(logger, message);
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 
@@ -267,11 +268,11 @@ public class WedgeIntrospector {
 				verifyWedgeDefinition(wedgeClass, wedgeDefinition);
 			}
 			catch (Exception e) {
-				LogTools.error(logger, "Manual WEDGE_DEFINITION failed verification: " + wedgeClass.getName(), e);
+				logger.log(Level.WARNING, "Manual WEDGE_DEFINITION failed verification: " + wedgeClass.getName(), e);
 			}
 
 			if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_INTROSPECTOR) {
-				LogTools.trace(logger, Common.getLogLevelVerbose(), wedgeClass.getName() + ": Using manually supplied wedge definition");
+				logger.log(Common.getLogLevelVerbose(), wedgeClass.getName() + ": Using manually supplied wedge definition");
 			}
 
 			putCache(wedgeClass, wedgeDefinition);
@@ -283,7 +284,7 @@ public class WedgeIntrospector {
 		}
 		catch (IllegalAccessException e) {
 			String message = "Unexpected error trying to read manual wedge definition: " + wedgeClass.getName();
-			LogTools.error(logger, message);
+			logger.log(Level.WARNING, message);
 			throw new WedgeIntrospectorException(message, e);
 		}
 
@@ -294,7 +295,7 @@ public class WedgeIntrospector {
 
 		wedgeDefinition = new WedgeDefinition(wedgeAttribute);
 
-		// Look at each field in the class and infer facets, content and config properties of the wedge
+		// Look at each field in the class and infer facets, content and configuration properties of the wedge
 		processFields(wedgeClass, wedgeDefinition);
 
 		putCache(wedgeClass, wedgeDefinition);
@@ -453,23 +454,23 @@ public class WedgeIntrospector {
 	
 		// Search the Interfaces implemented by this Class for in-bound Facets
 
+		// TODO Allow inbound facets to be fields annotated with @Facet.
 		{
-			// TODO inbound facets to be fields as well
 			Set<Class<?>> facetClasses = FacetIntrospector.getFacetClasses(wedgeClass);
 			for (Class<?> facetClass : facetClasses) {
 				String facetIdentifier = shortClassName(facetClass);
 
 				if (facets.contains(facetIdentifier)) {
 					String message = "Wedge '" + wedgeClassName + "' has 2 facets with the identifier '" + facetIdentifier + "'";
-					LogTools.error(logger, message);
+					logger.log(Level.WARNING, message);
 					throw new WedgeIntrospectorException(message);
 				}
 				else {
 					if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_INTROSPECTOR) {
-						LogTools.trace(logger, Common.getLogLevelVerbose(), wedgeClassName + ": Found facet: " + Direction.INBOUND + "/" + facetIdentifier + "/" + facetClass.getName());
+						logger.log(Common.getLogLevelVerbose(), wedgeClassName + ": Found facet: " + Direction.INBOUND + "/" + facetIdentifier + "/" + facetClass.getName());
 					}
 
-					addFacetDefToWedgeDef(wedgeDefinition, Direction.INBOUND, facetIdentifier, facetClass);
+					addFacetDefToWedgeDef(wedgeDefinition, Direction.INBOUND, facetIdentifier, facetIdentifier, facetClass);
 
 					facets.add(facetIdentifier);
 				}
@@ -480,8 +481,8 @@ public class WedgeIntrospector {
 			Field wedgeField = wedgeFields[i];
 
 			// Ignore fields in IGNORED_FIELDS list and conduit fields
-			String identifier = wedgeField.getName();
-			if (IGNORED_FIELDS.contains(identifier) || identifier.endsWith("Conduit") || identifier.endsWith("Provider"))
+			String fieldName = wedgeField.getName();
+			if (IGNORED_FIELDS.contains(fieldName) || fieldName.endsWith("Conduit") || fieldName.endsWith("Provider"))
 				continue;
 
 			// Ignore static fields
@@ -495,8 +496,8 @@ public class WedgeIntrospector {
 
 			// Fields cannot be final, since we need to manipulate them
 			if (Modifier.isFinal(modifiers)) {
-				String message = wedgeClassName + ": Facets and persistent fields may not be 'final': " + identifier;
-				LogTools.error(logger, message);
+				String message = wedgeClassName + ": Facets and persistent fields may not be 'final': " + fieldName;
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 
@@ -505,31 +506,48 @@ public class WedgeIntrospector {
 			Content contentAnnotation = wedgeField.getAnnotation(Content.class);
 			if (contentAnnotation != null) {
 				// is  a persisted field
+				if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_INTROSPECTOR) {
+					logger.log(Common.getLogLevelVerbose(), wedgeClassName + ": Found persistent field: " + fieldName);
+				}
+				wedgeAttribute.addPersistentField(fieldName);
+				continue;
 			}
 			
 			Class<?> wedgeFieldClass = wedgeField.getType();
 			if (!Facet.class.isAssignableFrom(wedgeFieldClass)) {
 				if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_INTROSPECTOR) {
-					LogTools.trace(logger, Common.getLogLevelVerbose(), wedgeClassName + ": Found persistent field: " + identifier);
+					logger.log(Common.getLogLevelVerbose(), wedgeClassName + ": Found persistent field: " + fieldName);
 				}
-
-				wedgeAttribute.addPersistentField(identifier);
+				wedgeAttribute.addPersistentField(fieldName);
 				continue;
 			}
 
 			// If not a persistent field, must be an outbound facet
+			String facetName = fieldName;
 
+			org.meemplex.meem.Facet facetAnnotation = wedgeField.getAnnotation(org.meemplex.meem.Facet.class);
+			if (facetAnnotation != null) {
+				if (facetAnnotation.direction() == org.meemplex.service.model.Direction.IN) {
+					String message = "Wedge '" + wedgeClassName + "' has incoming facet '" + fieldName + "' when expecting an outbound Facet";
+					logger.log(Level.WARNING, message);
+					throw new WedgeIntrospectorException(message);
+				}
+				if (facetAnnotation.name() != null) {
+					facetName = facetAnnotation.name();
+				}
+			}
+			
 			if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_INTROSPECTOR) {
-				LogTools.trace(logger, Common.getLogLevelVerbose(), wedgeClassName + ": Found facet: " + Direction.OUTBOUND + "/" + identifier + "/" + wedgeFieldClass.getName());
+				logger.log(Common.getLogLevelVerbose(), wedgeClassName + ": Found facet: " + Direction.OUTBOUND + "/" + fieldName + "/" + wedgeFieldClass.getName());
 			}
 
-			if (facets.contains(identifier)) {
-				String message = "Wedge '" + wedgeClassName + "' has outgoing facet '" + identifier + "' with same identifier as an incoming facet";
-				LogTools.error(logger, message);
+			if (facets.contains(fieldName)) {
+				String message = "Wedge '" + wedgeClassName + "' has outgoing facet '" + fieldName + "' with same identifier as an incoming facet";
+				logger.log(Level.WARNING, message);
 				throw new WedgeIntrospectorException(message);
 			}
 
-			addFacetDefToWedgeDef(wedgeDefinition, Direction.OUTBOUND, identifier, wedgeFieldClass);
+			addFacetDefToWedgeDef(wedgeDefinition, Direction.OUTBOUND, facetName, fieldName, wedgeFieldClass);
 		}
 	}
 
@@ -569,5 +587,5 @@ public class WedgeIntrospector {
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

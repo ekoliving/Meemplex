@@ -25,7 +25,8 @@ import org.openmaji.implementation.server.nursery.scripting.telnet.session.Abstr
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.definition.*;
 import org.openmaji.meem.wedge.lifecycle.*;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -66,7 +67,7 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 				port = new Integer(portString).intValue();
 			}
 			catch (NumberFormatException e) {
-				LogTools.error(logger, "Specified port number is not a number: " + portString);
+				logger.log(Level.WARNING, "Specified port number is not a number: " + portString);
 				continue;
 			}
 			String sessionClassName = entry.getValue().trim();
@@ -84,7 +85,7 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 
 	public void addServer(int port, String sessionClass) {
 		if (Common.TRACE_ENABLED && Common.TRACE_TELNET_SERVER) {
-			LogTools.trace(logger, logLevel, "Starting telnet server on port " + port + " for session class " + sessionClass);
+			logger.log(logLevel, "Starting telnet server on port " + port + " for session class " + sessionClass);
 		}
 
 		ServerThread serverThread = new ServerThread(port, sessionClass);
@@ -97,7 +98,7 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 		ServerThread serverThread = (ServerThread) serverThreads.get(new Integer(port));
 		if (serverThread != null) {
 			if (Common.TRACE_ENABLED && Common.TRACE_TELNET_SERVER) {
-				LogTools.trace(logger, logLevel, "Stopping telnet server on port " + port);
+				logger.log(logLevel, "Stopping telnet server on port " + port);
 			}
 			serverThread.stop();
 		}
@@ -132,7 +133,7 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 				serverSocket = new ServerSocket(port);
 			}
 			catch (IOException e) {
-				LogTools.error(logger, "Unable to create ServerSocket on port " + port, e);
+				logger.log(Level.WARNING, "Unable to create ServerSocket on port " + port, e);
 				return;
 			}
 
@@ -150,7 +151,7 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 						
 					}
 					catch (Exception e) {
-						LogTools.error(logger, "Exception while creating new telnet session", e);
+						logger.log(Level.WARNING, "Exception while creating new telnet session", e);
 						e.printStackTrace();
 					}
 					
@@ -158,7 +159,7 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 						sessions.add(session);
 	
 						if (Common.TRACE_ENABLED && Common.TRACE_TELNET_SERVER) {
-							LogTools.trace(logger, logLevel, "Starting telnet session on port " + port + " for session class " + sessionClassName + " from " + socket.getInetAddress());
+							logger.log(logLevel, "Starting telnet session on port " + port + " for session class " + sessionClassName + " from " + socket.getInetAddress());
 						}
 						
 						session.start();
@@ -181,7 +182,7 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 					serverSocket.close();
 				}
 				catch (IOException e) {
-					LogTools.error(logger, "Exception while stopping telnet server", e);
+					logger.log(Level.WARNING, "Exception while stopping telnet server", e);
 				}
 				serverSocket = null;
 			}
@@ -192,8 +193,8 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 		TelnetServer telnetServer = new TelnetServerWedge();
 		telnetServer.addServer(6969, "org.openmaji.implementation.server.nursery.scripting.beanshell.BeanShellSession");
 		//telnetServer.addServer(24, "org.openmaji.implementation.nursery.telnet.session.PythonSession");
-		LogTools.info(logger, "maji dir: " + System.getProperty(Common.PROPERTY_MAJI_HOME));
-		LogTools.info(logger, "beanshell dir: " + System.getProperty(BeanShellSession.PROPERTY_BEANSHELL_DIRECTORY));
+		logger.log(Level.INFO, "maji dir: " + System.getProperty(Common.PROPERTY_MAJI_HOME));
+		logger.log(Level.INFO, "beanshell dir: " + System.getProperty(BeanShellSession.PROPERTY_BEANSHELL_DIRECTORY));
 	}
 
 	/* ---------- MeemDefinitionProvider method(s) ----------------------------- */
@@ -214,12 +215,12 @@ public class TelnetServerWedge implements TelnetServer, MeemDefinitionProvider, 
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static int logLevel = Common.getLogLevelVerbose();
+	private static Level logLevel = Common.getLogLevelVerbose();
 
 }

@@ -30,8 +30,8 @@ import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.definition.MeemDefinition;
 import org.openmaji.meem.space.Space;
 import org.openmaji.system.space.meemstore.MeemStore;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
+
+
 import org.swzoo.log2.core.Logger;
 
 import JSX.ObjectReader;
@@ -60,7 +60,7 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 		if (!dir.exists()) {
 			// try and make the dir
 			if (!dir.mkdirs())
-				LogTools.error(logger, "MeemDefinition storage directory cannot be created: " + baseDir);
+				logger.log(Level.WARNING,  "MeemDefinition storage directory cannot be created: " + baseDir);
 		}
 			
 	}
@@ -76,7 +76,7 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 		MeemDefinition definition = null;
 		
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMSTORE) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Loading definition file: " + fileName);
+			logger.log(Common.getLogLevelVerbose(), "Loading definition file: " + fileName);
 		}
 		
 		// This classloader change is to allows classes loaded by eclipse to 
@@ -90,11 +90,11 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 				definition = (MeemDefinition) in.readObject();
 				in.close();
 			} catch (ClassNotFoundException e) {
-				LogTools.error(logger, "Exception while loading MeemDefinition " + meemPath.toString(), e);
+				logger.log(Level.WARNING,  "Exception while loading MeemDefinition " + meemPath.toString(), e);
 			} catch (FileNotFoundException e) {
 				// this is allowed
 			} catch (IOException e) {
-				LogTools.error(logger, "Exception while loading MeemDefinition " + meemPath.toString(), e);
+				logger.log(Level.WARNING,  "Exception while loading MeemDefinition " + meemPath.toString(), e);
 			}
 
 		} finally {
@@ -109,7 +109,7 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 		String fileName = baseDir + meemPath.getLocation();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMSTORE) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Storing definition file: " + fileName);
+			logger.log(Common.getLogLevelVerbose(), "Storing definition file: " + fileName);
 		}
 		
 		try {
@@ -118,7 +118,7 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 			out.writeObject(definition);
 			out.close();
 		} catch (IOException e) {
-			LogTools.error(logger, "Exception while storing MeemDefinition " + meemPath.toString(), e);
+			logger.log(Level.WARNING,  "Exception while storing MeemDefinition " + meemPath.toString(), e);
 		}
 
 		storeVersion(meemPath, definition);
@@ -129,17 +129,17 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 		String fileName = baseDir + meemPath.getLocation();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMSTORE) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Removing definition file: " + fileName);
+			logger.log(Common.getLogLevelVerbose(), "Removing definition file: " + fileName);
 		}
 		
 		File file = new File(fileName);
 		if (!file.delete() && file.exists()) {
-			LogTools.warning(logger, "Cannot delete definition file " + fileName);
+			logger.log(Level.WARNING, "Cannot delete definition file " + fileName);
 		}
 
 		file = new File(fileName + "_version");
 		if (!file.delete() && file.exists()) {
-			LogTools.warning(logger, "Cannot delete definition version file " + fileName);
+			logger.log(Level.WARNING, "Cannot delete definition version file " + fileName);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 			version = reader.readLine();
 			reader.close();
 		} catch (IOException e) {
-			//LogTools.error(logger, "Exception while loading MeemDefinition version " + meemPath.toString(), e);
+			//logger.log(Level.WARNING,  "Exception while loading MeemDefinition version " + meemPath.toString(), e);
 		}
 
 		return Integer.parseInt(version);
@@ -166,7 +166,7 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 			writer.write(String.valueOf(definition.getMeemAttribute().getVersion()));
 			writer.close();
 		} catch (IOException e) {
-			LogTools.error(logger, "Exception while storing MeemDefinition version " + meemPath.toString(), e);
+			logger.log(Level.WARNING,  "Exception while storing MeemDefinition version " + meemPath.toString(), e);
 		}
 
 		// also need to trash the existing content for this meempath
@@ -184,7 +184,7 @@ public class XMLDefinitionStore implements MeemStoreDefinitionStore {
 
 		if (files == null) {
 			// directory doesn't exist
-			LogTools.error(logger, "MeemContent storage directory does not exist: " + baseDir);
+			logger.log(Level.WARNING,  "MeemContent storage directory does not exist: " + baseDir);
 		} else {
 			for (int i = 0; i < files.length; i++) {
 				if (!files[i].endsWith("_version")) {

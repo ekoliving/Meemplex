@@ -21,9 +21,10 @@ import org.openmaji.implementation.server.Common;
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -35,7 +36,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class LRUCacheWedge implements Wedge, LRUCache, Cache {
 
-	private Logger logger = LogFactory.getLogger();	
+	private Logger logger = Logger.getAnonymousLogger();	
 		
 	LRU cache = new LRU(100);
 	
@@ -64,14 +65,14 @@ public class LRUCacheWedge implements Wedge, LRUCache, Cache {
 
 	public synchronized void put(Object key, Object value) {
 		cache.put(key, value);
-		LogTools.trace(logger, Common.getLogLevelVerbose(), "Cache.put() : key=" + key + ", value=" + value);
+		logger.log(Common.getLogLevelVerbose(), "Cache.put() : key=" + key + ", value=" + value);
 	}
 
 	public synchronized void remove(Object key) {
 		if (cache.containsKey(key)) {
 			Object value = cache.remove(key);
 			cacheClient.removed(key, value);
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Cache.remove() : key=" + key + ", value=" + value);
+			logger.log(Common.getLogLevelVerbose(), "Cache.remove() : key=" + key + ", value=" + value);
 		} else {
 			cacheClient.removed(key, null);
 		}

@@ -42,9 +42,10 @@ import net.jini.config.ConfigurationProvider;
 
 import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.utility.PropertiesLoader;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.sun.jini.admin.DestroyAdmin;
 import com.sun.jini.start.NonActivatableServiceDescriptor;
@@ -52,7 +53,7 @@ import com.sun.jini.start.ServiceDescriptor;
 import com.sun.jini.tool.ClassServer;
 
 public class JiniStarter {
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 
 	/** the property name for the NIC to bind to */
 	public static final String NIC_KEY = "org.openmaji.jini.nic";
@@ -114,36 +115,36 @@ public class JiniStarter {
 	 * Start the jini services.
 	 */
 	protected void commence() {
-		LogTools.info(logger, "commencing...");
+		logger.log(Level.INFO, "commencing...");
 
 		if ( !validateEnvironment() ) {
 			return;
 		}
 
-		LogTools.info(logger, "checking class-server port...");
+		logger.log(Level.INFO, "checking class-server port...");
 		
 		// start the class server
 		if (portNotBound(hostPort)) {
-			LogTools.info(logger, "starting class-server...");
+			logger.log(Level.INFO, "starting class-server...");
 			try {
 				classServer = new ClassServer(hostPort, jiniJarDir + "-dl", false, false);
 			}
 			catch (IOException e) {
-				LogTools.error(logger, "commence() - failed to launch ClassServer. ", e);
+				logger.log(Level.WARNING, "commence() - failed to launch ClassServer. ", e);
 			}
 			classServer.start();
 		}
 
 		// start reggie
 		try {
-			LogTools.info(logger, "starting reggie...");
+			logger.log(Level.INFO, "starting reggie...");
 			
 			System.setProperty(PROPERTY_HTTP_URL, "http://" + hostAddress + ":" + hostPort);
 			System.setProperty(PROPERTY_JINI_CONFIG, jiniConfigDir);
 			System.setProperty(PROPERTY_JINI_JARS, jiniJarDir);
 			System.setProperty(PROPERTY_REGGIE_POLICY, policyFile);
 			
-			LogTools.info(logger, "policy: " + policyFile + " : configDir: " + jiniConfigDir + " : jars: " + jiniJarDir);
+			logger.log(Level.INFO, "policy: " + policyFile + " : configDir: " + jiniConfigDir + " : jars: " + jiniJarDir);
 
 			Configuration configuration = ConfigurationProvider.getInstance(new String[] { jiniConfigFile });
 			ServiceDescriptor[] descs = (ServiceDescriptor[])  configuration.getEntry("com.sun.jini.start", "serviceDescriptors", ServiceDescriptor[].class, null);
@@ -155,7 +156,7 @@ public class JiniStarter {
 
 		}
 		catch (Exception ex) {
-			LogTools.error(logger, "commence() - failed to launch reggie", ex);
+			logger.log(Level.WARNING, "commence() - failed to launch reggie", ex);
 		}
 	}
 
@@ -207,7 +208,7 @@ public class JiniStarter {
 
 		File file = new File(jiniConfigFile);
 		if (file.exists()) {
-			LogTools.info(logger, "validateEnvironment() - Running from installed InterMajik");
+			logger.log(Level.INFO, "validateEnvironment() - Running from installed InterMajik");
 			
 			jiniJarDir = majitekDirectory + JINI_LIB_DIR;
 			policyFile = majitekDirectory + POLICY_FILE;
@@ -219,13 +220,13 @@ public class JiniStarter {
 		jiniConfigFile = jiniConfigDir + "/start-reggie.config";
 		file = new File(jiniConfigFile);
 		if (file.exists()) {
-			LogTools.info(logger, "validateEnvironment() - Running from eclipse launched InterMajik");
+			logger.log(Level.INFO, "validateEnvironment() - Running from eclipse launched InterMajik");
 			jiniJarDir = majitekDirectory + "/majitek-jars/jini";
 			policyFile = majitekDirectory + "/majitek-source/project-maji-runtime/security/all.policy";
 			return true;
 		}
 
-		LogTools.error(logger, "validateEnvironment() - Unable to locate start-reggie.config");
+		logger.log(Level.WARNING, "validateEnvironment() - Unable to locate start-reggie.config");
 		return false;
 	}
 
@@ -241,7 +242,7 @@ public class JiniStarter {
 				address = InetAddress.getByName(hostAddress);
 			}
 			catch (UnknownHostException ex) {
-				LogTools.error(logger, "validateHostAndPort() - Unknown host " + hostAddress);
+				logger.log(Level.WARNING, "validateHostAndPort() - Unknown host " + hostAddress);
 				return false;
 			}
 		}
@@ -249,7 +250,7 @@ public class JiniStarter {
 			try {
 				NetworkInterface ni = NetworkInterface.getByName(nicName);
 				if (ni == null) {
-					LogTools.error(logger, "validateHostAndPort() - no nic with name: " + nicName);
+					logger.log(Level.WARNING, "validateHostAndPort() - no nic with name: " + nicName);
 					return false;
 				}
 				Enumeration<InetAddress> addressEnum = ni.getInetAddresses();
@@ -263,7 +264,7 @@ public class JiniStarter {
 				}
 			}
 			catch (SocketException ex) {
-				LogTools.error(logger, "validateHostAndPort() - problem getting nic " + nicName);
+				logger.log(Level.WARNING, "validateHostAndPort() - problem getting nic " + nicName);
 				return false;
 			}
 		}
@@ -275,13 +276,13 @@ public class JiniStarter {
 				hostAddress = address.getHostAddress();
 			}
 			catch (IOException ex) {
-				LogTools.error(logger, "validateHostAndPort() - Unable to determine my local address");
+				logger.log(Level.WARNING, "validateHostAndPort() - Unable to determine my local address");
 				return false;
 			}
 		}
 
 		if (address.isLoopbackAddress()) {
-			LogTools.error(logger, "validateHostAndPort() - Your hostname is set to localhost. Can't proceed");
+			logger.log(Level.WARNING, "validateHostAndPort() - Your hostname is set to localhost. Can't proceed");
 			return false;
 		}
 
@@ -289,12 +290,12 @@ public class JiniStarter {
 		try {
 			NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
 			if (networkInterface == null) {
-				LogTools.error(logger, "validateHostAndPort() - no network interface with address " + hostAddress);
+				logger.log(Level.WARNING, "validateHostAndPort() - no network interface with address " + hostAddress);
 				return false;
 			}
 		}
 		catch (SocketException ex) {
-			LogTools.error(logger, "validateHostAndPort() - unable to determine network interface");
+			logger.log(Level.WARNING, "validateHostAndPort() - unable to determine network interface");
 			return false;
 		}
 
@@ -303,7 +304,7 @@ public class JiniStarter {
 				hostPort = Integer.parseInt(temp);
 			}
 			catch (NumberFormatException ex) {
-				LogTools.error(logger, "validateHostAndPort() - property '" + PORT_KEY + "' is not an integer");
+				logger.log(Level.WARNING, "validateHostAndPort() - property '" + PORT_KEY + "' is not an integer");
 				return false;
 			}
 		}
@@ -311,7 +312,7 @@ public class JiniStarter {
 			hostPort = DEFAULT_PORT;
 		}
 
-		LogTools.info(logger, "validateHostAndPort() - using address=[" + hostAddress + "] and port=[" + hostPort + "]");
+		logger.log(Level.INFO, "validateHostAndPort() - using address=[" + hostAddress + "] and port=[" + hostPort + "]");
 		return true;
 	}
 
@@ -360,7 +361,7 @@ public class JiniStarter {
 
 		int jiniStarterPort = new Integer(System.getProperty(JINI_STARTER_PORT)).intValue();
 		
-		LogTools.info(logger, "Jini Starter port: " + jiniStarterPort);
+		logger.log(Level.INFO, "Jini Starter port: " + jiniStarterPort);
 
 		ServerSocket serverSocket = null;
 		try {
@@ -368,7 +369,7 @@ public class JiniStarter {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			LogTools.info(logger, "Could not start JiniStarter server.  Will not be able to shut it down via ip", e);
+			logger.log(Level.INFO, "Could not start JiniStarter server.  Will not be able to shut it down via ip", e);
 			return;
 		}
 
@@ -395,7 +396,7 @@ public class JiniStarter {
 					}
 					else {
 						// unhandled command
-						LogTools.info(logger, "Unhandled command: " + command);
+						logger.log(Level.INFO, "Unhandled command: " + command);
 					}
 				}
 				catch (IOException e) {

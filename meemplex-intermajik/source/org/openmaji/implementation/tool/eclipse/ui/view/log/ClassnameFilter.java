@@ -19,10 +19,8 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-
 import org.openmaji.implementation.tool.eclipse.plugin.MajiPlugin;
-import org.swzoo.log2.core.LogEvent;
-import org.swzoo.log2.core.LogPayload;
+
 /**
  * <p>
  * ...
@@ -42,14 +40,14 @@ public class ClassnameFilter extends ViewerFilter {
 	 * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
 	 */
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
-		String className = (String)((LogEvent)element).payload.get(LogPayload.CLASS);
-		
-		for (Iterator i = excludeSet.iterator(); i.hasNext();) {
-			Pattern p = (Pattern)i.next();
-			
-			if (p.matcher(className).find())
-				return false;
-		}
+//		String className = (String)((LogEvent)element).payload.get(LogPayload.CLASS);
+//		
+//		for (Iterator i = excludeSet.iterator(); i.hasNext();) {
+//			Pattern p = (Pattern)i.next();
+//			
+//			if (p.matcher(className).find())
+//				return false;
+//		}
 		
 		return true;
 	}

@@ -40,7 +40,8 @@ import org.openmaji.system.space.meemstore.MeemContentClient;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 import org.openmaji.system.space.meemstore.MeemStoreClient;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MeemStoreImporterWedge
   implements MeemStore, MeemStoreCallBack, Wedge {
@@ -63,7 +64,7 @@ public class MeemStoreImporterWedge
 
   private MeemStoreCallForward meemStoreCallForward = null;
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   private Configuration configuration = null;
 
@@ -137,7 +138,7 @@ public class MeemStoreImporterWedge
 
       meemStoreCallForward = (MeemStoreCallForward) serviceItem.service;
 
-      LogTools.info(logger, "Jini Service lookup: " + serviceItem.serviceID);
+      logger.log(Level.INFO, "Jini Service lookup: " + serviceItem.serviceID);
     }
     catch (Exception exception) {
       throw new RuntimeException("Exception:" + exception);
@@ -154,12 +155,12 @@ public class MeemStoreImporterWedge
     MeemContent meemContent) {
 
     try {
-      LogTools.info(logger, "# storeMeemContent(" + meemPath + ")");
+      logger.log(Level.INFO, "# storeMeemContent(" + meemPath + ")");
 
       meemStoreCallForward.storeMeemContent(meemPath, meemContent);
     }
     catch (Exception exception) {
-      LogTools.error(logger, "# MeemStoreCallForward: " + exception);
+      logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
     }
   }
 
@@ -168,12 +169,12 @@ public class MeemStoreImporterWedge
     MeemDefinition meemDefinition) {
 
     try {
-      LogTools.info(logger, "# storeMeemDefinition(" + meemPath + ")");
+      logger.log(Level.INFO, "# storeMeemDefinition(" + meemPath + ")");
 
       meemStoreCallForward.storeMeemDefinition(meemPath, meemDefinition);
     }
     catch (Exception exception) {
-      LogTools.error(logger, "# MeemStoreCallForward: " + exception);
+      logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
     }
   }
 
@@ -181,12 +182,12 @@ public class MeemStoreImporterWedge
     MeemPath meemPath) {
 
     try {
-      LogTools.info(logger, "# destroyMeem(" + meemPath + ")");
+      logger.log(Level.INFO, "# destroyMeem(" + meemPath + ")");
 
       meemStoreCallForward.destroyMeem(meemPath);
     }
     catch (Exception exception) {
-      LogTools.error(logger, "# MeemStoreCallForward: " + exception);
+      logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
     }
   }
 
@@ -196,7 +197,7 @@ public class MeemStoreImporterWedge
     MeemPath meemPath)
     throws RemoteException {
 
-    LogTools.info(logger, "# meemStored(" + meemPath + ")");
+    logger.log(Level.INFO, "# meemStored(" + meemPath + ")");
 
     meemStoreClient.meemStored(meemPath);
   }
@@ -205,7 +206,7 @@ public class MeemStoreImporterWedge
     MeemPath meemPath)
     throws RemoteException {
 
-    LogTools.info(logger, "# meemDestroyed(" + meemPath + ")");
+    logger.log(Level.INFO, "# meemDestroyed(" + meemPath + ")");
 
     meemStoreClient.meemDestroyed(meemPath);
   }
@@ -215,7 +216,7 @@ public class MeemStoreImporterWedge
     MeemContent meemContent)
     throws RemoteException {
 
-    LogTools.info(logger, "# meemContentChanged(" + meemPath + ")");
+    logger.log(Level.INFO, "# meemContentChanged(" + meemPath + ")");
 
     meemContentClient.meemContentChanged(meemPath, meemContent);
   }
@@ -225,7 +226,7 @@ public class MeemStoreImporterWedge
     MeemDefinition meemDefinition)
     throws RemoteException {
 
-    LogTools.info(logger, "# meemDefinitionChanged(" + meemPath + ")");
+    logger.log(Level.INFO, "# meemDefinitionChanged(" + meemPath + ")");
 
     meemDefinitionClient.meemDefinitionChanged(meemPath, meemDefinition);
   }
@@ -240,7 +241,7 @@ public class MeemStoreImporterWedge
       Filter filter) {
 
       try {
-        LogTools.info(logger, "# getMeemContents(" + filter + ")");
+        logger.log(Level.INFO, "# getMeemContents(" + filter + ")");
 
         MeemContentClient meemContentClient = (MeemContentClient) target;
 
@@ -257,7 +258,7 @@ public class MeemStoreImporterWedge
         }
       }
       catch (Exception exception) {
-        LogTools.error(logger, "# sendContent(): " + exception);
+        logger.log(Level.WARNING, "# sendContent(): " + exception);
       }
     }
   }
@@ -272,7 +273,7 @@ public class MeemStoreImporterWedge
       Filter filter) {
 
       try {
-        LogTools.info(logger, "# getMeemDefinitions(" + filter + ")");
+        logger.log(Level.INFO, "# getMeemDefinitions(" + filter + ")");
 
         MeemDefinitionClient meemDefinitionClient =
           (MeemDefinitionClient) target;
@@ -292,7 +293,7 @@ public class MeemStoreImporterWedge
         }
       }
       catch (Exception exception) {
-        LogTools.error(logger, "# sendContent(): " + exception);
+        logger.log(Level.WARNING, "# sendContent(): " + exception);
       }
     }
   }

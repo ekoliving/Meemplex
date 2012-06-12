@@ -37,7 +37,8 @@ import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 import org.openmaji.system.utility.*;
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author  Andy Gelme
@@ -71,7 +72,7 @@ public class InjectMeemWedge
   
   public DependencyHandler dependencyHandlerConduit;
   
-  private static Logger logger = LogFactory.getLogger();  
+  private static Logger logger = Logger.getAnonymousLogger();  
   
 /* ---------- Configuration section ---------------------------------------- */
 
@@ -187,7 +188,7 @@ public class InjectMeemWedge
 			);
 		}
     
-		LogTools.info(logger, "Import complete [" + meemCount + " of "+ totalMeemCount + " Meems]");
+		logger.log(Level.INFO, "Import complete [" + meemCount + " of "+ totalMeemCount + " Meems]");
 	}
 
   
@@ -217,8 +218,8 @@ public class InjectMeemWedge
       isIdle = false;
 
       if (meemDefinition == null) {
-        LogTools.warn(
-          logger,
+        logger.log(
+          Level.WARNING,
           "Ignoring Meem with no MeemDefinition " +
           "(it's probably the EssentialLifeCycleManager): " +
           meemPath
@@ -247,7 +248,7 @@ public class InjectMeemWedge
     public void contentFailed(
       String reason) {
 
-      LogTools.info(logger, "Import failed: " + reason);
+      logger.log(Level.INFO, "Import failed: " + reason);
 
       isIdle = true;
     }
@@ -285,7 +286,7 @@ public class InjectMeemWedge
 		   	worksheetLifeCycleManager.transferMeem(Meem.spi.get(this.meemPath), worksheetLifeCycleManager);
 		} 
 		else {
-			LogTools.warn(logger, "MeemDefinition for " + this.meemPath + " already in MeemStore. Ignoring");
+			logger.log(Level.WARNING, "MeemDefinition for " + this.meemPath + " already in MeemStore. Ignoring");
 		}
 	}
 	
@@ -314,7 +315,7 @@ public class InjectMeemWedge
   		// merge the old MeemDefinition with the new
   		merge(newMeemDefinition, meemDefinition);
   
-//		LogTools.info(logger, "new meemDefnition: " + newMeemDefinition);					
+//		logger.log(Level.INFO, "new meemDefnition: " + newMeemDefinition);					
 
   		return newMeemDefinition;
   	}
@@ -330,15 +331,15 @@ public class InjectMeemWedge
 	  			classVector.add(cls);
   			}
   			catch (ClassNotFoundException ex) {
-  				LogTools.warn(
-  						logger, 
+  				logger.log(
+  						Level.WARNING, 
   						"Wedge class \"" + className + "\" not found.  " +
 						"It will not be included in the MeemDefinition for Meem " + meemPath
 					);
   			}
   			catch (IllegalArgumentException ex) {
-  				LogTools.warn(
-  						logger, 
+  				logger.log(
+  						Level.WARNING, 
   						"Wedge class \"" + className + "\" not found.  " +
 						"It will not be included in the MeemDefinition for Meem " + meemPath
 					);
@@ -427,10 +428,10 @@ public class InjectMeemWedge
 					getFacetDefinitionForInterface(wedgeDefinition2, inboundAttribute.getInterfaceName());
 				if (fd != null) {
 					facetDefinition.setFacetAttribute(fd.getFacetAttribute());
-//					LogTools.info(logger, "merged inbound facet: " + facetDefinition);
+//					logger.log(Level.INFO, "merged inbound facet: " + facetDefinition);
 				}
 				else {
-//					LogTools.info(logger, "new inbound facet: " + facetDefinition);					
+//					logger.log(Level.INFO, "new inbound facet: " + facetDefinition);					
 				}
 			}
 			else if (facetAttribute instanceof FacetOutboundAttribute) {
@@ -441,10 +442,10 @@ public class InjectMeemWedge
 					getFacetDefinitionForField(wedgeDefinition2, outboundAttribute.getWedgePublicFieldName());
 				if (fd != null) {
 					facetDefinition.setFacetAttribute(fd.getFacetAttribute());
-//					LogTools.info(logger, "merged outbound facet: " + facetDefinition);
+//					logger.log(Level.INFO, "merged outbound facet: " + facetDefinition);
 				}
 				else {
-//					LogTools.info(logger, "new outbound facet: " + facetDefinition);					
+//					logger.log(Level.INFO, "new outbound facet: " + facetDefinition);					
 				}
 			}
 		}

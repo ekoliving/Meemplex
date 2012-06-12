@@ -5,6 +5,7 @@
 package org.openmaji.implementation.rpc.server;
 
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -71,7 +72,7 @@ public class OutboundHandler <T extends Facet> extends FacetHandler<T> {
 		super(subject, meemPath, facetId, facetClass);
 		
 		if (DEBUG) {
-			logger.info("Creating new OutboundHandler for " + meemPath + ":" + facetId);
+			logger.log(Level.INFO, "Creating new OutboundHandler for " + meemPath + ":" + facetId);
 		}
 		
 		binding = BindingFactory.getOutboundBinding(facetClass);
@@ -118,7 +119,7 @@ public class OutboundHandler <T extends Facet> extends FacetHandler<T> {
 	 */
 	protected synchronized void cleanup() {
 		if (DEBUG) {
-			logger.info("cleanup handler for: " + meemPath + " : " + meem);
+			logger.log(Level.INFO, "cleanup handler for: " + meemPath + " : " + meem);
 		}
 		
 		super.cleanup();
@@ -137,7 +138,7 @@ public class OutboundHandler <T extends Facet> extends FacetHandler<T> {
 	 */
 	protected synchronized void meem(Meem meem) {
 		if (DEBUG) {
-			logger.info("got meem for: " + meemPath + " : " + meem);
+			logger.log(Level.INFO, "got meem for: " + meemPath + " : " + meem);
 		}
 
 		removeMeemReference();
@@ -163,14 +164,14 @@ public class OutboundHandler <T extends Facet> extends FacetHandler<T> {
 	private Reference getReference() {
 		if (proxy == null) {
 			if (DEBUG) {
-				logger.info("creating new proxy for binding: " + binding);
+				logger.log(Level.INFO, "creating new proxy for binding: " + binding);
 			}
 			proxy = serverGateway.getTargetFor((T)binding, facetClass);
 			reference = null;	// reset reference
 		}
 		if (reference == null) {
 			if (DEBUG) {
-				logger.info("creating new reference for: " + meemPath + " : " + facetId);
+				logger.log(Level.INFO, "creating new reference for: " + meemPath + " : " + facetId);
 			}
 			reference = Reference.spi.create(facetId, proxy, true);
 		}

@@ -12,9 +12,10 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClient;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.meem.wedge.lifecycle.Vote;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.utility.PropertiesLoader;
 
@@ -25,7 +26,7 @@ import org.openmaji.implementation.server.utility.PropertiesLoader;
  *
  */
 public class JiniServicesWedge2 implements Wedge, JiniServices, MeemDefinitionProvider {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public MeemContext meemContext;
 
@@ -52,7 +53,7 @@ public class JiniServicesWedge2 implements Wedge, JiniServices, MeemDefinitionPr
 	/* ------- Meem functionality ------------------------------------- */
 
 	public void commence() {
-		LogTools.info(logger, "commencing");
+		logger.log(Level.INFO, "commencing");
 
 		startServices();
 	}

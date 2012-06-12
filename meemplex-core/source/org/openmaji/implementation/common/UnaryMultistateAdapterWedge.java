@@ -4,9 +4,10 @@
 * Use is subject to license terms.
 */
 package org.openmaji.implementation.common;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.common.Multistate;
 import org.openmaji.common.State;
@@ -30,7 +31,7 @@ import org.openmaji.meem.wedge.lifecycle.WedgeValidationException;
  * 
  */
 public class UnaryMultistateAdapterWedge implements Unary, Wedge, WedgeDefinitionProvider{
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 	/**
 	 * Outbound Multistate facet
 	 */
@@ -57,12 +58,12 @@ public class UnaryMultistateAdapterWedge implements Unary, Wedge, WedgeDefinitio
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 
 	public void setStateString (String string){
-  		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"setStateString() - invoked");
+  		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "setStateString() - invoked");
 		this.stateString = string;
 	}
 	/* -------------- validation ----------------------------------------------- */
 	public void validate() throws WedgeValidationException{
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"validate() - invoked");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "validate() - invoked");
 		
 		if(stateString==null){
 			throw new WedgeValidationException("can't go ready because stateString is null");

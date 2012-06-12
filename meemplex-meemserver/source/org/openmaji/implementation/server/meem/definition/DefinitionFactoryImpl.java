@@ -19,6 +19,7 @@
 package org.openmaji.implementation.server.meem.definition;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.utility.*;
@@ -172,7 +173,7 @@ public class DefinitionFactoryImpl implements DefinitionFactory {
     	wedgeSpecification = ObjectUtility.getClass(Object.class, wedgeImplementationName);
     }
     catch (ClassNotFoundException e) {
-    	logger.info("could not locate class: " + wedgeImplementationName);
+    	logger.log(Level.INFO, "could not locate class: " + wedgeImplementationName);
     }
 
     return(createWedgeDefinition(wedgeSpecification));

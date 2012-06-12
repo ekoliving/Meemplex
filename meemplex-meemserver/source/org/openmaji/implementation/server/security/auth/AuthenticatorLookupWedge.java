@@ -19,9 +19,10 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.system.manager.user.AuthenticatorStatus;
 import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import net.jini.config.Configuration;
@@ -45,7 +46,7 @@ import net.jini.lookup.ServiceItemFilter;
  */
 public class AuthenticatorLookupWedge implements Wedge,  MeemDefinitionProvider, ServiceDiscoveryListener, MajiConstants {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public  AuthenticatorStatus authenticatorStatus;
 	public final ContentProvider authenticatorStatusProvider = 
@@ -118,7 +119,7 @@ public class AuthenticatorLookupWedge implements Wedge,  MeemDefinitionProvider,
 		if (authenticator != null) {
 			local = true;
 			authenticatorStatus.authenticatorLocated();
-			LogTools.info(logger, "Located local Maji authenticator.");
+			logger.log(Level.INFO, "Located local Maji authenticator.");
 			return;
 		}
 
@@ -239,7 +240,7 @@ public class AuthenticatorLookupWedge implements Wedge,  MeemDefinitionProvider,
 			authenticator = (Authenticator) serviceItem.service;
 			authenticatorStatus.authenticatorLocated();
 
-			LogTools.info(logger, "Located remote Maji authenticator.");
+			logger.log(Level.INFO, "Located remote Maji authenticator.");
 		}
 	}
 
@@ -309,7 +310,7 @@ public class AuthenticatorLookupWedge implements Wedge,  MeemDefinitionProvider,
 	private class AuthenticatorListenerImpl implements AuthenticatorListener {
 		public void authenticator(Authenticator authenticator) {
 
-			LogTools.info(logger, "Located local Maji authenticator.");
+			logger.log(Level.INFO, "Located local Maji authenticator.");
 			AuthenticatorLookupWedge.authenticator = authenticator;
 			local = true;
 			if (authenticatorStatus != null) {

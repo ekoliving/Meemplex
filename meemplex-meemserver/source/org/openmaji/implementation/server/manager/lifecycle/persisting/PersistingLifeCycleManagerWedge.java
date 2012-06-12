@@ -44,9 +44,10 @@ import org.openmaji.system.manager.lifecycle.LifeCycleManagerClient;
 import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.utility.uid.UID;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -153,7 +154,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 	public void meemTransferred(Meem meem, LifeCycleManager targetLifeCycleManager) {
 		
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "meemTransferred: " + meem + " to " + targetLifeCycleManager);
+			logger.log(logLevel, "meemTransferred: " + meem + " to " + targetLifeCycleManager);
 		}
 		
 		// remove dependency 
@@ -164,7 +165,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		changeLCMDependencyAttributes.remove(tempMeem);
 		
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "changeLCMDependencyAttributes = " + changeLCMDependencyAttributes);
+			logger.log(logLevel, "changeLCMDependencyAttributes = " + changeLCMDependencyAttributes);
 		}
 
 		dependencyHandlerConduit.removeDependency(dependencyAttribute);
@@ -226,7 +227,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		MeemPath selfPath = self.getMeemPath();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel,
+			logger.log(logLevel,
 				"Transferring meem " + meem + " to LCM " + targetLifeCycleManager + " from LCM " + selfPath);
 		}
 
@@ -246,7 +247,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		else {
 			if (isMyLCM) {
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "Transferring to self");
+					logger.log(logLevel, "Transferring to self");
 				}
 
 				transferActivate.add(meemPath);
@@ -255,7 +256,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 
 			}
 			else {
-				LogTools.error(logger, "Transfers must be initiated by the source or target LCM");
+				logger.log(Level.WARNING, "Transfers must be initiated by the source or target LCM");
 			}
 		}
 	}
@@ -268,7 +269,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Meem created: " + identifier + " : " + meemPath);
+			logger.log(logLevel, "Meem created: " + identifier + " : " + meemPath);
 		}
 
 		//	------------------------------------------------
@@ -285,12 +286,12 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		 */
 		public void meemBuilt(MeemPath meemPath, final Meem meem, int requestId) {
 			if (DEBUG) {
-				LogTools.info(logger, "meemBuilt: " + meemPath + " - " + requestId);
+				logger.log(Level.INFO, "meemBuilt: " + meemPath + " - " + requestId);
 			}
 
 			if (requestId == WEDGE_ID) {
 				if (DEBUG) {
-					LogTools.info(logger, "matches WEDGE_ID: " + meemPath + " - " + requestId);
+					logger.log(Level.INFO, "matches WEDGE_ID: " + meemPath + " - " + requestId);
 				}
 				
 				meems.put(meemPath, meem);
@@ -317,12 +318,12 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 
 				if (initialState.equals(LifeCycleState.LOADED)) {
 					if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-						LogTools.trace(logger, logLevel, "About to limit LifeCycleStae " + initialState + " : " + meem.getMeemPath());
+						logger.log(logLevel, "About to limit LifeCycleStae " + initialState + " : " + meem.getMeemPath());
 					}
 					lifeCycleAdapterConduit.limitLifeCycleState(meem, initialState);
 				} else {
 					if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-						LogTools.trace(logger, logLevel, "About to make " + initialState + " : " + meem.getMeemPath());
+						logger.log(logLevel, "About to make " + initialState + " : " + meem.getMeemPath());
 					}
 
 					lifeCycleAdapterConduit.changeLifeCycleState(meem, initialState);
@@ -336,7 +337,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		 */
 		public void parentLifeCycleManagerChanged(Meem meem, LifeCycleManager targetLifeCycleManager) {
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "parentLifeCycleManagerChanged " + meem.getMeemPath());
+				logger.log(logLevel, "parentLifeCycleManagerChanged " + meem.getMeemPath());
 			}
 			// take it out of our category
 
@@ -364,7 +365,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 			if (categoryPaths.contains(meemPath)) {
 				// reactivate the meem
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "Reactivating " + meemPath);
+					logger.log(logLevel, "Reactivating " + meemPath);
 				}
 				activationConduit.activate(meemPath);
 			}
@@ -416,7 +417,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 			if (!startupDone) {
 				startupDone = true;
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "Startup activation done: " + meemContext.getSelf().getMeemPath());
+					logger.log(logLevel, "Startup activation done: " + meemContext.getSelf().getMeemPath());
 				}
 			}			
 		}
@@ -425,7 +426,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		 * 
 		 */
 		public void contentFailed(String reason) {
-			LogTools.warn(logger, "Content failed during LCM startup: " + reason);
+			logger.log(Level.WARNING, "Content failed during LCM startup: " + reason);
 		}
 	}
 
@@ -437,7 +438,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		 */
 		public void activated(MeemPath meemPath, Meem meem, MeemDefinition meemDefinition) {
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "activated : " + meem);
+				logger.log(logLevel, "activated : " + meem);
 			}
 			if (transferActivate.remove(meemPath)) {
 				lifeCycleManagerClientConduit.meemTransferred(meem, (LifeCycleManager)meemContext.getTarget("lifeCycleManager"));
@@ -450,7 +451,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 		 */
 		public void activationFailed(MeemPath meemPath) {
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.warn(logger, "activationFailed : " + meemPath);
+				logger.log(Level.WARNING, "activationFailed : " + meemPath);
 			}
 		}
 
@@ -473,7 +474,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 				LifeCycleManager targetLifeCycleManager = (LifeCycleManager) changeLCMDependencyAttributes.get(meem);
 
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "dependencyConnected: About to transfer " + meem + " to " + targetLifeCycleManager);
+					logger.log(logLevel, "dependencyConnected: About to transfer " + meem + " to " + targetLifeCycleManager);
 				}
 				targetLifeCycleManager.transferMeem(meem, targetLifeCycleManager);
 			}
@@ -520,7 +521,7 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 
 			if (meem != null) {
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "lifeCycleLimitChanged " + state + " : " + meemPath);
+					logger.log(logLevel, "lifeCycleLimitChanged " + state + " : " + meemPath);
 				}
 				notifyClients(meemPath);
 			}
@@ -555,12 +556,12 @@ public class PersistingLifeCycleManagerWedge implements Wedge, LifeCycleManager,
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static final int logLevel = Common.getLogLevelVerbose();
+	private static final Level logLevel = Common.getLogLevelVerbose();
 
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -129,13 +130,13 @@ public class LogReader {
 							// ignore
 						}
 						else {
-							//logger.info("sending message: " + message);
+							//logger.log(Level.INFO, "sending message: " + message);
 							sendMessage(message);
 						}
 					}
 				}
 				catch (IOException e) {
-					logger.info("problem while reading log message: " + e);
+					logger.log(Level.INFO, "problem while reading log message: " + e);
 				}
 			}
 		}

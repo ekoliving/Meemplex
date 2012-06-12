@@ -30,9 +30,10 @@ import org.openmaji.meem.wedge.error.ErrorHandler;
 import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.system.meem.hook.invoke.Invocation;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -105,7 +106,7 @@ public class ReflectionInvocation implements Invocation, Serializable
 				}
 				msg.append(")");
 				
-				LogTools.info(logger, msg, invocationTargetException);
+				logger.log(Level.INFO, msg.toString(), invocationTargetException);
 			}
 			else {
 				errorHandler.thrown(invocationTargetException.getTargetException());
@@ -114,7 +115,7 @@ public class ReflectionInvocation implements Invocation, Serializable
 		catch (Throwable throwable)
 		{
 			if (errorHandler == null) {
-				LogTools.info(logger, "Got unhandled Throwable", throwable);
+				logger.log(Level.INFO, "Got unhandled Throwable", throwable);
 			}
 			else {
 				errorHandler.thrown(throwable);
@@ -212,7 +213,7 @@ public class ReflectionInvocation implements Invocation, Serializable
 	 */
 	private final String facetIdentifier;	
 	
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	private final InvocationContext invocationContext;
 	private final RequestStack requestStack;

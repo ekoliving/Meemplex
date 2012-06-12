@@ -27,14 +27,15 @@ import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.gateway.ServerGateway;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.openmaji.system.meemkit.core.MeemkitManager;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MeemSpaceCreateUtility
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   public static final String PROPERTY_MEEMKIT_JARS_URL = "org.openmaji.meemkit_jars_url";
 
@@ -76,7 +77,7 @@ public class MeemSpaceCreateUtility
     final Meem meemkitManagerMeem = EssentialMeemHelper.getEssentialMeem(MeemkitManager.spi.getIdentifier());
     
     if (meemkitManagerMeem == null) {
-    	LogTools.info(logger, "Could not locate Meemkit Manager Meem.  Aborting installation of meemkits");
+    	logger.log(Level.INFO, "Could not locate Meemkit Manager Meem.  Aborting installation of meemkits");
     	return;
     }
     final PigeonHole readyPigeonHole = new PigeonHole();
@@ -105,7 +106,7 @@ public class MeemSpaceCreateUtility
     }
 
     String meemkitsDirectory = jarsUrl.getPath();
-    LogTools.info(logger,"Installing all meemkits from "+meemkitsDirectory);
+    logger.log(Level.INFO, "Installing all meemkits from "+meemkitsDirectory);
 
     // It should now be safe to invoke the MeemkitManager
     MeemkitManager mm = (MeemkitManager) ReferenceHelper.getTarget(meemkitManagerMeem, MeemkitManager.spi.getIdentifier(), MeemkitManager.class);
@@ -132,7 +133,7 @@ public class MeemSpaceCreateUtility
     File[] files = meemkitJarsFile.listFiles();
     if ( files == null || files.length == 0 )
     {
-    	LogTools.info(logger, "No meemkits in " + meemkitsDirectory);
+    	logger.log(Level.INFO, "No meemkits in " + meemkitsDirectory);
     	return;
       //throw new IOException("No meemkits in " + meemkitsDirectory);
     }
@@ -177,7 +178,7 @@ public class MeemSpaceCreateUtility
 	        }
         }
         catch (MalformedURLException e) {
-        	LogTools.info(logger, "Problem with meemkit URL path: " + sourcePath);
+        	logger.log(Level.INFO, "Problem with meemkit URL path: " + sourcePath);
         }
       }
     }
@@ -185,7 +186,7 @@ public class MeemSpaceCreateUtility
     if ( numberInstalled == 0 )
     {
       //throw new IOException("No meemkits found in "+meemkitsDirectory);
-      LogTools.info(logger, "No meemkits found in "+meemkitsDirectory);
+      logger.log(Level.INFO, "No meemkits found in "+meemkitsDirectory);
     }
   }
   

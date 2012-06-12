@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.common.StringValue;
@@ -203,7 +204,7 @@ public class StringSocketAdapterWedge implements Wedge
 		}
 
 		if (host == null || port == -1) {
-			logger.info("not configured yet, can not go READY");
+			logger.log(Level.INFO, "not configured yet, can not go READY");
 			vote(false);
 			return;
 		}
@@ -212,7 +213,7 @@ public class StringSocketAdapterWedge implements Wedge
 			inetSocketAddress = new InetSocketAddress(InetAddress.getByName(host), port);
 		}
 		catch (UnknownHostException ex) {
-			logger.info("startThreadRunning() - myName=[" + friendlyName + "]: configured with unknown host");
+			logger.log(Level.INFO, "startThreadRunning() - myName=[" + friendlyName + "]: configured with unknown host");
 			vote(false);
 			return;
 		}
@@ -384,7 +385,7 @@ public class StringSocketAdapterWedge implements Wedge
 					if (DebugFlag.TRACE) {
 						logger.log(Level.FINE, "Problem: " + e.getMessage(), e);
 					}
-					//LogTools.info(logger, "Problem: " + e.getMessage(), e);
+					//logger.log(Level.INFO, "Problem: " + e.getMessage(), e);
 					
 					vote(false);
 					synchronized (this) {

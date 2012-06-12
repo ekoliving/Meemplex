@@ -10,9 +10,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.common.Multistate;
 import org.openmaji.common.State;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The LoopbackMultistateWedge Wedge is a multistateControlConduit target
@@ -23,7 +24,7 @@ import org.swzoo.log2.core.Logger;
  */
 
 public class LoopbackMultistateWedge implements Wedge{
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 	/*
 	 * inbound conduit
 	 */
@@ -46,7 +47,7 @@ public class LoopbackMultistateWedge implements Wedge{
 
 	    public synchronized void stateChanged(State state)
 	    {
-	      if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"stateChanged() - invoked on MultistateControlConduit");
+	      if ( DebugFlag.TRACE ) logger.log(Level.FINE, "stateChanged() - invoked on MultistateControlConduit");
 	      multistateStateConduit.stateChanged(state);
 	    }
 	  }

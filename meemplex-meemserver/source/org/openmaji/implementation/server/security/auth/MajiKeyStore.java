@@ -17,9 +17,10 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.Enumeration;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Warren Bloomer
@@ -100,7 +101,7 @@ public class MajiKeyStore {
 		throws FileNotFoundException, CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException
 	{
 		if (isKeystoreUpdated()) {
-			LogTools.warn(logger, "KeyStore has been updated during current changes.  The last update will be overwritten.");
+			logger.log(Level.WARNING, "KeyStore has been updated during current changes.  The last update will be overwritten.");
 		}
 		FileOutputStream fos = new FileOutputStream(keyStoreFile);
 		keyStore.store(fos, storePassword);
@@ -133,19 +134,19 @@ public class MajiKeyStore {
 			lastModified = keyStoreFile.lastModified();
 		}
 		catch (KeyStoreException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (FileNotFoundException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (IOException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);
+			logger.log(Level.WARNING, "Could not load keystore", ex);
 		}
 		catch (CertificateException ex) {
-			LogTools.warn(logger, "Could not load keystore", ex);			
+			logger.log(Level.WARNING, "Could not load keystore", ex);			
 		}
 	}
 	
@@ -153,5 +154,5 @@ public class MajiKeyStore {
 		return keyStoreFile.lastModified() > lastModified;
 	}
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

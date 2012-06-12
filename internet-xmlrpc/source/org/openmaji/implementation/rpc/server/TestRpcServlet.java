@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
@@ -84,7 +85,7 @@ public class TestRpcServlet extends XmlRpcServlet {
 		String username = credentials.substring(0, i);
 		String password = credentials.substring(i+1);
 		
-//		LogTools.info(logger, "logging in uid=" + username + ", pwd=" + password);
+//		logger.log(Level.INFO, "logging in uid=" + username + ", pwd=" + password);
 
 		// get Subject
 		loginContext = LoginHelper.login(username, password);
@@ -126,7 +127,7 @@ public class TestRpcServlet extends XmlRpcServlet {
 		pw.println ("</PRE>");
 		pw.flush();
 
-		logger.info(writer.toString());
+		logger.log(Level.INFO, writer.toString());
 
 		// TODO return subject containing the certificate
 		return null;
@@ -156,7 +157,7 @@ public class TestRpcServlet extends XmlRpcServlet {
      * 
      */
     protected XmlRpcHandlerMapping newXmlRpcHandlerMapping() throws XmlRpcException {
-    	logger.info("newXmlRpcHandlerMapping");
+    	logger.log(Level.INFO, "newXmlRpcHandlerMapping");
     	
         PropertyHandlerMapping mapping = (PropertyHandlerMapping) super.newXmlRpcHandlerMapping();
     	//PropertyHandlerMapping mapping = newPropertyHandlerMapping(url);
@@ -168,7 +169,7 @@ public class TestRpcServlet extends XmlRpcServlet {
     }
     
     protected PropertyHandlerMapping newPropertyHandlerMapping(URL url) throws IOException, XmlRpcException {
-    	logger.info("newPropertyHandlerMapping");
+    	logger.log(Level.INFO, "newPropertyHandlerMapping");
     	
     	PropertyHandlerMapping mapping = super.newPropertyHandlerMapping(url);
     	
@@ -182,7 +183,7 @@ public class TestRpcServlet extends XmlRpcServlet {
         public boolean isAuthorized(XmlRpcRequest pRequest){
             XmlRpcHttpRequestConfig config = (XmlRpcHttpRequestConfig) pRequest.getConfig();
             
-            logger.info("authenticating: " + config.getBasicUserName());
+            logger.log(Level.INFO, "authenticating: " + config.getBasicUserName());
             
             //return isAuthenticated(config.getBasicUserName(), config.getBasicPassword());
             return true;

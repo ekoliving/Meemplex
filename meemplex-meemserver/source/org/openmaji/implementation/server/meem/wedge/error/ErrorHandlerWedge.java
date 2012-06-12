@@ -13,6 +13,7 @@
 package org.openmaji.implementation.server.meem.wedge.error;
 
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.manager.error.ErrorRepository;

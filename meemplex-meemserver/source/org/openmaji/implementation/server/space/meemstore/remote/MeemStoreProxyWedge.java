@@ -36,9 +36,10 @@ import org.openmaji.system.space.meemstore.MeemContentClient;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 import org.openmaji.system.space.meemstore.MeemStoreClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -52,7 +53,7 @@ import org.swzoo.log2.core.Logger;
 public class MeemStoreProxyWedge
 	implements MeemStore, MeemStoreProxy, MeemStoreClientProxy, MeemDefinitionClientProxy, MeemContentClientProxy, Wedge, FilterChecker {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public MeemStoreClient meemStoreClient;
 	public MeemContentClient meemContentClient;
@@ -102,7 +103,7 @@ public class MeemStoreProxyWedge
 			}
 		} else 
 		if (meemStoreMeem != null && gotMeemStore.equals(Boolean.FALSE)) {
-			LogTools.info(logger, "Setting MeemStore: " + meemStoreMeem);
+			logger.log(Level.INFO, "Setting MeemStore: " + meemStoreMeem);
 			
 			this.meemStoreMeem = meemStoreMeem;
 		
@@ -112,7 +113,7 @@ public class MeemStoreProxyWedge
 
 			meemStoreMeem.addOutboundReference(targetReference, true);
 		} else {
-			LogTools.error(logger, "MeemStore already found. Stale remote system Meems may not have expired in Jini Lookup Service.");
+			logger.log(Level.WARNING, "MeemStore already found. Stale remote system Meems may not have expired in Jini Lookup Service.");
 		}
 	}
 	
@@ -121,7 +122,7 @@ public class MeemStoreProxyWedge
 		public void referenceAdded(Reference reference)	{
 			instance.meemStore = (MeemStore) reference.getTarget();
 			
-			LogTools.info(logger, "MeemStore set: " + instance.meemStore);
+			logger.log(Level.INFO, "MeemStore set: " + instance.meemStore);
 			synchronized (instance.gotMeemStore) {
 				instance.gotMeemStore = Boolean.TRUE;		
 				((MeemStoreQueueProxy)Proxy.getInvocationHandler(instance.meemStoreQueueProxy)).runQueue();

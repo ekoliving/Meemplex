@@ -75,9 +75,10 @@ import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.openmaji.system.space.resolver.MeemResolver;
 import org.openmaji.system.space.resolver.MeemResolverClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, JiniLookupClient, CategoryClient, LifeCycleManagerClient {
@@ -87,7 +88,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	private static final int UPGRADE_REQUEST_ID = 2;
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final boolean DEBUG = false;
 	
@@ -291,7 +292,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		// We don't indicate that we can go READY until all our dependencies have
 		// been setup to the Category of MeemkitLCMs
 		if (DEBUG) {
-			LogTools.info(logger, "commence() MeemkitManagerWedge voting false");
+			logger.log(Level.INFO, "commence() MeemkitManagerWedge voting false");
 		}
 		lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 	}
@@ -326,7 +327,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	public void installMeemkit(String meemkitName, URL meemkitURL) {
 		if (DEBUG) {
-			LogTools.info(logger, "installing meemkit: " + meemkitName);
+			logger.log(Level.INFO, "installing meemkit: " + meemkitName);
 		}
 
 		//TODO the meemkitName argument should be removed from this Facet
@@ -348,7 +349,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	public void installMeemkit(String meemkitName) {
 		if (DEBUG) {
-			LogTools.info(logger, "installing meemkit: " + meemkitName);
+			logger.log(Level.INFO, "installing meemkit: " + meemkitName);
 		}
 
 		if (meemkitName == null) {
@@ -403,7 +404,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	public void detailsChanged(String[] names, URL[] descriptorLocations) {
 		if (DEBUG) {
-			LogTools.info(logger, "detailsChanged()");
+			logger.log(Level.INFO, "detailsChanged()");
 		}
 
 		/*
@@ -415,7 +416,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		for (int i = 0; i < names.length; i++) {
 			String name = names[i];
 			if (DEBUG) {
-				LogTools.info(logger, "detailsChanged() name: " + names[i]);
+				logger.log(Level.INFO, "detailsChanged() name: " + names[i]);
 			}
 			URL descriptorLocation = null;
 			if (descriptorLocations != null) {
@@ -483,7 +484,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 				ownMeemkitLCMMeemStarted = true;
 			}
 		}
-		LogTools.info(logger, "meemAdded() - " + meem);
+		logger.log(Level.INFO, "meemAdded() - " + meem);
 		String entryName = meem.getMeemPath().getLocation();
 		if (!entries.contains(entryName)) {
 			entries.add(entryName);
@@ -492,7 +493,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 	}
 
 	public void meemRemoved(Meem meem) {
-		LogTools.info(logger, "meemRemoved() - " + meem);
+		logger.log(Level.INFO, "meemRemoved() - " + meem);
 		String entryName = meem.getMeemPath().getLocation();
 		entries.remove(entryName);
 		category.removeEntry(entryName);
@@ -516,7 +517,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	public void meemCreated(Meem meem, String identifier) {
 		if (DEBUG) {
-			LogTools.info(logger, "meemCreated: " + identifier + " " + meem.getMeemPath());
+			logger.log(Level.INFO, "meemCreated: " + identifier + " " + meem.getMeemPath());
 		}
 
 		Object context = requestContext.get();
@@ -525,7 +526,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		}
 
 		if (DEBUG) {
-			LogTools.info(logger, "meemCreated (in context): " + identifier + " " + meem.getMeemPath());
+			logger.log(Level.INFO, "meemCreated (in context): " + identifier + " " + meem.getMeemPath());
 		}
 
 		DependencyAttribute attr;
@@ -533,7 +534,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		Integer id = (Integer) context;
 		if (id.toString().equals(identifier)) {
 			if (DEBUG) {
-				LogTools.info(logger, "meemCreated (in context and right id): " + identifier + " " + meem.getMeemPath());
+				logger.log(Level.INFO, "meemCreated (in context and right id): " + identifier + " " + meem.getMeemPath());
 			}
 
 			attr = new DependencyAttribute(DependencyType.STRONG, Scope.LOCAL, meem, "category", null, true);
@@ -731,7 +732,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 	}
 
 	private void doInstallMeemkit(URL meemkitURL) throws IOException, MeemkitManagerException {
-		LogTools.info(logger, "installing meemkit at: " + meemkitURL);
+		logger.log(Level.INFO, "installing meemkit at: " + meemkitURL);
 		
 		String jarFilename = URLUtility.downloadToDirectory(meemkitURL, availableMeemkitsDirectory);
 		JarDetails details = getJarDetails(jarFilename);
@@ -753,7 +754,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	private void doInstallMeemkit(JarDetails jarDetails) throws IOException, MeemkitManagerException {
 		if (DEBUG) {
-			LogTools.info(logger, "doInstallMeemkit(): " + jarDetails);
+			logger.log(Level.INFO, "doInstallMeemkit(): " + jarDetails);
 		}
 		
 		if (DISABLE) {
@@ -812,7 +813,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		String path = HTTP_SERVER_CONTEXT_PATH + "/" + meemkitName + "/meemkitDescriptor.xml";
 		URL meemkitDescriptorURL = new URL("http", hostAddress, httpPort, path);
 
-		LogTools.info(logger, "createMeemkitMeem(" + meemkitName + ") - " + meemkitDescriptorURL);
+		logger.log(Level.INFO, "createMeemkitMeem(" + meemkitName + ") - " + meemkitDescriptorURL);
 
 		descriptorURLs.put(meemkitName, meemkitDescriptorURL);
 
@@ -859,7 +860,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		dependencyAttributeLCM = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, lcmMeem, "lifeCycleManager", null, true);
 		dependencyHandlerConduit.addDependency("lifeCycleManager", dependencyAttributeLCM, LifeTime.TRANSIENT);
 
-		LogTools.info(logger, "created LCM dependencyAttributes: " + dependencyAttributeLCM.getKey());
+		logger.log(Level.INFO, "created LCM dependencyAttributes: " + dependencyAttributeLCM.getKey());
 
 		dependencyAttributeLCMClient = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, lcmMeem, "lifeCycleManagerClient", null, false);
 		dependencyHandlerConduit.addDependency("lifeCycleManagerClient", dependencyAttributeLCMClient, LifeTime.TRANSIENT);
@@ -872,10 +873,10 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 				newMeemkitsPollTimeSeconds = Integer.parseInt(temp);
 			}
 			catch (NumberFormatException ex) {
-				LogTools.error(logger, "Unable to parse property '" + PROPERTY_MEEMKIT_MANAGER_POLL_NEW_MEEMKITS + "'. Ignoring it.");
+				logger.log(Level.WARNING, "Unable to parse property '" + PROPERTY_MEEMKIT_MANAGER_POLL_NEW_MEEMKITS + "'. Ignoring it.");
 			}
 			if (newMeemkitsPollTimeSeconds < 1) {
-				LogTools.error(logger, "'" + PROPERTY_MEEMKIT_MANAGER_POLL_NEW_MEEMKITS + "' must be greater than 0");
+				logger.log(Level.WARNING, "'" + PROPERTY_MEEMKIT_MANAGER_POLL_NEW_MEEMKITS + "' must be greater than 0");
 				newMeemkitsPollTimeSeconds = -1;
 			}
 		}
@@ -927,7 +928,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 				installedMeemkits.add(entryName);
 				String path = HTTP_SERVER_CONTEXT_PATH + "/" + entryName + "/meemkitDescriptor.xml";
 				URL meemkitDescriptorURL = new URL("http", hostAddress, httpPort, path);
-				LogTools.info(logger, "determineInstalledMeemkits() - " + meemkitDescriptorURL);
+				logger.log(Level.INFO, "determineInstalledMeemkits() - " + meemkitDescriptorURL);
 				descriptorURLs.put(entryName, meemkitDescriptorURL);
 			}
 		}
@@ -1068,7 +1069,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 			meemkitLCMDiscoveryStarted = true;
 			FacetItem facetItem = new FacetItem(MeemkitLifeCycleManager.spi.getIdentifier(), MeemkitLifeCycleManager.class.getName(), Direction.INBOUND);
 			jiniLookupConduit.startLookup(facetItem, false);
-			LogTools.info(logger, "startMeemkitLCMDiscovery() - MeemkitLCM Jini lookup initiated ...");
+			logger.log(Level.INFO, "startMeemkitLCMDiscovery() - MeemkitLCM Jini lookup initiated ...");
 		}
 	}
 
@@ -1081,7 +1082,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 	private class MyMeemResolverClient implements MeemResolverClient {
 		public void meemResolved(MeemPath meemPath, Meem meem) {
 			if (Common.TRACE_ENABLED && Common.TRACE_MEEMKIT) {
-				LogTools.trace(logger, Common.getLogLevel(), "meemResolved() meemPath=[" + meemPath.getLocation() + "] meem=[" + meem + "]");
+				logger.log(Common.getLogLevel(), "meemResolved() meemPath=[" + meemPath.getLocation() + "] meem=[" + meem + "]");
 			}
 
 			if (meem == null)
@@ -1340,7 +1341,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 						jarsDetails.put(entryName, newDetails);
 						descriptors.put(newDetails.meemkitName, newDetails.meemkitDescriptor);
 						meemkitManagerClientOutput.meemkitDescriptorsAdded(new MeemkitDescriptor[] { newDetails.meemkitDescriptor });
-						LogTools.info(logger, "lookForChanges() - Found new meemkit '" + newDetails.meemkitName + "'");
+						logger.log(Level.INFO, "lookForChanges() - Found new meemkit '" + newDetails.meemkitName + "'");
 					}
 					else {
 						File file = new File(filename);
@@ -1348,10 +1349,10 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 							JarDetails newDetails = getJarDetails(filename);
 							String meemkitName = newDetails.meemkitName;
 							if (installedMeemkits.contains(meemkitName) == false) {
-								LogTools.error(logger, "lookForChanges() - Can not upgrade meemkit '" + meemkitName + "' because it is not installed");
+								logger.log(Level.WARNING, "lookForChanges() - Can not upgrade meemkit '" + meemkitName + "' because it is not installed");
 							}
 							else {
-								LogTools.info(logger, "lookForChanges() - About to upgrade meemkit '" + meemkitName + "'");
+								logger.log(Level.INFO, "lookForChanges() - About to upgrade meemkit '" + meemkitName + "'");
 								previousDetails.jarLastModified = newDetails.jarLastModified;
 								doUpgradeMeemkit(newDetails);
 							}
@@ -1367,7 +1368,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 	private class DependencyClientConduit implements DependencyClient {
 		public void dependencyConnected(DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyConnected(): " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyConnected(): " + dependencyAttribute);
 			}
 
 			if (dependencyAttribute.equals(dependencyAttributeLCM)) {	// lifecycle manager connected
@@ -1380,7 +1381,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 					return;
 				}
 				if (DEBUG) {
-					LogTools.info(logger, "dependencyConnected(): create a new category meem: " + id);
+					logger.log(Level.INFO, "dependencyConnected(): create a new category meem: " + id);
 				}
 				MeemDefinition meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(CategoryWedge.class);
 				meemDefinition.getMeemAttribute().setIdentifier(id.toString());
@@ -1401,7 +1402,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 					&& dependencyAttribute.getFacetIdentifier().equals("meemkitLifeCycleManager")) {
 				//if (dependencyAttribute.getFacetIdentifier().equals("meemkitLifeCycleManager")) {
 				if (DEBUG) {
-					LogTools.info(logger, "dependencyConnected() voting true");
+					logger.log(Level.INFO, "dependencyConnected() voting true");
 				}
 
 				lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), true);
@@ -1415,7 +1416,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		public void dependencyAdded(String facetId, DependencyAttribute dependencyAttribute) {
 			// A dependency has been added, but is not yet connected.
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyAdded(): " + facetId + " - " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyAdded(): " + facetId + " - " + dependencyAttribute);
 			}
 		}
 

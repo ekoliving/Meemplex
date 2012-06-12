@@ -12,6 +12,7 @@
  */
 package org.openmaji.implementation.tool.eclipse.search.test;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.tool.eclipse.Common;
@@ -33,9 +34,9 @@ public class TestClient implements MeemResolverClient {
 	private Logger logger = Logger.getAnonymousLogger();
 
 	public void meemResolved(MeemPath meemPath, Meem meem) {
-		logger.info("resolvedMeemPath");
+		logger.log(Level.INFO, "resolvedMeemPath");
 		if (meem != null) {
-			logger.info("meemPath: " + meemPath + " : meem: " + meem);
+			logger.log(Level.INFO, "meemPath: " + meemPath + " : meem: " + meem);
 		}
 	}
 

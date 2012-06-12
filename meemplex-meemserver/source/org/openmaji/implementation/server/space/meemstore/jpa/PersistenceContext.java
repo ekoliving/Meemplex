@@ -2,6 +2,7 @@ package org.openmaji.implementation.server.space.meemstore.jpa;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
@@ -54,7 +55,7 @@ public class PersistenceContext {
 			
 			this.emf = Persistence.createEntityManagerFactory(PersistenceContext.PERSISTENCE_UNIT, properties);
 			if (debug) {
-				logger.info("persistence factory setup successfully: " + emf);
+				logger.log(Level.INFO, "persistence factory setup successfully: " + emf);
 			}
 		}
 	}
@@ -63,7 +64,7 @@ public class PersistenceContext {
 		if (emf != null) {
 			emf.close();
 			if (debug) {
-				logger.info("persistence factory closed successfully: " + emf);
+				logger.log(Level.INFO, "persistence factory closed successfully: " + emf);
 			}
 			emf = null;
 		}
@@ -76,7 +77,7 @@ public class PersistenceContext {
 
 			entityManagers.set(em);
 //			if (debug) {
-//				logger.info("entity manager setup successfully" + em);
+//				logger.log(Level.INFO, "entity manager setup successfully" + em);
 //			}
 		}
 		return em;

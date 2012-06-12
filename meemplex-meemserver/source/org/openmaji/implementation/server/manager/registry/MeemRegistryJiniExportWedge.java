@@ -44,7 +44,8 @@ import org.openmaji.system.meem.FacetItem;
 import org.openmaji.system.meem.wedge.remote.RemoteMeem;
 import org.openmaji.system.meem.wedge.remote.RemoteMeemClient;
 import org.openmaji.utility.CollectionUtility;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -164,7 +165,7 @@ public class MeemRegistryJiniExportWedge
 
 	if (exports.contains(meem.getMeemPath()))
 	{
-		LogTools.error(logger, "Attempt to export already exported meem: " + meem);
+		logger.log(Level.WARNING, "Attempt to export already exported meem: " + meem);
 		return;
 	}
 	
@@ -248,7 +249,7 @@ public class MeemRegistryJiniExportWedge
       }
     }
     catch (Exception exception) {
-      LogTools.error(logger, "Exporting RemoteMeem: " + exception);
+      logger.log(Level.WARNING, "Exporting RemoteMeem: " + exception);
     }
 
   }
@@ -295,5 +296,5 @@ public class MeemRegistryJiniExportWedge
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 }

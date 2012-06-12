@@ -18,6 +18,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -102,7 +103,7 @@ public class SimpleSocketServer implements Runnable
     }
     catch ( IOException ex )
     {
-    	logger.info("Giving up, thread terminating because of: "+ex.getMessage());
+    	logger.log(Level.INFO, "Giving up, thread terminating because of: "+ex.getMessage());
     }
   }
   
@@ -137,7 +138,7 @@ public class SimpleSocketServer implements Runnable
           haveActiveConnection = false;
           key.cancel();
           try { key.channel().close(); } catch ( IOException cex ) { /* Ignore */ }
-          logger.info("Connection closed due to: "+ex.getMessage());
+          logger.log(Level.INFO, "Connection closed due to: "+ex.getMessage());
         }
       }
     }
@@ -148,14 +149,14 @@ public class SimpleSocketServer implements Runnable
     ServerSocketChannel server = (ServerSocketChannel) key.channel();
     if ( haveActiveConnection )
     {
-    	logger.info("Only one connection at a time");
+    	logger.log(Level.INFO, "Only one connection at a time");
       SocketChannel socketChannel = server.accept();
       socketChannel.close();
     }
     else
     {
       SocketChannel socketChannel = server.accept();
-      logger.info("Accepted connection from " + socketChannel.socket().getRemoteSocketAddress());
+      logger.log(Level.INFO, "Accepted connection from " + socketChannel.socket().getRemoteSocketAddress());
       socketChannel.configureBlocking(false);
       connectedSocketSelectionKey = socketChannel.register(selector,SelectionKey.OP_READ);
       ByteBuffer buffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
@@ -176,7 +177,7 @@ public class SimpleSocketServer implements Runnable
       key.cancel();
       key.channel().close();
       haveActiveConnection = false;
-      logger.info("Connection closed");
+      logger.log(Level.INFO, "Connection closed");
       return;
     }
 

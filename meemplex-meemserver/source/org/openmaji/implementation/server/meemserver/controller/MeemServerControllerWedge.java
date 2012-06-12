@@ -57,9 +57,10 @@ import org.openmaji.system.space.Category;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.openmaji.system.space.resolver.MeemResolver;
 import org.openmaji.system.space.resolver.MeemResolverClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -125,7 +126,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 	 */
 	public void createMeemServerMeem(String meemServerName, Meem parentLifeCycleManagerMeem) {
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMSERVER) {
-			LogTools.trace(logger, logLevel, "Creating MeemServer Meem: " + meemServerName);
+			logger.log(logLevel, "Creating MeemServer Meem: " + meemServerName);
 		}
 
 		String identifier = MeemServer.spi.getIdentifier() + " " + meemServerName;
@@ -162,7 +163,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 		 */
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-				LogTools.info(logger, "change - no lifeCycleManager facet.");
+				logger.log(Level.INFO, "change - no lifeCycleManager facet.");
 				return;
 			}
 
@@ -195,7 +196,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 		 */
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-				LogTools.info(logger, "change - no lifeCycleManager facet.");
+				logger.log(Level.INFO, "change - no lifeCycleManager facet.");
 				return;
 			}
 
@@ -225,7 +226,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 		 */
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-				LogTools.info(logger, "change - no lifeCycleManager facet.");
+				logger.log(Level.INFO, "change - no lifeCycleManager facet.");
 				return;
 			}
 
@@ -245,7 +246,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 			String meemServerName = identifier.substring(MeemServer.spi.getIdentifier().length() + 1);
 
 			if (Common.TRACE_ENABLED && Common.TRACE_MEEMSERVER) {
-				LogTools.trace(logger, logLevel, "MeemServer Meem created: " + meemServerName);
+				logger.log(logLevel, "MeemServer Meem created: " + meemServerName);
 			}
 
 			// remove dependency
@@ -342,12 +343,12 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static final int logLevel = Common.getLogLevelVerbose();
+	private static final Level logLevel = Common.getLogLevelVerbose();
 
 }

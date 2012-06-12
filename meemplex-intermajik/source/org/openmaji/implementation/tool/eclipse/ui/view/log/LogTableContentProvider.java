@@ -23,7 +23,6 @@ import org.openmaji.implementation.tool.eclipse.client.SWTClientSynchronizer;
 import org.openmaji.implementation.tool.eclipse.plugin.MajiPlugin;
 import org.openmaji.implementation.tool.eclipse.util.log.EclipseLog;
 import org.openmaji.implementation.tool.eclipse.util.log.EclipseLogListener;
-import org.swzoo.log2.core.LogEvent;
 
 
 /**
@@ -42,24 +41,24 @@ public class LogTableContentProvider implements EclipseLogListener, IStructuredC
 	/* (non-Javadoc)
 	 * @see org.openmaji.implementation.tool.eclipse.util.log.EclipseLogListener#event(org.swzoo.log2.core.LogEvent)
 	 */
-	public void event(final LogEvent event) {
-		Display display = viewer.getControl().getDisplay();
-		SWTClientSynchronizer.get(display).execute(new Runnable() {
-			public void run() {
-				if (viewer != null)
-					viewer.add(event);
-					if (autoscroll)
-						viewer.reveal(event);
-			}
-		});
-	}
+//	public void event(final LogEvent event) {
+//		Display display = viewer.getControl().getDisplay();
+//		SWTClientSynchronizer.get(display).execute(new Runnable() {
+//			public void run() {
+//				if (viewer != null)
+//					viewer.add(event);
+//					if (autoscroll)
+//						viewer.reveal(event);
+//			}
+//		});
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 	 */
 	public void dispose() {
 		viewer = null;
-		EclipseLog.getInstance().removeListener(this);
+//		EclipseLog.getInstance().removeListener(this);
 	}
 
 	/* (non-Javadoc)
@@ -69,7 +68,7 @@ public class LogTableContentProvider implements EclipseLogListener, IStructuredC
 		if (newInput != null) {
 			this.viewer = (TableViewer) viewer;
 			// connect to log
-			logEntries = EclipseLog.getInstance().addListener(this);
+//			logEntries = EclipseLog.getInstance().addListener(this);
 		}
 	}
 

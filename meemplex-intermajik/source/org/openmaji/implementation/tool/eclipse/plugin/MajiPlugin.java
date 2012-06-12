@@ -14,6 +14,7 @@ package org.openmaji.implementation.tool.eclipse.plugin;
 
 import java.io.File;
 import java.util.Hashtable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -107,11 +108,11 @@ public class MajiPlugin extends AbstractUIPlugin {
 //		}
 		inst = this;
 
-		logger.info("starting intermajik: " + context.getBundle().getSymbolicName());
+		logger.log(Level.INFO, "starting intermajik: " + context.getBundle().getSymbolicName());
 		
 		super.start(context);
 		
-		logger.info("get prefstore");
+		logger.log(Level.INFO, "get prefstore");
 		getPreferenceStore();
 		
 		
@@ -222,7 +223,7 @@ public class MajiPlugin extends AbstractUIPlugin {
 	}
 
 	public static boolean startMaji() {
-		logger.info("something called startMaji()");
+		logger.log(Level.INFO, "something called startMaji()");
 		
 		// try {
 		// String launcherName = "org.openmaji.implementation.tool.eclipse.plugin.LaunchEclipsePlugin";

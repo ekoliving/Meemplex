@@ -56,6 +56,14 @@ public class JiniLookupWedge implements Wedge, JiniLookup {
 	
 	public MeemContext meemContext;
 
+	/* --------------------- conduits -------------------------- */
+	
+	public JiniLookupClient jiniLookupClientConduit;
+	
+	public JiniLookup jiniLookupConduit = this;
+
+	
+	
 	private static Configuration configuration = null;
 
 	private static LookupDiscoveryManager lookupDiscoveryManager = null;
@@ -72,10 +80,6 @@ public class JiniLookupWedge implements Wedge, JiniLookup {
 
 	private ServiceDiscoveryListener serviceDiscoveryListener = new MeemServiceDiscoveryListener();
 	
-	public JiniLookupClient jiniLookupClientConduit;
-	
-	public JiniLookup jiniLookupConduit = this;
-
 	
 	/**
 	 * 

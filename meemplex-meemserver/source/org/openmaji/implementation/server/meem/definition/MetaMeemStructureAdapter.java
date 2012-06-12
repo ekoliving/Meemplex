@@ -22,9 +22,10 @@ import org.openmaji.meem.definition.MeemAttribute;
 import org.openmaji.meem.definition.WedgeAttribute;
 import org.openmaji.system.meem.definition.MeemStructure;
 import org.openmaji.system.meem.definition.MetaMeem;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <code>MetaMeemStructureAdapter</code> provides an implementation of 
@@ -33,7 +34,7 @@ import org.swzoo.log2.core.Logger;
  * @author Kin Wong
  */
 public class MetaMeemStructureAdapter implements MetaMeem {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	private static final boolean DEBUG = false;
 	
   protected MeemStructure meemStructure;
@@ -60,14 +61,14 @@ public class MetaMeemStructureAdapter implements MetaMeem {
    */
   public void addDependencyAttribute(String facetId, DependencyAttribute dependencyAttribute) {
 	  if (DEBUG) {
-		  LogTools.info(logger, "addDependencyAttribute: " + facetId + " -> " + dependencyAttribute);
+		  logger.log(Level.INFO, "addDependencyAttribute: " + facetId + " -> " + dependencyAttribute);
 	  }
     commence();
 
     FacetAttribute facet = meemStructure.getFacetAttribute(facetId);
     if (facet == null) {
   	  if (DEBUG) {
-		  LogTools.info(logger, "could not locate facetId: " + facetId );
+		  logger.log(Level.INFO, "could not locate facetId: " + facetId );
 	  }
       return;
     }
@@ -99,7 +100,7 @@ public class MetaMeemStructureAdapter implements MetaMeem {
    */
   public void removeDependencyAttribute(Serializable dependencyId) {
 	  if (DEBUG) {
-		  LogTools.info(logger, "removeDependencyAttribute: " + dependencyId);
+		  logger.log(Level.INFO, "removeDependencyAttribute: " + dependencyId);
 	  }
     commence();
     DependencyAttribute dependency = meemStructure.getDependencyAttribute(dependencyId);
@@ -111,7 +112,7 @@ public class MetaMeemStructureAdapter implements MetaMeem {
 
   public void removeDependency(DependencyAttribute dependency) {
 	  if (DEBUG) {
-		  LogTools.info(logger, "removeDependencyAttribute: " + dependency);
+		  logger.log(Level.INFO, "removeDependencyAttribute: " + dependency);
 	  }
 	    commence();
 	    if (dependency == null) {
@@ -157,7 +158,7 @@ public class MetaMeemStructureAdapter implements MetaMeem {
    */
   public void updateDependencyAttribute(DependencyAttribute dependencyAttribute) {
 	  if (DEBUG) {
-		  LogTools.info(logger, "updateDependencyAttribute: " + dependencyAttribute);
+		  logger.log(Level.INFO, "updateDependencyAttribute: " + dependencyAttribute);
 	  }
     commence();
     meemStructure.update(dependencyAttribute);

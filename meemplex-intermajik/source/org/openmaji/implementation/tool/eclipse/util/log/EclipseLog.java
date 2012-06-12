@@ -18,7 +18,6 @@ import java.util.Set;
 
 
 import org.openmaji.utility.CollectionUtility;
-import org.swzoo.log2.core.LogEvent;
 
 /**
  * <p>
@@ -29,41 +28,41 @@ import org.swzoo.log2.core.LogEvent;
  */
 public class EclipseLog {
 	
-	private static EclipseLog instance = new EclipseLog();
-	
-	private Set logEntries = Collections.synchronizedSet(CollectionUtility.createLinkedHashSet());
-	private EclipseTerminator terminator = new EclipseTerminator(this);
-	private Set listeners = CollectionUtility.createHashSet();
-	
-	private EclipseLog() {
-	}
-	
-	public static EclipseLog getInstance() {
-		return instance;
-	}
-	
-	public EclipseTerminator getTerminator() {
-		return terminator;
-	}
-	
-	public synchronized void log(LogEvent event) {
-		logEntries.add(event);
-		notifyListeners(event);	
-	}
-	
-	public synchronized Set addListener(EclipseLogListener listener) {
-		listeners.add(listener);
-		return logEntries;
-	}
-	
-	public synchronized void removeListener(EclipseLogListener listener) {
-		listeners.remove(listener);
-	}
-	
-	private void notifyListeners(LogEvent event) {
-		for (Iterator i = listeners.iterator(); i.hasNext();) {
-			EclipseLogListener listener = (EclipseLogListener)i.next();
-			listener.event(event);
-		}
-	}
+//	private static EclipseLog instance = new EclipseLog();
+//	
+//	private Set logEntries = Collections.synchronizedSet(CollectionUtility.createLinkedHashSet());
+//	private EclipseTerminator terminator = new EclipseTerminator(this);
+//	private Set listeners = CollectionUtility.createHashSet();
+//	
+//	private EclipseLog() {
+//	}
+//	
+//	public static EclipseLog getInstance() {
+//		return instance;
+//	}
+//	
+//	public EclipseTerminator getTerminator() {
+//		return terminator;
+//	}
+//	
+//	public synchronized void log(LogEvent event) {
+//		logEntries.add(event);
+//		notifyListeners(event);	
+//	}
+//	
+//	public synchronized Set addListener(EclipseLogListener listener) {
+//		listeners.add(listener);
+//		return logEntries;
+//	}
+//	
+//	public synchronized void removeListener(EclipseLogListener listener) {
+//		listeners.remove(listener);
+//	}
+//	
+//	private void notifyListeners(LogEvent event) {
+//		for (Iterator i = listeners.iterator(); i.hasNext();) {
+//			EclipseLogListener listener = (EclipseLogListener)i.next();
+//			listener.event(event);
+//		}
+//	}
 }

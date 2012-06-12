@@ -11,7 +11,6 @@ package org.openmaji.meem.definition;
 
 import java.io.Serializable;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.openmaji.utility.uid.UID;
@@ -287,9 +286,7 @@ public final class MeemAttribute implements Cloneable, Serializable {
       targetMeemAttribute.scope      = sourceMeemAttribute.scope;
       targetMeemAttribute.version    = sourceMeemAttribute.version;
       
-      Iterator iterator = sourceMeemAttribute.immutableAttributes.entrySet().iterator();
-      while (iterator.hasNext()) {
-      	Map.Entry entry = (Map.Entry) iterator.next();
+      for (Map.Entry<Object, Object> entry: sourceMeemAttribute.immutableAttributes.entrySet()) {
       	Object key = entry.getKey();
       	if (!targetMeemAttribute.immutableAttributes.containsKey(key)) {
       		targetMeemAttribute.setImmutableAttribute(key, entry.getValue());

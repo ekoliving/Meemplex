@@ -1,6 +1,7 @@
 package org.meemplex.internet.core;
 
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.meemplex.system.MeemkitService;
@@ -35,7 +36,7 @@ public class InternetCoreActivator implements BundleActivator {
 	 * 
 	 */
 	public void start(BundleContext bc) throws Exception {
-		logger.info("Starting " + bc.getBundle().getSymbolicName());
+		logger.log(Level.INFO, "Starting " + bc.getBundle().getSymbolicName());
 		
 		this.bundleContext = bc;
 		

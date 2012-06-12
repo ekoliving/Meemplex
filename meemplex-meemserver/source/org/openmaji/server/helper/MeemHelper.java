@@ -24,9 +24,10 @@ import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.FacetClient;
 import org.openmaji.system.meem.FacetItem;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 ;
 
@@ -78,7 +79,7 @@ public class MeemHelper
 		}
 		catch (TimeoutException e)
 		{
-			LogTools.info(logger, "Timeout waiting for content for meemPath: " + meem.getMeemPath(), e);
+			logger.log(Level.INFO, "Timeout waiting for content for meemPath: " + meem.getMeemPath(), e);
 			return false;			
 		}
 		finally
@@ -109,7 +110,7 @@ public class MeemHelper
 
 		public void contentSent()
 		{
-//			LogTools.info(logger, "Content sent");
+//			logger.log(Level.INFO, "Content sent");
 			if (pigeonHole != null)
 			{
 				pigeonHole.put(found);
@@ -119,7 +120,7 @@ public class MeemHelper
 
 		public void contentFailed(String reason)
 		{
-			LogTools.info(logger, "Content failed: " + reason);
+			logger.log(Level.INFO, "Content failed: " + reason);
 			if (pigeonHole != null)
 			{
 				pigeonHole.put(Boolean.FALSE);
@@ -134,5 +135,5 @@ public class MeemHelper
 	private static final long timeout = 60000;
 
 	/** Logger for the class */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

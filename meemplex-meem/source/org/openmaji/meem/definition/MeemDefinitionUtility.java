@@ -8,6 +8,7 @@
  */
 package org.openmaji.meem.definition;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +38,7 @@ public class MeemDefinitionUtility {
 
 	WedgeDefinition wedgeDefinition = meemDefinition.getWedgeDefinition(oldWedgeIdentifier);
     if (wedgeDefinition == null) {
-    	logger.info("renameWedgeIdentifier() - No wedge with identifier of '"+oldWedgeIdentifier+"'");
+    	logger.log(Level.INFO, "renameWedgeIdentifier() - No wedge with identifier of '"+oldWedgeIdentifier+"'");
     }
     else {
         wedgeDefinition.getWedgeAttribute().setIdentifier(newWedgeIdentifier);
@@ -66,7 +67,7 @@ public class MeemDefinitionUtility {
 
 	WedgeDefinition wedgeDefinition = meemDefinition.getWedgeDefinition(wedgeIdentifier);	
     if (wedgeDefinition == null) {
-    	logger.info("renameFacetIdentifier() - No wedge with identifier of '"+wedgeIdentifier+"'");
+    	logger.log(Level.INFO, "renameFacetIdentifier() - No wedge with identifier of '"+wedgeIdentifier+"'");
     }
     else {
         WedgeDefinitionUtility.renameFacetIdentifier(

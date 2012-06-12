@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
@@ -104,7 +105,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 	 */
 	public void configure(MeemStore meemStore, Properties properties) {
 		if (DEBUG) {
-			logger.info("Configure");
+			logger.log(Level.INFO, "Configure");
 		}
 
 		this.database = properties.getProperty(MeemStoreWedge.MEEMSTORE_LOCATION);
@@ -131,7 +132,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 
 	public void close() {
 		if (DEBUG) {
-			logger.info("Closing");
+			logger.log(Level.INFO, "Closing");
 		}
 
 		PersistenceContext.instance().close();
@@ -142,7 +143,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 	public MeemDefinition load(MeemPath meemPath) {
 		
 		if (DEBUG) {
-			logger.info("Loading MeemDefinition for: " + meemPath);
+			logger.log(Level.INFO, "Loading MeemDefinition for: " + meemPath);
 		}
 
 		MeemDefinition definition = null;
@@ -175,7 +176,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 	public void store(MeemPath meemPath, MeemDefinition definition) {
 
 		if (DEBUG) {
-			logger.info("storing MeemDefinition for : " + meemPath);
+			logger.log(Level.INFO, "storing MeemDefinition for : " + meemPath);
 		}
 		
 		try {
@@ -266,7 +267,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 
 			// clear up old, unused wedges
 //			if (debug) {
-//				logger.info("there are : " + remaining.size() + " remaining wedges to clear up");
+//				logger.log(Level.INFO, "there are : " + remaining.size() + " remaining wedges to clear up");
 //			}
 //			for (WedgeEntity unusedWedge : remaining.values()) {
 //				meemEntity.getWedges().remove(unusedWedge.getName());
@@ -284,7 +285,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 	public void remove(MeemPath meemPath) {
 
 		if (DEBUG) {
-			logger.info("Removing " + meemPath);
+			logger.log(Level.INFO, "Removing " + meemPath);
 		}
 
 		try {
@@ -313,7 +314,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 
 	public int getVersion(MeemPath meemPath) {
 		if (DEBUG) {
-			logger.info("getting version of " + meemPath);
+			logger.log(Level.INFO, "getting version of " + meemPath);
 		}
 
 
@@ -345,7 +346,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 		Set<MeemPath> paths = new HashSet<MeemPath>();
 
 		if (DEBUG) {
-			logger.info("Getting all MeemPaths");
+			logger.log(Level.INFO, "Getting all MeemPaths");
 		}
 
 		try {
@@ -368,7 +369,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 		}
 		
 		if (DEBUG) {
-			logger.info("Returning " + paths.size() + " MeemPaths");
+			logger.log(Level.INFO, "Returning " + paths.size() + " MeemPaths");
 		}
 		return paths;
 	}

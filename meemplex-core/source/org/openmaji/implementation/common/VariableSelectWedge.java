@@ -1,8 +1,9 @@
 package org.openmaji.implementation.common;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.common.IntegerPosition;
 import org.openmaji.common.Linear;
@@ -33,7 +34,7 @@ import org.openmaji.system.meem.wedge.reference.ContentProvider;
 public class VariableSelectWedge implements Wedge, Variable, Linear {
 
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	private static boolean DEBUG = false;
 
@@ -199,7 +200,7 @@ public class VariableSelectWedge implements Wedge, Variable, Linear {
 	 */
 	public void valueChanged(Value channelValue) {
 		if (DEBUG) {
-			LogTools.info(logger, "Received channel: " + channelValue);
+			logger.log(Level.INFO, "Received channel: " + channelValue);
 		}
 
 		variableControlConduit.valueChanged(channelValue);
@@ -213,7 +214,7 @@ public class VariableSelectWedge implements Wedge, Variable, Linear {
 	 */
 	public void valueChanged(Position position) {
 		if (DEBUG) {
-			LogTools.info(logger, "Received position: " + position);
+			logger.log(Level.INFO, "Received position: " + position);
 		}
 		
 		int index = position.intValue();

@@ -7,9 +7,10 @@
 
 package org.openmaji.implementation.automation.loopback;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.common.Value;
 import org.openmaji.common.VariableList;
@@ -42,11 +43,11 @@ public class LoopbackVariableListWedge implements Wedge
   {
     public void valueChanged(Value[] valueList)
     {
-      //if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on VariableControlConduit");
-    	LogTools.info(logger, "valueChanged() - invoked on variableListControlConduit");
+      //if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on VariableControlConduit");
+    	logger.log(Level.INFO, "valueChanged() - invoked on variableListControlConduit");
       variableListStateConduit.valueChanged(valueList);
     }
   }
   
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 }

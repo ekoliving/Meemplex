@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -77,7 +78,7 @@ public class SimpleServerThread extends Thread
       }
       catch ( IOException ioException )
       {
-        logger.info("Couldn't accept Socket connection: " + ioException.getMessage());
+        logger.log(Level.INFO, "Couldn't accept Socket connection: " + ioException.getMessage());
       }
     }
   }

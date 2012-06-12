@@ -37,9 +37,10 @@ import org.openmaji.implementation.server.nursery.diagnostic.DiagnosticLog;
 import org.openmaji.implementation.server.nursery.diagnostic.events.invocation.RemoteOutboundInvocationEvent;
 import org.openmaji.implementation.server.request.RequestStack;
 import org.openmaji.implementation.server.request.RequestTracker;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.jini.core.lease.UnknownLeaseException;
 import net.jini.lease.LeaseListener;
@@ -106,7 +107,7 @@ public class SmartProxyMeem implements InvocationHandler, Serializable, WeakRefe
 	protected static HashMap smartProxyMeemMap = new HashMap();
 	private static LeaseRenewalManager leaseRenewalManager = new LeaseRenewalManager();
 	
-	static private final Logger logger = LogFactory.getLogger();
+	static private final Logger logger = Logger.getAnonymousLogger();
 	
 	private static boolean replaceWithNewest;
 	private static boolean proxyAndCacheLCS;
@@ -118,13 +119,13 @@ public class SmartProxyMeem implements InvocationHandler, Serializable, WeakRefe
 		leasingEnabled = Boolean.valueOf(System.getProperty(LEASING_ENABLED, "true")).booleanValue();
 		
 		if (!replaceWithNewest) {
-			LogTools.warn(logger, "Replace with newest SmartProxyMeem disabled. Will always use the first one discovered.");
+			logger.log(Level.WARNING, "Replace with newest SmartProxyMeem disabled. Will always use the first one discovered.");
 		}
 		if (!proxyAndCacheLCS) {
-			LogTools.warn(logger, "Proxying and caching of LifeCycleState in SmartProxyMeem disabled.");
+			logger.log(Level.WARNING, "Proxying and caching of LifeCycleState in SmartProxyMeem disabled.");
 		}
 		if (!leasingEnabled) {
-			LogTools.warn(logger, "SmartProxyMeem leasing disabled.");
+			logger.log(Level.WARNING, "SmartProxyMeem leasing disabled.");
 		}
 	}
 	
@@ -599,7 +600,7 @@ public class SmartProxyMeem implements InvocationHandler, Serializable, WeakRefe
 		
 		public void connect() {
 			disposed = false;
-//			LogTools.warn(logger, "connect(): " + meemPath + " : " + lifeCycleClient + " : " + this);
+//			logger.log(Level.WARNING, "connect(): " + meemPath + " : " + lifeCycleClient + " : " + this);
 			
 			Serializable[] args = new Serializable[] {reference, Boolean.FALSE}; 
 			
@@ -625,7 +626,7 @@ public class SmartProxyMeem implements InvocationHandler, Serializable, WeakRefe
 			catch (Throwable t)
 			{
 				// -mg- work out what to do here.
-				LogTools.info(logger, "connect exception: " + meemPath + ".", t);
+				logger.log(Level.INFO, "connect exception: " + meemPath + ".", t);
 			}
 		}
 
@@ -651,7 +652,7 @@ public class SmartProxyMeem implements InvocationHandler, Serializable, WeakRefe
 				catch (Throwable t)
 				{
 					// -mg- work out what to do here.
-					LogTools.info(logger, "problem while disconnecting", t);
+					logger.log(Level.INFO, "problem while disconnecting", t);
 				}
 			}
 			
@@ -667,7 +668,7 @@ public class SmartProxyMeem implements InvocationHandler, Serializable, WeakRefe
 			}
 	
 			public void lifeCycleStateChanged(LifeCycleTransition transition) {
-//				LogTools.warn(logger, "lifeCycleStateChanged(): " + meemPath + " : " + disposed +  " : " + lifeCycleClient + " : " + transition);
+//				logger.log(Level.WARNING, "lifeCycleStateChanged(): " + meemPath + " : " + disposed +  " : " + lifeCycleClient + " : " + transition);
 				if (!disposed) {
 					LifeCycleState actualCurrentState = lastTransition.getCurrentState();
 					if (!transition.getCurrentState().equals(actualCurrentState)) {

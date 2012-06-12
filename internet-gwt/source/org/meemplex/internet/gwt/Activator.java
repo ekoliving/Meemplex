@@ -1,6 +1,7 @@
 package org.meemplex.internet.gwt;
 
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.meemplex.system.MeemkitService;
@@ -27,7 +28,7 @@ public class Activator implements BundleActivator {
 		}
 		public MeemkitDescriptor getDescriptor() {
 			URL meemkitUrl = getDescriptorUrl();
-			//logger.info("got meemkit resource: " + meemkitUrl);
+			//logger.log(Level.INFO, "got meemkit resource: " + meemkitUrl);
 			
 			MeemkitDescriptor descriptor = MeemkitUtility.createMeemkitDescriptor(meemkitUrl);
 		    return descriptor;
@@ -35,7 +36,7 @@ public class Activator implements BundleActivator {
 	};
 	
 	public void start(BundleContext bc) throws Exception {
-		logger.info("Starting " + bc.getBundle().getSymbolicName());
+		logger.log(Level.INFO, "Starting " + bc.getBundle().getSymbolicName());
 		this.bundleContext = bc;
 		
 		serviceReg = bc.registerService(MeemkitService.class, meemkitService, null);

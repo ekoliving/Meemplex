@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * An event from/to a Meem

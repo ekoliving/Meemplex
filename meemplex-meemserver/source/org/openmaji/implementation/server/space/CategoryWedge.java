@@ -28,9 +28,10 @@ import org.openmaji.system.meem.wedge.reference.ContentProvider;
 import org.openmaji.system.space.Category;
 import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -40,9 +41,9 @@ import org.swzoo.log2.core.Logger;
 
 public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
-	private static final int LOG_LEVEL = Common.getLogLevelVerbose();
+	private static final Level LOG_LEVEL = Common.getLogLevelVerbose();
 
 
 	/* -------------------- outbound facets ------------------------- */
@@ -113,7 +114,7 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 
 		synchronized (entries) {
 			if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY && entriesMap.containsKey(entryName)) {
-				LogTools.trace(logger, LOG_LEVEL, "Overwriting entry " + entriesMap.get(entryName));
+				logger.log(LOG_LEVEL, "Overwriting entry " + entriesMap.get(entryName));
 			}
 			
 			// remove existing entry if it exists
@@ -127,7 +128,7 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 				entries.add(categoryEntry);
 		
 				if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY) {
-					LogTools.trace(logger, LOG_LEVEL, this.toString() + " added entry: " + entryName + " meemPath: " + meem.getMeemPath());
+					logger.log(LOG_LEVEL, this.toString() + " added entry: " + entryName + " meemPath: " + meem.getMeemPath());
 				}
 		
 				// persist content
@@ -150,7 +151,7 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 			if (categoryEntry != null) {
 	
 				if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY)
-					LogTools.trace(logger, LOG_LEVEL, "removed entry: " + entryName + " meemPath: " + categoryEntry.getMeem().getMeemPath());
+					logger.log(LOG_LEVEL, "removed entry: " + entryName + " meemPath: " + categoryEntry.getMeem().getMeemPath());
 	
 				// persist content
 				managedPersistenceHandlerConduit.persist();
@@ -179,7 +180,7 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 				}
 	
 				if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY)
-					LogTools.trace(logger, LOG_LEVEL, "renamed entry: " + oldEntryName + " to " + newEntryName);
+					logger.log(LOG_LEVEL, "renamed entry: " + oldEntryName + " to " + newEntryName);
 	
 				// persist content
 				managedPersistenceHandlerConduit.persist();

@@ -17,9 +17,10 @@ package org.openmaji.implementation.server.meem.hook.test;
 import org.openmaji.server.meem.hook.test.HookTest2;
 import org.openmaji.system.meem.hook.HookProcessor;
 import org.openmaji.system.meem.hook.invoke.Invocation;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ public class HookTest2Impl implements HookTest2 {
 
   public boolean process(Invocation invocation, HookProcessor hookProcessor) {
 
-    LogTools.info(logger, "Invoked");
+    logger.log(Level.INFO, "Invoked");
 
     return(true);
   }
@@ -47,5 +48,5 @@ public class HookTest2Impl implements HookTest2 {
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static Logger logger = LogFactory.getLogger();
+  private static Logger logger = Logger.getAnonymousLogger();
 }

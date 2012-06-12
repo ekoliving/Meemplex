@@ -28,9 +28,10 @@ import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -74,7 +75,7 @@ public class MeemTypeChecker {
 			}
 		}
 		catch (TimeoutException ex) {
-			LogTools.info(logger, "Timeout waiting for MeemDefinition", ex);
+			logger.log(Level.INFO, "Timeout waiting for MeemDefinition", ex);
 		}
 
 		return false;
@@ -136,5 +137,5 @@ public class MeemTypeChecker {
 	private static final long timeout = 60000;
 
 	/** Logger for the class */  
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

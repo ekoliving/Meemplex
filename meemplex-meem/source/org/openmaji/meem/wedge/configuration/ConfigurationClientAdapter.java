@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.meem.MeemContext;
@@ -107,14 +108,14 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 
 				String check = ((ConfigurationSpecification) specificationMap.get(id)).validate(value);
 				if (check != null) {
-					logger.info(check);
+					logger.log(Level.INFO, check);
 					configurationClientConduit.valueRejected(id, value, check);
 					return;
 				}
 
 				if (LifeCycleState.STATES.indexOf(currentState) > LifeCycleState.STATES.indexOf(spec.getMaxLifeCycleState())) {
 					String message = "property " + id.getFieldName() + " cannot be configured above LifeCycleState " + spec.getMaxLifeCycleState().getCurrentState();
-					logger.info(message);
+					logger.log(Level.INFO, message);
 					configurationClientConduit.valueRejected(id, value, message);
 					return;
 				}
@@ -126,12 +127,12 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 				}
 				catch (NoSuchMethodException e) {
 					String message = "no set method for property: " + id.getFieldName() + "(" + e + ")";
-					logger.info( message);
+					logger.log(Level.INFO,  message);
 					configurationClientConduit.valueRejected(id, value, message);
 				}
 				catch (IllegalAccessException e) {
 					String message = "cannot access set method for property: " + id.getFieldName() + "(" + e + ")";
-					logger.info( message);
+					logger.log(Level.INFO,  message);
 					configurationClientConduit.valueRejected(id, value, message);
 				}
 				catch (Exception e) {
@@ -145,7 +146,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 						buffer.append(e.getCause().getMessage());
 						buffer.append(']');
 					}
-					logger.info(buffer.toString());
+					logger.log(Level.INFO, buffer.toString());
 					if (e instanceof InvocationTargetException) {
 						InvocationTargetException ie = (InvocationTargetException) e;
 
@@ -241,7 +242,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 					ConfigurationSpecification spec = (ConfigurationSpecification) field.get(parent);
 
 					if (spec == null) {
-						logger.info("Ignoring null configuration specification: " + field.getName() + " in " + parent.getClass());
+						logger.log(Level.INFO, "Ignoring null configuration specification: " + field.getName() + " in " + parent.getClass());
 						continue;
 					}
 
@@ -270,12 +271,12 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 							spec.setDefaultValue((Serializable) value);
 						}
 						catch (Exception ex) {
-							logger.info("cannot set default value for configuration property '" + valueName + "' in " + parent.getClass() + " reason: " + ex.getMessage());
+							logger.log(Level.INFO, "cannot set default value for configuration property '" + valueName + "' in " + parent.getClass() + " reason: " + ex.getMessage());
 						}
 					}
 				}
 				catch (Exception e) {
-					logger.info("cannot get access to configuration specification: " + field.getName() + " in " + parent.getClass());
+					logger.log(Level.INFO, "cannot get access to configuration specification: " + field.getName() + " in " + parent.getClass());
 				}
 			}
 		}

@@ -9,9 +9,10 @@ import org.openmaji.meem.definition.LifeTime;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.system.meem.wedge.reference.MeemClientCallback;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -20,7 +21,7 @@ import org.swzoo.log2.core.Logger;
  */
 public final class SingleForwardDependency implements FacetConnectable
 {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	private final boolean DEBUG = false;
 	
@@ -66,7 +67,7 @@ public final class SingleForwardDependency implements FacetConnectable
 
 	public synchronized void connect() {
 		if (DEBUG) {
-			LogTools.info(logger, "connect(): " + targetMeem + " - " + targetFacetIdentifier);
+			logger.log(Level.INFO, "connect(): " + targetMeem + " - " + targetFacetIdentifier);
 		}
 		
 		if (!connected) {
@@ -82,7 +83,7 @@ public final class SingleForwardDependency implements FacetConnectable
 	public synchronized void disconnect()
 	{
 		if (DEBUG) {
-			LogTools.info(logger, "disconnect(): " + targetMeem + " - " + targetFacetIdentifier);
+			logger.log(Level.INFO, "disconnect(): " + targetMeem + " - " + targetFacetIdentifier);
 		}
 		
 		if (connected) {
@@ -123,7 +124,7 @@ public final class SingleForwardDependency implements FacetConnectable
 		public void referenceProvided(Reference reference)
 		{
 			if (DEBUG) {
-				LogTools.info(logger, "referenceProvided(): " + reference);
+				logger.log(Level.INFO, "referenceProvided(): " + reference);
 			}
 			
 			if (!cancelled) {
@@ -142,7 +143,7 @@ public final class SingleForwardDependency implements FacetConnectable
 						);
 
 					if (DEBUG) {
-						LogTools.info(logger, "referenceProvided(): adding reference: " + dependencyReference);
+						logger.log(Level.INFO, "referenceProvided(): adding reference: " + dependencyReference);
 					}
 					
 					dependencyHandlerWedge.meemConduit.addOutboundReference(dependencyReference, false);

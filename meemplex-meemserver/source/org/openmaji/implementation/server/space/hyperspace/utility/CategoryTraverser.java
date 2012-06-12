@@ -25,9 +25,10 @@ import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.Category;
 import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class CategoryTraverser implements CategoryClient, ContentClient {
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
 	private Reference reference = Reference.spi.create("categoryClient", this, true, null);
 	private Meem meem;
@@ -98,7 +99,7 @@ public class CategoryTraverser implements CategoryClient, ContentClient {
 			Meem meem = newEntry.getMeem();
 	    if ( meem == null )
 	    {
-	      LogTools.warn(logger,"entryAdded() - null returned by locateMeem()");
+	      logger.log(Level.WARNING, "entryAdded() - null returned by locateMeem()");
 	      return;
 	    }
 	

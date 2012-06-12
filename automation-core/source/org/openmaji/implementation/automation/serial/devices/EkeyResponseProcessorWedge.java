@@ -30,9 +30,10 @@ import org.openmaji.common.Value;
 import org.openmaji.common.Variable;
 import org.openmaji.diagnostic.Debug;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -44,7 +45,7 @@ import org.swzoo.log2.core.Logger;
 
 public class EkeyResponseProcessorWedge implements Variable, Wedge, WedgeDefinitionProvider
 {
-  private static Logger logger = LogFactory.getLogger();
+  private static Logger logger = Logger.getAnonymousLogger();
   private static final int DEBUG_HEARTBEATS = 1;
   private static final int DEBUG_NULLS = 2;
   private static final int DEBUG_SUCCESS = 4;
@@ -79,7 +80,7 @@ public class EkeyResponseProcessorWedge implements Variable, Wedge, WedgeDefinit
     }
     catch ( Exception ex )
     {
-      LogTools.error(logger,"valueChanged() - "+ex.getMessage());
+      logger.log(Level.WARNING, "valueChanged() - "+ex.getMessage());
     }
   }
 
@@ -167,7 +168,7 @@ public class EkeyResponseProcessorWedge implements Variable, Wedge, WedgeDefinit
         return;
       }
       // If we get here then it's an unrecognised message type. Log it and return
-      LogTools.error(logger,"Unrecognised message ["+response+"]");
+      logger.log(Level.WARNING, "Unrecognised message ["+response+"]");
       return;
     }
 
@@ -206,14 +207,14 @@ public class EkeyResponseProcessorWedge implements Variable, Wedge, WedgeDefinit
     }
 
     // Unrecognised message. Log it and return
-    LogTools.error(logger,"Received unrecognised message ["+response+"]");
+    logger.log(Level.WARNING, "Received unrecognised message ["+response+"]");
   }
 
   private void debug(int flag, String message)
   {
     if ( ( debugLevel & flag) > 0 )
     {
-      LogTools.info(logger,HexHelper.toHexString(message));
+      logger.log(Level.INFO, HexHelper.toHexString(message).toString());
     }
   }
 
@@ -238,7 +239,7 @@ public class EkeyResponseProcessorWedge implements Variable, Wedge, WedgeDefinit
     {
       if ( stopRunning )
       {
-        LogTools.info(logger,"Emulator thread terminating");
+        logger.log(Level.INFO, "Emulator thread terminating");
         return;
       }
       state.setSuccessfulScan(toggle);

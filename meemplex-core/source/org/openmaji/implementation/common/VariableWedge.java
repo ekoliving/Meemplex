@@ -15,9 +15,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -43,7 +44,7 @@ import org.swzoo.log2.core.Logger;
 
 public class VariableWedge implements Variable, Wedge
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   /**
    * Variable client (out-bound Facet)
@@ -60,7 +61,7 @@ public class VariableWedge implements Variable, Wedge
        */
       public void sendContent(Object target, Filter filter)
       {
-        if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"sendContent() - invoked");
+        if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
         Variable variable = (Variable) target;
         Value initialContent = ( value == null ? new StringValue("") : value );
         variable.valueChanged(initialContent);
@@ -98,7 +99,7 @@ public class VariableWedge implements Variable, Wedge
 
   public void valueChanged(Value value)
   {
-    if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on in-bound facet");
+    if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on in-bound facet");
     variableControlConduit.valueChanged(value);
   }
 
@@ -123,7 +124,7 @@ public class VariableWedge implements Variable, Wedge
 
     public void valueChanged(Value newValue)
     {
-      if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on VariableStateConduit");
+      if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on VariableStateConduit");
       value = newValue;
       variableClient.valueChanged(value);
     }

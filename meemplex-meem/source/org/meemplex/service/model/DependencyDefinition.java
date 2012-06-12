@@ -20,17 +20,17 @@ public class DependencyDefinition implements Serializable {
 	/**
 	 * The facet that is dependent on another Facet.
 	 */
-	private FacetReference dependantFacet;
+	public FacetReference dependantFacet;
 
 	/**
 	 * The Facet that is depended upon.
 	 */
-	private FacetReference dependeeFacet;
+	public FacetReference dependeeFacet;
 
 	/**
 	 * The type of dependency.  Strong, Weak.
 	 */
-	private DependencyType type;
+	public DependencyType type;
 
 	/**
 	 * Whether the outbound facet should send content once dependency is
@@ -43,7 +43,7 @@ public class DependencyDefinition implements Serializable {
 	/**
 	 * Filter
 	 */
-	private InvocationFilter filter;
+	public InvocationFilter filter;
 	
 	public static enum Direction {
 		FORWARD,

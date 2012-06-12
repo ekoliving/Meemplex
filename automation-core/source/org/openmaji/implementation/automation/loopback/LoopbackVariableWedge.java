@@ -17,9 +17,10 @@ import org.openmaji.meem.wedge.configuration.ConfigurationClientAdapter;
 import org.openmaji.meem.wedge.configuration.ConfigurationRejectedException;
 import org.openmaji.meem.wedge.configuration.ConfigurationSpecification;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -39,7 +40,7 @@ import org.swzoo.log2.core.Logger;
 
 public class LoopbackVariableWedge implements Wedge
 {
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   /* ---------------------------------- conduits ----------------------------- */
   
@@ -76,7 +77,7 @@ public class LoopbackVariableWedge implements Wedge
     public void valueChanged(Value value)
     {
       if ( DebugFlag.TRACE ) {
-    	  LogTools.trace(logger,20,"valueChanged() - invoked on VariableControlConduit");
+    	  logger.log(Level.FINE, "valueChanged() - invoked on VariableControlConduit");
       }      
       variableStateConduit.valueChanged(value);
     }

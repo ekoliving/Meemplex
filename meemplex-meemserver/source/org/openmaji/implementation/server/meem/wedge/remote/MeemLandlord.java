@@ -15,9 +15,10 @@ import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.manager.registry.jini.ExporterHelper;
 import org.openmaji.meem.MeemPath;
 import org.openmaji.system.meem.wedge.remote.Lease;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.jini.core.lease.LeaseDeniedException;
 import net.jini.core.lease.UnknownLeaseException;
@@ -91,7 +92,7 @@ public class MeemLandlord implements Landlord {
 			throw new UnknownLeaseException();
 		}
 		if (Common.TRACE_ENABLED && Common.TRACE_LEASING) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "renew() " + cookie + " : " + extension + " : " + result.duration);
+			logger.log(Common.getLogLevelVerbose(), "renew() " + cookie + " : " + extension + " : " + result.duration);
 		}
 		return result.duration;
 	}
@@ -145,7 +146,7 @@ public class MeemLandlord implements Landlord {
 		net.jini.core.lease.Lease lease = factory.newLease(cookie, expiration);
 		JiniLeaseWrapper leaseImpl= new JiniLeaseWrapper(lease);
 		if (Common.TRACE_ENABLED && Common.TRACE_LEASING) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "generateLease() " + meemPath + " : " + cookie);
+			logger.log(Common.getLogLevelVerbose(), "generateLease() " + meemPath + " : " + cookie);
 		}
 		return leaseImpl;
 	}
@@ -156,6 +157,6 @@ public class MeemLandlord implements Landlord {
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
 }

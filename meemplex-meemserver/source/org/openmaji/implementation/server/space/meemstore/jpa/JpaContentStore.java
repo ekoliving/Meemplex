@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
@@ -61,7 +62,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 	 */
 	public void configure(MeemStore meemStore, Properties properties) {
 		if (DEBUG) {
-			logger.info("Configure");
+			logger.log(Level.INFO, "Configure");
 		}
 
 		this.database = properties.getProperty(MeemStoreWedge.MEEMSTORE_LOCATION);
@@ -84,7 +85,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 	 */
 	public void close() {
 		if (DEBUG) {
-			logger.info("Closing");
+			logger.log(Level.INFO, "Closing");
 		}
 
 		PersistenceContext.instance().close();
@@ -96,7 +97,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 	public MeemContent load(MeemPath meemPath) {
 
 		if (DEBUG) {
-			logger.info("Loading content for " + meemPath);
+			logger.log(Level.INFO, "Loading content for " + meemPath);
 		}
 
 		MeemContent meemContent = new MeemContent();
@@ -154,7 +155,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 			String meemId = meemPath.getLocation();
 //			MeemEntity meemEntity = em.find(MeemEntity.class, meemId);
 //			if (meemEntity == null) {
-//				//logger.info("could not locate Meem in storage, " + meemPath.getLocation());
+//				//logger.log(Level.INFO, "could not locate Meem in storage, " + meemPath.getLocation());
 //				meemEntity = new MeemEntity();
 //				meemEntity.setId(meemPath.getLocation());
 //				em.persist(meemEntity);
@@ -237,7 +238,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 		Set<MeemPath> paths = new HashSet<MeemPath>();
 		
 		if (DEBUG) {
-			logger.info("Getting all MeemPaths");
+			logger.log(Level.INFO, "Getting all MeemPaths");
 		}
 
 		try {
@@ -249,7 +250,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 			for (String id : ids) {
 				MeemPath meemPath = MeemPath.spi.create(Space.MEEMSTORE, id);
 //				if (DEBUG) {
-//					logger.info("Got MeemPath: " + meemPath);
+//					logger.log(Level.INFO, "Got MeemPath: " + meemPath);
 //				}
 				paths.add(meemPath);
 			}
@@ -262,7 +263,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 			PersistenceContext.instance().release();
 		}
 		if (DEBUG) {
-			logger.info("Returning " + paths.size() + " MeemPaths");
+			logger.log(Level.INFO, "Returning " + paths.size() + " MeemPaths");
 		}
 		return paths;
 	}

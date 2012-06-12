@@ -7,9 +7,10 @@ package org.openmaji.implementation.rpc.binding.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.space.Space;
@@ -19,7 +20,7 @@ import org.openmaji.meem.space.Space;
  *
  */
 public class MeemPathHelper {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	String meempath;
 	String method;
@@ -55,7 +56,7 @@ public class MeemPathHelper {
 			meemPath = MeemPath.spi.create(Space.TRANSIENT, path);
 		}
 		else {
-			LogTools.info(logger, "Unknown meemspace in meempath: " + scheme);
+			logger.log(Level.INFO, "Unknown meemspace in meempath: " + scheme);
 		}
 
 		return meemPath;

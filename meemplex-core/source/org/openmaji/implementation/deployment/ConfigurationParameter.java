@@ -10,9 +10,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.jdom.Element;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.meem.wedge.configuration.ConfigurationIdentifier;
 
@@ -22,7 +23,7 @@ import org.openmaji.meem.wedge.configuration.ConfigurationIdentifier;
  */
 public final class ConfigurationParameter {
 
-    private static final Logger logger = LogFactory.getLogger();
+    private static final Logger logger = Logger.getAnonymousLogger();
 
     private final ConfigurationIdentifier configurationIdentifier;
 	private final Serializable value;
@@ -78,7 +79,7 @@ public final class ConfigurationParameter {
                     value = dateFormat.parse(valueString);
                 }
                 catch (ParseException ex) {
-                    LogTools.info(logger, "date has invalid format: " + valueString);
+                    logger.log(Level.INFO, "date has invalid format: " + valueString);
                 }
             }
             else if ( type.equalsIgnoreCase("file") ) {
@@ -89,7 +90,7 @@ public final class ConfigurationParameter {
             }
         }
         catch (RuntimeException ex) {
-            LogTools.info(logger, "problem getting parameter value for \"" + valueString + "\"", ex);
+            logger.log(Level.INFO, "problem getting parameter value for \"" + valueString + "\"", ex);
         }
         return value;
     }

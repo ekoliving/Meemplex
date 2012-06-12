@@ -45,7 +45,8 @@ import org.openmaji.system.space.meemstore.MeemContentClient;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 import org.openmaji.system.space.meemstore.MeemStoreClient;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MeemStoreExporterWedge
   implements MeemDefinitionProvider,
@@ -68,6 +69,7 @@ public class MeemStoreExporterWedge
   
   public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
+  
   private DependencyAttribute meemStoreDependencyAttribute = null;
 
   private DependencyAttribute meemStoreClientDependencyAttribute = null;
@@ -76,9 +78,9 @@ public class MeemStoreExporterWedge
 
   private DependencyAttribute meemDefinitionClientDependencyAttribute = null;
 
-  private WeakHashMap meemStoreCallBacks = new WeakHashMap();
+  private Map<MeemStoreCallBack, MeemStoreCallBack> meemStoreCallBacks = new WeakHashMap<MeemStoreCallBack, MeemStoreCallBack>();
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   private static MeemStoreExporterWedge meemStoreExporterWedge;  // Singleton
 
@@ -90,6 +92,7 @@ public class MeemStoreExporterWedge
 
   private JoinManager joinManager;
 
+  
   public static MeemStoreExporterWedge getInstance() {
     if (meemStoreExporterWedge == null) {
       throw new RuntimeException("meemStoreExporterWedge not instantiated");
@@ -98,6 +101,7 @@ public class MeemStoreExporterWedge
     return(meemStoreExporterWedge);
   }
 
+  
   public MeemStoreExporterWedge() {
     meemStoreExporterWedge = this;
   }
@@ -242,10 +246,10 @@ public class MeemStoreExporterWedge
       }
     }
     catch (Exception exception) {
-      LogTools.error(logger, "Exporting MeemStoreExporterWedge: " + exception);
+      logger.log(Level.WARNING, "Exporting MeemStoreExporterWedge: " + exception);
     }
 
-    LogTools.info(logger, "Jini Service registered: " + uuid);
+    logger.log(Level.INFO, "Jini Service registered: " + uuid);
 
 /* ------------------------------------------------------------------------- */
   }
@@ -280,19 +284,19 @@ public class MeemStoreExporterWedge
   public synchronized void meemStored(
     MeemPath meemPath) {
 
-    LogTools.info(logger, "meemStored(" + meemPath + ")");
+    logger.log(Level.INFO, "meemStored(" + meemPath + ")");
 
-    Vector   zombies = new Vector();
-    Iterator iterator = meemStoreCallBacks.values().iterator();
+    Vector<MeemStoreCallBack>   zombies = new Vector<MeemStoreCallBack>();
+    Iterator<MeemStoreCallBack> iterator = meemStoreCallBacks.values().iterator();
 
     while (iterator.hasNext()) {
-      MeemStoreCallBack meemStoreCallBack = (MeemStoreCallBack) iterator.next();
+      MeemStoreCallBack meemStoreCallBack = iterator.next();
 
       try {
         meemStoreCallBack.meemStored(meemPath);
       }
       catch (Exception exception) {
-        LogTools.error(logger, "MeemStoreCallBack removed due to Exception");
+        logger.log(Level.WARNING, "MeemStoreCallBack removed due to Exception");
 
         zombies.add(meemStoreCallBack);
       }
@@ -308,10 +312,10 @@ public class MeemStoreExporterWedge
   public synchronized void meemDestroyed(
     MeemPath meemPath) {
 
-    LogTools.info(logger, "meemDestroyed(" + meemPath + ")");
+    logger.log(Level.INFO, "meemDestroyed(" + meemPath + ")");
 
-    Vector   zombies = new Vector();
-    Iterator iterator = meemStoreCallBacks.values().iterator();
+    List<MeemStoreCallBack>   zombies = new ArrayList<MeemStoreCallBack>();
+    Iterator<MeemStoreCallBack> iterator = meemStoreCallBacks.values().iterator();
 
     while (iterator.hasNext()) {
       MeemStoreCallBack meemStoreCallBack = (MeemStoreCallBack) iterator.next();
@@ -320,7 +324,7 @@ public class MeemStoreExporterWedge
         meemStoreCallBack.meemDestroyed(meemPath);
       }
       catch (Exception exception) {
-        LogTools.error(logger, "MeemStoreCallBack removed due to Exception");
+        logger.log(Level.WARNING, "MeemStoreCallBack removed due to Exception");
 
         zombies.add(meemStoreCallBack);
       }
@@ -335,34 +339,30 @@ public class MeemStoreExporterWedge
 
 /* ---------- Inbound Facet: MeemContentClient ----------------------------- */
 
-  public synchronized void meemContentChanged(
-    MeemPath    meemPath,
-    MeemContent meemContent) {
+	public synchronized void meemContentChanged(MeemPath meemPath, MeemContent meemContent) {
 
-    LogTools.info(logger, "meemContentChanged(" + meemPath + ")");
+		logger.log(Level.INFO, "meemContentChanged(" + meemPath + ")");
 
-    Vector   zombies = new Vector();
-    Iterator iterator = meemStoreCallBacks.values().iterator();
+		List<MeemStoreCallBack> zombies = new ArrayList<MeemStoreCallBack>();
+		for (MeemStoreCallBack meemStoreCallBack : meemStoreCallBacks.values()) {
 
-    while (iterator.hasNext()) {
-      MeemStoreCallBack meemStoreCallBack = (MeemStoreCallBack) iterator.next();
+			try {
+				meemStoreCallBack.meemContentChanged(meemPath, meemContent);
+			}
+			catch (Exception exception) {
+				logger.log(Level.WARNING, 
+						"MeemStoreCallBack removed due to Exception");
 
-      try {
-        meemStoreCallBack.meemContentChanged(meemPath, meemContent);
-      }
-      catch (Exception exception) {
-        LogTools.error(logger, "MeemStoreCallBack removed due to Exception");
+				zombies.add(meemStoreCallBack);
+			}
+		}
 
-        zombies.add(meemStoreCallBack);
-      }
-    }
-
-    if (zombies.isEmpty() == false) {
-      iterator = zombies.iterator();
-
-      while (iterator.hasNext()) meemStoreCallBacks.remove(iterator.next());
-    }
-  }
+		if (zombies.isEmpty() == false) {
+			for (MeemStoreCallBack zombieCallback : zombies) {
+				meemStoreCallBacks.remove(zombieCallback);
+			}
+		}
+	}
 
 /* ---------- Inbound Facet: MeemDefinitionClient -------------------------- */
 
@@ -370,7 +370,7 @@ public class MeemStoreExporterWedge
     MeemPath       meemPath,
     MeemDefinition meemDefinition) {
 
-    LogTools.info(logger, "meemDefinitionChanged(" + meemPath + ")");
+    logger.log(Level.INFO, "meemDefinitionChanged(" + meemPath + ")");
 
     Vector   zombies = new Vector();
     Iterator iterator = meemStoreCallBacks.values().iterator();
@@ -382,7 +382,7 @@ public class MeemStoreExporterWedge
         meemStoreCallBack.meemDefinitionChanged(meemPath, meemDefinition);
       }
       catch (Exception exception) {
-        LogTools.error(logger, "MeemStoreCallBack removed due to Exception");
+        logger.log(Level.WARNING, "MeemStoreCallBack removed due to Exception");
 
         zombies.add(meemStoreCallBack);
       }
@@ -401,7 +401,7 @@ public class MeemStoreExporterWedge
     MeemStoreCallBack meemStoreCallBack)
     throws RemoteException {
 
-    LogTools.info(logger, "addMeemStoreCallBack(" + meemStoreCallBack + ")");
+    logger.log(Level.INFO, "addMeemStoreCallBack(" + meemStoreCallBack + ")");
 
     meemStoreCallBacks.put(meemStoreCallBack, null);
   }
@@ -410,7 +410,7 @@ public class MeemStoreExporterWedge
     MeemStoreCallBack meemStoreCallBack)
     throws RemoteException {
 
-    LogTools.info(logger, "removeMeemStoreCallBack(" + meemStoreCallBack + ")");
+    logger.log(Level.INFO, "removeMeemStoreCallBack(" + meemStoreCallBack + ")");
 
     meemStoreCallBacks.remove(meemStoreCallBack);
   }
@@ -423,12 +423,12 @@ public class MeemStoreExporterWedge
     throws RemoteException {
 
     if (meemStore == null) {
-      LogTools.error(
-        logger, "storeMeemContent() invoked, but 'meemStore' not connected"
+      logger.log(Level.WARNING,
+        "storeMeemContent() invoked, but 'meemStore' not connected"
       );
     }
     else {
-      LogTools.info(logger, "storeMeemContent(" + meemPath + ")");
+      logger.log(Level.INFO, "storeMeemContent(" + meemPath + ")");
 
       meemStore.storeMeemContent(meemPath, meemContent);
     }
@@ -440,12 +440,12 @@ public class MeemStoreExporterWedge
     throws RemoteException {
 
     if (meemStore == null) {
-      LogTools.error(
-        logger, "storeMeemDefinition() invoked, 'meemStore' not connected"
+      logger.log(Level.WARNING,
+        "storeMeemDefinition() invoked, 'meemStore' not connected"
       );
     }
     else {
-      LogTools.info(logger, "storeMeemDefinition(" + meemPath + ")");
+      logger.log(Level.INFO, "storeMeemDefinition(" + meemPath + ")");
 
       meemStore.storeMeemDefinition(meemPath, meemDefinition);
     }
@@ -456,12 +456,12 @@ public class MeemStoreExporterWedge
     throws RemoteException {
 
     if (meemStore == null) {
-      LogTools.error(
-        logger, "destroyMeem() invoked, but 'meemStore' not connected"
+      logger.log(Level.WARNING,
+         "destroyMeem() invoked, but 'meemStore' not connected"
       );
     }
     else {
-      LogTools.info(logger, "destroyMeem(" + meemPath + ")");
+      logger.log(Level.INFO, "destroyMeem(" + meemPath + ")");
 
       meemStore.destroyMeem(meemPath);
     }
@@ -489,8 +489,8 @@ public class MeemStoreExporterWedge
       meemContents = (HashMap) pigeonHole.get(timeout);
     }
     catch (TimeoutException timeoutException) {
-      LogTools.error(
-        logger,
+      logger.log(Level.WARNING,
+        
         "Timeout: MeemStoreExporterWedge <- MeemStore: MeemContentClient",
         timeoutException
       );
@@ -555,8 +555,8 @@ public class MeemStoreExporterWedge
       meemDefinitions = (HashMap) pigeonHole.get(timeout);
     }
     catch (TimeoutException timeoutException) {
-      LogTools.error(
-        logger,
+      logger.log(Level.WARNING,
+        
         "Timeout: MeemStoreExporterWedge <- MeemStore: MeemDefinitionClient",
         timeoutException
       );

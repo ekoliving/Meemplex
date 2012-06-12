@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -126,7 +127,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 
 	public void close() {
 		if (DEBUG) {
-			logger.info("Closing");
+			logger.log(Level.INFO, "Closing");
 		}
 
 		selectMeemPaths = null;
@@ -150,7 +151,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 	public MeemDefinition load(MeemPath meemPath) {
 
 		if (DEBUG) {
-			logger.info("Loading definition for " + meemPath);
+			logger.log(Level.INFO, "Loading definition for " + meemPath);
 		}
 		
 		MeemDefinition definition = null;
@@ -192,7 +193,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 	public void store(MeemPath meemPath, MeemDefinition definition) {
 
 		if (DEBUG) {
-			logger.info("Storing Definition for " + meemPath);
+			logger.log(Level.INFO, "Storing Definition for " + meemPath);
 		}
 
 		try {
@@ -234,7 +235,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 	public void remove(MeemPath meemPath) {
 
 		if (DEBUG) {
-			logger.info("Removing " + meemPath);
+			logger.log(Level.INFO, "Removing " + meemPath);
 		}
 
 		try {
@@ -248,7 +249,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 
 	public int getVersion(MeemPath meemPath) {
 		if (DEBUG) {
-			logger.info("Loading MeemDefinition for: " + meemPath);
+			logger.log(Level.INFO, "Loading MeemDefinition for: " + meemPath);
 		}
 
 
@@ -272,7 +273,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 		Set<MeemPath> paths = new HashSet<MeemPath>();
 		
 		if (DEBUG) {
-			logger.info("Getting all MeemPaths");
+			logger.log(Level.INFO, "Getting all MeemPaths");
 		}
 
 		try {
@@ -281,7 +282,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 			while (resultSet.next()) {
 				MeemPath meemPath = MeemPath.spi.create(Space.MEEMSTORE, resultSet.getString(1));
 //				if (DEBUG) {
-//					logger.info("Got MeemPath: " + meemPath);
+//					logger.log(Level.INFO, "Got MeemPath: " + meemPath);
 //				}
 				paths.add(meemPath);
 			}
@@ -290,14 +291,14 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 			logger.log(Level.INFO, "Exception while retriving MeemPaths from MeemStore", e);
 		}
 		if (DEBUG) {
-			logger.info("Returning " + paths.size() + " MeemPaths");
+			logger.log(Level.INFO, "Returning " + paths.size() + " MeemPaths");
 		}
 		return paths;
 	}
 
 	private void connect() {
 		if (DEBUG) {
-			logger.info("Connecting to database");
+			logger.log(Level.INFO, "Connecting to database");
 		}
 
 		try {
@@ -331,7 +332,7 @@ public class SqlDefinitionStore implements MeemStoreDefinitionStore {
 			statement.close();
 		}
 		catch (SQLException e) {
-			//LogTools.info(logger, "Problem creating table", e);
+			//logger.log(Level.INFO, "Problem creating table", e);
 		}
 	}	
 	

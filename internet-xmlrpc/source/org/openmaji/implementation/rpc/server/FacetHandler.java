@@ -5,9 +5,10 @@ package org.openmaji.implementation.rpc.server;
 
 import javax.security.auth.Subject;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import org.openmaji.implementation.rpc.binding.util.MeemPathHelper;
@@ -34,7 +35,7 @@ import org.openmaji.system.space.resolver.MeemResolverClient;
  */
 public class FacetHandler <T extends Facet> {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	private static boolean DEBUG = false;
 	
@@ -122,7 +123,7 @@ public class FacetHandler <T extends Facet> {
 	 */
 	protected void meem(Meem meem) {
 		if (DEBUG) {
-			LogTools.info(logger, "got meem for " + meemPath + ": " + meem);
+			logger.log(Level.INFO, "got meem for " + meemPath + ": " + meem);
 		}
 		// remove any existing reference to lifecycleclient
 		removeMeemReferences();
@@ -175,7 +176,7 @@ public class FacetHandler <T extends Facet> {
 	 */
 	protected void resolveMeem(MeemPath meemPath) {
 		if (DEBUG) {
-			LogTools.info(logger, "resolving meem for: " + meemPath + " : " + facetId);
+			logger.log(Level.INFO, "resolving meem for: " + meemPath + " : " + facetId);
 		}
 		if (meemPath.isDefinitive()) {
 			resolveDefinitive(meemPath);
@@ -237,7 +238,7 @@ public class FacetHandler <T extends Facet> {
 	private void resolveDefinitive(MeemPath meemPath)
 	{
 		if (DEBUG) {
-			LogTools.info(logger, "resolving meem via registry for: " + meemPath);
+			logger.log(Level.INFO, "resolving meem via registry for: " + meemPath);
 		}
 		
 		// Facet and Proxy Facet for receiving messages from the resolver Meem
@@ -269,7 +270,7 @@ public class FacetHandler <T extends Facet> {
 	private void resolveHyperSpace(MeemPath meemPath)
 	{
 		if (DEBUG) {
-			LogTools.info(logger, "resolving meem via hyperspace for: " + meemPath);
+			logger.log(Level.INFO, "resolving meem via hyperspace for: " + meemPath);
 		}
 		
 		// Facet and Proxy Facet for receiving messages from the resolver Meem
@@ -338,7 +339,7 @@ public class FacetHandler <T extends Facet> {
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.info(logger, "Could not resolve meem: " + reason);
+			logger.log(Level.INFO, "Could not resolve meem: " + reason);
 			//cleanup();
 		}
 		
@@ -364,7 +365,7 @@ public class FacetHandler <T extends Facet> {
 		
 		public void meemResolved(MeemPath meemPath, Meem meem) {
 			if (DEBUG) {
-				LogTools.info(logger, "MeemPathResolverClientImpl meemResolved: " + meemPath + " -> " + meem);
+				logger.log(Level.INFO, "MeemPathResolverClientImpl meemResolved: " + meemPath + " -> " + meem);
 			}
 			if (meem == null) {
 				//meem = null;
@@ -377,14 +378,14 @@ public class FacetHandler <T extends Facet> {
 
 		public void contentSent() {
 			if (DEBUG) {
-				LogTools.info(logger, "MeemPathResolverClientImpl contentSent.");
+				logger.log(Level.INFO, "MeemPathResolverClientImpl contentSent.");
 			}
 			//cleanup();
 		}
 
 		public void contentFailed(String reason) {
 			if (DEBUG) {
-				LogTools.info(logger, "MeemPathResolverClientImpl Could not resolve meem: " + reason);
+				logger.log(Level.INFO, "MeemPathResolverClientImpl Could not resolve meem: " + reason);
 			}
 			//cleanup();
 		}
@@ -418,7 +419,7 @@ public class FacetHandler <T extends Facet> {
 			/// handle a meem that has been removed
 			if (LifeCycleState.ABSENT.equals(lifeCycleState)) {
 				if (DEBUG) {
-					LogTools.info(logger,"meem is absent: " + meemPath);
+					logger.log(Level.INFO, "meem is absent: " + meemPath);
 				}
 				meem(null);
 			}

@@ -15,9 +15,10 @@ package org.openmaji.implementation.server.manager.lifecycle.category;
 import java.util.*;
 
 import org.openmaji.implementation.server.Common;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import org.openmaji.meem.Meem;
@@ -49,7 +50,7 @@ import org.openmaji.system.space.CategoryEntry;
  */
 public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, LifeCycleManagementClientCategory, Wedge {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	public MeemContext meemContext;
 
@@ -174,7 +175,7 @@ public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, 
 
 			CategoryEntry categoryEntry = new CategoryEntry(entryName, meem);
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, Common.getLogLevelVerbose(), "addEntry: " + entryName + " : " + categoryEntry);
+				logger.log(Common.getLogLevelVerbose(), "addEntry: " + entryName + " : " + categoryEntry);
 			}
 			entries.put(entryName, categoryEntry);
 
@@ -191,7 +192,7 @@ public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, 
 		public void removeEntry(String entryName) {
 			CategoryEntry categoryEntry = (CategoryEntry) entries.remove(entryName);
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, Common.getLogLevelVerbose(), "removeEntry: " + entryName + " : " + categoryEntry);
+				logger.log(Common.getLogLevelVerbose(), "removeEntry: " + entryName + " : " + categoryEntry);
 			}
 			if (categoryEntry != null) {
 

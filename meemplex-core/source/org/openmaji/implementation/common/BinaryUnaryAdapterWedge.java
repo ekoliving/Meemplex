@@ -6,9 +6,10 @@
  */
 package org.openmaji.implementation.common;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.common.Binary;
 import org.openmaji.common.Unary;
@@ -30,7 +31,7 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
  * 
  */
 public class BinaryUnaryAdapterWedge implements Binary, Wedge, WedgeDefinitionProvider {
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 	/**
 	 * Outbound Unary facet
 	 */
@@ -61,11 +62,11 @@ public class BinaryUnaryAdapterWedge implements Binary, Wedge, WedgeDefinitionPr
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 
 	public void setBinaryValue (String string){
-  		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"setBinaryValue() - invoked");
+  		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "setBinaryValue() - invoked");
 		this.binaryValue = string;
 	}
 	/*public void validate() throws WedgeValidationException{
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"validate() - invoked");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "validate() - invoked");
 		
 		if(binaryValue==null){
 			throw new WedgeValidationException("can't go ready because binaryValue is null");
@@ -76,7 +77,7 @@ public class BinaryUnaryAdapterWedge implements Binary, Wedge, WedgeDefinitionPr
 	 * Inbound Binary facet Implementation
 	 */
 	public void valueChanged(boolean newValue) {
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on inbound facet");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on inbound facet");
 		String binaryString=binaryValue.trim();
 		if(newValue){
 			if(binaryString.equalsIgnoreCase("true")){

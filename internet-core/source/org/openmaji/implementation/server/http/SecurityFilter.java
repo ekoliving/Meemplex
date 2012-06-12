@@ -8,6 +8,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -210,7 +211,7 @@ public class SecurityFilter implements Filter {
 		pw.println ("</PRE>");
 		pw.flush();
 
-		logger.info(writer.toString());
+		logger.log(Level.INFO, writer.toString());
 
 		// TODO return subject containing the certificate
 		return null;

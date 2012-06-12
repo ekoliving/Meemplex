@@ -13,6 +13,7 @@
 package org.openmaji.implementation.server.manager.lifecycle.adapter.meemstore;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.meem.wedge.lifecycle.SystemLifeCycleClientAdapter;
@@ -175,7 +176,7 @@ public class MeemStoreAdapterWedge implements Wedge, MeemDefinitionClient, MeemC
 		 * 
 		 */
 		public void storeMeemContent(MeemPath meemPath, MeemContent meemContent) {
-			logger.info("store meem content: " + meemPath);
+			logger.log(Level.INFO, "store meem content: " + meemPath);
 			
 			meemStore.storeMeemContent(meemPath, meemContent);
 		}

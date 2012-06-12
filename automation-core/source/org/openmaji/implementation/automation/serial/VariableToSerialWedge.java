@@ -12,9 +12,10 @@ import javax.comm.SerialPort;
 import javax.comm.SerialPortEvent;
 import javax.comm.SerialPortEventListener;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.meem.MeemContext;
 import org.openmaji.meem.Wedge;
@@ -76,7 +77,7 @@ turns off: kill all line by obeying the echoprt and echoe settings
  */
 public class VariableToSerialWedge implements Wedge, Variable {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	public MeemContext meemContext;
 	
@@ -156,7 +157,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 		portId = getSerialPort(devString);
 		
 		if (portId == null) {
-			LogTools.info(logger, "Could not find port: " + devString);			
+			logger.log(Level.INFO, "Could not find port: " + devString);			
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 			return;
 		}
@@ -165,7 +166,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 			serialPort = (SerialPort) portId.open("SerialWedge", 2000);
 		}
 		catch (PortInUseException e) {
-			LogTools.info(logger, "Serial port already in use", e);
+			logger.log(Level.INFO, "Serial port already in use", e);
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 			return;
 		}
@@ -178,7 +179,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 //					SerialPort.PARITY_NONE);
 //		}
 //		catch (UnsupportedCommOperationException e) {
-//			LogTools.info(logger, "Could not set port prameters", e);
+//			logger.log(Level.INFO, "Could not set port prameters", e);
 //			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 //			return;
 //		}
@@ -188,7 +189,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 			outputStream = serialPort.getOutputStream();
 		}
 		catch (IOException e) {
-			LogTools.info(logger, "Problem getting output stream", e);
+			logger.log(Level.INFO, "Problem getting output stream", e);
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 			return;
 		}
@@ -198,7 +199,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 			inputStream = serialPort.getInputStream();
 		}
 		catch (IOException e) {
-			LogTools.info(logger, "Problem getting input stream", e);
+			logger.log(Level.INFO, "Problem getting input stream", e);
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 			return;
 		}
@@ -207,7 +208,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 			serialPort.addEventListener(new SerialPortListener());
 		}
 		catch (TooManyListenersException e) {
-			LogTools.info(logger, "Too many listeners on serial port", e);
+			logger.log(Level.INFO, "Too many listeners on serial port", e);
 			lifeCycleControlConduit.vote(meemContext.getWedgeIdentifier(), false);
 			return;
 		}
@@ -267,7 +268,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 			outputStream.write(command.getBytes());
 		}
 		catch (IOException e) {
-			LogTools.info(logger, "Could not write to port output stream");
+			logger.log(Level.INFO, "Could not write to port output stream");
 			return;
 		}
 	}
@@ -285,7 +286,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 			while (inputStream.available() > 0) {
 				int numBytes = inputStream.read(readBuffer);
                 if ( debugLevel > 0 ) {
-                  LogTools.info(logger,HexHelper.toHexString(readBuffer,numBytes).toString());
+                  logger.log(Level.INFO, HexHelper.toHexString(readBuffer,numBytes).toString());
                 }
                 String str = new String(readBuffer, 0, numBytes);
 				Value value = new StringValue(str);
@@ -293,7 +294,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 			}
 		}
 		catch (IOException e) {
-			LogTools.info(logger, "Problem reading from input stream");
+			logger.log(Level.INFO, "Problem reading from input stream");
 		}
 	}
 

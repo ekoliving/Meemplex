@@ -16,89 +16,77 @@ import org.openmaji.meem.wedge.lifecycle.*;
  * <p>
  * Utility class for testing Meems outside of a MeemServer.
  * </p>
+ * 
  * <pre>
- * public static void main(
- *   String[] args) {
- *    
- *   try {
- *     testWedge testWedge = new TestWedge();
- *     testWedge.meemContext = MeemContextUtility.getMeemContext();
- *     testWedge.lifeCycleControlConduit = MeemContextUtility.getVote();
- *
- *     testWedge.commence();
- *     testWedge.valueChanged();
- *   }
- *   catch (Exception exception) {
- *     LogTools.error(logger, "TestWedge error: ", exception);
- *   }
+ * public static void main(String[] args) {
+ * 
+ * 	try {
+ * 		testWedge testWedge = new TestWedge();
+ * 		testWedge.meemContext = MeemContextUtility.getMeemContext();
+ * 		testWedge.lifeCycleControlConduit = MeemContextUtility.getVote();
+ * 
+ * 		testWedge.commence();
+ * 		testWedge.valueChanged();
+ * 	} catch (Exception exception) {
+ * 		logger.log(Level.WARNING, &quot;TestWedge error: &quot;, exception);
+ * 	}
  * }
  * </pre>
  */
 
 public class TestHarness {
 
-  public static MeemContext getMeemContext() {
-    MeemContext meemContext = new MeemContext() {
-      public Object getImmutableAttribute(
-        Object key)
-        throws IllegalArgumentException {
+	public static MeemContext getMeemContext() {
+		MeemContext meemContext = new MeemContext() {
+			public Object getImmutableAttribute(Object key)
+					throws IllegalArgumentException {
 
-        return(null);
-      }
+				return (null);
+			}
 
-      public Facet getLimitedTargetFor(
-        Facet facet,
-        Class specfication) {
+			public <T extends Facet> T getLimitedTargetFor(T facet,
+					java.lang.Class<T> specification) {
+				return null;
+			};
 
-        return(null);
-      }
+			public <T extends Facet> T getNonBlockingTargetFor(T facet,
+					Class<T> specification) {
 
-      public Facet getNonBlockingTargetFor(
-        Facet facet,
-        Class specification) {
+				return (null);
+			}
 
-        return(null);
-      }
+			public Meem getSelf() {
+				return (null);
+			}
 
-      public Meem getSelf() {
-        return(null);
-      }
+			public Facet getTarget(String facetIdentifier) {
 
-      public Facet getTarget(
-        String facetIdentifier) {
+				return (null);
+			}
 
-        return(null);
-      }
+			public <T extends Facet> T getTargetFor(T facet, Class<T> specification) {
 
-      public Facet getTargetFor(
-        Facet facet,
-        Class specification) {
+				return (null);
+			}
 
-        return(null);
-      }
+			public String getWedgeIdentifier() {
+				return (null);
+			}
+		};
 
-      public String getWedgeIdentifier() {
-        return(null);
-      }
-    };
+		return (meemContext);
+	}
 
-    return(meemContext);
-  }
+	public static Vote getVote() {
+		Vote vote = new Vote() {
+			public void vote(String voterIdentification, boolean goodToGo) {
+			}
 
-  public static Vote getVote() {
-    Vote vote = new Vote() {
-      public void vote(
-        String  voterIdentification,
-        boolean goodToGo) {
-      }
+			public void vote(String voterIdentification,
+					LifeCycleTransition lifeCycleTransition, boolean goodToGo) {
+			}
+		};
 
-      public void vote(
-        String              voterIdentification,
-        LifeCycleTransition lifeCycleTransition,
-        boolean             goodToGo) {
-      }
-    };
-    
-    return(vote);
-  }
+		return (vote);
+	}
 }

@@ -25,9 +25,10 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.system.meem.hook.HookProcessor;
 import org.openmaji.system.meem.hook.flightrecorder.FlightRecorderHook;
 import org.openmaji.system.meem.hook.invoke.Invocation;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -89,7 +90,7 @@ public class FlightRecorderHookWedge implements FlightRecorderHook, Wedge {
     {
 		String description = invocation.getDescription(detailed);
 	
-	    LogTools.info(logger, description);
+	    logger.log(Level.INFO, description);
     }
 
     return true;
@@ -122,5 +123,5 @@ public class FlightRecorderHookWedge implements FlightRecorderHook, Wedge {
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 }

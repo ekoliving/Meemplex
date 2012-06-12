@@ -49,9 +49,10 @@ import org.openmaji.system.space.Category;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.openmaji.system.utility.CategoryUtility;
 import org.openmaji.system.utility.MeemUtility;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The SubsystemWedge is a standard component that can be used by every subsystem meem to stop and start a subsystem. The subsystem developer is expected to write a domain specific
@@ -60,7 +61,7 @@ import org.swzoo.log2.core.Logger;
  * @author Chris Kakris
  */
 public class SubsystemWedge implements Wedge, Subsystem {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public MeemContext meemContext;
 
@@ -125,7 +126,7 @@ public class SubsystemWedge implements Wedge, Subsystem {
 	/* --------------- Meem functionality ------------------------------------- */
 
 	public void commence() {
-		LogTools.info(logger, "Subsystem started: " + meemCore.getMeemPath() + " : " + meemCore.getMeemStructure().getMeemAttribute().getIdentifier());
+		logger.log(Level.INFO, "Subsystem started: " + meemCore.getMeemPath() + " : " + meemCore.getMeemStructure().getMeemAttribute().getIdentifier());
 
 		lifeCycleManager = (LifeCycleManager) meemContext.getTarget("lifeCycleManager");
 
@@ -137,7 +138,7 @@ public class SubsystemWedge implements Wedge, Subsystem {
 	}
 
 	public void conclude() {
-		LogTools.info(logger, "Subsystem stopped: " + meemCore.getMeemPath() + " : " + meemCore.getMeemStructure().getMeemAttribute().getIdentifier());
+		logger.log(Level.INFO, "Subsystem stopped: " + meemCore.getMeemPath() + " : " + meemCore.getMeemStructure().getMeemAttribute().getIdentifier());
 	}
 
 	/* ---------- ConfigurationChangeHandler listener ------------------------------- */
@@ -197,7 +198,7 @@ public class SubsystemWedge implements Wedge, Subsystem {
 	private void createSubsystemCategory() {
 
 		if (hyperSpacePath == null) {
-			LogTools.error(logger, "Subsystem HyperSpace Category Path not initialized");
+			logger.log(Level.WARNING, "Subsystem HyperSpace Category Path not initialized");
 			return;
 		}
 
@@ -311,7 +312,7 @@ public class SubsystemWedge implements Wedge, Subsystem {
 		}
 
 		public void activationFailed(MeemPath meemPath) {
-			LogTools.error(logger, "activationFailed() - Meem in subsystem failed to activate: " + meemPath);
+			logger.log(Level.WARNING, "activationFailed() - Meem in subsystem failed to activate: " + meemPath);
 		}
 	};
 

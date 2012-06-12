@@ -2,6 +2,7 @@ package org.openmaji.implementation.diagnostic.util;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class TestInvocationHandler implements InvocationHandler {
@@ -36,7 +37,7 @@ public final class TestInvocationHandler implements InvocationHandler {
 				}
 				sb.append(arguments[i]);
 			}
-			logger.info("Called " + object + "." + method.getName() + "(" + sb + ")");
+			logger.log(Level.INFO, "Called " + object + "." + method.getName() + "(" + sb + ")");
 		}
 		
 		return null;

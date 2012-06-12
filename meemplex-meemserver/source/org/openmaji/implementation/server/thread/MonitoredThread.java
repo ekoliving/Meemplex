@@ -11,9 +11,10 @@ package org.openmaji.implementation.server.thread;
 
 
 import org.openmaji.implementation.server.Common;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -88,7 +89,7 @@ public class MonitoredThread
 						wait();
 					}
 					catch (InterruptedException ex) {
-						LogTools.trace(logger, Common.getLogLevel(), "Interrupted monitored thread");
+						logger.log(Common.getLogLevel(), "Interrupted monitored thread");
 						break;
 					}
 				}
@@ -164,5 +165,5 @@ public class MonitoredThread
   }
   
   /**  logger */
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 }

@@ -25,7 +25,8 @@ import org.openmaji.system.manager.lifecycle.LifeCycleAdapter;
 import org.openmaji.system.manager.lifecycle.LifeCycleAdapterClient;
 import org.openmaji.system.meem.wedge.reference.MeemClientCallback;
 import org.openmaji.system.meem.wedge.reference.MeemClientConduit;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ import org.swzoo.log2.core.*;
  */
 public class LifeCycleAdapterWedge implements Wedge {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final boolean DEBUG = false;
 	
@@ -65,7 +66,7 @@ public class LifeCycleAdapterWedge implements Wedge {
 	private final class LifeCycleAdapterConduit implements LifeCycleAdapter {
 		public void changeLifeCycleState(Meem meem, final LifeCycleState lifeCycleState) {
 			if (DEBUG) {
-				LogTools.info(logger, "changing meem state: " + meem.getMeemPath() + lifeCycleState);
+				logger.log(Level.INFO, "changing meem state: " + meem.getMeemPath() + lifeCycleState);
 			}
 			new ChangeTask(meem, lifeCycleState);
 		}
@@ -90,7 +91,7 @@ public class LifeCycleAdapterWedge implements Wedge {
 			meem.addOutboundReference(reference, false);
 
 			if (DEBUG) {
-				LogTools.info(logger, "getting reference to lifeCycle: " + meem.getMeemPath());
+				logger.log(Level.INFO, "getting reference to lifeCycle: " + meem.getMeemPath());
 			}
 			meemClientConduit.provideReference(meem, "lifeCycle", LifeCycle.class, this);
 		}
@@ -103,7 +104,7 @@ public class LifeCycleAdapterWedge implements Wedge {
 				meem.removeOutboundReference(reference);
 
 				if (DEBUG) {
-					LogTools.info(logger, "lifeCycleStateChanged: " + meem.getMeemPath() + " - " + transition);
+					logger.log(Level.INFO, "lifeCycleStateChanged: " + meem.getMeemPath() + " - " + transition);
 				}
 				
 				// notify clients
@@ -122,12 +123,12 @@ public class LifeCycleAdapterWedge implements Wedge {
 		 */
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-					LogTools.info(logger, "change - no lifeCycle facet can't change.");
+					logger.log(Level.INFO, "change - no lifeCycle facet can't change.");
 				return;
 			}
 			
 			if (DEBUG) {
-				LogTools.info(logger, "got reference to lifeCycle: " + meem.getMeemPath());
+				logger.log(Level.INFO, "got reference to lifeCycle: " + meem.getMeemPath());
 			}
 
 			LifeCycle lifeCycle = (LifeCycle) reference.getTarget();
@@ -169,7 +170,7 @@ public class LifeCycleAdapterWedge implements Wedge {
 		 */
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-					LogTools.info(logger, "limit - no lifeCycleLimit facet can't limit.");
+					logger.log(Level.INFO, "limit - no lifeCycleLimit facet can't limit.");
 				return;
 			}
 

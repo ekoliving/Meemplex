@@ -14,6 +14,7 @@ package org.openmaji.implementation.server.space.meemstore;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.space.meemstore.content.MeemStoreContentStore;
@@ -92,7 +93,7 @@ public class MeemStoreWedge
 				valueSet = meemPaths.values();
 	
 				if (filter == null) {
-					logger.info("!!!! No filter for meem content client");
+					logger.log(Level.INFO, "!!!! No filter for meem content client");
 					
 					for (MeemPath meemPath : valueSet) {
 						meemContentClient.meemContentChanged(meemPath, contentStore.load(meemPath));
@@ -131,7 +132,7 @@ public class MeemStoreWedge
 				valueSet = meemPaths.values();
 
 				if (filter == null) {
-					logger.info("!!!! No filter for meem definition client");
+					logger.log(Level.INFO, "!!!! No filter for meem definition client");
 					for (MeemPath meemPath : valueSet) {
 						meemDefinitionClient.meemDefinitionChanged(meemPath, definitionStore.load(meemPath));
 					}
@@ -227,7 +228,7 @@ public class MeemStoreWedge
 
 	public void storeMeemContent(MeemPath meemPath, MeemContent meemContent) {
 		if (DEBUG) {
-			logger.info("storing meem content: " + meemPath);
+			logger.log(Level.INFO, "storing meem content: " + meemPath);
 		}
 
 		// only store meemstore paths
@@ -257,7 +258,7 @@ public class MeemStoreWedge
 
 	public void storeMeemDefinition(MeemPath meemPath, MeemDefinition meemDefinition) {
 		if (DEBUG) {
-			logger.info("storing meem def: " + meemPath);
+			logger.log(Level.INFO, "storing meem def: " + meemPath);
 		}
 
 		// only store meemstore paths
@@ -276,7 +277,7 @@ public class MeemStoreWedge
 				}
 			} else {
 				//definition version number is same or smaller than the persisted one
-				//LogTools.warn(logger, "Request to persist MeemDefinition with lower version number than most recent version");
+				//logger.log(Level.WARNING, "Request to persist MeemDefinition with lower version number than most recent version");
 			}
 		}
 	}

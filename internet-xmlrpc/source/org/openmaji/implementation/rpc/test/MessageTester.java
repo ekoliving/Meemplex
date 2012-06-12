@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -34,10 +35,10 @@ public class MessageTester {
 		try {
 			MessageTester tester = new MessageTester();
 			
-			logger.info("creating client...");
+			logger.log(Level.INFO, "creating client...");
 			XmlRpcClient client = tester.getClient();
 			
-			logger.info("create client");
+			logger.log(Level.INFO, "create client");
 			Thread.sleep(1000);
 			
 			List<Object> setParams = new ArrayList<Object>();
@@ -45,38 +46,38 @@ public class MessageTester {
 			Object result;
 			
 			result = client.execute("test.getMap", getParams);
-			logger.info("got map: " + result);
+			logger.log(Level.INFO, "got map: " + result);
 			Thread.sleep(1000);
 			
 			result = client.execute("test.getList", getParams);
-			logger.info("got list: " + result);
-			logger.info("got list: " + (Object[])result);
-			logger.info("got item: " + ((Object[])result)[0]);
+			logger.log(Level.INFO, "got list: " + result);
+			logger.log(Level.INFO, "got list: " + (Object[])result);
+			logger.log(Level.INFO, "got item: " + ((Object[])result)[0]);
 			Thread.sleep(1000);
 			
 			result = client.execute("test.getMessage", getParams);
-			logger.info("got message: " + result);
+			logger.log(Level.INFO, "got message: " + result);
 			Thread.sleep(1000);
 			
 			setParams.add("Cheese");
 			client.execute("test.putMessage", setParams);
 			
 			result = client.execute("test.getMessage", getParams);
-			logger.info("got message: " + result);
+			logger.log(Level.INFO, "got message: " + result);
 			Thread.sleep(1000);
 			
 			setParams.set(0, "Meister");
 			client.execute("test.putMessage", setParams);
 			
 			result = client.execute("test.getMessage", getParams);
-			logger.info("got message: " + result);
+			logger.log(Level.INFO, "got message: " + result);
 			Thread.sleep(1000);
 			
 			setParams.set(0, new String[] {"Give", " Me", " a", " Break"});
 			client.execute("test.putMessages", setParams);
 			
 			result = client.execute("test.getMessage", getParams);
-			logger.info("got message: " + result);
+			logger.log(Level.INFO, "got message: " + result);
 		}
 		catch (Throwable t) {
 			t.printStackTrace();

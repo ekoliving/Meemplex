@@ -28,9 +28,10 @@ import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -90,7 +91,7 @@ public class CategoryHelper {
 			return (Map<String, CategoryEntry>) pigeonHole.get(TIMEOUT);
 		}
 		catch (TimeoutException e) {
-			LogTools.info(logger, "Timeout waiting for CategoryEntries", e);
+			logger.log(Level.INFO, "Timeout waiting for CategoryEntries", e);
 			return null;
 		}
 		finally {
@@ -112,7 +113,7 @@ public class CategoryHelper {
 			return (CategoryEntry) pigeonHole.get(TIMEOUT);
 		}
 		catch (TimeoutException e) {
-			LogTools.info(logger, "Timeout waiting for CategoryEntry", e);
+			logger.log(Level.INFO, "Timeout waiting for CategoryEntry", e);
 			return null;
 		}
 		finally {
@@ -193,5 +194,5 @@ public class CategoryHelper {
 
 	private static final long TIMEOUT = Long.parseLong(System.getProperty(ReferenceHelper.PIGEONHOLE_TIMEOUT, "30000"));
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

@@ -30,7 +30,7 @@ import org.openmaji.system.utility.MeemUtility;
  */
 public class GenericSubsystemWedge implements Wedge {
 
-	//private static final Logger logger = LogFactory.getLogger();
+	//private static final Logger logger = Logger.getAnonymousLogger();
 
 	public SubsystemCommissionControl commissionControlConduit = new CommissionControlConduit();
 
@@ -67,13 +67,13 @@ public class GenericSubsystemWedge implements Wedge {
 
 			//      if ( myHyperSpacePath == null || myHyperSpacePath.length() == 0 )
 			//      {
-			//        LogTools.error(logger,"createMeem() - HyperSpace path has not been configured");
+			//        logger.log(Level.WARNING, "createMeem() - HyperSpace path has not been configured");
 			//        return;
 			//      }
 
 			String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 			if (identifier == null || identifier.length() == 0) {
-				LogTools.error(logger, "createMeem() - identifier not set in MeemDefinition");
+				logger.log(Level.WARNING, "createMeem() - identifier not set in MeemDefinition");
 				return;
 			}
 
@@ -96,11 +96,11 @@ public class GenericSubsystemWedge implements Wedge {
 				return;
 			}
 
-//			LogTools.error(logger, "meemCreated() - unexpected meem, identifier=[" + identifier + "]");
+//			logger.log(Level.WARNING, "meemCreated() - unexpected meem, identifier=[" + identifier + "]");
 		}
 
 		public void meemDestroyed(Meem arg0) {
-//			LogTools.error(logger, "meemDestroyed() - TODO: finish this ?");
+//			logger.log(Level.WARNING, "meemDestroyed() - TODO: finish this ?");
 		}
 
 		public void meemTransferred(Meem arg0, LifeCycleManager arg1) {

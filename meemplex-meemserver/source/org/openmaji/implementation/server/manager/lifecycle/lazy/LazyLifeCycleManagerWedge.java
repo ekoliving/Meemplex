@@ -59,9 +59,10 @@ import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceClient;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.utility.uid.UID;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -131,7 +132,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 
 					if (meem != null) {
 						if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-							LogTools.trace(logger, logLevel, "Already activated Meem: " + meemPath + " : " + meem);
+							logger.log(logLevel, "Already activated Meem: " + meemPath + " : " + meem);
 						}
 
 						meemRegistryClient.meemRegistered(meem);
@@ -147,7 +148,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 							activatingMeems.put(meemPath, clients);
 
 							if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-								LogTools.trace(logger, logLevel, "Lazily activating Meem: " + meemPath);
+								logger.log(logLevel, "Lazily activating Meem: " + meemPath);
 							}
 
 							shouldActivate = true;
@@ -293,8 +294,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 		MeemPath selfPath = self.getMeemPath();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(
-				logger,
+			logger.log(
 				logLevel,
 				"Transferring meem " + meem + " to LCM " + targetLifeCycleManager + " from LCM " + selfPath);
 		}
@@ -315,7 +315,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 		else {
 			if (isMyLCM) {
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-					LogTools.trace(logger, logLevel, "Transferring to self");
+					logger.log(logLevel, "Transferring to self");
 				}
 
 				// all we need to do is to activate the meem
@@ -333,7 +333,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 				lifeCycleManagerClientConduit.meemTransferred(meem, targetLifeCycleManager);
 			}
 			else {
-				LogTools.error(logger, "Transfers must be initiated by the source or target LCM");
+				logger.log(Level.WARNING, "Transfers must be initiated by the source or target LCM");
 			}
 		}
 	}
@@ -346,7 +346,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 		String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Meem created: " + identifier + " : " + meemPath);
+			logger.log(logLevel, "Meem created: " + identifier + " : " + meemPath);
 		}
 		
 		activatedMeems.put(meemPath, meem);
@@ -398,7 +398,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 					lifeCycleAdapterConduit.limitLifeCycleState(meem, initialState);
 				} else {
 					if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-						LogTools.trace(logger, logLevel, "About to make " + initialState + " : " + meem.getMeemPath());
+						logger.log(logLevel, "About to make " + initialState + " : " + meem.getMeemPath());
 					}
 
 					lifeCycleAdapterConduit.changeLifeCycleState(meem, initialState);
@@ -448,7 +448,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 		 */
 		public void activated(final MeemPath meemPath, final Meem meem, MeemDefinition meemDefinition) {
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "****** Lazily Activated " + meemPath);
+				logger.log(logLevel, "****** Lazily Activated " + meemPath);
 			}
 
 			meemRegistryClient.meemRegistered(meem);
@@ -524,7 +524,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 		 */
 		public void contentSent() {
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-				LogTools.trace(logger, logLevel, "Startup Category contentSent done for : "
+				logger.log(logLevel, "Startup Category contentSent done for : "
 					+ meemContext.getSelf().getMeemPath());
 			}
 
@@ -673,10 +673,10 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 	/**
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
-	private static final int logLevel = Common.getLogLevelVerbose();
+	private static final Level logLevel = Common.getLogLevelVerbose();
 }

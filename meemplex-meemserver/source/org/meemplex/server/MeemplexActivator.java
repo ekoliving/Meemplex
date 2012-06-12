@@ -6,6 +6,7 @@ import java.net.URL;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -59,7 +60,7 @@ public class MeemplexActivator implements BundleActivator {
 	 * Start the Bundle
 	 */
 	public void start(BundleContext bc) throws Exception {
-		logger.info("Starting " + bc.getBundle().getSymbolicName());
+		logger.log(Level.INFO, "Starting " + bc.getBundle().getSymbolicName());
 		
 		this.bundleContext = bc;
 		
@@ -68,10 +69,10 @@ public class MeemplexActivator implements BundleActivator {
 
 		if (HyperSpaceHelper.getInstance().isHyperSpaceSet()) {
 			Meem systemMeem = MeemPathResolverHelper.getInstance().resolveMeemPath(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM));
-			logger.info("got hyperspace: " + (systemMeem !=null) );
+			logger.log(Level.INFO, "got hyperspace: " + (systemMeem !=null) );
 		}
 		else {
-			logger.info("hyperspace not yet set");
+			logger.log(Level.INFO, "hyperspace not yet set");
 		}
 		
 		// get hyperspace before handling meemkits
@@ -118,7 +119,7 @@ public class MeemplexActivator implements BundleActivator {
 		try {
 			URL entry = bundleContext.getBundle().getEntry("/");
 			String path = FileLocator.toFileURL(entry).getPath(); 
-			logger.info("URL to MeemServer bundle is: " + path);
+			logger.log(Level.INFO, "URL to MeemServer bundle is: " + path);
 			meemplexPath = path;
 		}
 		catch (IOException e) {
@@ -130,7 +131,7 @@ public class MeemplexActivator implements BundleActivator {
 //		URLConverter urlConverter = (URLConverter) bc.getService(ref);
 //		meemplexPath = urlConverter.toFileURL(meemplexEntry).getPath();
 		
-		logger.info("launching meemplex. base directory: " + meemplexPath);
+		logger.log(Level.INFO, "launching meemplex. base directory: " + meemplexPath);
 
 		// set up system properties
 		if (System.getProperty(PROP_HOME) == null) {
@@ -151,7 +152,7 @@ public class MeemplexActivator implements BundleActivator {
 		@Override
 		public void serviceChanged(ServiceEvent se) {
 			
-			//logger.info("MeemKitListener: serviceChanged " + se.getType());
+			//logger.log(Level.INFO, "MeemKitListener: serviceChanged " + se.getType());
 			
 			@SuppressWarnings("unchecked")
 			ServiceReference<MeemkitService> sr = (ServiceReference<MeemkitService>) se.getServiceReference();
@@ -177,7 +178,7 @@ public class MeemplexActivator implements BundleActivator {
 
 		String filter = "(" + Constants.OBJECTCLASS + "=" + MeemkitService.class.getCanonicalName() + ")";
 		
-		logger.info("service filter = " + filter);
+		logger.log(Level.INFO, "service filter = " + filter);
 		
 		bc.addServiceListener(meemkitListener, filter);
 		
@@ -194,12 +195,12 @@ public class MeemplexActivator implements BundleActivator {
 	 * 
 	 */
 	private void loadMeemkit(String name, MeemkitService meemkit) {
-		logger.info("loading meemkit: " + name);
+		logger.log(Level.INFO, "loading meemkit: " + name);
 		final MeemkitDescriptor meemkitDescriptor = meemkit.getDescriptor();
 		
 //		if (meemkitDescriptor != null) {
 //			MeemkitHeader header = meemkitDescriptor.getHeader();
-//			logger.info("meemkit descriptor: " + header);
+//			logger.log(Level.INFO, "meemkit descriptor: " + header);
 //		}
 		
 		/* */
@@ -208,7 +209,7 @@ public class MeemplexActivator implements BundleActivator {
 		// TODO load singletons
 
 		if (INSTALL_PATTERNS) {
-			//logger.info("installing pattern meems...");
+			//logger.log(Level.INFO, "installing pattern meems...");
 	
 			try {
 				ServerGateway gateway = ServerGateway.spi.create(MeemCoreRootAuthority.getSubject());
@@ -277,7 +278,7 @@ public class MeemplexActivator implements BundleActivator {
 	 * 
 	 */
 	private void unloadMeemkit(String name) {
-		logger.info("unloading meemkit: " + name);
+		logger.log(Level.INFO, "unloading meemkit: " + name);
 
 		// TODO remove singletons
 		// TODO remove pattern meems

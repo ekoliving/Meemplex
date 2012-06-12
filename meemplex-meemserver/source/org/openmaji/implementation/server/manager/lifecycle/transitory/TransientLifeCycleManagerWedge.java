@@ -31,7 +31,8 @@ import org.openmaji.system.manager.lifecycle.LifeCycleAdapterClient;
 import org.openmaji.system.manager.lifecycle.LifeCycleManager;
 import org.openmaji.system.manager.lifecycle.LifeCycleManagerClient;
 import org.openmaji.utility.uid.UID;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -49,12 +50,12 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 	/**
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
-	private static final int logLevel = Common.getLogLevelVerbose();
+	private static final Level logLevel = Common.getLogLevelVerbose();
 		
 	private final static boolean DEBUG = false;
 	
@@ -120,7 +121,7 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 		categoryPaths.add(meemPath);
 
 		if (DEBUG) {
-			LogTools.info(logger, "building meem: " + meemDefinition.getMeemAttribute().getIdentifier());
+			logger.log(Level.INFO, "building meem: " + meemDefinition.getMeemAttribute().getIdentifier());
 		}
 		lifeCycleManagerMiscConduit.buildMeem(meemPath, meemDefinition, WEDGE_ID);
 	}
@@ -151,7 +152,7 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 	
 	private void notifyClients(MeemPath meemPath) {
 		if (DEBUG) {
-			LogTools.info(logger, "notifying clients of meem created: " + meemPath);
+			logger.log(Level.INFO, "notifying clients of meem created: " + meemPath);
 		}
 		initialLifeCycleStates.remove(meemPath);
 		MeemDefinition meemDefinition = (MeemDefinition) meemDefinitions.remove(meemPath);
@@ -160,7 +161,7 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 		String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-			LogTools.trace(logger, logLevel, "Meem created: " + identifier + " : " + meemPath);
+			logger.log(logLevel, "Meem created: " + identifier + " : " + meemPath);
 		}
 
 		//	------------------------------------------------
@@ -177,12 +178,12 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 		 */
 		public void meemBuilt(MeemPath meemPath, final Meem meem, int requestId) {
 			if (DEBUG) {
-				LogTools.info(logger, "meem built: " + meemPath);
+				logger.log(Level.INFO, "meem built: " + meemPath);
 			}
 
 			if (requestId == WEDGE_ID) {
 				if (DEBUG) {
-					LogTools.info(logger, "meem built request is from this: " + meemPath);
+					logger.log(Level.INFO, "meem built request is from this: " + meemPath);
 				}
 				meems.put(meemPath, meem);
 
@@ -201,11 +202,11 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 		 */
 		public void lifeCycleReferenceAdded(Meem meem) {
 			if (DEBUG) {
-				LogTools.info(logger, "lifeCycleReferenceAdded: " + meem);
+				logger.log(Level.INFO, "lifeCycleReferenceAdded: " + meem);
 			}
 			if (meems.containsValue(meem)) {
 				if (DEBUG) {
-					LogTools.info(logger, "lifeCycleReferenceAdded is for this: " + meem);
+					logger.log(Level.INFO, "lifeCycleReferenceAdded is for this: " + meem);
 				}
 				LifeCycleState initialState = (LifeCycleState) initialLifeCycleStates.get(meem.getMeemPath());
 				
@@ -216,7 +217,7 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 					lifeCycleAdapterConduit.limitLifeCycleState(meem, initialState);
 				} else {
 					if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
-						LogTools.trace(logger, logLevel, "About to make " + initialState + " : " + meem.getMeemPath());
+						logger.log(logLevel, "About to make " + initialState + " : " + meem.getMeemPath());
 					}
 
 					lifeCycleAdapterConduit.changeLifeCycleState(meem, initialState);
@@ -227,7 +228,7 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 		
 		public void meemDeactivated(MeemPath meemPath) {
 			if (DEBUG) {
-				LogTools.info(logger, "meemDeactivated: " + meemPath);
+				logger.log(Level.INFO, "meemDeactivated: " + meemPath);
 			}
 			
 			// remove lifecycle category entry
@@ -242,7 +243,7 @@ public class TransientLifeCycleManagerWedge implements LifeCycleManager, Wedge
 
 		public void lifeCycleStateChanged(MeemPath meemPath, LifeCycleTransition transition) {
 			if (DEBUG) {
-				LogTools.info(logger, "lifeCycleStateChanged: " + meemPath + " - " + transition);
+				logger.log(Level.INFO, "lifeCycleStateChanged: " + meemPath + " - " + transition);
 			}
 			Meem meem = (Meem) meems.get(meemPath);
 			if (meem != null) {

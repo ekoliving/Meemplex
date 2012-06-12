@@ -18,6 +18,8 @@
 
 package org.openmaji.implementation.server;
 
+import java.util.logging.Level;
+
 import org.openmaji.implementation.server.utility.TraceFlagUtility;
 
 /**
@@ -56,7 +58,7 @@ public final class Common {
 
   /**
    * Whether trace logging calls should be made.
-   * This field should be checked before every LogTools.trace() call.
+   * This field should be checked before every logger.log() call.
    */
 
   public static boolean TRACE_ENABLED    = false;
@@ -103,13 +105,13 @@ public final class Common {
    * Maji platform default logging level for log messages
    */
 
-  private static final int DEFAULT_LOG_LEVEL = 8;
+  private static final Level DEFAULT_LOG_LEVEL = Level.FINE;
 
   /**
    * Maji platform verbose logging level for log messages
    */
 
-  private static final int VERBOSE_LOG_LEVEL = 64;
+  private static final Level VERBOSE_LOG_LEVEL = Level.FINER;
 
   /**
    * Per MeemServer top level category containing system Meem information.
@@ -133,7 +135,7 @@ public final class Common {
    * @return Maji platform current logging level
    */
 
-  public static int getLogLevel() {
+  public static Level getLogLevel() {
     return(DEFAULT_LOG_LEVEL);
   }
 
@@ -143,7 +145,7 @@ public final class Common {
    * @return Maji platform verbose logging level
    */
 
-  public static int getLogLevelVerbose() {
+  public static Level getLogLevelVerbose() {
     return(VERBOSE_LOG_LEVEL);
   }
 

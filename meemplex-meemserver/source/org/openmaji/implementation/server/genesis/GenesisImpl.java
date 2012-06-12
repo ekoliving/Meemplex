@@ -41,7 +41,8 @@ import org.openmaji.system.meemserver.MeemServer;
 import org.openmaji.system.spi.MajiSystemProvider;
 import org.openmaji.system.spi.SpecificationEntry;
 import org.openmaji.system.spi.SpecificationType;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -116,9 +117,9 @@ public class GenesisImpl implements Genesis {
 
 	private void bigBangInternal() throws IllegalArgumentException {
 
-		LogTools.info(logger, Common.getIdentification() + " Initializing ...");
+		logger.log(Level.INFO, Common.getIdentification() + " Initializing ...");
 
-		LogTools.info(logger, "MeemSpace identifier: " + MeemSpace.getIdentifier());
+		logger.log(Level.INFO, "MeemSpace identifier: " + MeemSpace.getIdentifier());
 
 		String meemServerName = MeemServer.spi.getName();
 
@@ -126,7 +127,7 @@ public class GenesisImpl implements Genesis {
 			throw new RuntimeException("Empty meemServerName property: " + MeemServer.PROPERTY_MEEMSERVER_NAME);
 		}
 
-		LogTools.info(logger, "MeemServer name: " + meemServerName);
+		logger.log(Level.INFO, "MeemServer name: " + meemServerName);
 
 		// --------------------------------------
 		// Property for specifying the build date
@@ -134,7 +135,7 @@ public class GenesisImpl implements Genesis {
 		String buildDateString = System.getProperty(PROPERTY_BUILD_DATE);
 
 		if (buildDateString != null) {
-			LogTools.info(logger, "Build date: " + buildDateString);
+			logger.log(Level.INFO, "Build date: " + buildDateString);
 		}
 
 /*
@@ -203,7 +204,7 @@ public class GenesisImpl implements Genesis {
 
 		String profile = stringTokenizer.nextToken();
 
-		LogTools.info(logger, "Genesis profile: " + profile);
+		logger.log(Level.INFO, "Genesis profile: " + profile);
 
 		// -------------------------------------------------------------------
 		// Profile: Core essential Meems. Minimal Maji application environment
@@ -250,7 +251,7 @@ public class GenesisImpl implements Genesis {
 		MeemDefinitionFactory meemDefinitionFactory = MeemDefinitionFactory.spi.create();
 
 		for (String meemTypeIdentifier : essentialMeemIdentifiers) {
-			LogTools.info(logger, "Create essential Meem: " + meemTypeIdentifier);
+			logger.log(Level.INFO, "Create essential Meem: " + meemTypeIdentifier);
 
 			MeemDefinition meemDefinition = meemDefinitionFactory.createMeemDefinition(meemTypeIdentifier);
 
@@ -263,10 +264,10 @@ public class GenesisImpl implements Genesis {
 		//-ag- Make this PoolingThreadManagerWedge a singleton and "startup" in the constructor
 		PoolingThreadManagerWedge.startup();
 
-		LogTools.info(logger, "Starting EssentialLifeCycleManager");
+		logger.log(Level.INFO, "Starting EssentialLifeCycleManager");
 		essentialLifeCycleManager.start();
 
-		LogTools.info(logger, Common.getIdentification() + " ... initialized !");
+		logger.log(Level.INFO, Common.getIdentification() + " ... initialized !");
 	}
 
 	/**
@@ -319,5 +320,5 @@ public class GenesisImpl implements Genesis {
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

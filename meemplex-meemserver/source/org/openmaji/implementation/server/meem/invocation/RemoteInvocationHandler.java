@@ -37,9 +37,10 @@ import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.remote.RemoteMeem;
 import org.openmaji.system.space.resolver.MeemResolver;
 import org.openmaji.system.space.resolver.MeemResolverClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -115,8 +116,7 @@ public class RemoteInvocationHandler {
 //			System.err.println("*** meemResolved: " + meemPath + " : " + meem + " : " + this);
 			if (!meemPath.equals(this.meemPath))
 			{
-				LogTools.error(
-						logger, 
+				logger.log(Level.WARNING,
 						"BindTask.meemResolved() listening for: " + this.meemPath + " got " + meemPath);
 				return;
 			}
@@ -203,7 +203,7 @@ public class RemoteInvocationHandler {
 					reflectionInvocation.fail();
 					
 					tryAgain = false;
-					LogTools.info(logger, "remoteMeem is null");
+					logger.log(Level.INFO, "remoteMeem is null");
 					break;
 				}
 				else {
@@ -251,8 +251,7 @@ public class RemoteInvocationHandler {
 							types.append(reflectionInvocation.getArgs()[i].getClass());
 						}
 
-						LogTools.info(
-								logger, 
+						logger.log(Level.INFO,
 								"RemoteException while invoking majikInvocation: " + 
 									reflectionInvocation.getFacetIdentifier() + "." + 
 									remoteMethod.getName() + 
@@ -322,5 +321,5 @@ public class RemoteInvocationHandler {
 	/**
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

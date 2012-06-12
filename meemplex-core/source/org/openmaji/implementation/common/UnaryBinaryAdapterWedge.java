@@ -88,7 +88,7 @@ public class UnaryBinaryAdapterWedge implements Unary, Wedge, WedgeDefinitionPro
 
 	/*
 	 * public void validate() throws WedgeValidationException{ if (
-	 * DebugFlag.TRACE ) LogTools.trace(logger,20,"validate() - invoked");
+	 * DebugFlag.TRACE ) logger.log(Level.FINE, "validate() - invoked");
 	 * 
 	 * if(binaryValue==null){ throw new WedgeValidationException("can't go ready
 	 * because binaryValue is null"); }

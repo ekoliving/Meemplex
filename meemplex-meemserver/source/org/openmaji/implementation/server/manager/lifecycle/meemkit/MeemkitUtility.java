@@ -28,9 +28,10 @@ import org.openmaji.system.meemkit.core.MeemkitLibraryExport;
 import org.openmaji.system.meemkit.core.MeemkitVersion;
 import org.openmaji.system.meemkit.core.MeemkitWizardDescriptor;
 import org.openmaji.system.meemkit.core.ToolkitCategoryEntry;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -44,7 +45,7 @@ import org.xml.sax.SAXException;
 
 public class MeemkitUtility
 {	
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 
   private static EntityResolver entityResolver = null;
 	
@@ -80,7 +81,7 @@ public class MeemkitUtility
     }
     catch ( Exception ex )
     {
-      LogTools.error(logger,"createMeemkitHeader() - unable to parse meemkit descriptor "+filename,ex);
+      logger.log(Level.WARNING, "createMeemkitHeader() - unable to parse meemkit descriptor "+filename,ex);
       return null;
     }
 
@@ -107,7 +108,7 @@ public class MeemkitUtility
     }
     catch ( IllegalArgumentException ex )
     {
-      LogTools.error(logger,"createMeemkitHeader() - bad meemkit descriptor for "+filename,ex);
+      logger.log(Level.WARNING, "createMeemkitHeader() - bad meemkit descriptor for "+filename,ex);
     }
     
     MeemkitHeader header = new MeemkitHeader(meemkitVersion);
@@ -140,7 +141,7 @@ public class MeemkitUtility
     }
     catch ( Exception ex )
     {
-      LogTools.error(logger,"createMeemkitDescriptor() - unable to parse meemkit descriptor "+filename,ex);
+      logger.log(Level.WARNING, "createMeemkitDescriptor() - unable to parse meemkit descriptor "+filename,ex);
       return null;
     }
     
@@ -166,7 +167,7 @@ public class MeemkitUtility
     }
     catch ( Exception ex )
     {
-      LogTools.error(logger,"createMeemkitDescriptor() - unable to parse meemkit descriptor "+location,ex);
+      logger.log(Level.WARNING, "createMeemkitDescriptor() - unable to parse meemkit descriptor "+location,ex);
       return null;
     }
     
@@ -193,7 +194,7 @@ public class MeemkitUtility
     }
     catch ( Exception ex )
     {
-      LogTools.error(logger,"createMeemkitDescriptor() - unable to parse meemkit descriptor "+location+": "+ex.getMessage());
+      logger.log(Level.WARNING, "createMeemkitDescriptor() - unable to parse meemkit descriptor "+location+": "+ex.getMessage());
       return null;
     }
     
@@ -280,7 +281,7 @@ public class MeemkitUtility
       String path = getAttribute(element,"path");
       if ( name == null || path == null )
       {
-        LogTools.error(logger,"getToolkitCategoryEntries() - must specify path and name attributes for toolkit category entry in meemkit "+meemkitName);
+        logger.log(Level.WARNING, "getToolkitCategoryEntries() - must specify path and name attributes for toolkit category entry in meemkit "+meemkitName);
       }
       else
       {
@@ -323,7 +324,7 @@ public class MeemkitUtility
       }
       catch ( IllegalArgumentException ex )
       {
-        LogTools.error(logger,"setDependencies() - bad dependency specified for dependentMeemkit "+descriptor.getHeader().getName()+": "+ex.getMessage());
+        logger.log(Level.WARNING, "setDependencies() - bad dependency specified for dependentMeemkit "+descriptor.getHeader().getName()+": "+ex.getMessage());
       }
     }
 
@@ -359,7 +360,7 @@ public class MeemkitUtility
       }
       catch ( IllegalArgumentException ex )
       {
-        LogTools.error(logger,"setLibraries() - bad library specified "+descriptor.getHeader().getName()+": "+ex.getMessage());
+        logger.log(Level.WARNING, "setLibraries() - bad library specified "+descriptor.getHeader().getName()+": "+ex.getMessage());
       }
     }
 
@@ -386,13 +387,13 @@ public class MeemkitUtility
       String text = getAttribute(element,"text");
       if ( text == null )
       {
-        LogTools.error(logger,"The attribute 'text' is missing in the <wizard> tag for meemkit "+descriptor.getHeader().getName());
+        logger.log(Level.WARNING, "The attribute 'text' is missing in the <wizard> tag for meemkit "+descriptor.getHeader().getName());
         return;
       }
       String wizardClass = getAttribute(element,"wizardClass");
       if ( wizardClass == null )
       {
-        LogTools.error(logger,"The attribute 'wizardClass' is missing in the <wizard> tag for meemkit "+descriptor.getHeader().getName());
+        logger.log(Level.WARNING, "The attribute 'wizardClass' is missing in the <wizard> tag for meemkit "+descriptor.getHeader().getName());
         return;
       }
       String resourceClass = getAttribute(element,"resourceClass");
@@ -436,7 +437,7 @@ public class MeemkitUtility
       }
       catch ( IllegalArgumentException ex )
       {
-        LogTools.error(logger,"setLibraryExport() - bad library export specified "+meemkitLibrary.getName()+": "+ex.getMessage());
+        logger.log(Level.WARNING, "setLibraryExport() - bad library export specified "+meemkitLibrary.getName()+": "+ex.getMessage());
       }
     }
 
@@ -531,14 +532,14 @@ public class MeemkitUtility
     String name = getAttribute(element,"name");
     if ( name == null )
     {
-      LogTools.error(logger,"getEntry() - bad meemkit descriptor, entry has no name");
+      logger.log(Level.WARNING, "getEntry() - bad meemkit descriptor, entry has no name");
       return null;
     }
     
     String path = getAttribute(element,"path");
     if ( path == null )
     {
-      LogTools.error(logger,"getEntry() - entry has no path for meemkit entry "+name);
+      logger.log(Level.WARNING, "getEntry() - entry has no path for meemkit entry "+name);
       return null;
     }
 
@@ -546,7 +547,7 @@ public class MeemkitUtility
     Element description = (Element) element.getChild("description");
     if ( description == null )
     {
-      LogTools.error(logger,"getEntry() - name=["+name+"] - entry has no description");
+      logger.log(Level.WARNING, "getEntry() - name=["+name+"] - entry has no description");
       return null;
     }
 
@@ -584,13 +585,13 @@ public class MeemkitUtility
 
     if ( wedgeList.size() == 0 && mdpElement == null )
     {
-      LogTools.error(logger,"getEntry() - name=["+name+"] - no wedges or meemDefinitionProvider defined");
+      logger.log(Level.WARNING, "getEntry() - name=["+name+"] - no wedges or meemDefinitionProvider defined");
       return null;
     }
 
     if ( wedgeList.size() > 0 && mdpElement != null )
     {
-      LogTools.error(logger,"getEntry() - name=["+name+"] - can not define both wedges and meemDefinitionProvider");
+      logger.log(Level.WARNING, "getEntry() - name=["+name+"] - can not define both wedges and meemDefinitionProvider");
       return null;
     }
 
@@ -627,7 +628,7 @@ public class MeemkitUtility
     String classname = getNormalizedAttribute(element,attribute);
     if ( classname.length() == 0 )
     {
-      LogTools.error(logger,"getClass() - name=["+entryName+"] - no class attribute specified");
+      logger.log(Level.WARNING, "getClass() - name=["+entryName+"] - no class attribute specified");
       return null;
     }
     return classname;

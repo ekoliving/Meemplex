@@ -25,9 +25,10 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.meem.wedge.lifecycle.WedgeValidationException;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -64,7 +65,7 @@ import org.swzoo.log2.core.Logger;
 
 public class SinglePatternBinaryRegexWedge implements Wedge, Variable {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Binary client (out-bound Facet)
@@ -123,31 +124,31 @@ public class SinglePatternBinaryRegexWedge implements Wedge, Variable {
 
 	public void valueChanged(Value value) {
 		if (DebugFlag.TRACE)
-			LogTools.trace(logger, 20, "valueChanged() - invoked");
+			logger.log(Level.FINE, "valueChanged() - invoked");
 
 		match = regexMatch(value);
 
-		LogTools.info(logger, "valueChanged() - " + Boolean.toString(match));
+		logger.log(Level.INFO, "valueChanged() - " + Boolean.toString(match));
 
 		binaryClient.valueChanged(match);
 	}
 
 	public void setPattern(String pattern) {
 		if (DebugFlag.TRACE)
-			LogTools.trace(logger, 20, "setPattern() - invoked");
+			logger.log(Level.FINE, "setPattern() - invoked");
 		this.pattern = pattern;
 		compiledPattern = Pattern.compile(pattern);
 	}
 
 	public void setExactMatch(boolean exactMatch) {
 		if (DebugFlag.TRACE)
-			LogTools.trace(logger, 20, "setPattern() - invoked");
+			logger.log(Level.FINE, "setPattern() - invoked");
 		this.exactMatch = exactMatch;
 	}
 
 	public void validate(String pattern) throws WedgeValidationException {
 		if (DebugFlag.TRACE)
-			LogTools.trace(logger, 20, "validate() - invoked");
+			logger.log(Level.FINE, "validate() - invoked");
 		if (pattern == null) {
 			throw new WedgeValidationException(
 					"Pattern not configured yet, can not go READY.");

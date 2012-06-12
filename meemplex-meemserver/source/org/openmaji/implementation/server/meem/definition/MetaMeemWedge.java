@@ -31,9 +31,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openmaji.implementation.server.meem.wedge.lifecycle.SystemLifeCycleClientAdapter;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import org.openmaji.meem.Wedge;
@@ -71,7 +72,7 @@ import org.openmaji.system.space.meemstore.MeemStore;
 
 public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem, Wedge {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final boolean DEBUG = false;
 
@@ -106,12 +107,12 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 				// send cached dependencies received from the dependencyHandlerConduit
 				// TODO remove the dependencies from MetaMeem
 				
-				//LogTools.info(logger, "sending dependency attributes...");
+				//logger.log(Level.INFO, "sending dependency attributes...");
 				Iterator<String> keyIter = facetDep.keySet().iterator();
 				while (keyIter.hasNext()) {
 					String facetId = keyIter.next();
 					DependencyAttribute dependencyAttribute = (DependencyAttribute) facetDep.get(facetId);
-					//LogTools.info(logger, "sending dependency attribute with meem: " + dependencyAttribute.getMeem());
+					//logger.log(Level.INFO, "sending dependency attribute with meem: " + dependencyAttribute.getMeem());
 					metaMeemClient.addDependencyAttribute(facetId, dependencyAttribute);
 				}
 				
@@ -184,7 +185,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 	/* TODO enable these 
 	public void addDependencyAttribute(Object facetId, DependencyAttribute dependencyAttribute) {
 		if (DEBUG) {
-			LogTools.info(logger, "addDependencyAttribute: " + dependencyAttribute);
+			logger.log(Level.INFO, "addDependencyAttribute: " + dependencyAttribute);
 		}
 
 		// assume permanent
@@ -195,7 +196,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 	public void removeDependencyAttribute(Serializable dependencyId) {
 		
 		if (DEBUG) {
-			LogTools.info(logger, "removeDependencyAttribute( " + dependencyId + ")");
+			logger.log(Level.INFO, "removeDependencyAttribute( " + dependencyId + ")");
 		}
 		
 		DependencyAttribute dependencyAttribute;
@@ -205,7 +206,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 		}
 		
 		if (dependencyAttribute == null) {
-			LogTools.info(logger, "Unknown dependency for: " + dependencyId);
+			logger.log(Level.INFO, "Unknown dependency for: " + dependencyId);
 			return;
 		}
 		
@@ -216,7 +217,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 	public void updateDependencyAttribute(DependencyAttribute dependencyAttribute) {
 		
 		if (DEBUG) {
-			LogTools.info(logger, "updateDependencyAttribute: " + dependencyAttribute);
+			logger.log(Level.INFO, "updateDependencyAttribute: " + dependencyAttribute);
 		}
 		
 		dependencyHandlerConduit.updateDependency(dependencyAttribute);
@@ -309,7 +310,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 
 		public void referenceProvided(Reference reference) {
 			if (reference == null) {
-				LogTools.error(logger, "no meemStore reference found can't persist meemDefinition!");
+				logger.log(Level.WARNING, "no meemStore reference found can't persist meemDefinition!");
 				return;
 			}
 
@@ -375,7 +376,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 
 		public void dependencyAttributeAdded(String facetId, DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyAttributeAdded: " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyAttributeAdded: " + dependencyAttribute);
 			}
 
 			// add dependency via the dependencyHandlerConduit
@@ -384,7 +385,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 
 		public void dependencyAttributeChanged(DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyAttributeChanged: " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyAttributeChanged: " + dependencyAttribute);
 			}
 
 			// update dependency via the dependencyHandlerConduit
@@ -394,7 +395,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 		public void dependencyAttributeRemoved(DependencyAttribute dependencyAttribute) {
 
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyAttributeRemoved: " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyAttributeRemoved: " + dependencyAttribute);
 			}
 			
 			// remove dependency via the dependencyHandlerConduit
@@ -409,7 +410,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 		
 		public void dependencyAdded(String facetId, DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyAdded: " + facetId + " - " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyAdded: " + facetId + " - " + dependencyAttribute);
 			}
 			synchronized (dependencies) {
 				facetDep.put(facetId, dependencyAttribute);
@@ -424,7 +425,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 		
 		public void dependencyRemoved(DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyRemoved: " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyRemoved: " + dependencyAttribute);
 			}
 			// remove the dependency attribute from dependencies cache
 			synchronized (dependencies) {
@@ -440,7 +441,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 		
 		public void dependencyUpdated(DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
-				LogTools.info(logger, "dependencyUpdated: " + dependencyAttribute);
+				logger.log(Level.INFO, "dependencyUpdated: " + dependencyAttribute);
 			}
 			
 			// update the dependency attribute in dependencies cache

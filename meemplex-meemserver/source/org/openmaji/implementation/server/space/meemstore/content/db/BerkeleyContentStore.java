@@ -31,9 +31,10 @@ import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.space.Space;
 import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.space.meemstore.MeemStore;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
@@ -43,7 +44,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class BerkeleyContentStore implements MeemStoreContentStore {
 
-	static private final Logger logger = LogFactory.getLogger();
+	static private final Logger logger = Logger.getAnonymousLogger();
 	
 	private String baseDir = null;
 
@@ -54,7 +55,7 @@ public class BerkeleyContentStore implements MeemStoreContentStore {
 		if (!dir.exists()) {
 			// try and make the dir
 			if (!dir.mkdirs())
-				LogTools.error(logger, "MeemContent storage directory cannot be created: " + baseDir);
+				logger.log(Level.WARNING, "MeemContent storage directory cannot be created: " + baseDir);
 		}
 	}
 
@@ -66,7 +67,7 @@ public class BerkeleyContentStore implements MeemStoreContentStore {
 		String fileName = baseDir + meemPath.getLocation();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMSTORE) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Loading content file: " + fileName);
+			logger.log(Common.getLogLevelVerbose(), "Loading content file: " + fileName);
 		}
 		
 		MeemContent meemContent = null;
@@ -85,12 +86,12 @@ public class BerkeleyContentStore implements MeemStoreContentStore {
 				ois.close();
 				
 			} catch (ClassNotFoundException e) {
-				LogTools.error(logger, "Exception while loading MeemContent " + meemPath.toString(), e);
+				logger.log(Level.WARNING, "Exception while loading MeemContent " + meemPath.toString(), e);
 			} catch (FileNotFoundException e) {
 				//	Send back an empty MeemContent
 			 	meemContent = new MeemContent();
 			} catch (IOException e) {
-				LogTools.error(logger, "Exception while loading MeemContent " + meemPath.toString(), e);
+				logger.log(Level.WARNING, "Exception while loading MeemContent " + meemPath.toString(), e);
 			}
 
 		} finally {
@@ -107,7 +108,7 @@ public class BerkeleyContentStore implements MeemStoreContentStore {
 		String fileName = baseDir + meemPath.getLocation();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMSTORE) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Storing content file: " + fileName);
+			logger.log(Common.getLogLevelVerbose(), "Storing content file: " + fileName);
 		}
 		
 		try {
@@ -117,7 +118,7 @@ public class BerkeleyContentStore implements MeemStoreContentStore {
 			oos.writeObject(content);
 			oos.close();
 		} catch (IOException e) {
-			LogTools.error(logger, "Exception while storing MeemContent " + meemPath.toString(), e);
+			logger.log(Level.WARNING, "Exception while storing MeemContent " + meemPath.toString(), e);
 		}
 	}
 
@@ -125,13 +126,13 @@ public class BerkeleyContentStore implements MeemStoreContentStore {
 		String fileName = baseDir + meemPath.getLocation();
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMSTORE) {
-			LogTools.trace(logger, Common.getLogLevelVerbose(), "Removing content file: " + fileName);
+			logger.log(Common.getLogLevelVerbose(), "Removing content file: " + fileName);
 		}
 		
 		File file = new File(fileName);
 		if (file.exists()) {
 			if (!file.delete()) {
-				LogTools.warning(logger, "Cannot delete content file: " + fileName);
+				logger.log(Level.WARNING, "Cannot delete content file: " + fileName);
 			}
 		}
 
@@ -145,7 +146,7 @@ public class BerkeleyContentStore implements MeemStoreContentStore {
 
 		if (files == null) {
 			// directory doesn't exist
-			LogTools.error(logger, "MeemContent storage directory does not exist: " + baseDir);
+			logger.log(Level.WARNING, "MeemContent storage directory does not exist: " + baseDir);
 		} else {
 			for (int i = 0; i < files.length; i++) {
 				MeemPath meemPath = MeemPath.spi.create(Space.MEEMSTORE, files[i]);

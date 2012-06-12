@@ -7,6 +7,7 @@
 
 package org.openmaji.implementation.diagnostic;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.meem.Wedge;
@@ -39,7 +40,7 @@ public class LifeCycleTransitionLoggerWedge implements Wedge
       buffer.append(transition.getPreviousState().getCurrentState());
       buffer.append(" -> ");
       buffer.append(transition.getCurrentState().getCurrentState());
-      logger.info(buffer.toString());
+      logger.log(Level.INFO, buffer.toString());
     }
 
     public void lifeCycleStateChanged(LifeCycleTransition transition)
@@ -49,7 +50,7 @@ public class LifeCycleTransitionLoggerWedge implements Wedge
       buffer.append(transition.getPreviousState().getCurrentState());
       buffer.append(" -> ");
       buffer.append(transition.getCurrentState().getCurrentState());
-      logger.info(buffer.toString());
+      logger.log(Level.INFO, buffer.toString());
     }
   }
 }

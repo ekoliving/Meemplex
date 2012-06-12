@@ -57,9 +57,10 @@ import org.openmaji.meem.wedge.error.ErrorHandler;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClient;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.meem.wedge.lifecycle.Vote;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -75,7 +76,7 @@ import org.swzoo.log2.core.Logger;
 
 public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 
-	protected static Logger logger = LogFactory.getLogger();
+	protected static Logger logger = Logger.getAnonymousLogger();
 
 	public MeemContext meemContext;
 
@@ -178,7 +179,7 @@ public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 
 	public void error(String message) {
 
-		LogTools.error(logger, message);
+		logger.log(Level.WARNING, message);
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 
 	public void info(String message) {
 
-		LogTools.info(logger, message);
+		logger.log(Level.INFO, message);
 	}
 
 	/**
@@ -202,7 +203,7 @@ public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 
 	public void trace(String message) {
 
-		LogTools.trace(logger, logLevel, message);
+		logger.log(logLevel, message);
 	}
 
 	/**
@@ -214,7 +215,7 @@ public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 
 	public void verbose(String message) {
 
-		LogTools.trace(logger, logLevelVerbose, message);
+		logger.log(logLevelVerbose, message);
 	}
 
 	/**
@@ -226,7 +227,7 @@ public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 
 	public void warn(String message) {
 
-		LogTools.warn(logger, message);
+		logger.log(Level.WARNING, message);
 	}
 
 	/**
@@ -251,7 +252,7 @@ public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 	public void commence() {
 
 		if (commands == null || commands.length == 0) {
-			LogTools.info(logger, "Commands array empty - nothing to do");
+			logger.log(Level.INFO, "Commands array empty - nothing to do");
 			return;
 		}
 
@@ -304,11 +305,11 @@ public class BSFMeemWedge implements BSFMeem, MeemDefinitionProvider, Wedge {
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static int logLevel = Common.getLogLevel();
+	private static Level logLevel = Common.getLogLevel();
 
 	/**
 	 * Acquire the Maji system-wide verbose logging level.
 	 */
 
-	private static int logLevelVerbose = Common.getLogLevelVerbose();
+	private static Level logLevelVerbose = Common.getLogLevelVerbose();
 }

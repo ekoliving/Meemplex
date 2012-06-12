@@ -9,10 +9,7 @@ package org.openmaji.implementation.server.meem;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.classloader.SystemExportList;
 import org.openmaji.implementation.server.meem.invocation.MeemInvocationSource;
 import org.openmaji.implementation.server.meem.wedge.reference.AsyncContentProvider;
@@ -29,15 +26,9 @@ import org.openmaji.system.meem.wedge.reference.ContentProvider;
  */
 public class OutboundFacetImpl <T extends Facet> extends FacetImpl<T> {
 
-	private static final Logger logger = Logger.getAnonymousLogger(); 
-	
 	public OutboundFacetImpl(WedgeImpl wedgeImpl, FacetOutboundAttribute facetOutboundAttribute) throws ClassNotFoundException {
 		super(wedgeImpl, ObjectUtility.getClass((Class<T>) Facet.class, facetOutboundAttribute.getInterfaceName()));
 
-		if (Common.TRACE_ENABLED && false) {
-			logger.info("outbound facet impl for: " + facetOutboundAttribute.getIdentifier() + " : " + facetOutboundAttribute.getIdentifier());
-		}
-		
 		this.facetOutboundAttribute = facetOutboundAttribute;
 	}
 

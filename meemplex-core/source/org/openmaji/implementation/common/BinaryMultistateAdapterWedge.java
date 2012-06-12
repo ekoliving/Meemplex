@@ -6,9 +6,10 @@
  */
 package org.openmaji.implementation.common;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.common.Binary;
 import org.openmaji.common.Multistate;
@@ -32,7 +33,7 @@ import org.openmaji.meem.wedge.lifecycle.WedgeValidationException;
  * 
  */
 public class BinaryMultistateAdapterWedge implements Binary, Wedge, WedgeDefinitionProvider {
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 	/**
 	 * Outbound Multistate facet
 	 */
@@ -68,15 +69,15 @@ public class BinaryMultistateAdapterWedge implements Binary, Wedge, WedgeDefinit
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 
 	public void setOnValueState (String string){
-  		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"setOnValueState() - invoked");
+  		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "setOnValueState() - invoked");
 		this.onValueState = string;
 	}
 	public void setOffValueState(String string){
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"setOffValueState() - invoked");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "setOffValueState() - invoked");
 		this.offValueState=string;
 	}
 	public void validate() throws WedgeValidationException{
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"validate() - invoked");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "validate() - invoked");
 		
 		if(onValueState==null && offValueState==null){
 			throw new WedgeValidationException("can't go ready because neither onValueState nor offValueState is set");

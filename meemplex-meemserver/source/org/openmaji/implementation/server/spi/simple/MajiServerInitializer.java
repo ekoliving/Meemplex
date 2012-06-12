@@ -19,9 +19,10 @@ import org.openmaji.implementation.server.utility.ObjectUtility;
 import org.openmaji.system.spi.MajiSystemProvider;
 import org.openmaji.system.spi.SpecificationEntry;
 import org.openmaji.system.spi.SpecificationType;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -529,8 +530,8 @@ public class MajiServerInitializer {
           );
         }
         catch (Exception exception) {
-          LogTools.error(
-            logger,
+          logger.log(Level.WARNING,
+            
             "Couldn't instantiate " +
             implementationClassName +
             " as the custom implementation for " +
@@ -551,5 +552,5 @@ public class MajiServerInitializer {
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 }

@@ -54,9 +54,10 @@ import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.openmaji.system.utility.MeemUtility;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -70,7 +71,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 	/**
 	 * Logger for this class.
 	 */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final boolean DEBUG = true;
 	
@@ -186,10 +187,10 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 	 */
 	public synchronized void setDescriptors(Collection<Descriptor> descriptors) {
 		if (DEBUG) {
-			LogTools.info(logger, "setting deployment descriptors");
+			logger.log(Level.INFO, "setting deployment descriptors");
 		}
 		if (progress.getProgressPoint() < progress.getCompletionPoint()) {
-			LogTools.info(logger, "deployment already in progress");
+			logger.log(Level.INFO, "deployment already in progress");
 		}
 
 		subsystemDescriptors.clear();
@@ -200,7 +201,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 		for (Descriptor obj : descriptors) {
 			if (obj instanceof SubsystemDescriptor) {
 				if (DEBUG) {
-					LogTools.info(logger, "got subsystem deployment descriptor: " + obj);
+					logger.log(Level.INFO, "got subsystem deployment descriptor: " + obj);
 				}
 				SubsystemDescriptor descriptor = (SubsystemDescriptor) obj;
 				numberOfMeemsInSubsystems += descriptor.getMeemIds().size();
@@ -211,14 +212,14 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 			}
 			else if (obj instanceof MeemDeploymentDescriptor) {
 				if (DEBUG) {
-					LogTools.info(logger, "got meem deployment descriptor: " + obj);
+					logger.log(Level.INFO, "got meem deployment descriptor: " + obj);
 				}
 				MeemDeploymentDescriptor deploymentDescriptor = (MeemDeploymentDescriptor) obj;
 				meemDescriptors.put(deploymentDescriptor.getId(), deploymentDescriptor);
 			}
 			else {
 				// ???
-				LogTools.info(logger, "Unhandled descriptor type: " + obj);
+				logger.log(Level.INFO, "Unhandled descriptor type: " + obj);
 			}
 		}
 
@@ -227,7 +228,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 	
 	public synchronized void addDescriptors(Collection<Descriptor> descriptors) {
 		if (DEBUG) {
-			LogTools.info(logger, "setting deployment descriptors");
+			logger.log(Level.INFO, "setting deployment descriptors");
 		}
 
 		//subsystemDescriptors.clear();
@@ -273,14 +274,14 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 
 		if (meemDescriptors.size() == 0) {
 			if (debugLevel > 0) {
-				LogTools.info(logger, "No descriptors provided");
+				logger.log(Level.INFO, "No descriptors provided");
 			}
 			progressConduit.addProgressPoints(0);
 			return;
 		}
 
 		if (debugLevel > 0) {
-			LogTools.info(logger, "Got " + meemDescriptors.size() + " descriptors");
+			logger.log(Level.INFO, "Got " + meemDescriptors.size() + " descriptors");
 		}
 
 		// make sure subsystems are created. then connect to create meems within them
@@ -344,17 +345,17 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 
 	public void subsystemCreated(Meem meem, MeemDefinition meemDefinition) {
 		if (meemDefinition == null) {
-			LogTools.info(logger, "Subsystem created with null meemDefinition?");
+			logger.log(Level.INFO, "Subsystem created with null meemDefinition?");
 			return;
 		}
 
 		String subsystemName = meemDefinition.getMeemAttribute().getIdentifier();
 		if (debugLevel > 0) {
-			LogTools.info(logger, "subsystem created: " + subsystemName);
+			logger.log(Level.INFO, "subsystem created: " + subsystemName);
 		}
 
 		if (subsystems.get(subsystemName) != null || subsystemMeems.get(subsystemName) != null) {
-			LogTools.warn(logger, "Subsystem, " + subsystemName + " already received");
+			logger.log(Level.WARNING, "Subsystem, " + subsystemName + " already received");
 		}
 
 		// store the subsystem meem in the sybsystems map
@@ -372,7 +373,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 
 	public void subsystemDestroyed(Meem meem) {
 		if (debugLevel > 0) {
-			LogTools.info(logger, "subsystem destroyed: " + meem);
+			logger.log(Level.INFO, "subsystem destroyed: " + meem);
 		}
 		
 		// remove the subsystem from subsystemMeems and subsystems
@@ -435,7 +436,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 			if (subsystems.get(subsystemName) == null) {
 				// subsystem does not yet exist
 				if (debugLevel > 0) {
-					LogTools.info(logger, "Requesting creation of " + subsystemName);
+					logger.log(Level.INFO, "Requesting creation of " + subsystemName);
 				}
 				createSubsystem(subsystemName);
 			}
@@ -450,7 +451,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 	private void createSubsystem(String name) {
 
 		if (debugLevel > 0) {
-			LogTools.info(logger, "In createSubsystem(" + name + ")");
+			logger.log(Level.INFO, "In createSubsystem(" + name + ")");
 		}
 		
 		MeemDefinition subsystemMeemDefinition;
@@ -489,11 +490,11 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 	}
 
 	public void contentSent() {
-		LogTools.info(logger, "ContentSent");
+		logger.log(Level.INFO, "ContentSent");
 	}
 
 	public void contentFailed(String reason) {
-		LogTools.info(logger, "ContentFailed: " + reason);
+		logger.log(Level.INFO, "ContentFailed: " + reason);
 	}
 
 	/* ------------------------------------------------------------------------ */
@@ -525,7 +526,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.error(logger, "DeploymentSubsystemMeem is supposed to have a DebugWedge");
+			logger.log(Level.WARNING, "DeploymentSubsystemMeem is supposed to have a DebugWedge");
 		}
 	}
 
@@ -586,13 +587,13 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 	 
 	 public void subsystemCreated(Meem meem, MeemDefinition meemDefinition) {
 	 if (meemDefinition == null) {
-	 LogTools.info(logger, "Subsystem created with null meemDefinition?");
+	 logger.log(Level.INFO, "Subsystem created with null meemDefinition?");
 	 return;
 	 }
 	 
 	 String subsystemName = meemDefinition.getMeemAttribute().getIdentifier();
 	 if ( debugLevel > 0 ) {
-	 LogTools.info(logger, "subsystem created "+subsystemName);
+	 logger.log(Level.INFO, "subsystem created "+subsystemName);
 	 }
 	 subsystemMeems.put(subsystemName, new HashSet());
 	 subsystems.put(subsystemName, meem);
@@ -698,7 +699,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 
 			if (desiredMeemIds.size() > 0) {
 				if (debugLevel > 0) {
-					LogTools.info(logger, desiredMeemIds.size() + " Meems to be created for subsystem \"" + subsystemName + "\"");
+					logger.log(Level.INFO, desiredMeemIds.size() + " Meems to be created for subsystem \"" + subsystemName + "\"");
 				}
 				
 				// create uncreated, desired Meems.
@@ -708,7 +709,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 		}
 
 		public void contentFailed(String message) {
-			LogTools.info(logger, "Problem when getting subsystem meems: " + message);
+			logger.log(Level.INFO, "Problem when getting subsystem meems: " + message);
 		}
 
 	}
@@ -743,7 +744,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 					subsystem.createMeem(descriptor.getMeemDefinition(), descriptor);
 				}
 				else {
-					LogTools.error(logger, "No deployment descriptor found for '" + meemId + "' for subsystem '" + subsystemName + "'");
+					logger.log(Level.WARNING, "No deployment descriptor found for '" + meemId + "' for subsystem '" + subsystemName + "'");
 				}
 			}
 		}
@@ -753,7 +754,7 @@ public class DeploymentWedge implements Wedge, DeploymentProcessor, ContentClien
 		}
 
 		public void contentFailed(String reason) {
-			LogTools.error(logger, "Error receiving the ConfigurationHandler facet of a managed meem: " + reason);
+			logger.log(Level.WARNING, "Error receiving the ConfigurationHandler facet of a managed meem: " + reason);
 		}
 	}
 

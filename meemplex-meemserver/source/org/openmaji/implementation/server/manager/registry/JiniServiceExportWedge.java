@@ -42,9 +42,10 @@ import org.openmaji.system.meem.FacetItem;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.jini.ExportableServiceClient;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.sun.jini.admin.DestroyAdmin;
 
@@ -190,7 +191,7 @@ public class JiniServiceExportWedge
          */
         public void contentFailed(String reason)
         {
-            LogTools.error(logger, "Can't determine whether or not meem: " + meem.getMeemPath() + " has a Jini Service");
+            logger.log(Level.WARNING, "Can't determine whether or not meem: " + meem.getMeemPath() + " has a Jini Service");
         }
     }
     
@@ -214,7 +215,7 @@ public class JiniServiceExportWedge
             {
                 if (processedMeems.contains(meem.getMeemPath()))
                 {
-                    LogTools.error(logger,
+                    logger.log(Level.WARNING, 
                             "Attempt to process already processed meem: " + meem);
                     return;
                 }
@@ -322,7 +323,7 @@ public class JiniServiceExportWedge
             }
             catch (Exception exception)
             {
-                LogTools.error(logger, "Exporting RemoteMeem: " + exception);
+                logger.log(Level.WARNING, "Exporting RemoteMeem: " + exception);
             }
         }
 
@@ -359,7 +360,7 @@ public class JiniServiceExportWedge
                 }
                 catch (Exception e)
                 {
-                    LogTools.error(logger, "Exception removing Jini service with Administrable: " + e.toString());
+                    logger.log(Level.WARNING, "Exception removing Jini service with Administrable: " + e.toString());
                 }
 
                 joinManager.terminate();
@@ -396,5 +397,5 @@ public class JiniServiceExportWedge
      * Create the per-class Software Zoo Logging V2 reference.
      */
 
-    private static final Logger logger = LogFactory.getLogger();
+    private static final Logger logger = Logger.getAnonymousLogger();
 }

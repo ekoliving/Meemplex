@@ -15,16 +15,17 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import org.openmaji.implementation.server.utility.StringUtility;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Chris Kakris
  */
 
 public class BSFScriptProcessor {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public static final String KEY_HELP_TOPIC = "topic:";
 
@@ -198,7 +199,7 @@ public class BSFScriptProcessor {
 					processScriptFile(file, path, originalPathLength);
 				}
 				catch (Exception ex) {
-					LogTools.error(logger, "scanScripts() - " + ex.getMessage());
+					logger.log(Level.WARNING, "scanScripts() - " + ex.getMessage());
 				}
 			}
 			return;
@@ -298,7 +299,7 @@ public class BSFScriptProcessor {
 
 		String tmp = (String) helpTopics.get(topic);
 		if (tmp != null) {
-			LogTools.error(logger, "addHelpKeywords() - The topic '" + topic + "' already exists");
+			logger.log(Level.WARNING, "addHelpKeywords() - The topic '" + topic + "' already exists");
 			return;
 		}
 

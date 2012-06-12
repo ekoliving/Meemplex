@@ -14,9 +14,10 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.openmaji.implementation.server.Common;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -89,7 +90,7 @@ public class ThreadPool
    */
   public void uncaughtException(Thread thread, Throwable ex)
   {
-    LogTools.warning(logger, "Uncaught exception for thread, " + thread, ex);
+    logger.log(Level.WARNING, "Uncaught exception for thread, " + thread, ex);
   }
 
   /**
@@ -178,7 +179,7 @@ public class ThreadPool
                 syncObject.wait(timeout);
               }
               catch (InterruptedException ex) {
-                LogTools.info(logger, "interrupted", ex);
+                logger.log(Level.INFO, "interrupted", ex);
                 throw new RuntimeException(ex);
               }
             }
@@ -208,11 +209,11 @@ public class ThreadPool
    */
   protected void free(MonitoredThread thread)
   {
-	LogTools.trace(logger, Common.getLogLevelVerbose(), "Freeing thread: " + thread);
+	logger.log(Common.getLogLevelVerbose(), "Freeing thread: " + thread);
     synchronized (syncObject) {
       /*
       if (thread.isRunning()) {
-      	LogTools.info(logger, "thread is still running. Interrupting.");
+      	logger.log(Level.INFO, "thread is still running. Interrupting.");
         thread.interrupt();
       }
       */
@@ -306,7 +307,7 @@ public class ThreadPool
       for (running=true; running; ) {
         synchronized (syncObject) {
           checkThreads();
-          LogTools.trace(logger, Common.getLogLevelVerbose(), "ThreadPool: " + usedCount() + " used, " + freeCount() + " free, " + getCapacity() + " capacity.");
+          logger.log(Common.getLogLevelVerbose(), "ThreadPool: " + usedCount() + " used, " + freeCount() + " free, " + getCapacity() + " capacity.");
           doWait();
         }
       }
@@ -342,8 +343,8 @@ public class ThreadPool
           if (reasonableTime > 0) {
             long startTime = thread.getStartTime();
             if ( (currentTime - startTime) > reasonableTime ) {
-              LogTools.info(
-                  logger,
+              logger.log(Level.INFO,
+                  
                   "Thread, " + thread + ", is taking too long."
                 );
                 
@@ -365,7 +366,7 @@ public class ThreadPool
         }
         catch (InterruptedException ex) {
 			running = false;
-          LogTools.info(logger, "Interrupted", ex);
+          logger.log(Level.INFO, "Interrupted", ex);
         }
       }
     }
@@ -373,5 +374,5 @@ public class ThreadPool
   
 
 	/** logger */
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

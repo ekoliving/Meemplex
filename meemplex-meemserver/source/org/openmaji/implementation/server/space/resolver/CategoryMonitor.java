@@ -25,9 +25,10 @@ import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -39,7 +40,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class CategoryMonitor implements CategoryClient {
 
-	static private final Logger logger = LogFactory.getLogger();
+	static private final Logger logger = Logger.getAnonymousLogger();
 
 	private Meem categoryMeem;
 	private MeemPath categoryPath;
@@ -53,7 +54,7 @@ public class CategoryMonitor implements CategoryClient {
 	public CategoryMonitor(MeemResolverWedge meemResolver, Meem categoryMeem, MeemPath categoryPath) {
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-			LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "CategoryMonitor(): " + categoryMeem.getMeemPath() +" path: " + categoryPath);
+			logger.log(MeemResolverWedge.LOG_LEVEL, "CategoryMonitor(): " + categoryMeem.getMeemPath() +" path: " + categoryPath);
 		}
 
 		this.meemResolver = meemResolver;
@@ -75,7 +76,7 @@ public class CategoryMonitor implements CategoryClient {
 
 	public void stopWatching() {
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-			LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "stopWatching(): " + this +" path: " + categoryPath);
+			logger.log(MeemResolverWedge.LOG_LEVEL, "stopWatching(): " + this +" path: " + categoryPath);
 		}
         
         //
@@ -111,7 +112,7 @@ public class CategoryMonitor implements CategoryClient {
 		}
 
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-			LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "watchingFor: " + entryName + " fullMeemPath: " + fullMeemPath + " : " + this);
+			logger.log(MeemResolverWedge.LOG_LEVEL, "watchingFor: " + entryName + " fullMeemPath: " + fullMeemPath + " : " + this);
 		}
 
 		MeemPath meemPath = (MeemPath) entries.get(entryName);
@@ -135,7 +136,7 @@ public class CategoryMonitor implements CategoryClient {
 				meemPaths.remove(fullMeemPath);
 				
 				if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
-					LogTools.trace(logger, MeemResolverWedge.LOG_LEVEL, "stopped watching : " + entryName + " fullMeemPath: " + fullMeemPath + " : " + this);
+					logger.log(MeemResolverWedge.LOG_LEVEL, "stopped watching : " + entryName + " fullMeemPath: " + fullMeemPath + " : " + this);
 				}
 				
 				if (meemPaths.size() == 0) {

@@ -12,9 +12,10 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.Hashtable;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import org.openmaji.implementation.rpc.binding.facet.InboundBinary;
@@ -67,7 +68,7 @@ import org.openmaji.common.VariableList;
  */
 public class BindingSPIImpl implements BindingSPI {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static String PATH = "/META-INF/registryFile.mrpc";
 
@@ -103,11 +104,11 @@ public class BindingSPIImpl implements BindingSPI {
 				outboundBindings.put(facetClass, bindingClass);
 			}
 			else {
-				LogTools.info(logger, "Binding class, " + bindingClass + " is not of type, " + facetClass);
+				logger.log(Level.INFO, "Binding class, " + bindingClass + " is not of type, " + facetClass);
 			}
 		}
 		else {
-			LogTools.info(logger, "Binding class, " + bindingClass + " is not an outbound binding");
+			logger.log(Level.INFO, "Binding class, " + bindingClass + " is not an outbound binding");
 		}
 	}
 
@@ -124,7 +125,7 @@ public class BindingSPIImpl implements BindingSPI {
 			inboundBindings.put(facetClass, bindingClass);
 		}
 		else {
-			LogTools.info(logger, "Binding class, " + bindingClass + " is not an outbound binding");
+			logger.log(Level.INFO, "Binding class, " + bindingClass + " is not an outbound binding");
 		}
 
 	}
@@ -147,10 +148,10 @@ public class BindingSPIImpl implements BindingSPI {
 				binding = (OutboundBinding) bindingClass.newInstance();
 			}
 			catch (InstantiationException ex) {
-				LogTools.info(logger, "Could not instantiate binding class: " + bindingClass, ex);
+				logger.log(Level.INFO, "Could not instantiate binding class: " + bindingClass, ex);
 			}
 			catch (IllegalAccessException ex) {
-				LogTools.info(logger, "No access to instantiate binding class: " + bindingClass, ex);
+				logger.log(Level.INFO, "No access to instantiate binding class: " + bindingClass, ex);
 			}
 		}		
 		return binding;
@@ -174,10 +175,10 @@ public class BindingSPIImpl implements BindingSPI {
 				binding = (InboundBinding) bindingClass.newInstance();
 			}
 			catch (InstantiationException ex) {
-				LogTools.info(logger, "Could not instantiate binding class: " + bindingClass, ex);
+				logger.log(Level.INFO, "Could not instantiate binding class: " + bindingClass, ex);
 			}
 			catch (IllegalAccessException ex) {
-				LogTools.info(logger, "No access to instantiate binding class: " + bindingClass, ex);
+				logger.log(Level.INFO, "No access to instantiate binding class: " + bindingClass, ex);
 			}
 		}
 		
@@ -211,7 +212,7 @@ public class BindingSPIImpl implements BindingSPI {
 						registerOutbound(facetClass.asSubclass(Facet.class), bindingClass.asSubclass(OutboundBinding.class));
 					}
 					catch (ClassNotFoundException ex) {
-						LogTools.info(logger, "Could not find class", ex);						
+						logger.log(Level.INFO, "Could not find class", ex);						
 					}
 				}
 				if ("Inbound".equalsIgnoreCase(st.sval)) {
@@ -224,7 +225,7 @@ public class BindingSPIImpl implements BindingSPI {
 						registerInbound(facetClass.asSubclass(Facet.class), bindingClass.asSubclass(InboundBinding.class));
 					}
 					catch (ClassNotFoundException ex) {
-						LogTools.info(logger, "Could not find class", ex);						
+						logger.log(Level.INFO, "Could not find class", ex);						
 					}
 				}
 				i = st.nextToken();
@@ -234,7 +235,7 @@ public class BindingSPIImpl implements BindingSPI {
 			is.close();
 		}
 		catch (IOException ex) {
-			LogTools.info(logger, "Could not parse binding file", ex);	
+			logger.log(Level.INFO, "Could not parse binding file", ex);	
 
 			// register default outbound bindings
 			registerOutbound(Binary.class,               OutboundBinary.class);

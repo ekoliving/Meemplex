@@ -30,9 +30,10 @@ import org.openmaji.meem.definition.MeemDefinition;
 import org.openmaji.system.manager.lifecycle.LifeCycleManager;
 import org.openmaji.system.meem.definition.DefinitionFactory;
 import org.openmaji.system.space.hyperspace.HyperSpace;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -43,7 +44,7 @@ import org.swzoo.log2.core.Logger;
  */
 public class HyperSpaceMeem {
 	
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static final String ACTIVATION_TYPE = "org.openmaji.server.manager.lifecycle.hyperspace.lifecyclemanager";
 	private static MeemDefinition meemDefinition = null;
@@ -57,11 +58,11 @@ public class HyperSpaceMeem {
 				try {
 					lifeCycleManager = Class.forName(lifeCycleManagerProperty.trim());
 					if (!LifeCycleManager.class.isAssignableFrom(lifeCycleManager)) {
-						LogTools.error(logger, "Class: [" + lifeCycleManagerProperty + "] doesn't implement LifeCycleManager. Using LazyLifeCycleManagerWedge instead.");
+						logger.log(Level.WARNING, "Class: [" + lifeCycleManagerProperty + "] doesn't implement LifeCycleManager. Using LazyLifeCycleManagerWedge instead.");
 						lifeCycleManager = LazyLifeCycleManagerWedge.class;
 					}
 				} catch (ClassNotFoundException e) {
-					LogTools.error(logger, "Error loading class: [" + lifeCycleManagerProperty + "]. Using LazyLifeCycleManagerWedge instead.");
+					logger.log(Level.WARNING, "Error loading class: [" + lifeCycleManagerProperty + "]. Using LazyLifeCycleManagerWedge instead.");
 					lifeCycleManager = LazyLifeCycleManagerWedge.class;
 				}
 			}

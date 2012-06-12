@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 import org.openmaji.implementation.tool.eclipse.icon.Icon;
-import org.swzoo.log2.core.LogEvent;
 
 
 /**
@@ -121,9 +120,9 @@ public class MajiLogView extends ViewPart {
 		 * @see org.eclipse.jface.viewers.IDoubleClickListener#doubleClick(org.eclipse.jface.viewers.DoubleClickEvent)
 		 */
 		public void doubleClick(DoubleClickEvent event) {
-			LogEvent logEvent = (LogEvent)((IStructuredSelection)event.getSelection()).getFirstElement();
-			LogDetailDialog eventDialog = new LogDetailDialog(getViewSite().getWorkbenchWindow().getActivePage().getWorkbenchWindow().getShell(), logEvent);
-			eventDialog.open();
+//			LogEvent logEvent = (LogEvent)((IStructuredSelection)event.getSelection()).getFirstElement();
+//			LogDetailDialog eventDialog = new LogDetailDialog(getViewSite().getWorkbenchWindow().getActivePage().getWorkbenchWindow().getShell(), logEvent);
+//			eventDialog.open();
 		}
 
 	}

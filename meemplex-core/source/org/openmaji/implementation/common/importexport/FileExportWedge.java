@@ -20,7 +20,8 @@ import org.openmaji.meem.wedge.lifecycle.*;
 import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.space.CategoryEntry;
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author  Andy Gelme
@@ -34,7 +35,7 @@ public class FileExportWedge
   
   private ObjectOutputStream objectOutputStream = null;
   
-  private static Logger logger = LogFactory.getLogger(); 
+  private static Logger logger = Logger.getAnonymousLogger(); 
   
 /* ---------- Configuration section ---------------------------------------- */
 
@@ -102,8 +103,8 @@ public class FileExportWedge
         objectOutputStream.writeObject(categoryEntries);
       }
       catch (IOException ioException) {
-        LogTools.error(
-          logger, "Exporting Category to file: " + outputFile, ioException          
+        logger.log(
+          Level.WARNING, "Exporting Category to file: " + outputFile, ioException          
         );
 
         conclude();
@@ -125,8 +126,8 @@ public class FileExportWedge
         meemCount++;
       }
       catch (IOException ioException) {
-        LogTools.error(
-          logger, "Exporting Meem to file: " + outputFile, ioException
+        logger.log(
+          Level.WARNING, "Exporting Meem to file: " + outputFile, ioException
         );
 
         conclude();
@@ -134,7 +135,7 @@ public class FileExportWedge
     }
 
     public void contentSent() {
-      LogTools.info(logger, "Export complete: " + outputFile + " [" + meemCount + " Meems]");
+      logger.log(Level.INFO, "Export complete: " + outputFile + " [" + meemCount + " Meems]");
       
       conclude();
     }
@@ -142,7 +143,7 @@ public class FileExportWedge
     public void contentFailed(
       String reason) {
 
-      LogTools.info(logger, "Export failed: " + outputFile);
+      logger.log(Level.INFO, "Export failed: " + outputFile);
 
       conclude();
     }
@@ -155,7 +156,7 @@ public class FileExportWedge
           new ObjectOutputStream(new FileOutputStream(outputFile));
       }
       catch (IOException ioException) {
-        LogTools.error(logger, "Creating file: " + outputFile, ioException);
+        logger.log(Level.WARNING, "Creating file: " + outputFile, ioException);
       }
     }
   }

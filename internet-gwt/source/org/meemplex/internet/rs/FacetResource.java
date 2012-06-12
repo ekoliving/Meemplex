@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -65,8 +66,8 @@ public class FacetResource  {
 	public void init(ServletConfig config) throws ServletException {
 	    
 	    try {
-	    	logger.info("this is session handler class: " + Class.forName("org.openmaji.implementation.rpc.server.SessionHandler"));
-	    	logger.info("this is service interface: " + Class.forName("org.meemplex.internet.gwt.client.gwtrpc.MeemGwtRpcService"));
+	    	logger.log(Level.INFO, "this is session handler class: " + Class.forName("org.openmaji.implementation.rpc.server.SessionHandler"));
+	    	logger.log(Level.INFO, "this is service interface: " + Class.forName("org.meemplex.internet.gwt.client.gwtrpc.MeemGwtRpcService"));
 	    }
 	    catch (Exception e) {
 	    	logger.log(Level.INFO, "Could not load class", e);
@@ -92,7 +93,7 @@ public class FacetResource  {
 	    }
 	    
 		if (this.trace) {
-			logger.info("starting MeemGwtService at: " + config.getServletContext().getContextPath() + " - " + config.getServletContext().getRealPath("/"));
+			logger.log(Level.INFO, "starting MeemGwtService at: " + config.getServletContext().getContextPath() + " - " + config.getServletContext().getRealPath("/"));
 		}
 
 	    start();
@@ -416,7 +417,7 @@ public class FacetResource  {
 							SessionHandler handler = (SessionHandler) sessionHandlers.get(key);
 							if ( (handler != null) && handler.isStale() ) {
 								if (trace) {
-									logger.info("++++ cleaning up session: " + key + " ++++");
+									logger.log(Level.INFO, "++++ cleaning up session: " + key + " ++++");
 								}
 								handler.cleanup();
 								sessionHandlers.remove(key);
@@ -428,7 +429,7 @@ public class FacetResource  {
 						wait(timeout);
 					}
 					catch (InterruptedException ex) {
-//						LogTools.info(logger, "++++ session monitor interrupted ++++");
+//						logger.log(Level.INFO, "++++ session monitor interrupted ++++");
 						running = false;
 					}
 				}

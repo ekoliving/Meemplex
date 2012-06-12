@@ -5,6 +5,7 @@
 package org.openmaji.implementation.rpc.server;
 
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -207,7 +208,7 @@ public class InboundHandler extends FacetHandler implements FacetEventListener {
 		}
 
 		public void referenceAdded(Reference reference) {
-			//LogTools.info(logger, "got reference: " + reference);
+			//logger.log(Level.INFO, "got reference: " + reference);
 			
 			targetFacet(reference.getTarget());
 		}
@@ -218,7 +219,7 @@ public class InboundHandler extends FacetHandler implements FacetEventListener {
 
 		public void contentFailed(String reason) {
 			//if (trace) {
-				logger.info("failed to get reference: " + reason);
+				logger.log(Level.INFO, "failed to get reference: " + reason);
 			//}
 			cleanup();
 		}

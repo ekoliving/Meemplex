@@ -48,7 +48,8 @@ import org.openmaji.system.meem.wedge.remote.RemoteMeemClient;
 import org.openmaji.system.meemserver.MeemServer;
 import org.openmaji.system.space.hyperspace.HyperSpace;
 import org.openmaji.system.space.meemstore.MeemStore;
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -169,8 +170,8 @@ public class RemoteMeemWedge implements Wedge, RemoteMeem {
 
     if (target == null) {
         String msg = "majikInvocation(" + methodName + "): No such facetIdentifier=" + facetIdentifier + "\n\t" + meemCore.getMeemPath() + "\n\t" + getDescription(methodName, args);
-      LogTools.error(
-        logger, 
+      logger.log(Level.WARNING,
+         
         msg
       );
 
@@ -232,14 +233,14 @@ public class RemoteMeemWedge implements Wedge, RemoteMeem {
 	  }
     }
     catch (NoSuchMethodException noSuchMethodException) {
-      LogTools.error(logger, "majikInvocation(): No such method=" + methodName);
+      logger.log(Level.WARNING, "majikInvocation(): No such method=" + methodName);
 
       throw new RemoteException(
         "majikInvocation(): No such method=" + methodName
       );
     }
     catch (Throwable throwable) {
-      LogTools.error(logger, "majikInvocation(): Exception: ", throwable);
+      logger.log(Level.WARNING, "majikInvocation(): Exception: ", throwable);
 
       throw new RemoteException("majikInvocation(): Exception: " + throwable);
     }
@@ -324,5 +325,5 @@ public class RemoteMeemWedge implements Wedge, RemoteMeem {
    * Create the per-class Software Zoo Logging V2 reference.
    */
 
-  private static final Logger logger = LogFactory.getLogger();
+  private static final Logger logger = Logger.getAnonymousLogger();
 }

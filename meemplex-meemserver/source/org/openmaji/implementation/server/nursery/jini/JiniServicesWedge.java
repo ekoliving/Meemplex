@@ -18,13 +18,14 @@ import org.openmaji.meem.wedge.error.ErrorHandler;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClient;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.meem.wedge.lifecycle.Vote;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class JiniServicesWedge implements Wedge, JiniServices, MeemDefinitionProvider {
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 
 	public MeemContext meemContext;
 
@@ -47,14 +48,14 @@ public class JiniServicesWedge implements Wedge, JiniServices, MeemDefinitionPro
 
 		jiniStarterPort = new Integer(System.getProperty(JiniStarter.JINI_STARTER_PORT)).intValue();
 
-		LogTools.info(logger, "Got jiniStarterPort: " + jiniStarterPort);
+		logger.log(Level.INFO, "Got jiniStarterPort: " + jiniStarterPort);
 		shutdownServer();
 	}
 
 	/* ------- Meem functionality ------------------------------------- */
 
 	public void commence() {
-		LogTools.info(logger, "commencing");
+		logger.log(Level.INFO, "commencing");
 		jiniProcess = startProcess(jiniStarterArguments(), "jiniStarter");
 	}
 
@@ -78,7 +79,7 @@ public class JiniServicesWedge implements Wedge, JiniServices, MeemDefinitionPro
 
 		try {
 			process = runtime.exec(args);
-			LogTools.info(logger, "commence() - " + processName + " started");
+			logger.log(Level.INFO, "commence() - " + processName + " started");
 
 			//if (Common.TRACE_ENABLED && Common.TRACE_JINI_SERVICES) {
 				StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), processName);
@@ -173,9 +174,9 @@ public class JiniServicesWedge implements Wedge, JiniServices, MeemDefinitionPro
 				String line = null;
 				while ((line = br.readLine()) != null) {
 					//if (Common.TRACE_ENABLED) {
-						LogTools.trace(logger, Common.getLogLevelVerbose(), line);
+						logger.log(Common.getLogLevelVerbose(), line);
 					//}
-					LogTools.info(logger, "Jini: " + line);
+					logger.log(Level.INFO, "Jini: " + line);
 				}
 			}
 			catch (IOException ioe) {

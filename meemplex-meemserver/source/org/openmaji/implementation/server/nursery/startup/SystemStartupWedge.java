@@ -8,11 +8,12 @@
 package org.openmaji.implementation.server.nursery.startup;
 
 import java.io.File;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.scripting.bsf.BSFMeemWedge;
 import org.openmaji.implementation.server.space.meemstore.MeemStoreWedge;
-import org.swzoo.log2.core.LogFactory;
+
 
 public class SystemStartupWedge extends BSFMeemWedge implements SystemStartup
 {
@@ -21,7 +22,7 @@ public class SystemStartupWedge extends BSFMeemWedge implements SystemStartup
 
   public void commence()
   { 
-	  logger.info("System startup");
+	  logger.log(Level.INFO, "System startup");
 	  
     String meemStoreLocation = System.getProperty(MeemStoreWedge.MEEMSTORE_LOCATION);
     String filename = meemStoreLocation + "/../" + SystemStartup.CREATE_MEEMSPACE_FLAG;
@@ -44,6 +45,6 @@ public class SystemStartupWedge extends BSFMeemWedge implements SystemStartup
     
     myName = "systemStartupWedge";
     myClass = this.getClass();
-    super.logger = LogFactory.getLogger();
+    super.logger = Logger.getAnonymousLogger();
   }
 }

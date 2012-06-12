@@ -26,9 +26,10 @@ import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.nursery.scripting.telnet.event.ConnectionEvent;
 import org.openmaji.implementation.server.nursery.scripting.telnet.event.ConnectionListener;
 import org.openmaji.implementation.server.nursery.scripting.telnet.util.TelnetSessionLog;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -123,27 +124,27 @@ public abstract class AbstractSession extends Thread implements ConnectionListen
 
 	public void error(String message) {
 
-		LogTools.error(logger, message);
+		logger.log(Level.WARNING, message);
 	}
 
 	public void info(String message) {
 
-		LogTools.info(logger, message);
+		logger.log(Level.INFO, message);
 	}
 
 	public void trace(String message) {
 
-		LogTools.trace(logger, logLevel, message);
+		logger.log(logLevel, message);
 	}
 
 	public void verbose(String message) {
 
-		LogTools.trace(logger, logLevelVerbose, message);
+		logger.log(logLevelVerbose, message);
 	}
 
 	public void warn(String message) {
 
-		LogTools.warn(logger, message);
+		logger.log(Level.WARNING, message);
 	}
 
 	protected Socket getSocket() {
@@ -156,17 +157,17 @@ public abstract class AbstractSession extends Thread implements ConnectionListen
 	 * Create the per-class Software Zoo Logging V2 reference.
 	 */
 
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */
 
-	private static int logLevel = Common.getLogLevel();
+	private static Level logLevel = Common.getLogLevel();
 
 	/**
 	 * Acquire the Maji system-wide verbose logging level.
 	 */
 
-	private static int logLevelVerbose = Common.getLogLevelVerbose();
+	private static Level logLevelVerbose = Common.getLogLevelVerbose();
 }

@@ -30,11 +30,12 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.wedge.configuration.*;
 import org.openmaji.meem.wedge.lifecycle.*;
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PulseTimerWedge implements Runnable, Unary, Wedge {
 
-  private static Logger logger = LogFactory.getLogger();
+  private static Logger logger = Logger.getAnonymousLogger();
 
 /* -------- Facets --------------------------------------------------------- */
 
@@ -171,7 +172,7 @@ public class PulseTimerWedge implements Runnable, Unary, Wedge {
           long timeSleep = timePeriod;          
           if (random) timeSleep = Math.abs(randomize.nextLong()) % timePeriod; 
 
-          if (debug) LogTools.info(logger, "Pulse generated, next pulse in " + timeSleep + " ms");
+          if (debug) logger.log(Level.INFO, "Pulse generated, next pulse in " + timeSleep + " ms");
 
           stateChanged(true);
           wait(pulseWidth);

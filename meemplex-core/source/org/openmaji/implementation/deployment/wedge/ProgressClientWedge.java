@@ -19,12 +19,13 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleTransition;
 import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ProgressClientWedge implements Wedge {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public ProgressClient progressClient;
 
@@ -62,7 +63,7 @@ public class ProgressClientWedge implements Wedge {
 		public void addCompletionPoints(int points) {
 			completion = completion + points;
 			if (debugLevel > 0) {
-				LogTools.info(logger, "completion point is " + completion);
+				logger.log(Level.INFO, "completion point is " + completion);
 			}
 			sendOverallProgress(progressClient);
 		}
@@ -70,7 +71,7 @@ public class ProgressClientWedge implements Wedge {
 		public void addProgressPoints(int points) {
 			current = current + points;
 			if (debugLevel > 0) {
-				LogTools.info(logger, "progress=[" + current + "/" + completion + "]");
+				logger.log(Level.INFO, "progress=[" + current + "/" + completion + "]");
 			}
 			sendOverallProgress(progressClient);
 		}

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.space.meemstore.MeemStoreWedge;
@@ -91,7 +92,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 	 */
 	public void close() {
 		if (DEBUG) {
-			logger.info("Closing");
+			logger.log(Level.INFO, "Closing");
 		}
 		
 		selectMeemPaths = null;
@@ -115,7 +116,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 	public MeemContent load(MeemPath meemPath) {
 		
 		if (DEBUG) {
-			logger.info("Loading " + meemPath);
+			logger.log(Level.INFO, "Loading " + meemPath);
 		}
 		
 		MeemContent meemContent = new MeemContent();
@@ -169,7 +170,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 		}
 
 		if (DEBUG) {
-			logger.info("Storing " + meemPath);
+			logger.log(Level.INFO, "Storing " + meemPath);
 		}
 		
 		try {
@@ -227,7 +228,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 	public void remove(MeemPath meemPath) {
 		
 		if (DEBUG) {
-			logger.info("Removing " + meemPath);
+			logger.log(Level.INFO, "Removing " + meemPath);
 		}
 
 		try {
@@ -246,7 +247,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 		Set<MeemPath> paths = new HashSet<MeemPath>();
 		
 		if (DEBUG) {
-			logger.info("Getting all MeemPaths");
+			logger.log(Level.INFO, "Getting all MeemPaths");
 		}
 
 		try {
@@ -255,7 +256,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 			while (resultSet.next()) {
 				MeemPath meemPath = MeemPath.spi.create(Space.MEEMSTORE, resultSet.getString(1));
 //				if (DEBUG) {
-//					logger.info("Got MeemPath: " + meemPath);
+//					logger.log(Level.INFO, "Got MeemPath: " + meemPath);
 //				}
 				paths.add(meemPath);
 			}
@@ -264,7 +265,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 			logger.log(Level.INFO, "Exception while retrieving MeemPaths from MeemStore", e);
 		}
 		if (DEBUG) {
-			logger.info("Returning " + paths.size() + " MeemPaths");
+			logger.log(Level.INFO, "Returning " + paths.size() + " MeemPaths");
 		}
 		return paths;
 	}
@@ -274,7 +275,7 @@ public class SqlContentStore implements MeemStoreContentStore {
 	 */
 	private void connect() {
 		if (DEBUG) {
-			logger.info("Connecting to database");
+			logger.log(Level.INFO, "Connecting to database");
 		}
 
 		try {

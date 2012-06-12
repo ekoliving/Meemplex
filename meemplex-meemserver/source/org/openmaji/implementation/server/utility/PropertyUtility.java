@@ -16,7 +16,8 @@ package org.openmaji.implementation.server.utility;
 import java.io.*;
 import java.util.*;
 
-import org.swzoo.log2.core.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -31,7 +32,7 @@ import org.swzoo.log2.core.*;
 
 public class PropertyUtility {
 
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public static final String PROPERTY_INCLUDE_ABSOLUTE = "org.openmaji.includeFileAbsolute";
 
@@ -46,7 +47,7 @@ public class PropertyUtility {
 	public static void dumpProperties(Properties properties) {
 
 		if (properties == null) {
-			LogTools.info(logger, "Properties is <null>");
+			logger.log(Level.INFO, "Properties is <null>");
 			return;
 		}
 
@@ -56,7 +57,7 @@ public class PropertyUtility {
 			String name = (String) enumeration.nextElement();
 			String value = properties.getProperty(name);
 
-			LogTools.info(logger, "Property " + name + " = " + value);
+			logger.log(Level.INFO, "Property " + name + " = " + value);
 		}
 	}
 

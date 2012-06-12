@@ -21,7 +21,7 @@ public class Common {
 	
 	/**
    * Whether trace logging calls should be made.
-   * This field should be checked before every LogTools.trace() call.
+   * This field should be checked before every logger.log() call.
    */
   public static boolean TRACE_ENABLED    = false;
 	

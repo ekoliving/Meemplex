@@ -14,6 +14,7 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -138,7 +139,7 @@ public class MajiRpcServlet extends HttpServlet {
 		throws ServletException, IOException 
 	{
 		if (trace) {
-			logger.info("doing post");
+			logger.log(Level.INFO, "doing post");
 		}
 		
 		// TODO this is a hack to allow cross-domain requests
@@ -146,10 +147,10 @@ public class MajiRpcServlet extends HttpServlet {
 
 		// TODO perhaps we should only allow secure connections
 //		if (httpRequest.isSecure()) {
-//			LogTools.trace(logger, 20, "Connection is secure");			
+//			logger.log(Level.FINE, "Connection is secure");			
 //		}
 //		else {
-//			LogTools.trace(logger, 20, "Warning connection is NOT secure");
+//			logger.log(Level.FINE, "Warning connection is NOT secure");
 //		}
 
 		// authenticate
@@ -174,7 +175,7 @@ public class MajiRpcServlet extends HttpServlet {
 			}
 			catch (LoginException e) {
 				if (trace) {
-					logger.info("could not log in: " + e);
+					logger.log(Level.INFO, "could not log in: " + e);
 				}
 				sendAuthChallenge(response);
 				return;
@@ -184,7 +185,7 @@ public class MajiRpcServlet extends HttpServlet {
 		// login is required
 		if (loginContext == null) {
 			if (trace) {
-				logger.info("login context is null");
+				logger.log(Level.INFO, "login context is null");
 			}
 			sendAuthChallenge(response);
 			return;
@@ -205,12 +206,12 @@ public class MajiRpcServlet extends HttpServlet {
 					sendAuthChallenge(response);
 				}
 				catch(IOException e) {
-					logger.info("Problem writing response to the client. Client probably disconnected. " + e.getMessage());
+					logger.log(Level.INFO, "Problem writing response to the client. Client probably disconnected. " + e.getMessage());
 					// TODO we might likely lose contents of a "receive" request.  
 					// Do we need to push the event back on the front of the message queue
 				}
 				catch (Exception ex) {
-					logger.info("Unhandled Exception while processing XML-RPC request: " + ex);
+					logger.log(Level.INFO, "Unhandled Exception while processing XML-RPC request: " + ex);
 				}
 				return null;
 			}
@@ -223,7 +224,7 @@ public class MajiRpcServlet extends HttpServlet {
 //				loginContext.logout();
 //			}
 //			catch (LoginException ex) {
-//				LogTools.info(logger, "Problem logging out", ex);				
+//				logger.log(Level.INFO, "Problem logging out", ex);				
 //			}
 		}
 		catch (PrivilegedActionException ex) {
@@ -274,7 +275,7 @@ public class MajiRpcServlet extends HttpServlet {
 		String username = credentials.substring(0, i);
 		String password = credentials.substring(i+1);
 		
-//		LogTools.info(logger, "logging in uid=" + username + ", pwd=" + password);
+//		logger.log(Level.INFO, "logging in uid=" + username + ", pwd=" + password);
 
 		// get Subject
 		loginContext = LoginHelper.login(username, password);
@@ -317,7 +318,7 @@ public class MajiRpcServlet extends HttpServlet {
 		pw.flush();
 
 		if (trace) {
-			logger.info(writer.toString());
+			logger.log(Level.INFO, writer.toString());
 		}
 
 		// TODO return subject containing the certificate
@@ -333,7 +334,7 @@ public class MajiRpcServlet extends HttpServlet {
 		throws IOException
 	{
 		if (trace) {
-			logger.info("sending auth challenge");
+			logger.log(Level.INFO, "sending auth challenge");
 		}
 		
 //		httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -357,7 +358,7 @@ public class MajiRpcServlet extends HttpServlet {
 
 		public RequestProcessorFactory getRequestProcessorFactory(Class aClass) throws XmlRpcException {
 			if (trace) {
-				logger.info("getting handler factory for : " + aClass);
+				logger.log(Level.INFO, "getting handler factory for : " + aClass);
 			}
 			return factories.get(aClass.getName());
 		}
@@ -373,7 +374,7 @@ public class MajiRpcServlet extends HttpServlet {
 		
 		public Object getRequestProcessor(XmlRpcRequest xmlRpcRequest) throws XmlRpcException {
 			if (trace) {
-				logger.info("getting request processor for : " + singleton.getClass() + " --- " + xmlRpcRequest.getMethodName());
+				logger.log(Level.INFO, "getting request processor for : " + singleton.getClass() + " --- " + xmlRpcRequest.getMethodName());
 			}
 			return singleton;
 		}
@@ -384,7 +385,7 @@ public class MajiRpcServlet extends HttpServlet {
             XmlRpcHttpRequestConfig config = (XmlRpcHttpRequestConfig) pRequest.getConfig();
             
             if (trace) {
-            	logger.info("authenticating: " + config.getBasicUserName());
+            	logger.log(Level.INFO, "authenticating: " + config.getBasicUserName());
             }
             
             //return doAuthentication(config.getBasicUserName(), config.getBasicPassword());

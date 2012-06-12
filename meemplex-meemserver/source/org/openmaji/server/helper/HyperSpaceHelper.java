@@ -31,15 +31,16 @@ import org.openmaji.meem.wedge.configuration.ConfigurationIdentifier;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.system.space.Category;
 import org.openmaji.system.space.hyperspace.HyperSpace;
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author mg Created on 20/01/2003
  */
 public class HyperSpaceHelper {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private static Meem hyperSpaceMeem = null;
 
@@ -66,7 +67,7 @@ public class HyperSpaceHelper {
 			hyperSpace = null;
 		}
 		else {
-			LogTools.error(logger, "HyperSpace already found. Stale remote system Meems may not have expired in Jini Lookup Service.");
+			logger.log(Level.WARNING, "HyperSpace already found. Stale remote system Meems may not have expired in Jini Lookup Service.");
 		}
 	}
 

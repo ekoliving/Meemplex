@@ -6,6 +6,7 @@
  */
 package org.openmaji.implementation.common;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.common.Binary;
@@ -41,7 +42,7 @@ public class BinaryLinearAdapterWedge implements Wedge {
 			float f = value ? trueValue : falseValue;
 			FloatPosition position = new FloatPosition(f, 1, falseValue, trueValue);
 			if (DEBUG) {
-				logger.info("got binary: " + value + " sending " + position);
+				logger.log(Level.INFO, "got binary: " + value + " sending " + position);
 			}
 			linearStateConduit.valueChanged(position);
 		};
@@ -53,7 +54,7 @@ public class BinaryLinearAdapterWedge implements Wedge {
 		public void valueChanged(Position position) {
 			boolean b = (position.floatValue() == trueValue);
 			if (DEBUG) {
-				logger.info("got position: " + position + " sending " + b);
+				logger.log(Level.INFO, "got position: " + position + " sending " + b);
 			}
 			binaryStateConduit.valueChanged(b);
 		};

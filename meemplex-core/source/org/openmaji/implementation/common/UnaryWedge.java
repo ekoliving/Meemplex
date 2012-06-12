@@ -10,9 +10,10 @@ import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * UnaryWedge does not maintain any status and is like a command to trigger
@@ -23,7 +24,7 @@ import org.swzoo.log2.core.Logger;
  */
 
 public class UnaryWedge implements Unary,Wedge{
-	private static Logger logger = LogFactory.getLogger();
+	private static Logger logger = Logger.getAnonymousLogger();
 	/*
 	 * Unary outbound Facet
 	 */
@@ -36,7 +37,7 @@ public class UnaryWedge implements Unary,Wedge{
 	     * @param filter           No Filters are currently implemented
 	     */
 	    public synchronized void sendContent(Object target, Filter filter){
-			if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"sendContent() - invoked");
+			if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
 	        ((Unary) target).valueChanged();
 	    }
 	};
@@ -53,7 +54,7 @@ public class UnaryWedge implements Unary,Wedge{
 
 	/* ---------- Unary Facet method(s) --------------------------------------- */
 	 public synchronized void valueChanged(){
-		if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on inbound facet");
+		if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on inbound facet");
 	    unaryControlConduit.valueChanged();
 	 }
 
@@ -63,7 +64,7 @@ public class UnaryWedge implements Unary,Wedge{
 	 */
 	 class UnaryConduit implements Unary{
 		 public synchronized void valueChanged(){
-			 if ( DebugFlag.TRACE ) LogTools.trace(logger,20,"valueChanged() - invoked on UnaryStateConduit");
+			 if ( DebugFlag.TRACE ) logger.log(Level.FINE, "valueChanged() - invoked on UnaryStateConduit");
 			  
 			 unaryClient.valueChanged();
 	    }

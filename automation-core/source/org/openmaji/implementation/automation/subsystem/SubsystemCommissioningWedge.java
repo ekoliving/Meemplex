@@ -47,16 +47,17 @@ import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
 import org.openmaji.system.utility.MeemUtility;
 
-import org.swzoo.log2.core.LogFactory;
-import org.swzoo.log2.core.LogTools;
-import org.swzoo.log2.core.Logger;
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is a wedge for a subsystem that commissions its own meems
  *
  */
 public class SubsystemCommissioningWedge implements Wedge {
-	private static final Logger logger = LogFactory.getLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public MeemContext meemContext;
 	public MeemCore meemCore;
@@ -173,7 +174,7 @@ public class SubsystemCommissioningWedge implements Wedge {
 			);
 
 		if (DEBUG) {
-			LogTools.info(logger, "Adding dependency: " + meem + "." + source + " -> " + path + "." + target);
+			logger.log(Level.INFO, "Adding dependency: " + meem + "." + source + " -> " + path + "." + target);
 		}
 
 		// XXX
@@ -216,7 +217,7 @@ public class SubsystemCommissioningWedge implements Wedge {
 		MeemPath categoryMeemPath = MeemPath.spi.create(Space.HYPERSPACE, myHyperSpacePath);
 		categoryDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.DISTRIBUTED, categoryMeemPath, "categoryClient");
 
-		LogTools.info(logger, "Setting up categoryClient dependency: " + categoryDependencyAttribute);
+		logger.log(Level.INFO, "Setting up categoryClient dependency: " + categoryDependencyAttribute);
 		
 		Facet facet = meemCore.getTargetFor(new CategoryClientImpl(), CategoryClient.class);
 		dependencyHandlerConduit.addDependency(facet, categoryDependencyAttribute, LifeTime.TRANSIENT);
@@ -246,12 +247,12 @@ public class SubsystemCommissioningWedge implements Wedge {
 	private class CommissionControlConduit implements SubsystemCommissionControl {
 		public void changeCommissionState(CommissionState newState) {
 			if (newState.equals(commissionState)) {
-				LogTools.error(logger, "changeCommissionState() - Subsystem already in that state");
+				logger.log(Level.WARNING, "changeCommissionState() - Subsystem already in that state");
 				return;
 			}
 
 			if (myHyperSpacePath == null || myHyperSpacePath.length() == 0) {
-				LogTools.error(logger, "changeCommissionState() - HyperSpace path has not been configured");
+				logger.log(Level.WARNING, "changeCommissionState() - HyperSpace path has not been configured");
 				return;
 			}
 
@@ -287,24 +288,24 @@ public class SubsystemCommissioningWedge implements Wedge {
 	private class MeemControlConduit implements SubsystemMeemControl {
 		public void createMeem(MeemDefinition meemDefinition, MeemDescription meemDescription) {
 			if (commissionState.equals(CommissionState.NOT_COMMISSIONED)) {
-				LogTools.error(logger, "createMeem() - can not create Meems until subsystem commissioned");
+				logger.log(Level.WARNING, "createMeem() - can not create Meems until subsystem commissioned");
 				return;
 			}
 
 			if (myHyperSpacePath == null || myHyperSpacePath.length() == 0) {
-				LogTools.error(logger, "createMeem() - HyperSpace path has not been configured");
+				logger.log(Level.WARNING, "createMeem() - HyperSpace path has not been configured");
 				return;
 			}
 
 			String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 			if (identifier == null || identifier.length() == 0) {
-				LogTools.error(logger, "createMeem() - identifier not set in MeemDefinition");
+				logger.log(Level.WARNING, "createMeem() - identifier not set in MeemDefinition");
 				return;
 			}
 			
 			if (meemIdentifiers.contains(identifier)) {
 				if (DEBUG) {
-					LogTools.info(logger, "createMeem() - meem with identifier, \"" + identifier + "\", is already created in the subsystem");
+					logger.log(Level.INFO, "createMeem() - meem with identifier, \"" + identifier + "\", is already created in the subsystem");
 				}
 
 				// TODO check if the existing description != new description, destroy old meem and create new one
@@ -326,7 +327,7 @@ public class SubsystemCommissioningWedge implements Wedge {
 			// TODO Use request/response to match up created meem with request
 
 			if (DEBUG) {
-				LogTools.info(logger, "meemCreated(): " + identifier);
+				logger.log(Level.INFO, "meemCreated(): " + identifier);
 			}
 			meemIdentifiers.add(identifier);	// add identifier to set of ids for meems in subsystem
 
@@ -347,12 +348,12 @@ public class SubsystemCommissioningWedge implements Wedge {
 			/** Diana---commented the error logger because sometimes the required Meem descriptors are 
 			 * passed via XML deployment file rather than SubsystemWedge 
 			 **/
-			//LogTools.error(logger,"meemCreated() - unexpected meem, identifier=["+identifier+"]");
+			//logger.log(Level.WARNING, "meemCreated() - unexpected meem, identifier=["+identifier+"]");
 		}
 
 		public void meemDestroyed(Meem meem) {
 			/** Diana---commented the error logger to avoid error confusion **/
-			//LogTools.error(logger,"meemDestroyed() - TODO: finish this ?");  
+			//logger.log(Level.WARNING, "meemDestroyed() - TODO: finish this ?");  
 
 			// TODO get identifier from meem
 			//meem.getMeemPath();
@@ -361,7 +362,7 @@ public class SubsystemCommissioningWedge implements Wedge {
 		}
 
 		public void meemTransferred(Meem meem, LifeCycleManager lcm) {
-			LogTools.error(logger, "meemTransferred() - TODO: finish this ?");
+			logger.log(Level.WARNING, "meemTransferred() - TODO: finish this ?");
 		}
 
 		private void handleMeemCreation(Meem meem, String identifier, MeemDescription meemDescription) {
@@ -411,7 +412,7 @@ public class SubsystemCommissioningWedge implements Wedge {
 		public void entriesAdded(CategoryEntry[] entries) {
 			for (int i=0; i<entries.length; i++) {
 				if (DEBUG) {
-					LogTools.info(logger, "adding identifier to known ids: " + entries[i].getName());
+					logger.log(Level.INFO, "adding identifier to known ids: " + entries[i].getName());
 				}
 				meemIdentifiers.add(entries[i].getName());
 			}
@@ -420,7 +421,7 @@ public class SubsystemCommissioningWedge implements Wedge {
 		public void entriesRemoved(CategoryEntry[] entries) {
 			for (int i=0; i<entries.length; i++) {
 				if (DEBUG) {
-					LogTools.info(logger, "removing identifier from known ids: " + entries[i].getName());
+					logger.log(Level.INFO, "removing identifier from known ids: " + entries[i].getName());
 				}
 				meemIdentifiers.remove(entries[i].getName());
 			}
