@@ -93,14 +93,9 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 			MetaMeem metaMeemClient = (MetaMeem) target;
 			metaMeemClient.updateMeemAttribute(meemStructure.getMeemAttribute());
 			
-			Iterator<Serializable> wedgeAttributeKeys = meemStructure.getWedgeAttributeKeys().iterator();
-			while (wedgeAttributeKeys.hasNext()) {
-				Serializable wedgeKey = wedgeAttributeKeys.next();
+			for (Serializable wedgeKey : meemStructure.getWedgeAttributeKeys()) {
 				metaMeemClient.addWedgeAttribute(meemStructure.getWedgeAttribute(wedgeKey));
-				
-				Iterator<String> facetAttributeKeys = meemStructure.getFacetAttributeKeys(wedgeKey).iterator();
-				while (facetAttributeKeys.hasNext()) {
-					String facetKey = facetAttributeKeys.next();
+				for (String facetKey : meemStructure.getFacetAttributeKeys(wedgeKey)) {
 					metaMeemClient.addFacetAttribute(wedgeKey, meemStructure.getFacetAttribute(facetKey));
 				}
 				
@@ -108,9 +103,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 				// TODO remove the dependencies from MetaMeem
 				
 				//logger.log(Level.INFO, "sending dependency attributes...");
-				Iterator<String> keyIter = facetDep.keySet().iterator();
-				while (keyIter.hasNext()) {
-					String facetId = keyIter.next();
+				for (String facetId : facetDep.keySet()) {
 					DependencyAttribute dependencyAttribute = (DependencyAttribute) facetDep.get(facetId);
 					//logger.log(Level.INFO, "sending dependency attribute with meem: " + dependencyAttribute.getMeem());
 					metaMeemClient.addDependencyAttribute(facetId, dependencyAttribute);

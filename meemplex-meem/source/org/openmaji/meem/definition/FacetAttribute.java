@@ -38,14 +38,16 @@ abstract public class FacetAttribute implements Cloneable, Serializable {
 	/**
 	 * @see java.lang.Object#clone()
 	 */
-	public Object clone() {
-		try { 
-			return super.clone();
-		} catch (CloneNotSupportedException e) { 
-			// this shouldn't happen, since we are Cloneable
-			throw new InternalError();
-		}
-	}
+//	public Object clone() {
+//		try { 
+//			return super.clone();
+//		} catch (CloneNotSupportedException e) { 
+//			// this shouldn't happen, since we are Cloneable
+//			throw new InternalError();
+//		}
+//	}
+	
+	public abstract FacetAttribute clone();
 
 	/**
 	 * Returns the identifier of this <code>FacetAttribute</code>. The identifier
@@ -151,4 +153,5 @@ abstract public class FacetAttribute implements Cloneable, Serializable {
       "]"
     );
   }
+  
 }

@@ -577,13 +577,11 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		Meem resolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
 
 		MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_MEEM);
-		resolverMeemDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", new ExactMatchFilter(
-				meemPath), false);
+		resolverMeemDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", new ExactMatchFilter(meemPath), false);
 		dependencyHandlerConduit.addDependency(resolverClientFacet, resolverMeemDependencyAttribute, LifeTime.TRANSIENT);
 
 		meemPath = MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_WEDGE);
-		resolverWedgeDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", new ExactMatchFilter(
-				meemPath), false);
+		resolverWedgeDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", new ExactMatchFilter(meemPath), false);
 		dependencyHandlerConduit.addDependency(resolverClientFacet, resolverWedgeDependencyAttribute, LifeTime.TRANSIENT);
 	}
 

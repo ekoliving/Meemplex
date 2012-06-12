@@ -105,4 +105,8 @@ public final class FacetOutboundAttribute extends FacetAttribute {
       "]"
     );
   }
+
+  public FacetOutboundAttribute clone() {
+	  return new FacetOutboundAttribute(identifier, interfaceName, wedgePublicFieldName);
+  }
 }

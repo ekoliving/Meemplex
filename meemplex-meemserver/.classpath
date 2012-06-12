@@ -36,14 +36,11 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="source"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsf.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/cxf-extensions.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/derby.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/eclipselink.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/getopt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.persistence_2.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jline-2.6.jar"/>

@@ -242,13 +242,18 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 		Connectable client = new BasicConnectable(dependencyAttribute, isStrong);
 
 		boolean isInbound = false;
-		Class specification = null;
+		Class<?> specification = null;
 		
 		if (sourceFacetIdentifier != null) {
-			FacetImpl facetImpl = getFacetImpl(sourceFacetIdentifier);
+			FacetImpl<?> facetImpl = getFacetImpl(sourceFacetIdentifier);
 	
 			if (facetImpl == null) {
 				logger.log(Level.WARNING, "No facet with identifier \"" + sourceFacetIdentifier + "\". Unable to create dependency.");
+				logger.log(Level.WARNING,
+						"dependencyAdded() SourceMeem = " + meemCore.getMeemPath()
+							+ " FacetId: " + sourceFacetIdentifier
+							+ " DepAttr: " + dependencyAttribute
+							+ " LifeTime: " + lifeTime);
 				return;
 			}
 	
@@ -440,14 +445,14 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 	}
 
 	private boolean isSystemFacet(String facetIdentifier) {
-		FacetImpl facetImpl = getFacetImpl(facetIdentifier);
+		FacetImpl<?> facetImpl = getFacetImpl(facetIdentifier);
 
 		return facetImpl == null ? false : facetImpl.getWedgeImpl().isSystemWedge();
 	}
 
-	private FacetImpl getFacetImpl(String facetIdentifier)
+	private FacetImpl<?> getFacetImpl(String facetIdentifier)
 	{
-		FacetImpl facetImpl = ((MeemCoreImpl) meemCore).getInboundFacetImpl(facetIdentifier);
+		FacetImpl<?> facetImpl = ((MeemCoreImpl) meemCore).getInboundFacetImpl(facetIdentifier);
 
 		if (facetImpl == null) {
 			facetImpl = ((MeemCoreImpl) meemCore).getOutboundFacetImpl(facetIdentifier);
@@ -504,19 +509,14 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 	 * @param client
 	 */
 	private void sendDependencyContent(DependencyClient client) {
-        Iterator addedIterator = persistedDependencies.keySet().iterator();
-        while (addedIterator.hasNext()) {
-        	DependencyAttribute dependencyAttribute = (DependencyAttribute) addedIterator.next();
+		for (DependencyAttribute dependencyAttribute : persistedDependencies.keySet()) {
         	DependencyDescriptor descriptor = (DependencyDescriptor) persistedDependencies.get(dependencyAttribute);
         	client.dependencyAdded(descriptor.getFacetIdentifier(), dependencyAttribute);
         }
 
-		Iterator connectedIterator = connectedDependencies.iterator();
-		while (connectedIterator.hasNext()) {
-			DependencyAttribute dependencyAttribute = (DependencyAttribute) connectedIterator.next();
+		for (DependencyAttribute dependencyAttribute : connectedDependencies) {
 			client.dependencyConnected(dependencyAttribute);
 		}
-
 	}
 	
 	/* --------------- DependencyHandler conduit ------------ */
@@ -580,10 +580,8 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 				 end section */
 
 				// iterate through the dependencies that are persisted, and add them to this meem
-				Iterator iterator = persistedDependencies.keySet().iterator();
-				while (iterator.hasNext())  {
-					DependencyAttribute attribute = (DependencyAttribute) iterator.next();
-					DependencyDescriptor descriptor = (DependencyDescriptor) persistedDependencies.get(attribute);
+				for (DependencyAttribute attribute : persistedDependencies.keySet()) {
+					DependencyDescriptor descriptor = persistedDependencies.get(attribute);
 					doAddDependency(descriptor.getFacetIdentifier(), attribute, LifeTime.PERMANENT);
 				}
 			}

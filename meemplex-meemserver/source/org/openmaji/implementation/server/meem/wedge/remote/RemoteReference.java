@@ -12,6 +12,8 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.openmaji.implementation.server.classloader.SystemExportList;
@@ -42,10 +44,10 @@ public class RemoteReference implements Reference {
 
 	protected final Reference reference;
 	protected final MeemPath meemPath;
-	private transient WeakReference weakReference = null;
+	private transient WeakReference<SmartProxyMeem> weakReference = null;
 	private boolean local = false;
 	protected boolean queueing = true;
-	private transient Vector queue = null;	
+	private transient List<Invocation> queue = null;	
 	private transient Facet targetProxy = null;
 	private transient Reference registryReference = null;
 	
@@ -73,7 +75,7 @@ public class RemoteReference implements Reference {
 	private Facet getTargetProxy() {
 		if (targetProxy == null) {
 			Facet facet = reference.getTarget();
-			Class[] interfaces = facet.getClass().getInterfaces();
+			Class<?>[] interfaces = facet.getClass().getInterfaces();
 			
 			ClassLoader classLoader = SystemExportList.getInstance().getClassLoaderFor(getSpecification(interfaces));
 			targetProxy = (Facet) Proxy.newProxyInstance(classLoader, interfaces, new RemoteReferenceInvocationHandler(facet));
@@ -97,7 +99,7 @@ public class RemoteReference implements Reference {
 			return this;
 		}
 		
-		queue = new Vector();
+		queue = new ArrayList<Invocation>();
 		
 		obtainWeakReference();
 		
@@ -106,7 +108,7 @@ public class RemoteReference implements Reference {
 	
 	private synchronized void obtainWeakReference() {
 		synchronized (SmartProxyMeem.smartProxyMeemMap) {
-			SmartProxyMeem smartProxyMeem = (SmartProxyMeem) SmartProxyMeem.smartProxyMeemMap.get(meemPath);
+			SmartProxyMeem smartProxyMeem = SmartProxyMeem.smartProxyMeemMap.get(meemPath);
 		
 			if (smartProxyMeem != null) {
 				weakReference = smartProxyMeem.obtainWeakReference();
@@ -176,7 +178,7 @@ public class RemoteReference implements Reference {
 	
 	private void runQueuedInvocations() {
 		for (int i = 0; i < queue.size(); i++) {
-			Invocation invocation = (Invocation) queue.get(i);
+			Invocation invocation = queue.get(i);
 			invocation.invoke(reference.getTarget(), null);
 		}
 		queueing = false;

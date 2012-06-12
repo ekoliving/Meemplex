@@ -112,8 +112,8 @@ void createMeemSpace(String deployTarget)
     }
   }  
 
-  MeemSpaceCreateUtility meemSpaceCreateUtility = new MeemSpaceCreateUtility();
-  meemSpaceCreateUtility.installMeemkits();
+//  MeemSpaceCreateUtility meemSpaceCreateUtility = new MeemSpaceCreateUtility();
+//  meemSpaceCreateUtility.installMeemkits();
 
   boolean deployFromScript = false;
   if ( deployTarget != null )

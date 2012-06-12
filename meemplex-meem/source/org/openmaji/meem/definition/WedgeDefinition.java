@@ -9,8 +9,10 @@
 package org.openmaji.meem.definition;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.openmaji.utility.CollectionUtility;
 
@@ -268,5 +270,19 @@ public final class WedgeDefinition implements Serializable {
 
 	public synchronized String toString() {
 		return (getClass().getName() + "[" + "wedgeAttribute=" + wedgeAttribute + ", facetDefinitions=" + facetDefinitions + "]");
+	}
+	
+	public WedgeDefinition clone() {
+		WedgeAttribute copyWedgeAttribute = wedgeAttribute = new WedgeAttribute(wedgeAttribute.getImplementationClassName(), wedgeAttribute.getIdentifier());
+		copyWedgeAttribute.setPersistentFields(new ArrayList<String>(wedgeAttribute.getPersistentFields()));
+		copyWedgeAttribute.setSystemWedge(wedgeAttribute.isSystemWedge());
+		WedgeDefinition copy = new WedgeDefinition(copyWedgeAttribute);
+		List<FacetDefinition> facetDefinitions = new ArrayList<FacetDefinition>();
+		for (FacetDefinition facetDefinition : getFacetDefinitions()) {
+			facetDefinitions.add(facetDefinition.clone());
+		}
+		copy.setFacetDefinitions(facetDefinitions);
+		
+		return copy;
 	}
 }

@@ -24,8 +24,6 @@ Export-Package: org.openmaji.common,
  org.openmaji.util
 Import-Package: org.osgi.framework;version="1.6.0"
 Require-Bundle: org.meemplex.meemserver;bundle-version="1.0.0";visibility:=reexport
-Bundle-ClassPath: library/jdom.jar,
- library/swzoo.jar,
- build/classes/
+Bundle-ClassPath: build/classes/
 Bundle-Activator: org.meemplex.core.CoreActivator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

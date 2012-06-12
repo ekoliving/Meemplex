@@ -29,8 +29,7 @@ public class MeemClientWedge implements Wedge
 
 	private class MeemClientImpl implements MeemClientConduit
 	{
-        public void provideReference(Meem meem, String inboundFacetIdentifier,
-            Class specification, MeemClientCallback referenceCallback)
+        public void provideReference(Meem meem, String inboundFacetIdentifier, Class specification, MeemClientCallback referenceCallback)
         {
 			if (meem.equals(meemCore.getSelf()))
 			{

@@ -99,12 +99,14 @@
       </description>
     </entry>
 
+<!-- 
     <entry name="LifeCycleTransitionLogger" path="/core/diagnostic" icon="">
       <meemDefinitionProvider class="org.openmaji.implementation.diagnostic.LifeCycleTransitionLoggerMeem"/>
       <description overview="LifeCycle Transition Logger" author="Chris Kakris">
         <detail>This meem does nothing except log each lifecycle transition it experiences.</detail>
       </description>
     </entry>
+ -->
 
     <entry name="Export" path="/core/export" icon="common_meemkit_16.gif">
       <meemDefinitionProvider class="org.openmaji.implementation.common.importexport.ExportMeem"/>

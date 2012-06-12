@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ import java.util.logging.Logger;
  */
 public class RemoteInvocationHandler {
 
-	private static Map boundMeems = new HashMap();
+	private static Map<MeemPath, BindTask> boundMeems = new HashMap<MeemPath, BindTask>();
 
 	public static void invokeRemoteMeem(MeemPath meemPath, ReflectionInvocation reflectionInvocation) {
 
@@ -86,7 +85,7 @@ public class RemoteInvocationHandler {
 		private static final int MAX_FAILURE_COUNT = 3;
 		
 		private final MeemPath meemPath;
-		private final LinkedList queue = new LinkedList();
+		private final LinkedList<ReflectionInvocation> queue = new LinkedList<ReflectionInvocation>();
 		private boolean bound = false;
 		private Meem boundMeem = null;
 		private RemoteMeem remoteMeem = null;

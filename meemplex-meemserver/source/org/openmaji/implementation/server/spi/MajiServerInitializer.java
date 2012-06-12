@@ -13,6 +13,8 @@
 
 package org.openmaji.implementation.server.spi;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.openmaji.implementation.server.utility.ObjectUtility;
@@ -20,6 +22,7 @@ import org.openmaji.system.spi.MajiSystemProvider;
 import org.openmaji.system.spi.SpecificationEntry;
 import org.openmaji.system.spi.SpecificationType;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -246,6 +249,16 @@ public class MajiServerInitializer {
 	public static void initialize(MajiSystemProvider majiSystemProvider) {
 
 		Properties systemProperties = System.getProperties();
+
+		// load the logging properties
+		final InputStream inputStream = MajiServerInitializer.class.getResourceAsStream("/logging.properties");
+		try {
+			LogManager.getLogManager().readConfiguration(inputStream);
+		}
+		catch (final IOException e) {
+			Logger.getAnonymousLogger().severe("Could not load default logging.properties file");
+			Logger.getAnonymousLogger().severe(e.getMessage());
+		}
 
 		for (int index = 0; index < specificationEntries.length; index++) {
 			SpecificationEntry specificationEntry = specificationEntries[index];

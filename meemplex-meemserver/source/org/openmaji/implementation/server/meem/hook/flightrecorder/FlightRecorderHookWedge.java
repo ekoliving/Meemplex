@@ -120,8 +120,8 @@ public class FlightRecorderHookWedge implements FlightRecorderHook, Wedge {
 /* ---------- Logging fields ----------------------------------------------- */
 
   /**
-   * Create the per-class Software Zoo Logging V2 reference.
+   * Create the logger.
    */
 
-  private static final Logger logger = Logger.getAnonymousLogger();
+  private static final Logger logger = Logger.getLogger(FlightRecorderHookWedge.class.getPackage().getName());
 }

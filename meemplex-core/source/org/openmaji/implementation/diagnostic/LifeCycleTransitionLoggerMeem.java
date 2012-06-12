@@ -16,7 +16,7 @@ public class LifeCycleTransitionLoggerMeem implements MeemDefinitionProvider
 {
 	public MeemDefinition getMeemDefinition()
   {
-    Class[] wedges = new Class[] { LifeCycleTransitionLoggerWedge.class };
+    Class<?>[] wedges = new Class[] { LifeCycleTransitionLoggerWedge.class };
     MeemDefinition meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(wedges);
     meemDefinition.getMeemAttribute().setIdentifier("LifeCycleTransitionLogger");
     return meemDefinition;

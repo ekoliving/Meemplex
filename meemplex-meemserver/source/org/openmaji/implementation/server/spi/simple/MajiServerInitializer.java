@@ -502,55 +502,36 @@ public class MajiServerInitializer {
 /* ---------- End of SpecificationEntries ---------------------------------- */
   };
 
-  public static void initialize(
-    MajiSystemProvider majiSystemProvider) {
+	public static void initialize(MajiSystemProvider majiSystemProvider) {
 
-    Properties systemProperties = System.getProperties();
+		Properties systemProperties = System.getProperties();
 
-    for (int index = 0; index < specificationEntries.length; index ++) {
-      SpecificationEntry specificationEntry = specificationEntries[index];
+		for (int index = 0; index < specificationEntries.length; index++) {
+			SpecificationEntry specificationEntry = specificationEntries[index];
+			String implementationClassNamePropertyName = specificationEntry.getSpecification().getName() + PROPERTY_CLASSNAME_SUFFIX;
+			String implementationClassName = systemProperties.getProperty(implementationClassNamePropertyName);
 
-      String implementationClassNamePropertyName =
-        specificationEntry.getSpecification().getName() +
-        PROPERTY_CLASSNAME_SUFFIX;
+			if (implementationClassName != null) {
+				try {
+					Class<?> implementationClass = ObjectUtility.getClass(Object.class, implementationClassName);
+					specificationEntry = new SpecificationEntry(specificationEntry.getSpecification(), specificationEntry.getSpecificationType(), implementationClass);
+				}
+				catch (Exception exception) {
+					logger.log(Level.WARNING, "Couldn't instantiate " + implementationClassName + " as the custom implementation for " + specificationEntry.getSpecification());
 
-      String implementationClassName =
-        systemProperties.getProperty(implementationClassNamePropertyName);
+					System.exit(-1); // Yes, this choice was deliberately made !
+				}
+			}
 
-      if (implementationClassName != null) {
-        try {
-          Class implementationClass = ObjectUtility.getClass(
-            Object.class, implementationClassName
-          );
+			majiSystemProvider.addSpecificationEntry(specificationEntry);
+		}
+	}
 
-          specificationEntry = new SpecificationEntry(
-            specificationEntry.getSpecification(),
-            specificationEntry.getSpecificationType(),
-            implementationClass
-          );
-        }
-        catch (Exception exception) {
-          logger.log(Level.WARNING,
-            
-            "Couldn't instantiate " +
-            implementationClassName +
-            " as the custom implementation for " +
-            specificationEntry.getSpecification()
-          );
+	/* ---------- Logging fields ----------------------------------------------- */
 
-          System.exit(-1);  // Yes, this choice was deliberately made !
-        }
-      }
+	/**
+	 * Create the per-class Software Zoo Logging V2 reference.
+	 */
 
-      majiSystemProvider.addSpecificationEntry(specificationEntry);
-    }
-  }
-
-/* ---------- Logging fields ----------------------------------------------- */
-
-  /**
-   * Create the per-class Software Zoo Logging V2 reference.
-   */
-
-  private static final Logger logger = Logger.getAnonymousLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 }

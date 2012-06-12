@@ -136,6 +136,11 @@ public final class FacetDefinition implements Serializable {
 
     return(hashCode);
   }
+  
+  public FacetDefinition clone() {
+	  FacetAttribute copyFacetAttribute = facetAttribute.clone();
+	  return new FacetDefinition(copyFacetAttribute);
+  }
 
   /**
    * Provides a String representation of FacetDefinition.

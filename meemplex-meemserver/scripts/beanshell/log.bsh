@@ -39,10 +39,10 @@ endhelp:
 
 import java.util.Properties;
 
-import org.swzoo.log2.util.ConfigurableLogFactory;
-import org.swzoo.log2.topology.shortblack.Brew;
-import org.swzoo.log2.component.process.filter.TraceLevelFilter;
-import org.swzoo.nursery.properties.PropertiesUtil;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+Logger log = Logger.getAnonymousLogger();
 
 /* -------------------------------------------------------------------------- *
  * Print to Maji log or BeanShell console, depending on "printToLog" flag.
@@ -60,8 +60,7 @@ argumentType: String
 functionEnd:
 */
 
-void printToLog(
-  String message) {
+void printToLog(String message) {
 
   if (printToLog == true) {
     info(message);
@@ -82,7 +81,7 @@ functionEnd:
 */
 
 void error(String message) {
-  log.error(message);
+  log.severe(message);
 }
 
 /*
@@ -110,7 +109,7 @@ functionEnd:
 */
 
 void trace(String message) {
-  log.trace(message);
+  log.fine(message);
 }
 
 /*
@@ -124,7 +123,7 @@ functionEnd:
 */
 
 void verbose(String message) {
-  log.verbose(message);
+  log.finer(message);
 }
 
 /*
@@ -138,35 +137,11 @@ functionEnd:
 */
 
 void warn(String message) {
-  log.warn(message);
+  log.warning(message);
 }
 
-/*
-function: getTraceLevelFilter
-functionDescription: Return the logging system's trace level filter
-functionType: TraceLevelFilter
-functionEnd:
-*/
 
-TraceLevelFilter getTraceLevelFilter() {
-
-  factory  = new ConfigurableLogFactory();
-  topology = factory.getProvider();
-
-  backend = topology.getBackEnd();
-  if ( backend instanceof org.openmaji.implementation.tool.eclipse.util.log.LatteBackEnd ) {
-    latteBackend = (org.openmaji.implementation.tool.eclipse.util.log.LatteBackEnd) backend;
-    return latteBackend.traceLevelFilter;
-  }
-
-  if ( backend instanceof Brew ) {
-    brew = (Brew) topology.getBackEnd();
-    return brew.traceLevelFilter;
-  }
-  
-  print("Unrecognised logging backend: "+backend.getClass().getName());
-  return null;
-}
+Level traceLevel = Level.FINE;
 
 /*
 function: getLogTraceLevel
@@ -175,8 +150,8 @@ functionType: int
 functionEnd:
 */
 
-int getLogTraceLevel() {
-  return(getTraceLevelFilter().getLevel());
+Level getLogTraceLevel() {
+	return traceLevel;
 }
 
 /*
@@ -189,10 +164,9 @@ argumentType: int
 functionEnd:
 */
 
-void setLogTraceLevel(
-  int traceLevel) {
+void setLogTraceLevel(Level newLevel) {
 
-  getTraceLevelFilter().setLevel(traceLevel);
+  traceLevel = newLevel;
 }
 
 /*

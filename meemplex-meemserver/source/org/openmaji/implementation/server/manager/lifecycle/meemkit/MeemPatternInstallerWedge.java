@@ -26,6 +26,7 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.server.helper.LifeCycleManagerHelper;
 import org.openmaji.server.helper.ReferenceHelper;
 import org.openmaji.server.presentation.PatternGroupWedge;
+import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.openmaji.system.meemkit.core.MeemkitEntryDescriptor;
 import org.openmaji.system.meemkit.core.ToolkitCategoryEntry;
@@ -329,8 +330,13 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 				icons.setLargeIcon(re.extract(largeIcon));
 			}
 
-			VariableMap variableMap = (VariableMap) ReferenceHelper.getTarget(meem, "variableMap", VariableMap.class);
-			variableMap.update(InterMajik.ICONIC_PRESENTATION_KEY, icons);
+			try {
+				VariableMap variableMap = (VariableMap) ReferenceHelper.getTarget(meem, "variableMap", VariableMap.class);
+				variableMap.update(InterMajik.ICONIC_PRESENTATION_KEY, icons);
+			}
+			catch (Exception e) {
+				logger.info("problem getting variable map target for " + entry.getName());
+			}
 		}
 		
 		/*

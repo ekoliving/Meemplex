@@ -103,15 +103,13 @@ public class DualPatternBinaryRegexWedge implements Wedge, Variable {
 	 * The conduit through which this Wedge alerts errors in configuration
 	 * changes
 	 */
-	public ConfigurationClient configurationClientConduit = new ConfigurationClientAdapter(
-			this);
+	public ConfigurationClient configurationClientConduit = new ConfigurationClientAdapter(this);
 
 	/*
 	 * The conduit through which we are alerted to life cycle changes
 	 */
 
-	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(
-			this);
+	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
 	public String truePattern;
 	

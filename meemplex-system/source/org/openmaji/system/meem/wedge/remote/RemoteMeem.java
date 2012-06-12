@@ -37,7 +37,7 @@ public interface RemoteMeem extends Facet {
 	void majikInvocation(
 			String facetIdentifier, 
 			String methodName, 
-			Class[] argsClasses, 
+			Class<?>[] argsClasses, 
 			Serializable[] args, 
 			Serializable request
 		) throws RemoteException;

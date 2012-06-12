@@ -105,4 +105,8 @@ public final class FacetInboundAttribute extends FacetAttribute {
       "]"
     );
   }
+  
+  public FacetInboundAttribute clone() {
+	  return new FacetInboundAttribute(identifier, interfaceName, contentRequired);
+  }
 }

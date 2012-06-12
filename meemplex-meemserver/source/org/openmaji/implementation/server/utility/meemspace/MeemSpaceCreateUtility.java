@@ -80,7 +80,7 @@ public class MeemSpaceCreateUtility
     	logger.log(Level.INFO, "Could not locate Meemkit Manager Meem.  Aborting installation of meemkits");
     	return;
     }
-    final PigeonHole readyPigeonHole = new PigeonHole();
+    final PigeonHole<Boolean> readyPigeonHole = new PigeonHole<Boolean>();
 
     Runnable runnable = new Runnable() {
       public void run()
@@ -145,7 +145,7 @@ public class MeemSpaceCreateUtility
       if ( file.getName().endsWith(MeemkitDescriptor.ARCHIVE_SUFFIX) )
       {
         ServerGateway serverGateway = ServerGateway.spi.create();
-        PigeonHole pigeonHole = new PigeonHole();
+        PigeonHole<String> pigeonHole = new PigeonHole<String>();
         MeemkitClassloaderMonitor client = new MyMeemkitClassloaderMonitor(pigeonHole);
         Facet proxy = serverGateway.getTargetFor(client, MeemkitClassloaderMonitor.class);
         Reference reference = Reference.spi.create("meemkitClassloaderMonitorClient", proxy, true);
@@ -194,9 +194,9 @@ public class MeemSpaceCreateUtility
 
   private class MyMeemkitClassloaderMonitor implements MeemkitClassloaderMonitor
   {
-    private final PigeonHole pigeonHole;
+    private final PigeonHole<String> pigeonHole;
 
-    public MyMeemkitClassloaderMonitor(PigeonHole pigeonHole)
+    public MyMeemkitClassloaderMonitor(PigeonHole<String> pigeonHole)
     {
       this.pigeonHole = pigeonHole;
     }
@@ -216,9 +216,9 @@ public class MeemSpaceCreateUtility
 
   private class MyLifeCycleClient implements LifeCycleClient
   {
-    private final PigeonHole pigeonHole;
+    private final PigeonHole<Boolean> pigeonHole;
 
-    public MyLifeCycleClient(PigeonHole pigeonHole)
+    public MyLifeCycleClient(PigeonHole<Boolean> pigeonHole)
     {
       this.pigeonHole = pigeonHole;
     }

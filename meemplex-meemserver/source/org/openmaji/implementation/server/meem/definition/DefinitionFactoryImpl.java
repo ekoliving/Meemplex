@@ -92,7 +92,7 @@ public class DefinitionFactoryImpl implements DefinitionFactory {
 
   public MeemDefinition createMeemDefinition(
     String meemIdentifier,
-    Class  wedgeSpecification) {
+    Class<?>  wedgeSpecification) {
 
     MeemDefinition meemDefinition = new MeemDefinition(
       new MeemAttribute(meemIdentifier)
@@ -135,7 +135,7 @@ public class DefinitionFactoryImpl implements DefinitionFactory {
         wedgeDefinition = createWedgeDefinition((String) wedgeSpecifier);
       }
       else if (wedgeSpecifier instanceof Class) {
-        wedgeDefinition = createWedgeDefinition((Class) wedgeSpecifier);
+        wedgeDefinition = createWedgeDefinition((Class<?>) wedgeSpecifier);
       }
       else {
         throw new IllegalArgumentException(

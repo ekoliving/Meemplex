@@ -108,7 +108,7 @@ public class RemoteMeemWedge implements Wedge, RemoteMeem {
   private void doRemoteMeemChanged(
     RemoteMeemClient target) {
 	
-	ArrayList	items = new ArrayList();
+	ArrayList<FacetItem>	items = new ArrayList<FacetItem>();
 	
     if (facetItems == null) {
       if (meemCore.isA(HyperSpace.class)) {
@@ -160,7 +160,7 @@ public class RemoteMeemWedge implements Wedge, RemoteMeem {
   public void majikInvocation(
     String       facetIdentifier,
     String       methodName,
-    Class[]      argsClasses,
+    Class<?>[] argsClasses,
     Serializable[]     args,
     Serializable request)
     throws   RemoteException 
@@ -218,7 +218,7 @@ public class RemoteMeemWedge implements Wedge, RemoteMeem {
       	
       	RequestTracker.setRequestStack(rs);
       	      	
-        Class targetClass = implementation.getClass();
+        Class<? extends Facet> targetClass = implementation.getClass();
 
         Method method = targetClass.getMethod(methodName, argsClasses);
         

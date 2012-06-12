@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.meemplex.meem.Content;
 import org.openmaji.implementation.server.Common;
@@ -42,6 +43,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Determines Facets and persisted fields in a Wedge
+ * 
  * @author Peter
  */
 public class WedgeIntrospector {
@@ -110,8 +113,8 @@ public class WedgeIntrospector {
 		WedgeDefinition wedgeDefinition = getCache(wedgeClass);
 
 		if (wedgeDefinition != null) {
-			// TODO return copy of cached wedge definition
-			return wedgeDefinition;
+			// return copy of cached wedge definition
+			return wedgeDefinition.clone();
 		}
 
 		// Check that the wedge class is public and non-abstract
@@ -222,7 +225,6 @@ public class WedgeIntrospector {
 
 		try {
 			wedgeClass.getMethod("commence", (Class<?>) null);
-
 			wedgeClass.getField("lifeCycleClientConduit");
 		}
 		catch (NoSuchFieldException e) {
@@ -234,7 +236,6 @@ public class WedgeIntrospector {
 
 		try {
 			wedgeClass.getMethod("conclude", (Class<?>[]) null);
-
 			wedgeClass.getField("lifeCycleClientConduit");
 		}
 		catch (NoSuchFieldException e) {
@@ -552,39 +553,39 @@ public class WedgeIntrospector {
 	}
 
 
-	private static synchronized void putCache(Class<?> wedgeClass, WedgeDefinition wedgeDefinition) {
+	private static void putCache(Class<?> wedgeClass, WedgeDefinition wedgeDefinition) {
 		if (cache != null) {
-			WeakReference<WedgeDefinition> entry = new WeakReference<WedgeDefinition>(wedgeDefinition);
-
-			cache.put(wedgeClass, entry);
+			synchronized (cache) {
+				WeakReference<WedgeDefinition> entry = new WeakReference<WedgeDefinition>(wedgeDefinition.clone());
+				cache.put(wedgeClass, entry);
+			}
 		}
 	}
 
-	private static synchronized WedgeDefinition getCache(Class<?> wedgeClass) {
+	private static WedgeDefinition getCache(Class<?> wedgeClass) {
 		if (cache != null) {
-			WeakReference<WedgeDefinition> entry = cache.get(wedgeClass);
-
-			if (entry != null) {
-				WedgeDefinition wedgeDefinition = entry.get();
-
-				if (wedgeDefinition != null) {
-					return wedgeDefinition;
+			synchronized (cache) {
+				WeakReference<WedgeDefinition> entry = cache.get(wedgeClass);
+				if (entry != null) {
+					WedgeDefinition wedgeDefinition = entry.get();
+					if (wedgeDefinition != null) {
+						return wedgeDefinition;
+					}
 				}
-
-				cache.remove(wedgeClass);
 			}
 		}
-
 		return null;
 	}
 
-	/** cache for wedge definitions for classes */
-	private static final Map<Class<?>, WeakReference<WedgeDefinition>> cache = null;// new WeakHashMap();
+	/** 
+	 * cache for wedge definitions for classes 
+	 */
+	private static final Map<Class<?>, WeakReference<WedgeDefinition>> cache = new WeakHashMap<Class<?>, WeakReference<WedgeDefinition>>();
 
 	/* ---------- Logging fields ----------------------------------------------- */
 
 	/**
-	 * Create the per-class Software Zoo Logging V2 reference.
+	 * Logger
 	 */
 
 	private static final Logger logger = Logger.getAnonymousLogger();
