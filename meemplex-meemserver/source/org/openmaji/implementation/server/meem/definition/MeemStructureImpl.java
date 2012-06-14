@@ -497,7 +497,7 @@ public class MeemStructureImpl implements MeemStructure {
 		}
 
 		public void updateWedge(WedgeAttribute wedge) {
-			this.wedge = (WedgeAttribute)wedge.clone();
+			this.wedge = wedge.clone();
 		}
 			
 		public void addFacetId(String facetId) {

@@ -462,6 +462,10 @@ public class MeemCoreImpl implements MeemBuilder, MeemCore {
 	public OutboundFacetImpl<?> getOutboundFacetImpl(String outboundFacetIdentifier) {
 		return meemCoreStructure.getOutboundFacetImpl(outboundFacetIdentifier);
 	}
+	
+	public Collection<FacetImpl<?>> getFacetImpls() {
+		return meemCoreStructure.getFacetImpls();
+	}
 
 	public Meem getFlightRecorder() {
 		return (flightRecorder);

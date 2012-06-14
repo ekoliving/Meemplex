@@ -37,8 +37,6 @@ import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceClient;
 import org.openmaji.system.space.meemstore.MeemContentClient;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 
-
-
 /**
  * <p>
  * ...
@@ -91,12 +89,12 @@ public class ActivationWedge implements Wedge {
 
 		meems.put(meemPath, meem);
 
-		DefinitionContentPair definitionContentPair = (DefinitionContentPair) definitionContentPairs.get(meemPath);
+		DefinitionContentPair definitionContentPair = definitionContentPairs.get(meemPath);
 
 		if (definitionContentPair != null) {
 			MeemContent                 meemContent       = definitionContentPair.getMeemContent();
 			Map<String, Serializable>   lcPersistanceMap  = meemContent.getPersistentFields("LifeCycleWedge");
-			LifeCycleState              maxState          = (LifeCycleState) lcPersistanceMap.get("maxState");
+			LifeCycleState              maxState          = lcPersistanceMap == null ? LifeCycleState.READY : (LifeCycleState) lcPersistanceMap.get("maxState");
 
 			meemMaxLifeCycleStates.put(meemPath, maxState);
 			

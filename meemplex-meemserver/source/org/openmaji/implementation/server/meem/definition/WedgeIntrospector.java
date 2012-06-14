@@ -28,7 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.meemplex.meem.Conduit;
 import org.meemplex.meem.Content;
+import org.meemplex.meem.FacetContent;
 import org.openmaji.implementation.server.Common;
 
 import org.openmaji.meem.Facet;
@@ -483,18 +485,27 @@ public class WedgeIntrospector {
 
 			// Ignore fields in IGNORED_FIELDS list and conduit fields
 			String fieldName = wedgeField.getName();
-			if (IGNORED_FIELDS.contains(fieldName) || fieldName.endsWith("Conduit") || fieldName.endsWith("Provider"))
+			if (IGNORED_FIELDS.contains(fieldName) || fieldName.endsWith("Conduit") || fieldName.endsWith("Provider")) {
 				continue;
-
+			}
+			if (wedgeField.getAnnotation(Conduit.class) != null) {
+				continue;
+			}
+			if (wedgeField.getAnnotation(FacetContent.class) != null) {
+				continue;
+			}
+			
 			// Ignore static fields
 			int modifiers = wedgeField.getModifiers();
-			if (Modifier.isStatic(modifiers))
+			if (Modifier.isStatic(modifiers)) {
 				continue;
+			}
 
 			// Ignore transient fields
-			if (Modifier.isTransient(modifiers))
+			if (Modifier.isTransient(modifiers)) {
 				continue;
-
+			}
+			
 			// Fields cannot be final, since we need to manipulate them
 			if (Modifier.isFinal(modifiers)) {
 				String message = wedgeClassName + ": Facets and persistent fields may not be 'final': " + fieldName;
@@ -502,8 +513,7 @@ public class WedgeIntrospector {
 				throw new WedgeIntrospectorException(message);
 			}
 
-			// If the field type is not a Facet interface, this is a persistent field
-
+			// check if annotated to be persistent content field
 			Content contentAnnotation = wedgeField.getAnnotation(Content.class);
 			if (contentAnnotation != null) {
 				// is  a persisted field
@@ -514,8 +524,10 @@ public class WedgeIntrospector {
 				continue;
 			}
 			
+			// If the field type is not a Facet interface, this is a persistent field
+			org.meemplex.meem.Facet facetAnnotation = wedgeField.getAnnotation(org.meemplex.meem.Facet.class);
 			Class<?> wedgeFieldClass = wedgeField.getType();
-			if (!Facet.class.isAssignableFrom(wedgeFieldClass)) {
+			if (!Facet.class.isAssignableFrom(wedgeFieldClass) && facetAnnotation == null) {
 				if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_INTROSPECTOR) {
 					logger.log(Common.getLogLevelVerbose(), wedgeClassName + ": Found persistent field: " + fieldName);
 				}
@@ -525,15 +537,16 @@ public class WedgeIntrospector {
 
 			// If not a persistent field, must be an outbound facet
 			String facetName = fieldName;
-
-			org.meemplex.meem.Facet facetAnnotation = wedgeField.getAnnotation(org.meemplex.meem.Facet.class);
 			if (facetAnnotation != null) {
 				if (facetAnnotation.direction() == org.meemplex.service.model.Direction.IN) {
-					String message = "Wedge '" + wedgeClassName + "' has incoming facet '" + fieldName + "' when expecting an outbound Facet";
-					logger.log(Level.WARNING, message);
-					throw new WedgeIntrospectorException(message);
+//					String message = "Wedge '" + wedgeClassName + "' has incoming facet '" + fieldName + "' when expecting an outbound Facet";
+//					logger.log(Level.WARNING, message);
+//					throw new WedgeIntrospectorException(message);
+					
+					// TODO not yet handling inbound Facets via public fields 
+					continue;
 				}
-				if (facetAnnotation.name() != null) {
+				if (facetAnnotation.name() != null && !facetAnnotation.name().isEmpty()) {
 					facetName = facetAnnotation.name();
 				}
 			}
@@ -581,8 +594,6 @@ public class WedgeIntrospector {
 	 * cache for wedge definitions for classes 
 	 */
 	private static final Map<Class<?>, WeakReference<WedgeDefinition>> cache = new WeakHashMap<Class<?>, WeakReference<WedgeDefinition>>();
-
-	/* ---------- Logging fields ----------------------------------------------- */
 
 	/**
 	 * Logger

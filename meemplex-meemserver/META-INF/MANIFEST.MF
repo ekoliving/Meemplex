@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Meem Server
-Bundle-SymbolicName: org.meemplex.meemserver
+Bundle-SymbolicName: org.meemplex.meemserver;singleton:=true
 Bundle-Version: 1.0.0.1
 Bundle-Vendor: Sugar Coding
 DynamicImport-Package: *
@@ -137,7 +137,7 @@ Bundle-ClassPath: lib/activation.jar,
  lib/jdom.jar,
  lib/jline-2.6.jar,
  lib/mail.jar,
- lib/swzoo.jar,
+ lib/org.eclipse.paho.client.mqttv3.jar,
  lib/jini/classserver.jar,
  lib/jini/jini-core.jar,
  build/classes/,

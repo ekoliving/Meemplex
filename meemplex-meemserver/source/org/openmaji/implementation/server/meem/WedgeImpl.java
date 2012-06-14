@@ -37,6 +37,7 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 
 import org.meemplex.meem.Conduit;
+import org.meemplex.meem.ConfigProperty;
 import org.meemplex.meem.MeemContext;
 import org.openmaji.implementation.server.classloader.MeemkitClassLoader;
 import org.openmaji.implementation.server.meem.core.MeemContextImpl;
@@ -257,6 +258,9 @@ public class WedgeImpl {
 					String valueName = field.getName().substring(0, field.getName().length() - "Specification".length());
 
 					spec.setIdentifier(new ConfigurationIdentifier(this.getWedgeAttribute().getIdentifier(), valueName));
+				}
+				else if (field.getAnnotation(ConfigProperty.class) != null) {
+					// TODO config spec for property
 				}
 			}
 		}

@@ -19,6 +19,8 @@ import org.openmaji.system.space.CategoryEntry;
 
 /**
  * Basic utility class for dealing with categories from outside the meem world.
+ * 
+ * TODO turn these methods into asynchronous methods with AsyncCallback
  */
 public interface CategoryUtility
 {

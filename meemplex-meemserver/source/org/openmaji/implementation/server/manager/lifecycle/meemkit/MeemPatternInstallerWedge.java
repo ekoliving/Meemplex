@@ -298,7 +298,7 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 		}
 		catch (Exception ex) {
 			String message = "Unable to create Meem for [" + entry.getName() + "]: " + ex.getMessage();
-			errorHandlerConduit.thrown(new Exception(message));
+			errorHandlerConduit.thrown(new Exception(message, ex));
 			return;
 		}
 

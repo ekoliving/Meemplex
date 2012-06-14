@@ -30,6 +30,12 @@ public interface MeemStoreDefinitionStore {
 	
 	void close();
 	
+	/**
+	 * Load the MeemDefinition for the given MeemPath
+	 * 
+	 * @param meemPath
+	 * @return
+	 */
 	MeemDefinition load(MeemPath meemPath);
 	
 	void store(MeemPath meemPath, MeemDefinition definition);
@@ -38,5 +44,9 @@ public interface MeemStoreDefinitionStore {
 	
 	int getVersion(MeemPath meemPath);
 	
+	/**
+	 * Get MeemPaths for all meems in persistant store.
+	 * @return
+	 */
 	Set<MeemPath> getAllPaths();
 }

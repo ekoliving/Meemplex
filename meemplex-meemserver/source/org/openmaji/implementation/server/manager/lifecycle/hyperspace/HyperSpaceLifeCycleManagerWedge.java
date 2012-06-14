@@ -41,6 +41,7 @@ public class HyperSpaceLifeCycleManagerWedge implements HyperSpace, Wedge {
 	/* ------------------------ conduits --------------------- */
 	
 	public Category categoryConduit = null;
+	
 	public ManagedPersistenceClient managedPersistenceClientConduit = new PersistenceClientImpl(); //inbound
 
 	/*--------------------- Category methods ----------------- */

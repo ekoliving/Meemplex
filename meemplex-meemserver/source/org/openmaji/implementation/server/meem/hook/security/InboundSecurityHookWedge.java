@@ -82,6 +82,8 @@ public class InboundSecurityHookWedge
 	implements InboundSecurityHook, Hook, AccessControl, Wedge, FilterChecker
 {
 	private static final Logger logger = Logger.getAnonymousLogger();
+	
+	private static final boolean TRACE = false;
 
     public MeemCore					meemCore;
     
@@ -90,27 +92,19 @@ public class InboundSecurityHookWedge
     public AccessControlClient      accessControlClientConduit;
 	
     public AccessControlClient      accessControlClient;
-    public final ContentProvider    accessControlClientProvider = new ContentProvider()
-    {
+    
+    public final ContentProvider    accessControlClientProvider = new ContentProvider() {
         public void sendContent(Object target, Filter filter) throws ContentException {
             AccessControlClient     client = (AccessControlClient)target;
-//            logger.log(Level.INFO, "sending access control content");
-            
             Object template = null;
             if (filter != null && filter instanceof ExactMatchFilter) {
             	template = ((ExactMatchFilter)filter).getTemplate();
             }
-
-            Iterator                it = principals.keySet().iterator();
-            while (it.hasNext()) {
-                Principal  p = (Principal)it.next();
-                
+            for (Principal p : principals.keySet()) {
                 if (template == null || template.equals(p)) {
-//                    logger.log(Level.INFO, "sending access for " + p + " = " + principals.get(p));
-                    client.accessAdded(p, (AccessLevel)principals.get(p));
+                    client.accessAdded(p, principals.get(p));
                 }                
             }
-            
         }
     };
     
@@ -171,7 +165,9 @@ public class InboundSecurityHookWedge
 	 */
 	public void addAccess(Principal principal, AccessLevel level)
 	{
-//		logger.log(Level.INFO, "Add acces for " + principal + ". level = " + level);
+		if (TRACE) {
+		logger.log(Level.INFO, "Add access for " + principal + ". level = " + level);
+		}
 		
 		principals.put(principal, level);
 
@@ -187,7 +183,9 @@ public class InboundSecurityHookWedge
 	 */
 	public void removeAccess(Principal principal)
 	{
-//		logger.log(Level.INFO, "Remove acces for " + principal + ".");
+		if (TRACE) {
+		logger.log(Level.INFO, "Remove access for " + principal + ".");
+		}
 		
 		AccessLevel	level = null;
 		
@@ -218,20 +216,18 @@ public class InboundSecurityHookWedge
     	// perform access control
     	if ( !checkAccess(invocation) ) {
     		ReflectionInvocation reflectionInvocation = (ReflectionInvocation)invocation;
-    		Method               method               = reflectionInvocation.getMethod();
-    		logger.log(Level.INFO,
-    				"no access for Subject on, \"" + meemCore.getMeemPath() + ":" + invocation.getFacetIdentifier() + "." + method.getName() + "\" - level = " + getCurrentAccessLevel(principals), 
-    				new SecurityException("No Access")
-    			);
-//    		logger.log(Level.INFO, reflectionInvocation.getDescription(true));
+    		Method method = reflectionInvocation.getMethod();
+			String message = "no access for Subject on, \"" + meemCore.getMeemPath() + ":" + invocation.getFacetIdentifier() + "." + method.getName() + "\" - level = " + getCurrentAccessLevel(principals);
+    		errorHandlerConduit.thrown(new SecurityException(message));
+    		logger.log(Level.INFO, message, new SecurityException("No Access"));
     		return false;
     	}
 
     	// now put new Subject in context if the Meem is associated with one.
 
 		if (meemSubject != null) {
-	    	final PrivilegedExceptionAction action = new PrivilegedExceptionAction() {
-				public Object run() throws Exception {
+	    	final PrivilegedExceptionAction<Boolean> action = new PrivilegedExceptionAction<Boolean>() {
+				public Boolean run() throws Exception {
 					try {
 						return new Boolean(hookProcessor.processHooks());
 					}
@@ -246,7 +242,7 @@ public class InboundSecurityHookWedge
 				}
 			};
 
-			Boolean result = (Boolean) Subject.doAsPrivileged(meemSubject, action, null);
+			Boolean result = Subject.doAsPrivileged(meemSubject, action, null);
 			return result.booleanValue();
 		}
 		else {
@@ -289,7 +285,7 @@ public class InboundSecurityHookWedge
     }
     
     
-    /* ------------------------ FileterChecker interface ------------------------ */
+    /* ------------------------ FilterChecker interface ------------------------ */
     
     /* (non-Javadoc)
      * @see org.openmaji.meem.filter.FilterChecker#invokeMethodCheck(org.openmaji.meem.filter.Filter, java.lang.String, java.lang.Object[])
@@ -463,7 +459,7 @@ public class InboundSecurityHookWedge
 	 * @param principals
 	 * @return the current access level.
 	 */
-	private AccessLevel getCurrentAccessLevel(Map principalLevels)
+	private AccessLevel getCurrentAccessLevel(Map<Principal, AccessLevel> principalLevels)
 	{
 		Subject currentSubject = getCurrentSubject();
 		
@@ -482,10 +478,9 @@ public class InboundSecurityHookWedge
 		}
 
 		// check principals' access levels
-		Set					principals = currentSubject.getPrincipals(X500Principal.class);
-		Iterator			it = principals.iterator();
-		while (it.hasNext()) {
-			AccessLevel	l = (AccessLevel)principalLevels.get(it.next());
+		Set<X500Principal> principals = currentSubject.getPrincipals(X500Principal.class);
+		for (X500Principal p : principals) {
+			AccessLevel	l = principalLevels.get(p);
 			if (level == null || level.isGrantedBy(l)) {
 				level = l;
 			}

@@ -48,7 +48,6 @@ public class AuthenticatorExporterWedge
 	private static final Logger logger = Logger.getAnonymousLogger();
 	
 	
-	//private static final String AUTHENTICATOR_EXPORTER_COMPONENT = "org.openmaji.implementation.server.security.auth.AuthenticatorService";
 	private static final String AUTHENTICATOR_EXPORTER_COMPONENT = AuthenticatorService.class.getName();
 
 	private static final String AUTHENTICATOR_EXPORTER_NAME = "authenticatorExporter";

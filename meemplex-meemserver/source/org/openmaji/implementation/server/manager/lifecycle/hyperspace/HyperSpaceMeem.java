@@ -51,7 +51,7 @@ public class HyperSpaceMeem {
 	
 	public static MeemDefinition getMeemDefinition() {
 		if (meemDefinition == null) {
-			Class lifeCycleManager = LazyLifeCycleManagerWedge.class;
+			Class<?> lifeCycleManager = LazyLifeCycleManagerWedge.class;
 			 
 			String lifeCycleManagerProperty = System.getProperty(ACTIVATION_TYPE);
 			if (lifeCycleManagerProperty != null) {
@@ -69,7 +69,7 @@ public class HyperSpaceMeem {
 						
 			DefinitionFactory definitionFactory = DefinitionFactory.spi.create();
 			
-			List wedges = new ArrayList();
+			List<Class<?>> wedges = new ArrayList<Class<?>>();
 			
 			wedges.add(LifeCycleManagerWedge.class);
 			wedges.add(LifeCycleAdapterWedge.class);			

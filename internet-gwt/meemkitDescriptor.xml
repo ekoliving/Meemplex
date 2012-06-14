@@ -24,8 +24,8 @@
   <meemview>
     
     <hierarchy>    
-      <category path="/"         name="internet" icon="example_domain_16.gif" />
-      <category path="/internet" name="gwtrpc"   icon="example_meemkit_16.gif"/>
+      <category path="/"         name="internet" icon="network_meemkit_16.gif" />
+      <category path="/internet" name="gwtrpc"   icon="network_meemkit_16.gif"/>
     </hierarchy>
 
     <entry name="Maji GWT-RPC Server" path="/internet/gwtrpc" icon="">
@@ -41,8 +41,8 @@
   <wedgeview>
 
     <hierarchy>
-      <category path="/"         name="internet" icon="example_domain_16.gif" />
-      <category path="/internet" name="gwtrpc"   icon="example_meemkit_16.gif"/>
+      <category path="/"         name="internet" icon="network_meemkit_16.gif" />
+      <category path="/internet" name="gwtrpc"   icon="network_meemkit_16.gif"/>
     </hierarchy>
 
 

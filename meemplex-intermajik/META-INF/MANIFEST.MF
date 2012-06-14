@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: org.meemplex.intermajik
 Bundle-SymbolicName: org.meemplex.intermajik;singleton:=true
 Bundle-Version: 1.1.0
-Bundle-ClassPath: build/classes/,
- lib/swzoo.jar
+Bundle-ClassPath: build/classes/
 Bundle-Activator: org.openmaji.implementation.tool.eclipse.plugin.MajiPlugin
 Bundle-Vendor: Sugar Coding
 Bundle-Localization: plugin

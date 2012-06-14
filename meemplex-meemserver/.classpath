@@ -33,6 +33,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jini/start.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jini/sun-util.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jini/tools.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.paho.client.mqttv3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="source"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>

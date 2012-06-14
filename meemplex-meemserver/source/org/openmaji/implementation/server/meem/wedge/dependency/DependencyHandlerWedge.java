@@ -249,11 +249,6 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 	
 			if (facetImpl == null) {
 				logger.log(Level.WARNING, "No facet with identifier \"" + sourceFacetIdentifier + "\". Unable to create dependency.");
-				logger.log(Level.WARNING,
-						"dependencyAdded() SourceMeem = " + meemCore.getMeemPath()
-							+ " FacetId: " + sourceFacetIdentifier
-							+ " DepAttr: " + dependencyAttribute
-							+ " LifeTime: " + lifeTime);
 				return;
 			}
 	

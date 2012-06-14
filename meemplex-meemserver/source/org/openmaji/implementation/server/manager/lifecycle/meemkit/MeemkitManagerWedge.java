@@ -82,37 +82,11 @@ import java.util.logging.Logger;
 
 
 public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, JiniLookupClient, CategoryClient, LifeCycleManagerClient {
-	private static final String HTTP_SERVER_CONTEXT_PATH = "/meemkits";
-
-	private static final int INSTALL_REQUEST_ID = 1;
-
-	private static final int UPGRADE_REQUEST_ID = 2;
-
-	private static final Logger logger = Logger.getAnonymousLogger();
-
-	private static final boolean DEBUG = false;
-	
-	private static final boolean DISABLE = true;
-	
-
-	/** the amount of time in seconds to poll for new meemkits */
-	public static final String PROPERTY_MEEMKIT_MANAGER_POLL_NEW_MEEMKITS = "org.openmaji.meemkit.manager.newmeemkits.poll.seconds";
-
-	/** address to bind to */
-	public static final String PROPERTY_MEEMKIT_MANAGER_ADDRESS = "org.openmaji.meemkit.manager.adress";
-	
-	/** if address is not set, the network interface to bind to */
-	public static final String PROPERTY_MEEMKIT_MANAGER_NIC = "org.openmaji.meemkit.manager.nic";
-
-	/** port to bind to */
-	public static final String PROPERTY_MEEMKIT_MANAGER_HTTP_PORT = "org.openmaji.meemkit.manager.port";
-
-	public static final String INSTALL_PATTERNS_PREFIX = "install-patterns-flag-";
-
-	public MeemCore meemCore;
 
 	@org.meemplex.meem.MeemContext
 	public MeemContext meemContext;
+
+	public MeemCore meemCore;
 
 	public RequestContext requestContext;
 
@@ -319,8 +293,10 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		installedMeemkits.clear();
 		availableMeemkits.clear();
 
-		MeemClientCallback callback = new MyCallback();
-		meemClientConduit.provideReference(categoryMeem, LifeCycle.spi.getIdentifier(), LifeCycle.class, callback);
+		if (categoryMeem != null) {
+			MeemClientCallback callback = new MyCallback();
+			meemClientConduit.provideReference(categoryMeem, LifeCycle.spi.getIdentifier(), LifeCycle.class, callback);
+		}
 	}
 
 	/* ------------------ MeemkitManager facet methods ------------------------ */
@@ -1424,5 +1400,34 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		public void dependencyUpdated(DependencyAttribute dependencyAttribute) {
 		}
 	}
+
+	
+	private static final String HTTP_SERVER_CONTEXT_PATH = "/meemkits";
+
+	private static final int INSTALL_REQUEST_ID = 1;
+
+	private static final int UPGRADE_REQUEST_ID = 2;
+
+	private static final Logger logger = Logger.getAnonymousLogger();
+
+	private static final boolean DEBUG = false;
+	
+	private static final boolean DISABLE = true;
+	
+
+	/** the amount of time in seconds to poll for new meemkits */
+	public static final String PROPERTY_MEEMKIT_MANAGER_POLL_NEW_MEEMKITS = "org.openmaji.meemkit.manager.newmeemkits.poll.seconds";
+
+	/** address to bind to */
+	public static final String PROPERTY_MEEMKIT_MANAGER_ADDRESS = "org.openmaji.meemkit.manager.adress";
+	
+	/** if address is not set, the network interface to bind to */
+	public static final String PROPERTY_MEEMKIT_MANAGER_NIC = "org.openmaji.meemkit.manager.nic";
+
+	/** port to bind to */
+	public static final String PROPERTY_MEEMKIT_MANAGER_HTTP_PORT = "org.openmaji.meemkit.manager.port";
+
+	public static final String INSTALL_PATTERNS_PREFIX = "install-patterns-flag-";
+
 
 }

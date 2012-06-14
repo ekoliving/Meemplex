@@ -37,7 +37,7 @@ public final class WedgeAttribute implements Cloneable, Serializable {
 	/**
 	 * Names of fields that should be persisted
 	 */
-	private LinkedHashSet<String> persistentFieldNames;
+	private Collection<String> persistentFieldNames = new LinkedHashSet<String>();
 
 	/**
 	 * Whether the wedge is a system wedge or not.
@@ -98,14 +98,11 @@ public final class WedgeAttribute implements Cloneable, Serializable {
 	/**
 	 * @see java.lang.Object#clone()
 	 */
-	public Object clone() {
-		try {
-			return super.clone();
-		}
-		catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
-			throw new InternalError();
-		}
+	public WedgeAttribute clone() {
+		WedgeAttribute copy = new WedgeAttribute(implementationClassName, identifier);
+		copy.setPersistentFields(getPersistentFields());
+		copy.setSystemWedge(isSystemWedge);
+		return copy;
 	}
 
 	/**
@@ -139,9 +136,9 @@ public final class WedgeAttribute implements Cloneable, Serializable {
 	 */
 	public Collection<String> getPersistentFields() {
 		if (persistentFieldNames == null) {
-			return Collections.emptyList();
+			return new LinkedHashSet<String>();
 		}
-		ArrayList<String> fields = new ArrayList<String>(persistentFieldNames);
+		Collection<String> fields = new LinkedHashSet<String>(persistentFieldNames);
 		return fields;
 	}
 

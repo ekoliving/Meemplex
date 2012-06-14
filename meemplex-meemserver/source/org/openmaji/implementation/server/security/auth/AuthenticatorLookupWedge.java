@@ -310,7 +310,9 @@ public class AuthenticatorLookupWedge implements Wedge,  MeemDefinitionProvider,
 	private class AuthenticatorListenerImpl implements AuthenticatorListener {
 		public void authenticator(Authenticator authenticator) {
 
-			logger.log(Level.INFO, "Located local Maji authenticator.");
+			if (authenticator != null) {
+				logger.log(Level.INFO, "Located local Maji authenticator.");
+			}
 			AuthenticatorLookupWedge.authenticator = authenticator;
 			local = true;
 			if (authenticatorStatus != null) {

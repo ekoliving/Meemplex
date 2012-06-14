@@ -163,11 +163,17 @@ public class JpaContentStore implements MeemStoreContentStore {
 
 			Collection<String> wedgeIds = content.getWedgeIdentifiers();
 			for (String wedgeName : wedgeIds) {
+				if (DEBUG) {
+					logger.log(Level.INFO, "Storing " + meemPath + " wedge: " + wedgeName);
+				}
 				Map<String, Serializable> fields = content.getPersistentFields(wedgeName);
 				if (fields != null && fields.size() > 0) {
 					for (Entry<String, Serializable> field : fields.entrySet()) {
 						String name = field.getKey();
 						Serializable value = field.getValue();
+						if (DEBUG) {
+							logger.log(Level.INFO, "Storing " + meemPath + " field: " + name);
+						}
 						
 						ContentPK key = new ContentPK(meemId, wedgeName, name);
 						ContentEntity contentEntity = em.find(ContentEntity.class, key);

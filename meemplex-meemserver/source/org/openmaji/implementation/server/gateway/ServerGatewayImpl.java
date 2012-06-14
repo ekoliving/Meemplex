@@ -36,6 +36,7 @@ import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.server.helper.EssentialMeemHelper;
 import org.openmaji.server.helper.LifeCycleManagerHelper;
 import org.openmaji.server.helper.ReferenceHelper;
+import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.gateway.FacetConsumer;
 import org.openmaji.system.gateway.ServerGateway;
 import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
@@ -162,17 +163,17 @@ public class ServerGatewayImpl implements ServerGateway {
 	/**
 	 * Asynchronous method to get a facet target.
 	 */
-	public <T extends Facet> void getTarget(final Meem meem, final String facetIdentifier, final Class<T> specification, final FacetConsumer<T> callback) {
+	public <T extends Facet> void getTarget(final Meem meem, final String facetIdentifier, final Class<T> specification, final AsyncCallback<T> callback) {
 		Subject.doAs(subject, new PrivilegedAction<Void>() {
 			public Void run() {
-//				MeemClientImpl meemClient = new MeemClientImpl(meem, callback);
-//				Facet proxy = meemClient.getProxy();
-				Facet proxy = MeemClientImpl.getProxy(meem, callback);
-
+				Facet proxy = MeemClientImpl.getProxy(meem, new FacetConsumer<T>() {
+					public void facet(Meem meem, String facetId, T target) {
+						callback.result(target);
+					};
+				});
 				Filter filter = new FacetDescriptor(facetIdentifier, specification);
 				Reference targetReference = Reference.spi.create("meemClientFacet", proxy, true, filter);
-
-				meem.addOutboundReference(targetReference, true);
+				meem.addOutboundReference(targetReference, true);	// a one-off retrieval of content
 
 				return null;
 			}
@@ -283,25 +284,26 @@ public class ServerGatewayImpl implements ServerGateway {
 	/**
 	 * 
 	 */
-	private static final class MeemClientImpl implements MeemClient, ContentClient {
+	private static final class MeemClientImpl <T extends Facet> implements MeemClient, ContentClient {
 		private Meem meem;
 
-		private FacetConsumer consumer;
+		private FacetConsumer<T> consumer;
 
 		private Facet proxy;
 
-		public static Facet getProxy(Meem meem, FacetConsumer consumer) {
-			MeemClientImpl meemClient = new MeemClientImpl(meem, consumer);
+		public static <T extends Facet> Facet getProxy(Meem meem, FacetConsumer<T> consumer) {
+			MeemClientImpl<T> meemClient = new MeemClientImpl<T>(meem, consumer);
 			return meemClient.getProxy();
 		}
 
-		private MeemClientImpl(Meem meem, FacetConsumer consumer) {
+		private MeemClientImpl(Meem meem, FacetConsumer<T> consumer) {
 			this.meem = meem;
 			this.consumer = consumer;
 		}
 
 		public void referenceAdded(Reference reference) {
-			consumer.facet(meem, reference.getFacetIdentifier(), reference.getTarget());
+			T facet = reference.getTarget();
+			consumer.facet(meem, reference.getFacetIdentifier(), facet);
 		}
 
 		public void referenceRemoved(Reference reference) {

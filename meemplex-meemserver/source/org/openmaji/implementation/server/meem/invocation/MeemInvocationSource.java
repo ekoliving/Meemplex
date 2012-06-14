@@ -18,14 +18,16 @@
 
 package org.openmaji.implementation.server.meem.invocation;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openmaji.implementation.server.Common;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.openmaji.implementation.server.meem.FacetImpl;
 import org.openmaji.implementation.server.meem.wedge.reference.AsyncContentProvider;
 import org.openmaji.implementation.server.meem.wedge.remote.RemoteReference;
@@ -41,11 +43,13 @@ import org.openmaji.meem.wedge.error.ErrorHandler;
 import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.system.meem.hook.invoke.Invocation;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
+import org.openmaji.system.meemserver.MeemServer;
 
 
 /**
  * <p>
- * ...
+ * This is where messages being sent by the wedge on an outbound facet are fanned out to References 
+ * that have been added to the facet.
  * </p>
  * <p>
  * Note: Implementation thread safe = Not considered yet
@@ -68,6 +72,7 @@ public class MeemInvocationSource implements InvocationHandler
 	private final FacetImpl facet;
 	public final ContentProvider contentProvider;
 	public final AsyncContentProvider asyncContentProvider;
+
 
 	public MeemInvocationSource(FacetImpl facet, AsyncContentProvider asyncContentProvider,
 		ContentProvider contentProvider, FilterChecker filterChecker)
@@ -124,6 +129,7 @@ public class MeemInvocationSource implements InvocationHandler
 //		}
 		
 		synchronized (references) {
+			
 			if (!references.isEmpty())
 			{
 				final Invocation invocation = new ReflectionInvocation(facet.getFacetAttribute().getIdentifier(), method, args);
@@ -211,7 +217,7 @@ public class MeemInvocationSource implements InvocationHandler
 					invocation.invoke(reference.getTarget(), errorHandlerConduit);
 					
 				}
-				references.removeAll(invalidReferences);	// remove any invlaid references
+				references.removeAll(invalidReferences);	// remove any invalid references
 			
 //				if (DEBUG) {
 //					if (references.size() > 200) {
@@ -220,6 +226,8 @@ public class MeemInvocationSource implements InvocationHandler
 //				}
 			}
 		}
+		
+		publishEvent(method, args);
 
 		return null;
 	}
@@ -228,7 +236,95 @@ public class MeemInvocationSource implements InvocationHandler
 		return facet.getFacetAttribute();
 	}
 	
-	public Class getSpecification() {
+	public Class<?> getSpecification() {
 		return facet.getSpecification();
 	}
+
+	/**
+	 * Publish the outbound Facet message.
+	 * 
+	 * @param method
+	 * @param args
+	 */
+	private void publishEvent(Method method, Object[] args) {
+		if (publish) {
+			if (facet.getWedgeImpl().isSystemWedge()) {
+				return;
+			}
+			try {
+				MqttClient mqttClient = getMqttClient();
+				if (mqttClient == null) {
+					return;
+				}
+				
+				String meemId = facet.getWedgeImpl().getMeemPath().getLocation();
+				String wedgeId = facet.getWedgeImpl().getWedgeAttribute().getIdentifier();
+				String facetName = facet.getIdentifier();
+				String topicString = "meem/" + meemId + "/" + wedgeId + "/" + facetName;
+				
+				StringBuilder payloadBuffer = new StringBuilder(method.getName());
+				payloadBuffer.append('(');
+				if (args != null) {
+					for (int i=0; i<args.length; i++) {
+						if (i>0) {
+							payloadBuffer.append(',');
+						}
+						payloadBuffer.append(args[i]);	
+					}
+				}
+				payloadBuffer.append(')');
+				
+				MqttTopic topic = mqttClient.getTopic(topicString);
+				byte[] payload = payloadBuffer.toString().getBytes("UTF-8");
+				topic.publish(payload, 1, false);
+				
+//				logger.info("published topic: " + topicString + " payload: " + payloadBuffer);
+			}
+			catch (MqttException e) {
+			}
+			catch (UnsupportedEncodingException e) {
+			}
+			catch (Exception e) {
+			}
+		}
+	}
+
+	private static MqttClient getMqttClient() throws MqttException {
+		if (mqttClient == null) {
+			String clientId = MeemServer.spi.getIdentifier();
+			mqttClient = new MqttClient(mqttServer, clientId);
+		}
+		if (mqttClient.isConnected() == false) {
+			mqttClient.connect();
+		}
+		return mqttClient;
+	}
+
+	/**
+	 * Whether to publish outbound facet messages to an MQTT service. 
+	 */
+	private static boolean publish = false;
+	
+	/**
+	 * The URI for the MQTT service
+	 */
+	private static String mqttServer = "tcp://localhost:1883";
+
+	/**
+	 * Get MQTT configuration
+	 */
+	static {
+		try {
+			publish = Boolean.parseBoolean(System.getProperty("org.meemplex.server.mtqq", "false"));
+			mqttServer = System.getProperty("org.meemplex.server.mtqq.server", "tcp://localhost:1883");
+		}
+		catch (Exception e) {
+		}
+	};
+
+	/**
+	 * The MQTT client
+	 */
+	private static MqttClient mqttClient;
+	
 }

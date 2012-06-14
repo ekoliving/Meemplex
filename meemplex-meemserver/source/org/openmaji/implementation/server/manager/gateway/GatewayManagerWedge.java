@@ -83,7 +83,7 @@ public class GatewayManagerWedge implements GatewayManager, MeemDefinitionProvid
 	// return gatewayManagerWedgeSingleton.makeIntoTarget(facet, specification);
 	// }
 
-	public static synchronized void revokeTarget(final Facet proxy, final Facet implementation) {
+	public static synchronized <T extends Facet> void revokeTarget(final T proxy, final T implementation) {
 		if (gatewayManagerWedgeSingleton == null) {
 			throw new IllegalStateException("GatewayManager Meem is not ready for use.");
 		}

@@ -25,8 +25,10 @@ import org.openmaji.server.helper.HyperSpaceHelper;
 import org.openmaji.server.helper.LifeCycleManagerHelper;
 import org.openmaji.server.helper.MeemPathResolverHelper;
 import org.openmaji.server.helper.ReferenceHelper;
+import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.gateway.ServerGateway;
 import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
+import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.openmaji.system.meemserver.MeemServer;
 import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
@@ -50,6 +52,8 @@ import bsh.Interpreter;
 public class MeemplexActivator implements BundleActivator {
 	private static final Logger logger = Logger.getAnonymousLogger();
 	
+	private static final String PROP_HOME = "org.openmaji.directory";
+	
 	private static final boolean INSTALL_PATTERNS = true;
 	
 	private BundleContext bundleContext = null;
@@ -61,39 +65,20 @@ public class MeemplexActivator implements BundleActivator {
 	 */
 	public void start(BundleContext bc) throws Exception {
 		logger.log(Level.INFO, "Starting " + bc.getBundle().getSymbolicName());
-		
+
 		this.bundleContext = bc;
 		
-		//start the meemplex engine.
-		startMeemEngine();
+		startMeemEngine();		//start the meemplex engine.
 
-		if (HyperSpaceHelper.getInstance().isHyperSpaceSet()) {
-			Meem systemMeem = MeemPathResolverHelper.getInstance().resolveMeemPath(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM));
-			logger.log(Level.INFO, "got hyperspace: " + (systemMeem !=null) );
-		}
-		else {
-			logger.log(Level.INFO, "hyperspace not yet set");
-		}
-		
 		// get hyperspace before handling meemkits
-		Runnable meemkitRunnable = new Runnable() {
-			public void run() {
-				// blocks until hyperspace located
-				Meem hyperSpaceMeem = HyperSpaceHelper.getInstance().getHyperSpaceMeem();
-				if (hyperSpaceMeem != null) {
-					try {
-						Thread.sleep(6000);	// make sure hyperspace categories are created before proceeding
-						listenForMeemkits(bundleContext);
-					}
-					catch (Exception e) {
-						logger.log(Level.INFO, "Problem listening for meemkits", e);
-					}
-				}
+		HyperSpaceHelper.getInstance().getHyperSpaceMeem(new AsyncCallback<Meem>() {
+			public void result(Meem hyperSpaceMeem) {
+				handleHyperSpace(hyperSpaceMeem);
 			}
-		};
-		new Thread(meemkitRunnable).start();
-		
-
+			public void exception(Exception e) {
+				logger.log(Level.INFO, "Could not get Hyperspace Meem", e);
+			}
+		});
 	}
 
 	/**
@@ -108,8 +93,28 @@ public class MeemplexActivator implements BundleActivator {
 		}
 	}
 	
-	private static final String PROP_HOME = "org.openmaji.directory";
-	
+	/**
+	 * Handle hyperspace meem.
+	 * 
+	 * @param hyperSpaceMeem
+	 */
+	private void handleHyperSpace(Meem hyperSpaceMeem) {
+		if (hyperSpaceMeem == null) {
+			logger.log(Level.INFO, "hyperspace is null");
+		}
+		else {
+
+			logger.log(Level.INFO, "got hyperspace: " + hyperSpaceMeem );
+			try {
+				Thread.sleep(6000);	// make sure hyperspace categories are created before proceeding
+									// TODO remove this wait hack - listen for meemkitmanager becoming ready
+				listenForMeemkits(bundleContext);
+			}
+			catch (Exception e) {
+				logger.log(Level.INFO, "Problem listening for meemkits", e);
+			}
+		}
+	}
 	
 	/**
 	 * 
@@ -145,15 +150,13 @@ public class MeemplexActivator implements BundleActivator {
 		MeemEngineLauncher.instance().launch();
 	}
 
+	private static final String MEEMKIT_FILTER = "(" + Constants.OBJECTCLASS + "=" + MeemkitService.class.getCanonicalName() + ")";
+	
 	/**
 	 * The listener for MeemKit OSGI services
 	 */
 	private ServiceListener meemkitListener = new ServiceListener() {
-		@Override
 		public void serviceChanged(ServiceEvent se) {
-			
-			//logger.log(Level.INFO, "MeemKitListener: serviceChanged " + se.getType());
-			
 			@SuppressWarnings("unchecked")
 			ServiceReference<MeemkitService> sr = (ServiceReference<MeemkitService>) se.getServiceReference();
 			Bundle bundle = sr.getBundle();
@@ -175,13 +178,7 @@ public class MeemplexActivator implements BundleActivator {
 	};
 
 	private void listenForMeemkits(BundleContext bc) throws Exception {
-
-		String filter = "(" + Constants.OBJECTCLASS + "=" + MeemkitService.class.getCanonicalName() + ")";
-		
-		logger.log(Level.INFO, "service filter = " + filter);
-		
-		bc.addServiceListener(meemkitListener, filter);
-		
+		bc.addServiceListener(meemkitListener, MEEMKIT_FILTER);
 		Collection<ServiceReference<MeemkitService>> serviceRefs = bc.getServiceReferences(MeemkitService.class, null);
 		for (ServiceReference<MeemkitService> serviceRef : serviceRefs) {
 			MeemkitService meemkitService = bc.getService(serviceRef);
@@ -196,21 +193,10 @@ public class MeemplexActivator implements BundleActivator {
 	 */
 	private void loadMeemkit(String name, MeemkitService meemkit) {
 		logger.log(Level.INFO, "loading meemkit: " + name);
+		
 		final MeemkitDescriptor meemkitDescriptor = meemkit.getDescriptor();
 		
-//		if (meemkitDescriptor != null) {
-//			MeemkitHeader header = meemkitDescriptor.getHeader();
-//			logger.log(Level.INFO, "meemkit descriptor: " + header);
-//		}
-		
-		/* */
-		// TODO load pattern meems
-		// TODO load pattern wedges
-		// TODO load singletons
-
-		if (INSTALL_PATTERNS) {
-			//logger.log(Level.INFO, "installing pattern meems...");
-	
+		if (INSTALL_PATTERNS) {		// load pattern meems and wedges
 			try {
 				ServerGateway gateway = ServerGateway.spi.create(MeemCoreRootAuthority.getSubject());
 				
@@ -229,12 +215,14 @@ public class MeemplexActivator implements BundleActivator {
 						});
 					}
 				};
-				new Thread(runnable).start();
+				ThreadManager.spi.create().queue(runnable);
 			}
 			catch (Exception e) {
 				logger.log(Level.INFO, "Problem installing pattern meems", e);
 			}
 		}
+		
+		// TODO load singletons/instances for the meemkit
 	}
 	
 	/**

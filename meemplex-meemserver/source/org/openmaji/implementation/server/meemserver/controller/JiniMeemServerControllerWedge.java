@@ -75,8 +75,7 @@ public class JiniMeemServerControllerWedge implements Wedge, JiniLookupClient {
 		jiniLookupConduit.stopLookup();
 
 		synchronized(meems) {
-			for (Iterator iter = meems.values().iterator(); iter.hasNext();) {
-				ConfigurationClientImpl configurationHandler = (ConfigurationClientImpl) iter.next();
+			for (ConfigurationClientImpl configurationHandler : meems.values()) {
 				configurationHandler.stop();
 			}
 		}

@@ -96,7 +96,9 @@ public class OutboundFacetImpl <T extends Facet> extends FacetImpl<T> {
 		Class<?>[] interfaces = new Class[] { this.getSpecification() };
 
 		try {
-			return (T) Proxy.newProxyInstance(classLoader, interfaces, getMeemInvocationSource());
+			@SuppressWarnings("unchecked")
+			T result = (T) Proxy.newProxyInstance(classLoader, interfaces, getMeemInvocationSource());
+			return result;
 		}
 		catch (RuntimeException e) {
 			// DEBUG

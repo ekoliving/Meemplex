@@ -180,19 +180,16 @@ public class MeemStoreWedge
 	
 	public void commence() {
 		Properties properties = System.getProperties();
-
-		// TODO put this in a commence() method, and close stores on conclude().
 		startStores(properties);
 
 		// grab the content and definition paths
 		// it is possible to have a content stored without a definition and vice versa
-
-		// -mg- not sure this is really necessary. should just hand off to store to try and
-		// load and fail silently if path cannot be found
 		HashSet<MeemPath> paths = new HashSet<MeemPath>();
 		paths.addAll(contentStore.getAllPaths());
 		paths.addAll(definitionStore.getAllPaths());
-		
+
+		// -mg- not sure this is really necessary. should just hand off to store to try and
+		// load and fail silently if path cannot be found
 		for (MeemPath meemPath : paths) {
 			meemPaths.put(meemPath.getLocation(), meemPath);
 		}

@@ -140,6 +140,13 @@ public class MeemCoreStructure implements MeemStructure {
 	public OutboundFacetImpl<?> getOutboundFacetImpl(String outboundFacetIdentifier) {
 		return outboundFacets.get(outboundFacetIdentifier);
 	}
+	
+	public Collection<FacetImpl<?>> getFacetImpls() {
+		List<FacetImpl<?>> impls = new ArrayList<FacetImpl<?>>();
+		impls.addAll(inboundFacets.values());
+		impls.addAll(outboundFacets.values());
+		return impls;
+	}
 
 	// public synchronized Iterator getInvocationReferences()
 	// {

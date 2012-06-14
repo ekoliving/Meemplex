@@ -120,12 +120,6 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 		myProperties.put("javax.persistence.jdbc.user", username);
 		myProperties.put("javax.persistence.jdbc.password", password);
 		myProperties.put("eclipselink.ddl-generation", "create-tables");
-		/*
-		myProperties.put("toplink.jdbc.driver", driver);
-		myProperties.put("toplink.jdbc.url", url);
-		myProperties.put("toplink.jdbc.user", username);
-		myProperties.put("toplink.jdbc.password", password);
-		*/
 
 		PersistenceContext.instance().config(myProperties);
 	}
@@ -355,6 +349,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 			
 			@SuppressWarnings("unchecked")
 			List<String> ids = em.createNamedQuery("Meem.selectIds").getResultList();
+			
 			for (String id : ids) {
 				MeemPath meemPath = MeemPath.spi.create(Space.MEEMSTORE, id);
 				paths.add(meemPath);

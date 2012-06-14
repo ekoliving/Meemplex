@@ -12,8 +12,10 @@
  */
 package org.openmaji.server.helper;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.openmaji.implementation.server.meem.definition.WedgeIntrospector;
@@ -29,6 +31,8 @@ import org.openmaji.meem.space.Space;
 import org.openmaji.meem.wedge.configuration.ConfigurationHandler;
 import org.openmaji.meem.wedge.configuration.ConfigurationIdentifier;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
+import org.openmaji.system.gateway.AsyncCallback;
+import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.space.Category;
 import org.openmaji.system.space.hyperspace.HyperSpace;
 
@@ -49,6 +53,8 @@ public class HyperSpaceHelper {
 	private static HyperSpaceHelper instance = new HyperSpaceHelper();
 
 	private static WedgeDefinition categoryWedgeDefinition = null;
+	
+	private static Set<AsyncCallback<Meem>> hyperSpaceMeemCallbacks = new HashSet<AsyncCallback<Meem>>();
 
 	private HyperSpaceHelper() {
 	}
@@ -60,6 +66,8 @@ public class HyperSpaceHelper {
 	public synchronized void setHyperSpaceMeem(Meem meem) {
 		if (hyperSpaceMeem == null) {
 			hyperSpaceMeem = meem;
+
+			deliverToCallbacks(meem);
 			this.notifyAll();
 		}
 		else if (meem == null && hyperSpaceMeem != null) {
@@ -83,19 +91,48 @@ public class HyperSpaceHelper {
 		return hyperSpace;
 	}
 
+	public synchronized void getHyperSpace(final AsyncCallback<HyperSpace> callback) {
+		if (hyperSpace == null && hyperSpaceMeem != null) {
+			ReferenceHelper.getTarget(getHyperSpaceMeem(), "hyperSpace", HyperSpace.class, new AsyncCallback<HyperSpace>() {
+				public void result(HyperSpace result) {
+					hyperSpace = result;
+					callback.result(result);
+				};
+				public void exception(Exception e) {
+					callback.exception(e);
+				}
+			});
+		}
+		else {
+			callback.result(hyperSpace);
+		}
+	}
+	
 	public synchronized Meem getHyperSpaceMeem() {
 		while (hyperSpaceMeem == null) {
 			// we haven't been told about hyperspace yet
 			// so we'll just wait a little bit and hope it turns up
 			// (this is quite dodgy, but so are get()s
 			try {
-				this.wait();
+				this.wait(30000);
 			}
 			catch (InterruptedException e) {
+				break;
 			}
 		}
 
 		return hyperSpaceMeem;
+	}
+	
+	public synchronized void getHyperSpaceMeem(AsyncCallback<Meem> callback) {
+		if (hyperSpaceMeem == null) {
+			synchronized (hyperSpaceMeemCallbacks) {
+				hyperSpaceMeemCallbacks.add(callback);
+			}
+		}
+		else {
+			callback.result(hyperSpaceMeem);
+		}
 	}
 
 	public synchronized boolean isHyperSpaceSet() {
@@ -213,5 +250,24 @@ public class HyperSpaceHelper {
 		}
 
 		return newCategoryMeem;
+	}
+	
+	/**
+	 * Send hyperspace meem to callbacks waiting for the meem.
+	 * @param hyperSpaceMeem
+	 */
+	private void deliverToCallbacks(final Meem hyperSpaceMeem) {
+		// deliver to callbacks
+		ThreadManager.spi.create().queue(new Runnable() {
+			public void run() {
+				synchronized (hyperSpaceMeemCallbacks) {
+					for (AsyncCallback<Meem> callback : hyperSpaceMeemCallbacks) {
+						callback.result(hyperSpaceMeem);
+					}
+					hyperSpaceMeemCallbacks.clear();
+				}
+			}
+		});
+
 	}
 }

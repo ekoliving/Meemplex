@@ -26,6 +26,8 @@ import org.openmaji.spi.MajiSPI;
  * For this reason, any use of these methods inside a meem must be avoided. To assist with this you will find 
  * examples of the "in-meem" equivalent to the various methods.
  * </p>
+ * 
+ * TODO turn these methods into asynchronous methods with AsyncCallback
  */
 public interface MeemUtility
 {
@@ -86,7 +88,7 @@ public interface MeemUtility
 	 * @param specification the interface we are looking for.
 	 * @return true if the meem implements the specification, false otherwise.
 	 */
-	public boolean isA(Meem meem, Class specification);
+	public boolean isA(Meem meem, Class<?> specification);
 
    /**
 	* Return true if the meem has a facet that matches the passed-in details. If one of the detail
@@ -138,7 +140,7 @@ public interface MeemUtility
 	* @param direction the direction of the facet - inbound or outbound.
 	* @return true if the meem has a facet fitting the passed in details, false otherwise.
 	*/
-	public boolean hasA(Meem meem, String facetIdentifier, Class specification, Direction direction);
+	public boolean hasA(Meem meem, String facetIdentifier, Class<?> specification, Direction direction);
 	
 	/**
 	 * Return the inbound target, if any, matching the passed-in facetIdentifier and specification.
@@ -181,7 +183,7 @@ public interface MeemUtility
 	 * @param specification  the interface matching the facet type.
 	 * @return the target, or null if there is no target matching.
 	 */
-	public Facet getTarget(Meem meem, String facetIdentifier, Class specification);
+	public Facet getTarget(Meem meem, String facetIdentifier, Class<?> specification);
 	
 	/**
 	 * Return the MeemDefinition for the passed in Meem.

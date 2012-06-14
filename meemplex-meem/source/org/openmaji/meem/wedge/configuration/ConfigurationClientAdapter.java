@@ -236,6 +236,8 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 		for (int i = 0; i != fields.length; i++) {
 			Field field = fields[i];
 
+			// TODO get ConfigProperty annotations too.
+			
 			if (Modifier.isPublic(field.getModifiers()) && field.getType() == ConfigurationSpecification.class) {
 				String valueName = field.getName().substring(0, field.getName().length() - "Specification".length());
 				try {

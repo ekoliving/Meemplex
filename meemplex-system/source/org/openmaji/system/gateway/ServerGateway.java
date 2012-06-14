@@ -55,6 +55,8 @@ public interface ServerGateway
  	 * @return the meem for the meem path.
  	 */ 
     Meem getMeem(MeemPath path);
+    
+//    void getMeem(MeemPath meemPath, AsyncCallback<Meem> callback);
         
     /**
      * Return a suitably wrapped target for passing into the MeemServer's MeemSpace.
@@ -82,7 +84,8 @@ public interface ServerGateway
      * @param specification
      * @param callback
      */
-    <T extends Facet> void getTarget(Meem meem, String facetIdentifier, Class<T> specification, FacetConsumer<T> callback);
+    <T extends Facet>
+    void getTarget(Meem meem, String facetIdentifier, Class<T> specification, AsyncCallback<T> callback);
 
     /**
      * Returns a suitably wrapped target for invoking methods on a Facet of a Meem.

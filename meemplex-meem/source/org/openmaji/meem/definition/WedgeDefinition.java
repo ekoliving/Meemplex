@@ -273,10 +273,8 @@ public final class WedgeDefinition implements Serializable {
 	}
 	
 	public WedgeDefinition clone() {
-		WedgeAttribute copyWedgeAttribute = wedgeAttribute = new WedgeAttribute(wedgeAttribute.getImplementationClassName(), wedgeAttribute.getIdentifier());
-		copyWedgeAttribute.setPersistentFields(new ArrayList<String>(wedgeAttribute.getPersistentFields()));
-		copyWedgeAttribute.setSystemWedge(wedgeAttribute.isSystemWedge());
-		WedgeDefinition copy = new WedgeDefinition(copyWedgeAttribute);
+		WedgeAttribute attributeCopy = wedgeAttribute == null ? null : wedgeAttribute.clone();
+		WedgeDefinition copy = new WedgeDefinition(attributeCopy);
 		List<FacetDefinition> facetDefinitions = new ArrayList<FacetDefinition>();
 		for (FacetDefinition facetDefinition : getFacetDefinitions()) {
 			facetDefinitions.add(facetDefinition.clone());
