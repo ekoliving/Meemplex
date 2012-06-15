@@ -61,7 +61,7 @@ public class MeemHelper
 			throw new RuntimeException("meem cannot be null");
 		}
 
-		PigeonHole pigeonHole = new PigeonHole();
+		PigeonHole<Boolean> pigeonHole = new PigeonHole<Boolean>();
 		FacetClient facetClient = new FacetClientCallback(pigeonHole);
 		
 		// get a non-blocking target
@@ -90,7 +90,7 @@ public class MeemHelper
 
 	public static class FacetClientCallback implements FacetClient, ContentClient {
 
-		public FacetClientCallback(PigeonHole pigeonHole)
+		public FacetClientCallback(PigeonHole<Boolean> pigeonHole)
 		{
 			this.pigeonHole = pigeonHole;
 		}
@@ -128,7 +128,7 @@ public class MeemHelper
 			}
 		}
 
-		private PigeonHole pigeonHole;
+		private PigeonHole<Boolean> pigeonHole;
 		private Boolean found = Boolean.FALSE;
 	}
 

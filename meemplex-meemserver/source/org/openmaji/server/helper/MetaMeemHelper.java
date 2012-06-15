@@ -54,7 +54,7 @@ public class MetaMeemHelper
 
 	public static FacetAttribute getFacetAttribute(Meem meem, String facetIdentifier)
 	{
-		PigeonHole pigeonHole = new PigeonHole();
+		PigeonHole<FacetAttribute> pigeonHole = new PigeonHole<FacetAttribute>();
 		MetaMeem metaMeemClient = new MetaMeemClient(pigeonHole, facetIdentifier);
 		Facet proxy = GatewayManagerWedge.getTargetFor(metaMeemClient, MetaMeem.class);
 
@@ -64,7 +64,7 @@ public class MetaMeemHelper
 		{
 			meem.addOutboundReference(metaMeemClientReference, true);
 
-			return (FacetAttribute) pigeonHole.get(TIMEOUT);
+			return pigeonHole.get(TIMEOUT);
 		}
 		catch (TimeoutException timeoutException)
 		{
@@ -79,7 +79,7 @@ public class MetaMeemHelper
 	
 	public static MeemDefinition getMeemDefinition(Meem meem)
 	{
-		PigeonHole pigeonHole = new PigeonHole();
+		PigeonHole<MeemDefinition> pigeonHole = new PigeonHole<MeemDefinition>();
 		MetaMeem metaMeemClient = new MeemDefinitionClient(pigeonHole);
 		Facet proxy = GatewayManagerWedge.getTargetFor(metaMeemClient, MetaMeem.class);
 
@@ -89,7 +89,7 @@ public class MetaMeemHelper
 		{
 			meem.addOutboundReference(metaMeemClientReference, true);
 
-			return (MeemDefinition) pigeonHole.get(TIMEOUT);
+			return pigeonHole.get(TIMEOUT);
 		}
 		catch (TimeoutException timeoutException)
 		{
@@ -106,11 +106,11 @@ public class MetaMeemHelper
 	 */
 	public static class MetaMeemClient implements MetaMeem, ContentClient
 	{
-		private PigeonHole pigeonHole;
+		private PigeonHole<FacetAttribute> pigeonHole;
 		private final String facetIdentifier;
 		private FacetAttribute facetAttribute = null;
 
-		public MetaMeemClient(PigeonHole pigeonHole, String facetIdentifier)
+		public MetaMeemClient(PigeonHole<FacetAttribute> pigeonHole, String facetIdentifier)
 		{
 			this.pigeonHole = pigeonHole;
 			this.facetIdentifier = facetIdentifier;
@@ -184,12 +184,12 @@ public class MetaMeemHelper
 	 */
 	public static class MeemDefinitionClient implements MetaMeem, ContentClient
 	{
-		private PigeonHole pigeonHole;
+		private PigeonHole<MeemDefinition> pigeonHole;
 		private MeemDefinition meemDefinition = null;
 		private WedgeDefinition lastWedgeDefinition = null;
 		private FacetDefinition lastFacetDefinition = null;
 		
-		public MeemDefinitionClient(PigeonHole pigeonHole)
+		public MeemDefinitionClient(PigeonHole<MeemDefinition> pigeonHole)
 		{
 			this.pigeonHole = pigeonHole;
 			meemDefinition = new MeemDefinition();

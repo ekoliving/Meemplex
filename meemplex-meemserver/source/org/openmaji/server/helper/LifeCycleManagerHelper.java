@@ -307,7 +307,7 @@ public class LifeCycleManagerHelper {
 	
 	public static class LifeCycleManagerClientImpl implements LifeCycleManagerClient {
 
-		private PigeonHole meemHole = new PigeonHole();
+		private PigeonHole<Meem> meemHole = new PigeonHole<Meem>();
 		private long timeout = 60000;
 	
 		public Meem getMeem() {
@@ -337,11 +337,11 @@ public class LifeCycleManagerHelper {
 	
 	public static class LifeCycleManagementClientImpl implements LifeCycleManagementClient {
 
-		public LifeCycleManagementClientImpl(PigeonHole pigeonHole) {
+		public LifeCycleManagementClientImpl(PigeonHole<LifeCycleManager> pigeonHole) {
 			this.pigeonHole = pigeonHole;
 		}
 		
-		private PigeonHole pigeonHole;
+		private PigeonHole<LifeCycleManager> pigeonHole;
 		private Meem meem = null;
 
 		public Meem getMeem() {
@@ -357,9 +357,6 @@ public class LifeCycleManagerHelper {
 			}
 		}
 	}
-
-
-
 
 	public static class CreateMeemTask implements LifeCycleManagerClient, ContentClient {
 		public CreateMeemTask(PigeonHole<Meem> pigeonHole) {

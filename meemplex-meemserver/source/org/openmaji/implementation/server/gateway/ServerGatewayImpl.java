@@ -192,6 +192,8 @@ public class ServerGatewayImpl implements ServerGateway {
 				if (facet == null) {
 					return null;
 				}
+				
+				@SuppressWarnings("unchecked")
 				T reference = (T) Proxy.newProxyInstance(specification.getClassLoader(), getClasses(facet, specification), new SubjectInvocationHandler(subject, facet));
 				return reference;
 			}
@@ -205,6 +207,7 @@ public class ServerGatewayImpl implements ServerGateway {
 	 * @see org.openmaji.system.gateway.ServerGateway#getTarget(Facet, Class)
 	 */
 	public <T extends Facet> T getTarget(final T facet, final Class<T> specification) {
+		@SuppressWarnings("unchecked")
 		T reference = (T) Proxy.newProxyInstance(specification.getClassLoader(), getClasses(facet, specification), new SubjectInvocationHandler(subject, facet));
 
 		return reference;

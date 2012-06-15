@@ -90,7 +90,11 @@ public class HyperSpaceHelper {
 
 		return hyperSpace;
 	}
-
+	
+	/**
+	 * Asynchronous and preferred way to get Hyperspace.
+	 * @param callback
+	 */
 	public synchronized void getHyperSpace(final AsyncCallback<HyperSpace> callback) {
 		if (hyperSpace == null && hyperSpaceMeem != null) {
 			ReferenceHelper.getTarget(getHyperSpaceMeem(), "hyperSpace", HyperSpace.class, new AsyncCallback<HyperSpace>() {

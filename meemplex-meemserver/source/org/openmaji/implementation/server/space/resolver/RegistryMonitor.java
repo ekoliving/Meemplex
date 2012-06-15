@@ -43,7 +43,7 @@ public class RegistryMonitor implements MeemRegistryClient {
 	
 	private Meem meemRegistryGatewayMeem;
 	
-	private Map references = new HashMap();
+	private Map<MeemPath, Reference> references = new HashMap<MeemPath, Reference>();
 
 	public RegistryMonitor(MeemResolverWedge meemResolver, MeemCore meemCore) {
 		this.meemResolver = meemResolver;
@@ -84,8 +84,6 @@ public class RegistryMonitor implements MeemRegistryClient {
 	/**
 	 */
 	public void meemRegistered(Meem meem) {
-				
-		
 		meemResolver.handleMeemRegistered(meem.getMeemPath(), meem);
 	}
 

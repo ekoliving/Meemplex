@@ -31,6 +31,7 @@ import org.openmaji.meem.filter.Filter;
 import org.openmaji.meem.space.Space;
 import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.server.helper.*;
+import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.manager.registry.MeemRegistryClient;
 import org.openmaji.system.manager.registry.MeemRegistryGateway;
 import org.openmaji.system.meem.FacetClientCallback;
@@ -150,7 +151,13 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 		{
 			// TODO[peter] Why does this have to be a separate object?
 			registryMonitor = new RegistryMonitor(this, meemCore);
-			registryMonitor.meemRegistered(HyperSpaceHelper.getInstance().getHyperSpaceMeem());
+			HyperSpaceHelper.getInstance().getHyperSpaceMeem(new AsyncCallback<Meem>() {
+				public void result(Meem meem) {
+					registryMonitor.meemRegistered(meem);
+				}
+				public void exception(Exception arg0) {
+				}
+			});
 		}
 
 		return registryMonitor;
@@ -159,7 +166,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 	/**
 	 * @see org.openmaji.space.resolver.MeemResolver#resolveMeemPath(org.openmaji.meem.MeemPath, org.openmaji.space.resolver.MeemResolverClient)
 	 */
-	private void resolveMeem(MeemPath meemPath, MeemResolverClient client, ContentClient contentClient)
+	private void resolveMeem(MeemPath meemPath, final MeemResolverClient client, final ContentClient contentClient)
 	{
 		if (meemPath.isDefinitive())
 		{
@@ -176,23 +183,44 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 				meemPath = MeemPath.spi.create(meemPath.getSpace(), "/" + meemPath.getLocation());
 			}
 
-			Meem meem = HyperSpaceHelper.getInstance().getHyperSpaceMeem();
-
-			if (meem == null)
-			{
-				contentClient.contentFailed(
-					"MeemPathResolver cannot find HyperSpace while trying to resolve " + meemPath
-				);
-			}
-			else
-			{
-				new ResolvedMeemPathCategoryCallback(meemPath, client, contentClient).proceed(meem);
-			}
+			final MeemPath hyperSpaceMeemPath = meemPath;
+			HyperSpaceHelper.getInstance().getHyperSpaceMeem(new AsyncCallback<Meem>() {
+				public void result(Meem hyperSpacMeem) {
+					handleHyperSpaceToResolveMeem(hyperSpacMeem, hyperSpaceMeemPath, client, contentClient);
+				}
+				public void exception(Exception e) {
+					contentClient.contentFailed("MeemPathResolver cannot find HyperSpace while trying to resolve " + hyperSpaceMeemPath);
+				}
+			});
+			
+//			Meem meem = HyperSpaceHelper.getInstance().getHyperSpaceMeem();
+//			if (meem == null) {
+//				contentClient.contentFailed("MeemPathResolver cannot find HyperSpace while trying to resolve " + meemPath);
+//			}
+//			else {
+//				new ResolvedMeemPathCategoryCallback(meemPath, client, contentClient).proceed(meem);
+//			}
 		}
 		else 
 		{
 			// if it isn't a HyperSpace path, we can't handle it.
 			contentClient.contentFailed("MeemPath of unknown type unresolvable: " + meemPath);
+		}
+	}
+
+	/**
+	 * When hyperspace meem is resolved for the purposes of resolving a meempath
+	 * @param hyperSpacMeem
+	 * @param meemPath
+	 * @param client
+	 * @param contentClient
+	 */
+	private void handleHyperSpaceToResolveMeem(Meem hyperSpacMeem, MeemPath meemPath, MeemResolverClient client, ContentClient contentClient) {
+		if (hyperSpacMeem == null) {
+			contentClient.contentFailed("MeemPathResolver cannot find HyperSpace while trying to resolve " + meemPath);
+		}
+		else {
+			new ResolvedMeemPathCategoryCallback(meemPath, client, contentClient).proceed(hyperSpacMeem);
 		}
 	}
 
@@ -274,24 +302,50 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider
 			}
 
 			// -mg- this should use the space type, not just assume hyperspace
-			Meem meem = HyperSpaceHelper.getInstance().getHyperSpaceMeem();
+			final MeemPath hyperSpacePath = meemPath;
+			HyperSpaceHelper.getInstance().getHyperSpaceMeem(new AsyncCallback<Meem>() {
+				public void result(Meem hyperSpaceMeem) {
+					handleHyperSpaceMeemForMonitoring(hyperSpaceMeem, hyperSpacePath);
+				}
+				public void exception(Exception e) {
+				}
+			});
 
-			String location = meemPath.getLocation();
-			StringTokenizer tok = new StringTokenizer(location, "/");
-
-			if (tok.hasMoreTokens())
-			{
-				MeemPath currentMeemPath = MeemPath.spi.create(meemPath.getSpace(), "");
-				String firstPath = tok.nextToken();
-
-				createCategoryMonitor(meem, currentMeemPath, firstPath, meemPath);
-			}
-			else
-			{
-				// No location part of the MeemPath, so the request is for the root of the space
-				pathResolved(meemPath, meem.getMeemPath());
-			}
+//			Meem meem = HyperSpaceHelper.getInstance().getHyperSpaceMeem();
+//
+//			String location = meemPath.getLocation();
+//			StringTokenizer tok = new StringTokenizer(location, "/");
+//
+//			if (tok.hasMoreTokens()) {
+//				MeemPath currentMeemPath = MeemPath.spi.create(meemPath.getSpace(), "");
+//				String firstPath = tok.nextToken();
+//
+//				createCategoryMonitor(meem, currentMeemPath, firstPath, meemPath);
+//			}
+//			else {
+//				// No location part of the MeemPath, so the request is for the
+//				// root of the space
+//				pathResolved(meemPath, meem.getMeemPath());
+//			}
 		}
+	}
+	
+	private void handleHyperSpaceMeemForMonitoring(Meem hyperSpaceMeem, MeemPath meemPath) {
+		String location = meemPath.getLocation();
+		StringTokenizer tok = new StringTokenizer(location, "/");
+
+		if (tok.hasMoreTokens()) {
+			MeemPath currentMeemPath = MeemPath.spi.create(meemPath.getSpace(), "");
+			String firstPath = tok.nextToken();
+
+			createCategoryMonitor(hyperSpaceMeem, currentMeemPath, firstPath, meemPath);
+		}
+		else {
+			// No location part of the MeemPath, so the request is for the root
+			// of the space
+			pathResolved(meemPath, hyperSpaceMeem.getMeemPath());
+		}
+
 	}
 
 	private synchronized void stopMonitoring(MeemPath meemPath)

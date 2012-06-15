@@ -40,6 +40,7 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.common.VariableMap;
 import org.openmaji.server.helper.*;
+import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
 import org.openmaji.system.manager.lifecycle.LifeCycleManager;
 import org.openmaji.system.manager.lifecycle.LifeCycleManagerClient;
@@ -240,10 +241,10 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 	/**
 	 * @see org.openmaji.system.manager.lifecycle.LifeCycleManagerClient#meemCreated(org.openmaji.meem.Meem, java.lang.String)
 	 */
-	public void meemCreated(Meem meem, String identifier) {
+	public void meemCreated(final Meem meem, String identifier) {
 		if (dependencyAttributes.containsKey(identifier)) {
 
-			String meemServerName = identifier.substring(MeemServer.spi.getIdentifier().length() + 1);
+			final String meemServerName = identifier.substring(MeemServer.spi.getIdentifier().length() + 1);
 
 			if (Common.TRACE_ENABLED && Common.TRACE_MEEMSERVER) {
 				logger.log(logLevel, "MeemServer Meem created: " + meemServerName);
@@ -259,43 +260,14 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 
 			// add the new MeemServer Meem to the deployment category in hyperspace
 
-			Meem deploymentMeem = MeemPathResolverHelper.getInstance().resolveMeemPath(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.DEPLOYMENT));
+			MeemPathResolverHelper.getInstance().resolveMeemPath(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.DEPLOYMENT), new AsyncCallback<Meem>() {
+				public void result(Meem deploymentMeem) {
+					handleDeploymentMeem(deploymentMeem, meemServerName, meem);
+				}
+				public void exception(Exception e) {
+				}
+			});
 
-			if (deploymentMeem == null) {
-				deploymentMeem = LifeCycleManagerHelper.assembleMeem(
-					new Class[] {
-						org.openmaji.implementation.common.VariableMapWedge.class,
-						org.openmaji.implementation.server.space.CategoryWedge.class,
-						org.openmaji.server.presentation.PatternGroupWedge.class },
-					LifeCycleState.LOADED,
-					LifeCycleState.READY,
-					StandardHyperSpaceCategory.DEPLOYMENT);
-					
-					
-				ResourceExporter re = new ResourceExporter(org.openmaji.server.presentation.hyperspace.images.Images.class);
-				MeemIconicPresentation icons = new MeemIconicPresentation();
-				icons.setSmallIcon(re.extract("meemserver_16.gif"));
-				icons.setLargeIcon(re.extract(MeemIconicPresentation.getLargeIconName("meemserver_16.gif")));
-	
-				VariableMap variableMap = (VariableMap) ReferenceHelper.getTarget(deploymentMeem, "variableMap", VariableMap.class);
-				variableMap.update(org.openmaji.system.presentation.InterMajik.ICONIC_PRESENTATION_KEY, icons);
-	
-				
-				ConfigurationHandler ch =
-					(ConfigurationHandler) ReferenceHelper.getTarget(deploymentMeem, "configurationHandler", ConfigurationHandler.class);
-				ConfigurationIdentifier ci = new ConfigurationIdentifier("MeemSystemWedge", "meemIdentifier");
-				ch.valueChanged(ci, "deployment");
-
-			}
-			//
-			// add the meem server to the deployment category.
-			//
-			new AddEntryTask(deploymentMeem, meemServerName, meem);
-
-			//
-			// take read_write for other off.
-			//
-			new SetAccessTask(deploymentMeem);
 
 		}
 
@@ -313,6 +285,45 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 	 */
 	public void meemTransferred(Meem meem, LifeCycleManager targetLifeCycleManager) {
 		// don't care	
+	}
+	
+	private void handleDeploymentMeem(Meem deploymentMeem, String meemServerName, Meem meem) {
+		if (deploymentMeem == null) {
+			deploymentMeem = LifeCycleManagerHelper.assembleMeem(
+				new Class[] {
+					org.openmaji.implementation.common.VariableMapWedge.class,
+					org.openmaji.implementation.server.space.CategoryWedge.class,
+					org.openmaji.server.presentation.PatternGroupWedge.class },
+				LifeCycleState.LOADED,
+				LifeCycleState.READY,
+				StandardHyperSpaceCategory.DEPLOYMENT);
+				
+				
+			ResourceExporter re = new ResourceExporter(org.openmaji.server.presentation.hyperspace.images.Images.class);
+			MeemIconicPresentation icons = new MeemIconicPresentation();
+			icons.setSmallIcon(re.extract("meemserver_16.gif"));
+			icons.setLargeIcon(re.extract(MeemIconicPresentation.getLargeIconName("meemserver_16.gif")));
+
+			VariableMap variableMap = (VariableMap) ReferenceHelper.getTarget(deploymentMeem, "variableMap", VariableMap.class);
+			variableMap.update(org.openmaji.system.presentation.InterMajik.ICONIC_PRESENTATION_KEY, icons);
+
+			
+			ConfigurationHandler ch =
+				(ConfigurationHandler) ReferenceHelper.getTarget(deploymentMeem, "configurationHandler", ConfigurationHandler.class);
+			ConfigurationIdentifier ci = new ConfigurationIdentifier("MeemSystemWedge", "meemIdentifier");
+			ch.valueChanged(ci, "deployment");
+
+		}
+		//
+		// add the meem server to the deployment category.
+		//
+		new AddEntryTask(deploymentMeem, meemServerName, meem);
+
+		//
+		// take read_write for other off.
+		//
+		new SetAccessTask(deploymentMeem);
+
 	}
 
 	private final class DependencyClientConduit implements DependencyClient {
