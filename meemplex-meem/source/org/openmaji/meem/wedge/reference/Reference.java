@@ -24,7 +24,7 @@ import org.openmaji.spi.MajiSPI;
  * @version 1.0
  */
 
-public interface Reference extends Serializable {
+public interface Reference<T extends Facet> extends Serializable {
 
   /**
    * Provide the identifier of the Provider Meem's Facet to depend upon.
@@ -57,7 +57,7 @@ public interface Reference extends Serializable {
    * @return Target of the specified Facet
    */
 
-  public <T extends Facet> T getTarget();
+  public T getTarget();
   
   /**
 	 * Nested class for service provider.
@@ -66,12 +66,14 @@ public interface Reference extends Serializable {
 	 */
 	public class spi {
 		
-		public static Reference create(String facetIdentifier, Facet target, boolean contentRequired) {
-			return ((Reference) MajiSPI.provider().create(Reference.class, new Object[] { facetIdentifier, target, new Boolean(contentRequired), null }));
+		@SuppressWarnings("unchecked")
+		public static <T extends Facet> Reference<T> create(String facetIdentifier, T target, boolean contentRequired) {
+			return ((Reference<T>) MajiSPI.provider().create(Reference.class, new Object[] { facetIdentifier, target, new Boolean(contentRequired), null }));
 		}
 		
-		public static Reference create(String facetIdentifier, Facet target, boolean contentRequired, Filter filter) {
-			return ((Reference) MajiSPI.provider().create(Reference.class, new Object[] { facetIdentifier, target, new Boolean(contentRequired), filter }));
+		@SuppressWarnings("unchecked")
+		public static <T extends Facet> Reference<T> create(String facetIdentifier, T target, boolean contentRequired, Filter filter) {
+			return ((Reference<T>) MajiSPI.provider().create(Reference.class, new Object[] { facetIdentifier, target, new Boolean(contentRequired), filter }));
 		}
 	}
 }

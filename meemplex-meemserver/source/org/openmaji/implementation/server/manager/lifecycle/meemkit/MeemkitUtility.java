@@ -50,16 +50,22 @@ public class MeemkitUtility
   private static EntityResolver entityResolver = null;
 	
 	static {  	
-  	try {
-			new URL("http://www.majitek.com").openConnection().connect();
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
-			entityResolver = new EntityResolver() {
-				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-					return new InputSource(new StringReader(""));
-				}
-			};
-		}
+//		try {
+//			new URL("http://meemplex.org/").openConnection().connect();
+//		} catch (MalformedURLException e) {
+//		} catch (IOException e) {
+//			entityResolver = new EntityResolver() {
+//				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+//					return new InputSource(new StringReader(""));
+//				}
+//			};
+//		}
+		
+		entityResolver = new EntityResolver() {
+			public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+				return new InputSource(new StringReader(""));
+			}
+		};
 	}
   
   /**

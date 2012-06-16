@@ -50,6 +50,6 @@ public class EssentialMeemHelper {
 	 * @return The MeemPath to the requested Meem
 	 */
 	public static Meem getEssentialMeem(String meemIdentifier) {
-		return (Meem)essentialMeems.get(meemIdentifier);		
+		return essentialMeems.get(meemIdentifier);		
 	}
 }

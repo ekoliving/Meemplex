@@ -31,15 +31,19 @@ import org.openmaji.meem.space.Space;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleLimit;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.meem.wedge.reference.Reference;
+import org.openmaji.server.utility.FacetCallbackTask;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
+import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.manager.lifecycle.CreateMeemFilter;
 import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
 import org.openmaji.system.manager.lifecycle.LifeCycleManager;
 import org.openmaji.system.manager.lifecycle.LifeCycleManagerClient;
+import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.meem.definition.DefinitionFactory;
 import org.openmaji.system.meem.wedge.lifecycle.LifeCycleManagementClient;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.space.Category;
 
 
@@ -90,7 +94,7 @@ public class LifeCycleManagerHelper {
 	 * 
 	 * @param meemDefinition
 	 * @param meemPath
-	 * 	The full path to the Meem to be created.  Do not reate a new one if a Meem already exists at this path.
+	 * 	The full path to the Meem to be created.  Do not create a new one if a Meem already exists at this path.
 	 *  
 	 * @param initialState
 	 * @return
@@ -192,14 +196,18 @@ public class LifeCycleManagerHelper {
 			// get the LCM from the LifeCycleManagement facet
 			PigeonHole<LifeCycleManager> pigeonHole = new PigeonHole<LifeCycleManager>();
 			LifeCycleManagementClientImpl client = new LifeCycleManagementClientImpl(pigeonHole);
-			Facet proxy = GatewayManagerWedge.getTargetFor(client, LifeCycleManagementClient.class); 
+			LifeCycleManagementClient proxy = GatewayManagerWedge.getTargetFor(client, LifeCycleManagementClient.class); 
 
-			Reference lcmManagementReference = Reference.spi.create("lifeCycleManagementClient", proxy, true);
+			Reference<LifeCycleManagementClient> lcmManagementReference = Reference.spi.create("lifeCycleManagementClient", proxy, true);
 
 			resolvedMeem.addOutboundReference(lcmManagementReference, true);
 
 			try {
 				lifeCycleManager = pigeonHole.get(timeout);
+			}
+			catch (ContentException ex) {
+				logger.log(Level.INFO, "Timeout waiting for LifecycleManager", ex);
+				lifeCycleManager = null;
 			}
 			catch (TimeoutException ex) {
 				logger.log(Level.INFO, "Timeout waiting for LifecycleManager", ex);
@@ -232,7 +240,6 @@ public class LifeCycleManagerHelper {
 	}
 
 	public static Meem createTransientMeem(MeemDefinition meemDefinition, LifeCycleState lifeCycleState) {
-
 		if (transientLifeCycleManagerMeem == null) {
 			transientLifeCycleManagerMeem =
 				EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier());
@@ -241,40 +248,84 @@ public class LifeCycleManagerHelper {
 		return (createMeem(meemDefinition, transientLifeCycleManagerMeem, lifeCycleState));
 	}
 
+	/**
+	 * Create a transient meem.
+	 * 
+	 * @param meemDefinition
+	 * @param lifeCycleState
+	 * @param callback
+	 */
+	public static void createTransientMeem(MeemDefinition meemDefinition, LifeCycleState lifeCycleState, AsyncCallback<Meem> callback) {
+		if (transientLifeCycleManagerMeem == null) {
+			transientLifeCycleManagerMeem =
+				EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier());
+		}
+
+		createMeem(meemDefinition, transientLifeCycleManagerMeem, lifeCycleState, callback);
+	}
+	
 	public static Meem createMeem(MeemDefinition meemDefinition, Meem lifeCycleManagerMeem) {
 		return createMeem(meemDefinition, lifeCycleManagerMeem, LifeCycleState.READY);
 	}
 
-//	public static Meem createMeem(MeemDefinition meemDefinition, final Meem lifeCycleManagerMeem,
-//		final LifeCycleState initialState) {
-//
-//		LifeCycleManager lifeCycleManager = (LifeCycleManager) ReferenceHelper.getTarget(
-//			lifeCycleManagerMeem, "lifeCycleManager", LifeCycleManager.class);
-//
-//		return createMeem(meemDefinition, lifeCycleManagerMeem, lifeCycleManager, initialState);			
-//	}
+	/**
+	 * Create a meem at the default lifecycle state of READY.
+	 * 
+	 * @param meemDefinition
+	 * @param lifeCycleManagerMeem
+	 * @param callback
+	 */
+	public static void createMeem(MeemDefinition meemDefinition, Meem lifeCycleManagerMeem, AsyncCallback<Meem> callback) {
+		createMeem(meemDefinition, lifeCycleManagerMeem, LifeCycleState.READY, callback);
+	}
+	
+	public static Meem createMeem(MeemDefinition meemDefinition, final Meem lifeCycleManagerMeem, final LifeCycleState initialState) {
 
-	public static Meem createMeem(MeemDefinition meemDefinition, final Meem lifeCycleManagerMeem, /*final LifeCycleManager lifeCycleManager,*/ final LifeCycleState initialState) {
-
-		PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
-		LifeCycleManagerClient lifeCycleManagerClient = new CreateMeemTask(pigeonHole);
-		Facet proxy = GatewayManagerWedge.getTargetFor(lifeCycleManagerClient, LifeCycleManagerClient.class);
+		final PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
+		
 		Filter filter = new CreateMeemFilter(meemDefinition, initialState);
-		Reference reference = Reference.spi.create("lifeCycleManagerClient", proxy, true, filter);
+		new MeemCreationTask(lifeCycleManagerMeem, "lifeCycleManagerClient", filter, pigeonHole);
 
-		lifeCycleManagerMeem.addOutboundReference(reference, true);
+//		LifeCycleManagerClient lifeCycleManagerClient = new CreateMeemTask(pigeonHole);
+//		LifeCycleManagerClient proxy = GatewayManagerWedge.getTargetFor(lifeCycleManagerClient, LifeCycleManagerClient.class);
+//		Filter filter = new CreateMeemFilter(meemDefinition, initialState);
+//		Reference<LifeCycleManagerClient> reference = Reference.spi.create("lifeCycleManagerClient", proxy, true, filter);
+//		lifeCycleManagerMeem.addOutboundReference(reference, true);
 
 		try {
 			return pigeonHole.get(timeout);
-		} catch (TimeoutException ex) {
+		}
+		catch (TimeoutException ex) {
 			logger.log(Level.INFO, "Timeout waiting for CreateMeemTask", ex);
 			return null;
 		}
-		finally {
-			GatewayManagerWedge.revokeTarget(proxy, lifeCycleManagerClient);
+		catch (ContentException ex) {
+			logger.log(Level.INFO, "ContentException waiting for CreateMeemTask", ex);
+			return null;
 		}
 	}
 
+	/**
+	 * Create a meem.  Return the meem asynchronously via a callback
+	 * 
+	 * @param meemDefinition
+	 * @param lifeCycleManagerMeem
+	 * @param initialState
+	 * @param callback
+	 */
+	public static void createMeem(MeemDefinition meemDefinition, final Meem lifeCycleManagerMeem, final LifeCycleState initialState, AsyncCallback<Meem> callback) {
+		Filter filter = new CreateMeemFilter(meemDefinition, initialState);
+		new MeemCreationTask(lifeCycleManagerMeem, "lifeCycleManagerClient", filter, callback);
+	}
+	
+	/**
+	 * 
+	 * @param wedgeClasses
+	 * @param lifeCycleState
+	 * @param lifeCycleStateLimit
+	 * @param path
+	 * @return
+	 */
 	public static Meem assembleMeem(Class<?>[] wedgeClasses, LifeCycleState lifeCycleState, LifeCycleState lifeCycleStateLimit, String path) {
 
 		DefinitionFactory definitionFactory = DefinitionFactory.spi.create();
@@ -298,8 +349,84 @@ public class LifeCycleManagerHelper {
 
 		return meem;
 	}
+	
+	/**
+	 * Assemble a meem from wedges
+	 * 
+	 * @param wedgeClasses
+	 * @param lifeCycleState
+	 * @param lifeCycleStateLimit
+	 * @param path
+	 * @param callback
+	 */
+	/*
+	public static void assembleMeem(Class<?>[] wedgeClasses, LifeCycleState lifeCycleState, final LifeCycleState lifeCycleStateLimit, String path, final AsyncCallback<Meem> callback) {
 
-	private static final long timeout = 60000;
+		DefinitionFactory definitionFactory = DefinitionFactory.spi.create();
+
+		Iterator<?> wedgeIterator = Arrays.asList(wedgeClasses).iterator();
+
+		MeemDefinition meemDefinition = definitionFactory.createMeemDefinition(wedgeIterator);
+
+		Meem meem = null;
+
+		if (path == null) {
+			createTransientMeem(meemDefinition, lifeCycleState, new AsyncCallback<Meem>() {
+				public void result(Meem newMeem) {
+					setLifeCycleStateLimit(newMeem, lifeCycleStateLimit, callback);
+				}
+				public void exception(Exception e) {
+					callback.exception(e);
+				}
+			});
+		}
+		else {
+			// TODO make this call asynchronous
+			
+//			MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE, path);
+//			meem = createMeem(meemDefinition, meemPath, lifeCycleState, new AsyncCallback<Meem>() {
+//				public void result(Meem result) {
+//					// TODO Auto-generated method stub
+//					
+//				}
+//				public void exception(Exception e) {
+//					// TODO Auto-generated method stub
+//					
+//				}
+//			});
+			
+			MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE, path);
+			meem = createMeem(meemDefinition, meemPath, lifeCycleState);
+			setLifeCycleStateLimit(meem, lifeCycleStateLimit, callback);
+		}
+	}
+	*/
+	
+	/**
+	 * 
+	 * @param meem
+	 * @param lifeCycleStateLimit
+	 * @param callback
+	 */
+	/*
+	private static void setLifeCycleStateLimit(final Meem meem, final LifeCycleState lifeCycleStateLimit, final AsyncCallback<Meem> callback) {
+//		LifeCycleLimit lifeCycleLimit = ReferenceHelper.getTarget(meem, "lifeCycleLimit", LifeCycleLimit.class);
+//		lifeCycleLimit.limitLifeCycleState(lifeCycleStateLimit);
+//		callback.result(meem);
+
+		ReferenceHelper.getTarget(meem, "lifeCycleLimit", LifeCycleLimit.class, new AsyncCallback<LifeCycleLimit>() {
+			public void result(LifeCycleLimit lifeCycleLimit) {
+				lifeCycleLimit.limitLifeCycleState(lifeCycleStateLimit);
+				callback.result(meem);
+			}
+			public void exception(Exception e) {
+				callback.exception(e);
+			}
+		});
+	}
+	*/
+
+	private static final long timeout = Long.parseLong(System.getProperty(PigeonHole.PROPERTY_TIMEOUT, "60000"));
 
 	/** Logger for the class */
 	private static final Logger logger = Logger.getAnonymousLogger();
@@ -312,7 +439,10 @@ public class LifeCycleManagerHelper {
 	
 		public Meem getMeem() {
 			try {
-				return ((Meem) meemHole.get(timeout));
+				return meemHole.get(timeout);
+			} catch (ContentException ex) {
+				logger.log(Level.INFO, "ContentException waiting for LifecycleManager", ex);
+				return null;
 			} catch (TimeoutException ex) {
 				logger.log(Level.INFO, "Timeout waiting for LifecycleManager", ex);
 				return null;
@@ -358,6 +488,8 @@ public class LifeCycleManagerHelper {
 		}
 	}
 
+	/**
+	 */
 	public static class CreateMeemTask implements LifeCycleManagerClient, ContentClient {
 		public CreateMeemTask(PigeonHole<Meem> pigeonHole) {
 			this.pigeonHole = pigeonHole;
@@ -390,4 +522,33 @@ public class LifeCycleManagerHelper {
 		private PigeonHole<Meem> pigeonHole;
 		private Meem meem = null;
 	}
+
+	/**
+	 * 
+	 */
+	public static class MeemCreationTask extends FacetCallbackTask<LifeCycleManagerClient, Meem> {
+		public MeemCreationTask(Meem meem, String facetName, Filter filter, AsyncCallback<Meem> callback) {
+			super(meem, facetName, filter, callback);
+		}
+		
+		public MeemCreationTask(Meem meem, String facetName, Filter filter, PigeonHole<Meem> pigeonHole) {
+			super(meem, facetName, filter, pigeonHole);
+		}
+		
+		@Override
+		protected LifeCycleManagerClient getFacetListener() {
+			return new LifeCycleManagerClientImpl();
+		}
+		
+		class LifeCycleManagerClientImpl extends FacetListener implements LifeCycleManagerClient {
+			public void meemCreated(Meem meem, String identifier) {
+				setResult(meem);
+			}
+			public void meemDestroyed(Meem meem) {
+			}
+			public void meemTransferred(Meem meem, LifeCycleManager targetLifeCycleManager) {
+			}
+		}
+	}
+	
 }

@@ -16,12 +16,12 @@ import org.openmaji.meem.wedge.reference.Reference;
  * 
  * @author Chris Kakris
  */
-public interface MeemClientCallback extends Facet
+public interface MeemClientCallback <T extends Facet> extends Facet
 {
 	/**
 	 * Returns a reference object containing the facet we want, or just null if there is no facet.
 	 * 
 	 * @param reference a reference containing the target - null if a suitable facet could not be found.
 	 */
-    void referenceProvided(Reference reference);
+    void referenceProvided(Reference<T> reference);
 }

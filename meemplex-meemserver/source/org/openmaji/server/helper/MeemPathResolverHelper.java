@@ -13,7 +13,6 @@
 package org.openmaji.server.helper;
 
 import org.openmaji.implementation.server.manager.gateway.GatewayManagerWedge;
-import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.filter.ExactMatchFilter;
@@ -26,6 +25,7 @@ import org.openmaji.system.manager.registry.MeemRegistryClient;
 import org.openmaji.system.manager.registry.MeemRegistryGateway;
 import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.space.resolver.MeemResolver;
 import org.openmaji.system.space.resolver.MeemResolverClient;
 
@@ -69,30 +69,57 @@ public class MeemPathResolverHelper {
 	 * @param meemPath
 	 * @return
 	 */
-	private Meem resolveDefinitive(MeemPath meemPath) {
-		PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
-
-		MeemRegistryClient meemRegistryClient = new MeemRegistryClientImpl(pigeonHole);
-		Facet proxy = GatewayManagerWedge.getTargetFor(meemRegistryClient, MeemRegistryClient.class);
-
-		Filter filter = new ExactMatchFilter(meemPath);
-
-		Reference reference = Reference.spi.create("meemRegistryClient", proxy, true, filter);
-
-		Meem meemRegistryGateway = EssentialMeemHelper.getEssentialMeem(MeemRegistryGateway.spi.getIdentifier());
-
-		meemRegistryGateway.addOutboundReference(reference, true);
-
+	private Meem resolveDefinitive(final MeemPath meemPath) {
+		final PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
+		
+		new MeemRegistryResolverTask(meemPath, new AsyncCallback<Meem>() {
+			public void result(Meem target) {
+				pigeonHole.put(target);
+			};
+			public void exception(Exception e) {
+				if (DEBUG) {
+					logger.log(Level.INFO, "Problem resolving meemregistry path: " + meemPath, e);
+				}
+				pigeonHole.exception(e);
+			}
+		});
+		
 		try {
-			return pigeonHole.get(timeout);
+			return pigeonHole.get();
 		}
-		catch (TimeoutException ex) {
-			logger.log(Level.INFO, "Timeout waiting for Meem for the MeemPath", ex);
+		catch (ContentException e) {
 			return null;
 		}
-		finally {
-			GatewayManagerWedge.revokeTarget(proxy, meemRegistryClient);
+		catch (TimeoutException e) {
+			return null;
 		}
+
+		
+//		PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
+//
+//		MeemRegistryClient meemRegistryClient = new MeemRegistryClientImpl(pigeonHole);
+//		MeemRegistryClient proxy = GatewayManagerWedge.getTargetFor(meemRegistryClient, MeemRegistryClient.class);
+//
+//		Filter filter = new ExactMatchFilter(meemPath);
+//
+//		Reference<MeemRegistryClient> reference = Reference.spi.create("meemRegistryClient", proxy, true, filter);
+//
+//		Meem meemRegistryGateway = EssentialMeemHelper.getEssentialMeem(MeemRegistryGateway.spi.getIdentifier());
+//
+//		meemRegistryGateway.addOutboundReference(reference, true);
+//
+//		try {
+//			return pigeonHole.get(timeout);
+//		}
+//		catch (ContentException ex) {
+//			return null;
+//		}
+//		catch (TimeoutException ex) {
+//			return null;
+//		}
+//		finally {
+//			GatewayManagerWedge.revokeTarget(proxy, meemRegistryClient);
+//		}
 	}
 
 	/**
@@ -101,9 +128,7 @@ public class MeemPathResolverHelper {
 	 * @param callback
 	 */
 	private void resolveDefinitive(MeemPath meemPath, AsyncCallback<Meem> callback) {
-
-		MeemRegistryClientCallback meemRegistryClient = new MeemRegistryClientCallback(callback);
-		meemRegistryClient.resolve(meemPath);
+		new MeemRegistryResolverTask(meemPath, callback);
 	}
 	
 	/**
@@ -111,14 +136,38 @@ public class MeemPathResolverHelper {
 	 * @param meemPath
 	 * @return
 	 */
-	private Meem resolveHyperSpace(MeemPath meemPath) {
-		PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
+	private Meem resolveHyperSpace(final MeemPath meemPath) {
+		final PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
+		
+		new MeemPathResolverTask(meemPath, new AsyncCallback<Meem>() {
+			public void result(Meem target) {
+				pigeonHole.put(target);
+			};
+			public void exception(Exception e) {
+				if (DEBUG) {
+					logger.log(Level.INFO, "Problem resolving hyperspace path: " + meemPath, e);
+				}
+				pigeonHole.exception(e);
+			}
+		});
+		
+		try {
+			return pigeonHole.get();
+		}
+		catch (ContentException e) {
+			return null;
+		}
+		catch (TimeoutException e) {
+			return null;
+		}
+
+		/*
 		final MeemPathResolverClientImpl client = new MeemPathResolverClientImpl(pigeonHole);
 
 		Meem resolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
-		Facet proxy = GatewayManagerWedge.getTargetFor(client, MeemResolverClient.class);
+		MeemResolverClient proxy = GatewayManagerWedge.getTargetFor(client, MeemResolverClient.class);
 
-		Reference reference = Reference.spi.create("meemResolverClient", proxy, true, new ExactMatchFilter(meemPath));
+		Reference<MeemResolverClient> reference = Reference.spi.create("meemResolverClient", proxy, true, new ExactMatchFilter(meemPath));
 
 		resolverMeem.addOutboundReference(reference, true);
 
@@ -126,18 +175,22 @@ public class MeemPathResolverHelper {
 			return pigeonHole.get(timeout);
 		}
 		catch (TimeoutException ex) {
-			logger.log(Level.INFO, "Timeout waiting for Meem for the MeemPath", ex);
+			logger.log(Level.INFO, "Timeout waiting for Meem for the MeemPath: " + meemPath, ex);
 			return null;
 		}
 		finally {
 			GatewayManagerWedge.revokeTarget(proxy, client);
 		}
+		*/
 	}
 	
+	/**
+	 * 
+	 * @param meemPath
+	 * @param callback
+	 */
 	private void resolveHyperSpace(MeemPath meemPath, AsyncCallback<Meem> callback) {
-
-		MeemRegistryClientCallback meemRegistryClient = new MeemRegistryClientCallback(callback);
-		meemRegistryClient.resolve(meemPath);
+		new MeemPathResolverTask(meemPath, callback);
 	}
 
 
@@ -175,70 +228,6 @@ public class MeemPathResolverHelper {
 		private PigeonHole<Meem> pigeonHole;
 		private Meem meem = null;
 	}
-
-	/**
-	 * Callback version of MeemRegistry resolver
-	 *
-	 */
-	public class MeemRegistryClientCallback implements MeemRegistryClient, ContentClient {
-		private AsyncCallback<Meem> callback;
-		private Facet clientProxy;
-		private MeemPath meemPath;
-		private Meem meem = null;
-
-		Runnable timeoutHandler = new Runnable() {
-			public void run() {
-				contentFailed("Timeout while resolving meem " + meemPath);
-			}
-		};
-		
-		public MeemRegistryClientCallback(AsyncCallback<Meem> callback) {
-			this.callback = callback;
-		}
-		
-		public void resolve(MeemPath meemPath) {
-			this.meemPath = meemPath;
-			clientProxy = GatewayManagerWedge.getTargetFor(this, MeemRegistryClient.class);
-			Filter filter = new ExactMatchFilter(meemPath);
-			Reference reference = Reference.spi.create("meemRegistryClient", clientProxy, true, filter);
-			Meem meemRegistryGateway = EssentialMeemHelper.getEssentialMeem(MeemRegistryGateway.spi.getIdentifier());
-			meemRegistryGateway.addOutboundReference(reference, true);
-
-			ThreadManager.spi.create().queue(timeoutHandler, timeout);
-		}
-
-		public void meemRegistered(Meem meem) {
-			this.meem = meem;
-		}
-
-		public void meemDeregistered(Meem meem) {
-			this.meem = null;
-		}
-
-		public void contentSent() {
-			if (callback != null) {
-				callback.result(meem);
-				callback = null;
-				revokeProxy();
-			}
-		}
-
-		public void contentFailed(String reason) {
-			if (callback != null) {
-				callback.exception(new Exception(reason));
-				callback = null;
-				revokeProxy();
-			}
-		}
-		
-		private void revokeProxy() {
-			if (clientProxy != null) {
-				ThreadManager.spi.create().cancel(timeoutHandler);
-				GatewayManagerWedge.revokeTarget(clientProxy, this);
-				clientProxy = null;
-			}
-		}
-	}
 	
 	/**
 	 * 
@@ -252,10 +241,16 @@ public class MeemPathResolverHelper {
 		}
 
 		public void meemResolved(MeemPath meemPath, Meem meem) {
+			if (DEBUG) {
+				logger.info("Meem resolved from meempath: " + meemPath + " : " + meem);
+			}
 			this.meem = meem;
 		}
 
 		public void contentSent() {
+			if (DEBUG) {
+				logger.info("content sent for meempath: " + meem);
+			}
 			if (pigeonHole != null) {
 				pigeonHole.put(meem);
 				pigeonHole = null;
@@ -274,56 +269,65 @@ public class MeemPathResolverHelper {
 	}
 	
 	/**
-	 * Callback version of MeemPath resolver.
+	 * Callback version of MeemRegistry resolver
 	 *
 	 */
-	public class MeemPathClientCallback implements MeemResolverClient, ContentClient {
-		private AsyncCallback<Meem> callback;
-		private Facet clientProxy;
+	public class MeemRegistryResolverTask implements MeemRegistryClient, ContentClient {
 		private MeemPath meemPath;
+		private MeemRegistryClient clientProxy;
 		private Meem meem = null;
-		
-		Runnable timeoutHandler = new Runnable() {
+		private AsyncCallback<Meem> callback;
+
+		private Runnable timeoutHandler = new Runnable() {
 			public void run() {
-				contentFailed("Timeout resolving meem at " + meemPath);
+				timeout();
 			}
 		};
 		
-		public MeemPathClientCallback(AsyncCallback<Meem> callback) {
-			this.callback = callback;
-		}
-		
-		public void resolve(MeemPath meemPath) {
+		public MeemRegistryResolverTask(MeemPath meemPath, AsyncCallback<Meem> callback) {
 			this.meemPath = meemPath;
-			clientProxy = GatewayManagerWedge.getTargetFor(this, MeemResolverClient.class);
-			Reference reference = Reference.spi.create("meemResolverClient", clientProxy, true, new ExactMatchFilter(meemPath));
-			Meem resolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
-			resolverMeem.addOutboundReference(reference, true);
-
-			ThreadManager.spi.create().queue(timeoutHandler, timeout);
+			this.callback = callback;
+			this.clientProxy = GatewayManagerWedge.getTargetFor(this, MeemRegistryClient.class);
+			Filter filter = new ExactMatchFilter(meemPath);
+			Reference<MeemRegistryClient> reference = Reference.spi.create("meemRegistryClient", clientProxy, true, filter);
+			Meem meemRegistryGateway = EssentialMeemHelper.getEssentialMeem(MeemRegistryGateway.spi.getIdentifier());
+			ThreadManager.spi.create().queue(timeoutHandler, System.currentTimeMillis()+timeout);
+			meemRegistryGateway.addOutboundReference(reference, true);
 		}
 
-		public void meemResolved(MeemPath meemPath, Meem meem) {
+		public void meemRegistered(Meem meem) {
 			this.meem = meem;
+		}
+
+		public void meemDeregistered(Meem meem) {
+			this.meem = null;
 		}
 
 		public void contentSent() {
 			if (callback != null) {
 				callback.result(meem);
 				callback = null;
-				revokeProxy();
+				cleanup();
 			}
 		}
 
 		public void contentFailed(String reason) {
 			if (callback != null) {
-				callback.exception(new Exception(reason));
+				callback.exception(new ContentException(reason));
 				callback = null;
-				revokeProxy();
+				cleanup();
 			}
 		}
 		
-		private void revokeProxy() {
+		private void timeout() {
+			if (callback != null) {
+				callback.exception(new TimeoutException("Timeout while resolving meem " + meemPath));
+				callback = null;
+				cleanup();
+			}
+		}
+		
+		private void cleanup() {
 			if (clientProxy != null) {
 				ThreadManager.spi.create().cancel(timeoutHandler);
 				GatewayManagerWedge.revokeTarget(clientProxy, this);
@@ -331,9 +335,78 @@ public class MeemPathResolverHelper {
 			}
 		}
 	}
+	
+	/**
+	 * Callback version of MeemPath resolver.
+	 *
+	 */
+	public class MeemPathResolverTask implements MeemResolverClient, ContentClient {
+		private AsyncCallback<Meem> callback;
+		private MeemResolverClient clientProxy;
+		private MeemPath meemPath;
+		private Meem meem = null;
+		
+		Runnable timeoutHandler = new Runnable() {
+			public void run() {
+				timeout();
+			}
+		};
+		
+		public MeemPathResolverTask(MeemPath meemPath, AsyncCallback<Meem> callback) {
+			this.callback = callback;
+			this.meemPath = meemPath;
+			this.clientProxy = GatewayManagerWedge.getTargetFor(this, MeemResolverClient.class);
+			Reference<MeemResolverClient> reference = Reference.spi.create("meemResolverClient", clientProxy, true, new ExactMatchFilter(meemPath));
+			Meem resolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
+			ThreadManager.spi.create().queue(timeoutHandler, System.currentTimeMillis()+timeout);
+			resolverMeem.addOutboundReference(reference, true);
+		}
+		
+		public void meemResolved(MeemPath meemPath, Meem meem) {
+			if (DEBUG) {
+				logger.info("Meem resolved from meempath: " + meemPath + " : " + meem);
+			}
+			this.meem = meem;
+		}
 
-	private static final long timeout = 60000;
+		public void contentSent() {
+			if (callback != null) {
+				callback.result(meem);
+				callback = null;
+				cleanup();
+			}
+		}
+
+		public void contentFailed(String reason) {
+			if (callback != null) {
+				callback.exception(new ContentException(reason));
+				callback = null;
+				cleanup();
+			}
+		}
+		
+		public void timeout() {
+			if (callback != null) {
+				callback.exception(new TimeoutException("Timeout while resolving meem " + meemPath));
+				callback = null;
+				cleanup();
+			}
+		}
+		
+		private void cleanup() {
+			if (clientProxy != null) {
+				ThreadManager.spi.create().cancel(timeoutHandler);
+				GatewayManagerWedge.revokeTarget(clientProxy, this);
+				clientProxy = null;
+			}
+		}
+		
+	}
+
+	private static final long timeout = Long.parseLong(System.getProperty(PigeonHole.PROPERTY_TIMEOUT, "60000"));
 
 	/** Logger for the class */
 	private static final Logger logger = Logger.getAnonymousLogger();
+	
+	private static final boolean DEBUG = false;
 }

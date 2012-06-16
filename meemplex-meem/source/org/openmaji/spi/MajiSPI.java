@@ -58,13 +58,12 @@ public abstract class MajiSPI implements MajiProvider {
   public static synchronized MajiProvider provider() {
     if (majiProvider == null) {
       AccessController.doPrivileged(
-        new PrivilegedAction<Object>() {
-          public Object run() {
+        new PrivilegedAction<Void>() {
+          public Void run() {
             if (loadProviderFromProperty() == false) {
               loadProviderAsService();
             }
-
-            return(null);
+            return null;
           }
         }
       );
@@ -137,9 +136,8 @@ public abstract class MajiSPI implements MajiProvider {
    * 
    * @param specification the class to instance the object from.
    */
-  public Object create(
-    Class<?> specification) {
-
+  public <T> T create(
+    Class<T> specification) {
     return(create(specification, null));
   }
 
@@ -150,8 +148,8 @@ public abstract class MajiSPI implements MajiProvider {
    * @param specification the class to instance the object from.
    * @param arg the object to be passed as an argument.
    */
-  public Object create(
-    Class<?>  specification,
+  public <T> T create(
+    Class<T>  specification,
     Object arg) {
 
     Object[] args = { arg };
@@ -166,7 +164,7 @@ public abstract class MajiSPI implements MajiProvider {
    * @param specification the class to instance the object from.
    * @param args the array of arguments to passed to the constructor.
    */
-  public abstract Object create(
-    Class<?>    specification,
+  public abstract <T> T create(
+    Class<T>    specification,
     Object[] args);
 }

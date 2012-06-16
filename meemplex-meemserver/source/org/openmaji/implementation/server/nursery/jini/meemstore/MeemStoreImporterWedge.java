@@ -15,6 +15,7 @@ package org.openmaji.implementation.server.nursery.jini.meemstore;
 
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.Map.Entry;
 
 import net.jini.config.Configuration;
 import net.jini.config.ConfigurationProvider;
@@ -70,7 +71,7 @@ public class MeemStoreImporterWedge
 
   private ServiceDiscoveryManager serviceDiscoveryManager = null;
 
-  private static Class[] serviceInterfaces =
+  private static Class<?>[] serviceInterfaces =
     new Class[] { MeemStoreCallForward.class };
 
   private static ServiceTemplate serviceTemplate =
@@ -245,15 +246,11 @@ public class MeemStoreImporterWedge
 
         MeemContentClient meemContentClient = (MeemContentClient) target;
 
-        HashMap meemContents = meemStoreCallForward.getMeemContent(filter);
+        Map<MeemPath, MeemContent> meemContents = meemStoreCallForward.getMeemContent(filter);
 
-        Iterator iterator = meemContents.keySet().iterator();
-
-        while (iterator.hasNext()) {
-          MeemPath meemPath = (MeemPath) iterator.next();
-
-          MeemContent meemContent = (MeemContent) meemContents.get(meemPath);
-
+        for (Entry<MeemPath, MeemContent> contentEntry : meemContents.entrySet()) {
+          MeemPath meemPath = contentEntry.getKey();
+          MeemContent meemContent = contentEntry.getValue();
           meemContentClient.meemContentChanged(meemPath, meemContent);
         }
       }
@@ -278,17 +275,12 @@ public class MeemStoreImporterWedge
         MeemDefinitionClient meemDefinitionClient =
           (MeemDefinitionClient) target;
 
-        HashMap meemDefinitions =
+        Map<MeemPath, MeemDefinition> meemDefinitions =
           meemStoreCallForward.getMeemDefinition(filter);
 
-        Iterator iterator = meemDefinitions.keySet().iterator();
-
-        while (iterator.hasNext()) {
-          MeemPath meemPath = (MeemPath) iterator.next();
-
-          MeemDefinition meemDefinition =
-            (MeemDefinition) meemDefinitions.get(meemPath);
-
+        for (Entry<MeemPath, MeemDefinition> defEntry : meemDefinitions.entrySet()) {
+          MeemPath meemPath = defEntry.getKey();
+          MeemDefinition meemDefinition = defEntry.getValue();
           meemDefinitionClient.meemDefinitionChanged(meemPath, meemDefinition);
         }
       }

@@ -41,6 +41,7 @@ import org.openmaji.server.utility.*;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.space.meemstore.MeemContentClient;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
@@ -372,12 +373,9 @@ public class MeemStoreExporterWedge
 
     logger.log(Level.INFO, "meemDefinitionChanged(" + meemPath + ")");
 
-    Vector   zombies = new Vector();
-    Iterator iterator = meemStoreCallBacks.values().iterator();
-
-    while (iterator.hasNext()) {
-      MeemStoreCallBack meemStoreCallBack = (MeemStoreCallBack) iterator.next();
-
+    List<MeemStoreCallBack>   zombies = new ArrayList<MeemStoreCallBack>();
+    
+    for (MeemStoreCallBack meemStoreCallBack : meemStoreCallBacks.values()) {
       try {
         meemStoreCallBack.meemDefinitionChanged(meemPath, meemDefinition);
       }
@@ -388,10 +386,8 @@ public class MeemStoreExporterWedge
       }
     }
 
-    if (zombies.isEmpty() == false) {
-      iterator = zombies.iterator();
-
-      while (iterator.hasNext()) meemStoreCallBacks.remove(iterator.next());
+    for (MeemStoreCallBack zombie : zombies) {
+      meemStoreCallBacks.remove(zombie);
     }
   }
 
@@ -469,13 +465,13 @@ public class MeemStoreExporterWedge
 
 /* ---------- Synchronous: MeemContentClient ------------------------------- */
 
-  public HashMap getMeemContent(  // used by sendContent()
+  public Map<MeemPath,MeemContent> getMeemContent(  // used by sendContent()
     Filter filter)
     throws RemoteException{
 
-    PigeonHole pigeonHole = new PigeonHole();
+    PigeonHole<Map<MeemPath,MeemContent>> pigeonHole = new PigeonHole<Map<MeemPath,MeemContent>>();
 
-    HashMap meemContents = null;
+    Map<MeemPath,MeemContent> meemContents = null;
 
     MeemContentClient meemContentClient = (MeemContentClient)
       meemCore.getTargetFor(new MeemContentClientImpl(pigeonHole), MeemContentClient.class);
@@ -486,11 +482,16 @@ public class MeemStoreExporterWedge
     );
 
     try {
-      meemContents = (HashMap) pigeonHole.get(timeout);
+      meemContents = pigeonHole.get(timeout);
+    }
+    catch (ContentException ce) {
+        logger.log(Level.WARNING,
+          "ContentException: MeemStoreExporterWedge <- MeemStore: MeemContentClient",
+          ce
+        );
     }
     catch (TimeoutException timeoutException) {
       logger.log(Level.WARNING,
-        
         "Timeout: MeemStoreExporterWedge <- MeemStore: MeemContentClient",
         timeoutException
       );
@@ -502,13 +503,11 @@ public class MeemStoreExporterWedge
   private final class MeemContentClientImpl
     implements MeemContentClient, ContentClient {
 
-    private PigeonHole pigeonHole;
+    private PigeonHole<Map<MeemPath,MeemContent>> pigeonHole;
 
-    private HashMap meemContents = new HashMap();
+    private Map<MeemPath,MeemContent> meemContents = new HashMap<MeemPath,MeemContent>();
 
-    public MeemContentClientImpl(
-      PigeonHole pigeonHole) {
-
+    public MeemContentClientImpl(PigeonHole<Map<MeemPath,MeemContent>> pigeonHole) {
       this.pigeonHole = pigeonHole;
     }
 
@@ -534,13 +533,13 @@ public class MeemStoreExporterWedge
 
 /* ---------- Synchronous: MeemDefinitionClient ---------------------------- */
 
-  public HashMap getMeemDefinition(  // used by sendContent()
+  public Map<MeemPath,MeemDefinition> getMeemDefinition(  // used by sendContent()
     Filter filter)
     throws RemoteException{
 
-    PigeonHole pigeonHole = new PigeonHole();
+    PigeonHole<Map<MeemPath,MeemDefinition>> pigeonHole = new PigeonHole<Map<MeemPath,MeemDefinition>>();
 
-    HashMap meemDefinitions = null;
+    Map<MeemPath,MeemDefinition> meemDefinitions = null;
 
     MeemDefinitionClient meemDefinitionClient = (MeemDefinitionClient)
       meemCore.getTargetFor(new MeemDefinitionClientImpl(pigeonHole), MeemDefinitionClient.class);
@@ -552,11 +551,16 @@ public class MeemStoreExporterWedge
     );
 
     try {
-      meemDefinitions = (HashMap) pigeonHole.get(timeout);
+      meemDefinitions = pigeonHole.get(timeout);
     }
+    catch (ContentException ce) {
+        logger.log(Level.WARNING,
+          "Content Problem: MeemStoreExporterWedge <- MeemStore: MeemDefinitionClient",
+          ce
+        );
+      }
     catch (TimeoutException timeoutException) {
       logger.log(Level.WARNING,
-        
         "Timeout: MeemStoreExporterWedge <- MeemStore: MeemDefinitionClient",
         timeoutException
       );
@@ -568,13 +572,11 @@ public class MeemStoreExporterWedge
   private final class MeemDefinitionClientImpl
     implements MeemDefinitionClient, ContentClient {
 
-    private PigeonHole pigeonHole;
+    private PigeonHole<Map<MeemPath,MeemDefinition>> pigeonHole;
 
-    private HashMap meemDefinitions = new HashMap();
+    private Map<MeemPath,MeemDefinition> meemDefinitions = new HashMap<MeemPath,MeemDefinition>();
 
-    public MeemDefinitionClientImpl(
-      PigeonHole pigeonHole) {
-
+    public MeemDefinitionClientImpl(PigeonHole<Map<MeemPath,MeemDefinition>> pigeonHole) {
       this.pigeonHole = pigeonHole;
     }
 

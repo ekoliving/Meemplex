@@ -8,114 +8,88 @@
  */
 package org.openmaji.implementation.server.manager.thread;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  *
  */
-public class TaskRunner
-	extends Thread
-{	
-	private ArrayList	list = new ArrayList();
-	
-	long						taskCount = 0;
-	long						startTime;
-	long						busyTime;
-	
-	TaskRunner()
-	{
+public class TaskRunner extends Thread {
+	private Queue<Runnable> runnableList = new LinkedList<Runnable>();
+
+	long taskCount = 0;
+	long startTime;
+	long busyTime;
+
+	TaskRunner() {
 		this.start();
 	}
-	
-	void queue(
-		Runnable	runnable)
-	{
-		synchronized (list)
-		{
+
+	public void queue(Runnable runnable) {
+		synchronized (runnableList) {
 			taskCount++;
-			
-			list.add(runnable);
-			
-			list.notifyAll();
+			runnableList.add(runnable);
+			runnableList.notifyAll();
 		}
 	}
 
-	public void run()
-	{
+	public void run() {
 		startTime = System.currentTimeMillis();
-		
-		for (;;)
-		{
-			Runnable	runnable = null;
-		
-			synchronized (list)
-			{
-				if (list.size() > 0)
-				{
-					runnable = (Runnable)list.get(0);
-					list.remove(0);
-				}
+
+		for (;;) {
+			Runnable runnable = null;
+
+			synchronized (runnableList) {
+				runnable = runnableList.poll();
 			}
-			
-			if (runnable != null)
-			{
-				long	taskStartTime = System.currentTimeMillis();
-				
-				try
-				{
+
+			if (runnable != null) {
+				long taskStartTime = System.currentTimeMillis();
+
+				try {
 					runnable.run();
 				}
-				catch (Throwable e)
-				{
+				catch (Throwable e) {
 					// ignore
 				}
-				
+
 				busyTime = taskStartTime - System.currentTimeMillis();
 			}
-			else
-			{
-				synchronized (list)
-				{
-					try
-					{
-						list.wait();
+			else {
+				synchronized (runnableList) {
+					try {
+						runnableList.wait();
 					}
-					catch (InterruptedException e)
-					{
-						// ignore 
+					catch (InterruptedException e) {
+						// ignore
 					}
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * return the number of tasks that have been queued.
 	 */
-	public long getTaskCount()
-	{
+	public long getTaskCount() {
 		return taskCount;
 	}
-	
-	public long getStartTime()
-	{
+
+	public long getStartTime() {
 		return startTime;
 	}
-	
-	public long getBusyTime()
-	{
+
+	public long getBusyTime() {
 		return busyTime;
 	}
-	
-	public long getTasksWaiting()
-	{
-		long	waiting;
-		
-		synchronized (list)
-		{
-			waiting = list.size();
+
+	public long getTasksWaiting() {
+		long waiting;
+
+		synchronized (runnableList) {
+			waiting = runnableList.size();
 		}
-		
+
 		return waiting;
 	}
 }

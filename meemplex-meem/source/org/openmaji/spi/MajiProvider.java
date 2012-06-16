@@ -29,8 +29,7 @@ public interface MajiProvider {
    * 
    * @param specification the class to instance the object from.
    */
-  public Object create(
-    Class<?> specification);
+  public <T> T create(Class<T> specification);
 
   /**
    * Create an object from an underlying implementation where the constructor just takes
@@ -39,9 +38,7 @@ public interface MajiProvider {
    * @param specification the class to instance the object from.
    * @param arg the object to be passed as an argument.
    */
-  public Object create(
-    Class<?>  specification,
-    Object arg);
+  public <T> T create(Class<T>  specification, Object arg);
     
 	/**
 	 * Create an object from an underlying implementation where the constructor takes
@@ -50,7 +47,5 @@ public interface MajiProvider {
 	 * @param specification the class to instance the object from.
 	 * @param args the array of arguments to passed to the constructor.
 	 */
-  public Object create(
-    Class<?>    specification,
-    Object[] args);
+  public <T> T create(Class<T> specification, Object[] args);
 }

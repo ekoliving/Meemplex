@@ -34,6 +34,7 @@ import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.definition.MeemContent;
 import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceClient;
 import org.openmaji.system.meem.wedge.persistence.ManagedPersistenceHandler;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 
@@ -127,7 +128,10 @@ public class HyperSpaceExport implements ManagedPersistenceClient, MeemDefinitio
 
 				try {
 					exportedMeem.content = (MeemContent) contentHole.get(timeout);
-				} catch (TimeoutException ex) {
+				} catch (ContentException ex) {
+					logger.log(Level.INFO, "Content failure for MeemContent", ex);
+				}
+				catch (TimeoutException ex) {
 					logger.log(Level.INFO, "Timout waiting for MeemContent", ex);
 				}
 
@@ -147,6 +151,8 @@ public class HyperSpaceExport implements ManagedPersistenceClient, MeemDefinitio
 
 				try {
 					exportedMeem.definition = (MeemDefinition) definitionHole.get(timeout);
+				} catch (ContentException ex) {
+					logger.log(Level.INFO, "Content failure for MeemDefinition", ex);
 				} catch (TimeoutException ex) {
 					logger.log(Level.INFO, "Timeout waiting for MeemDefinition", ex);
 				}

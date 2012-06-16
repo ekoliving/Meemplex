@@ -14,9 +14,6 @@
  */
 package org.openmaji.implementation.server.space.hyperspace.utility;
 
-import java.util.Iterator;
-
-
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.definition.*;
@@ -26,6 +23,7 @@ import org.openmaji.server.helper.EssentialMeemHelper;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.space.meemstore.MeemDefinitionClient;
 import org.openmaji.system.space.meemstore.MeemStore;
 
@@ -57,22 +55,25 @@ public class MeemTypeChecker {
 	public static boolean checkMeem(String type, MeemPath meemPath) {
 		getMeemStore();
 
-		PigeonHole pigeonHole = new PigeonHole();
-		MeemDefinitionClientImpl definitionClient = new MeemDefinitionClientImpl(pigeonHole);
+		PigeonHole<MeemDefinition> pigeonHole = new PigeonHole<MeemDefinition>();
+		MeemDefinitionClient definitionClient = new MeemDefinitionClientImpl(pigeonHole);
 
-		Reference meemDefinitionClientReference =
+		Reference<MeemDefinitionClient> meemDefinitionClientReference =
 			Reference.spi.create("meemDefinitionClient", definitionClient, true, new ExactMatchFilter(meemPath));
 
 		meemStoreMeem.addOutboundReference(meemDefinitionClientReference, true);
 
 		try
 		{
-			MeemDefinition meemDefinition = (MeemDefinition) pigeonHole.get(timeout);
+			MeemDefinition meemDefinition = pigeonHole.get(timeout);
 
 			if (meemDefinition != null)
 			{
 				return checkDefinition(type, meemDefinition);
 			}
+		}
+		catch (ContentException ex) {
+			logger.log(Level.INFO, "Timeout waiting for MeemDefinition", ex);
 		}
 		catch (TimeoutException ex) {
 			logger.log(Level.INFO, "Timeout waiting for MeemDefinition", ex);
@@ -82,15 +83,10 @@ public class MeemTypeChecker {
 	}
 
 	public static boolean checkDefinition(String type, MeemDefinition definition) {
-		for (Iterator wedgeDefinitions = definition.getWedgeDefinitions().iterator(); wedgeDefinitions.hasNext();) {
-			WedgeDefinition wedgeDefinition = (WedgeDefinition) wedgeDefinitions.next();
-
-			for (Iterator facetDefinitions = wedgeDefinition.getFacetDefinitions().iterator(); facetDefinitions.hasNext();) {
-				FacetDefinition facetDefinition = (FacetDefinition) facetDefinitions.next();
-
+		for (WedgeDefinition wedgeDefinition : definition.getWedgeDefinitions()) {
+			for (FacetDefinition facetDefinition : wedgeDefinition.getFacetDefinitions()) {
 				if (facetDefinition.getFacetAttribute().isDirection(Direction.INBOUND)) {
 					String interfaceName = facetDefinition.getFacetAttribute().getInterfaceName();
-
 					if (interfaceName.equalsIgnoreCase(type)) {
 						return true;
 					}
@@ -102,7 +98,7 @@ public class MeemTypeChecker {
 
 	private static class MeemDefinitionClientImpl implements MeemDefinitionClient, ContentClient
 	{
-		public MeemDefinitionClientImpl(PigeonHole pigeonHole)
+		public MeemDefinitionClientImpl(PigeonHole<MeemDefinition> pigeonHole)
 		{
 			this.pigeonHole = pigeonHole;
 		}
@@ -130,7 +126,7 @@ public class MeemTypeChecker {
 			}
 		}
 
-		private PigeonHole pigeonHole;
+		private PigeonHole<MeemDefinition> pigeonHole;
 		private MeemDefinition meemDefinition = null;
 	}
 

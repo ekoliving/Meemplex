@@ -203,7 +203,7 @@ public class DynamicDeviceWedge implements Wedge {
 		public void run() {
 			if (running) {
 				checkLease();
-				ThreadManager.spi.create().queue(this, interval);
+				ThreadManager.spi.create().queue(this, System.currentTimeMillis()+interval);
 			}			
 		}
 	}

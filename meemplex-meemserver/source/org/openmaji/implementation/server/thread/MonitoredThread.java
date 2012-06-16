@@ -13,7 +13,6 @@ package org.openmaji.implementation.server.thread;
 import org.openmaji.implementation.server.Common;
 
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 

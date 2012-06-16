@@ -253,7 +253,9 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 	public void commence() {
 		try {
 			getSystemProperties();
-			startHTTPServer();
+			if (START_HTTP_SERVER) {
+				startHTTPServer();
+			}
 			determineInstalledMeemkits();
 			determineAvailableMeemkits();
 			startHyperSpaceResolver();
@@ -275,13 +277,15 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		jiniLookupConduit.stopLookup();
 		meemkitLCMDiscoveryStarted = false;
 
-		try {
-			server.stop();
+		if (server != null) {
+			try {
+				server.stop();
+			}
+			catch (Exception ex) {
+				errorHandlerConduit.thrown(ex);
+			}
 		}
-		catch (Exception ex) {
-			errorHandlerConduit.thrown(ex);
-		}
-
+		
 		for (DependencyAttribute dependencyAttribute : dependencyAttributes) {
 			dependencyHandlerConduit.removeDependency(dependencyAttribute);
 		}
@@ -939,6 +943,10 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		}
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	private void startHTTPServer() throws Exception {
 		// First determine what IP address the Jetty server should use
 		
@@ -1402,18 +1410,21 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 	}
 
 	
+	private static final Logger logger = Logger.getAnonymousLogger();
+
 	private static final String HTTP_SERVER_CONTEXT_PATH = "/meemkits";
 
 	private static final int INSTALL_REQUEST_ID = 1;
 
 	private static final int UPGRADE_REQUEST_ID = 2;
 
-	private static final Logger logger = Logger.getAnonymousLogger();
-
 	private static final boolean DEBUG = false;
 	
 	private static final boolean DISABLE = true;
 	
+	private static final boolean START_HTTP_SERVER = false;
+	
+
 
 	/** the amount of time in seconds to poll for new meemkits */
 	public static final String PROPERTY_MEEMKIT_MANAGER_POLL_NEW_MEEMKITS = "org.openmaji.meemkit.manager.newmeemkits.poll.seconds";

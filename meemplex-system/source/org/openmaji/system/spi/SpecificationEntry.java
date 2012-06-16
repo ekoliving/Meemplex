@@ -29,23 +29,30 @@ import java.lang.reflect.Method;
  * @version 1.0
  */
 
-public class SpecificationEntry {
+public class SpecificationEntry <T> {
 
 	private static String SPI_CLASSNAME = "$spi";
 
 	private String identifier = null; // It's okay for this to remain "null"
 
-	private Class<?> specification;
+	/**
+	 * Specification class.  An interface or abstract class.
+	 */
+	private Class<T> specification;
 
 	private SpecificationType specificationType;
 
-	private Class<?> implementation;
+	/**
+	 * Implementation class.  A class that extends or implements the specification class.
+	 */
+	private Class<T> implementation;
 
-	public SpecificationEntry(Class<?> specification, SpecificationType specificationType, Class<?> implementation) {
+	@SuppressWarnings("unchecked")
+	public SpecificationEntry(Class<T> specification, SpecificationType specificationType, Class<? extends T> implementation) {
 
 		this.specification = specification;
 		this.specificationType = specificationType;
-		this.implementation = implementation;
+		this.implementation = (Class<T>) implementation;
 
 		// ------------------------------------------------------------
 		// If <something>.spi.getIdentifier() is defined, then use it !
@@ -80,7 +87,7 @@ public class SpecificationEntry {
 		return (identifier);
 	}
 
-	public Class<?> getSpecification() {
+	public Class<T> getSpecification() {
 		return (specification);
 	}
 
@@ -88,7 +95,7 @@ public class SpecificationEntry {
 		return (specificationType);
 	}
 
-	public Class<?> getImplementation() {
+	public Class<T> getImplementation() {
 		return (implementation);
 	}
 

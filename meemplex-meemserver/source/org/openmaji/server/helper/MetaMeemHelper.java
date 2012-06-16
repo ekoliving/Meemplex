@@ -19,7 +19,6 @@ package org.openmaji.server.helper;
 import java.io.Serializable;
 
 import org.openmaji.implementation.server.manager.gateway.GatewayManagerWedge;
-import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.definition.DependencyAttribute;
 import org.openmaji.meem.definition.FacetAttribute;
@@ -33,6 +32,7 @@ import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.definition.MetaMeem;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 
 
 
@@ -56,15 +56,20 @@ public class MetaMeemHelper
 	{
 		PigeonHole<FacetAttribute> pigeonHole = new PigeonHole<FacetAttribute>();
 		MetaMeem metaMeemClient = new MetaMeemClient(pigeonHole, facetIdentifier);
-		Facet proxy = GatewayManagerWedge.getTargetFor(metaMeemClient, MetaMeem.class);
+		MetaMeem proxy = GatewayManagerWedge.getTargetFor(metaMeemClient, MetaMeem.class);
 
-		Reference metaMeemClientReference = Reference.spi.create("metaMeemClient", proxy, true);
+		Reference<MetaMeem> metaMeemClientReference = Reference.spi.create("metaMeemClient", proxy, true);
 
 		try
 		{
 			meem.addOutboundReference(metaMeemClientReference, true);
 
 			return pigeonHole.get(TIMEOUT);
+		}
+		catch (ContentException contentException)
+		{
+			// If no response, then return "null", as expected
+			return null;
 		}
 		catch (TimeoutException timeoutException)
 		{
@@ -81,15 +86,20 @@ public class MetaMeemHelper
 	{
 		PigeonHole<MeemDefinition> pigeonHole = new PigeonHole<MeemDefinition>();
 		MetaMeem metaMeemClient = new MeemDefinitionClient(pigeonHole);
-		Facet proxy = GatewayManagerWedge.getTargetFor(metaMeemClient, MetaMeem.class);
+		MetaMeem proxy = GatewayManagerWedge.getTargetFor(metaMeemClient, MetaMeem.class);
 
-		Reference metaMeemClientReference = Reference.spi.create("metaMeemClient", proxy, true);
+		Reference<MetaMeem> metaMeemClientReference = Reference.spi.create("metaMeemClient", proxy, true);
 
 		try
 		{
 			meem.addOutboundReference(metaMeemClientReference, true);
 
 			return pigeonHole.get(TIMEOUT);
+		}
+		catch (ContentException contentException)
+		{
+			// If no response, then return "null", as expected
+			return null;
 		}
 		catch (TimeoutException timeoutException)
 		{

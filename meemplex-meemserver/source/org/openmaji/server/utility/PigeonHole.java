@@ -33,6 +33,8 @@
 
 package org.openmaji.server.utility;
 
+import org.openmaji.system.meem.wedge.reference.ContentException;
+
 /**
  * <p>
  * A PigeonHole is a mutex protected holder for a single Object.
@@ -58,17 +60,30 @@ package org.openmaji.server.utility;
  */
 
 public final class PigeonHole<T> {
+	
+	public static final String PROPERTY_TIMEOUT = "org.openmaji.server.pigeonhole.timeout";
+	
+	/**
+	 * PigeonHole Timeout value
+	 */
+	private static final long timeout = Long.parseLong(System.getProperty(PigeonHole.PROPERTY_TIMEOUT, "60000"));
+
 	/**
 	 * Object that is to be passed between asynchronous threads
 	 */
 	private T pigeon = null;
 
+	private Exception exception = null;
+
 	private boolean received = false;
 
 	private int waitingThreads = 0;
+	
 
-	// private int waitingMajiThreads = 0;
-
+	public synchronized T get() throws ContentException, TimeoutException {
+		return get(timeout);
+	}
+	
 	/**
 	 * Retrieve an Object from the PigeonHole. If the PigeonHole is empty, then wait until it is filled.
 	 * 
@@ -79,7 +94,7 @@ public final class PigeonHole<T> {
 	 *             When the time to wait has expired
 	 */
 
-	public synchronized T get(long timeout) throws TimeoutException {
+	public synchronized T get(long timeout) throws ContentException, TimeoutException {
 		if (timeout < 1) {
 			throw new IllegalArgumentException("Timeout must be greater than zero");
 		}
@@ -95,9 +110,17 @@ public final class PigeonHole<T> {
 			do {
 				try {
 					this.wait(remaining);
+					if (exception != null) {
+						if (exception instanceof TimeoutException) {
+							throw (TimeoutException) exception;
+						}
+						else {
+							throw new ContentException(exception);
+						}
+					}
 				}
 				catch (InterruptedException interruptedException) {
-					System.err.println("Pigeon interrupted. Still going to wait.");
+					throw new ContentException(exception);
 				}
 				remaining = end - System.currentTimeMillis();
 			} while (!received && remaining > 0);
@@ -127,19 +150,13 @@ public final class PigeonHole<T> {
 			throw new RuntimeException("Pigeons may only be used once!");
 		}
 
-		received = true;
-
+		this.received = true;
 		this.pigeon = pigeon;
-
-		// boolean isMajiThread = PoolingThreadManagerWedge.isMajiThread();
-		//
-		// if (isMajiThread && waitingMajiThreads > 0)
-		// {
-		// PoolingThreadManagerWedge.exitContinuation(this);
-		// }
-		// else
-		// {
 		this.notify();
-		// }
+	}
+	
+	public synchronized void exception(Exception e) {
+		this.exception = e;
+		notifyAll();
 	}
 }

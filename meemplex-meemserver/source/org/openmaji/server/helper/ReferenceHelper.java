@@ -20,11 +20,11 @@ import org.openmaji.meem.MeemClient;
 import org.openmaji.meem.filter.FacetDescriptor;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.meem.wedge.reference.Reference;
+import org.openmaji.server.utility.FacetCallbackTask;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.gateway.AsyncCallback;
-import org.openmaji.system.manager.thread.ThreadManager;
-import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,19 +38,11 @@ import java.util.logging.Logger;
  * </p>
  * 
  * @author Andy Gelme
+ * @author Warren Bloomer
  * @version 1.0
  */
 
 public class ReferenceHelper {
-	/*
-	 * PigeonHole Timeout value
-	 */
-	public static final String PIGEONHOLE_TIMEOUT = "org.openmaji.server.pigeonhole.timeout";
-
-	private static final long timeout = Long.parseLong(System.getProperty(PIGEONHOLE_TIMEOUT, "30000"));
-
-	/** Logger for the class */
-	private static final Logger logger = Logger.getAnonymousLogger();
 
 	/**
 	 * Get the proxied inbound facet for the Meem.
@@ -60,24 +52,22 @@ public class ReferenceHelper {
 	 * @param specification
 	 * @return
 	 */
-	public static <T extends Facet> T getTarget(Meem meem, String facetIdentifier, Class<T> specification) {
-		PigeonHole<T> pigeonHole = new PigeonHole<T>();
-		MeemClientImpl<T> meemClient = new MeemClientImpl<T>(pigeonHole);
-		Facet proxy = GatewayManagerWedge.getTargetFor(meemClient, MeemClient.class);
-		Filter filter = new FacetDescriptor(facetIdentifier, specification);
-		Reference targetReference = Reference.spi.create("meemClientFacet", proxy, true, filter);
+	public static <T extends Facet> T getTarget(Meem meem, String facetName, Class<T> specification) {
+		final PigeonHole<T> pigeonHole = new PigeonHole<T>();
 
-		meem.addOutboundReference(targetReference, true);
-
+		Filter filter = new FacetDescriptor(facetName, specification);
+		new GetTargetTask<T>(meem, "meemClientFacet", filter, pigeonHole);
+		
 		try {
 			return pigeonHole.get(timeout);
+		}
+		catch (ContentException ex) {
+			logger.log(Level.INFO, "ContentException waiting for Reference", ex);
+			return null;
 		}
 		catch (TimeoutException ex) {
 			logger.log(Level.INFO, "Timeout waiting for Reference", ex);
 			return null;
-		}
-		finally {
-			GatewayManagerWedge.revokeTarget(proxy, meemClient);
 		}
 	}
 
@@ -89,97 +79,47 @@ public class ReferenceHelper {
 	 * @param specification
 	 * @param callback
 	 */
-	public static <T extends Facet> void getTarget(Meem meem, String facetIdentifier, Class<T> specification, AsyncCallback<T> callback) {
-		MeemClientCallback<T> meemClient = new MeemClientCallback<T>(callback);
-		meemClient.receive(meem, facetIdentifier, specification);
+	public static <T extends Facet> void getTarget(Meem meem, String facetName, Class<T> specification, AsyncCallback<T> callback) {
+		Filter filter = new FacetDescriptor(facetName, specification);
+		new GetTargetTask<T>(meem, "meemClientFacet", filter, callback);
 	}
-
 	
-	public static class MeemClientCallback<T extends Facet> implements MeemClient, ContentClient {
-		private AsyncCallback<T> callback;
-		private MeemClient clientProxy;
-		private T result = null;
-
-		public MeemClientCallback(AsyncCallback<T> callback) {
-			this.callback = callback;
+	/**
+	 * Used to get a reference asynchronously.
+	 * 
+	 * @param <T>
+	 */	
+	private static class GetTargetTask <T extends Facet> extends FacetCallbackTask<MeemClient, T> {
+		public GetTargetTask(Meem meem, String facetName, Filter filter, AsyncCallback<T> callback) {
+			super(meem, facetName, filter, callback);
 		}
 
-		public void receive(Meem meem, String facetIdentifier, Class<T> specification) {
-			clientProxy = GatewayManagerWedge.getTargetFor(this, MeemClient.class);
-			Filter filter = new FacetDescriptor(facetIdentifier, specification);
-			Reference targetReference = Reference.spi.create("meemClientFacet", clientProxy, true, filter);
-
-			meem.addOutboundReference(targetReference, true);
-
-			Runnable doTimeout = new Runnable() {
-				public void run() {
-					logger.log(Level.INFO, "Timeout waiting for Reference");
-					revokeTarget();
-				}
-			};
-			ThreadManager.spi.create().queue(doTimeout, timeout);
+		public GetTargetTask(Meem meem, String facetName, Filter filter, PigeonHole<T> pigeonHole) {
+			super(meem, facetName, filter, pigeonHole);
 		}
-
-		public void referenceAdded(Reference reference) {
-			result = reference.getTarget();
+		
+		@Override
+		protected MeemClient getFacetListener() {
+			return (MeemClient) new MeemClientFacetListener();
 		}
-
-		public void referenceRemoved(Reference reference) {
-			result = null;
-		}
-
-		public void contentSent() {
-			if (callback != null) {
-				callback.result(result);
-				callback = null;
-				revokeTarget();
+		
+		class MeemClientFacetListener extends FacetListener implements MeemClient {
+			@SuppressWarnings("unchecked")
+			public void referenceAdded(Reference<?> reference) {
+				setResult((T)reference.getTarget());
 			}
-		}
-
-		public void contentFailed(String reason) {
-			if (callback != null) {
-				callback.exception(new Exception(reason));
-				callback = null;
-				revokeTarget();
-			}
-		}
-
-		private void revokeTarget() {
-			if (clientProxy != null) {
-				GatewayManagerWedge.revokeTarget(clientProxy, this);
-				clientProxy = null;
+			public void referenceRemoved(Reference<?> reference) {
+				setResult(null);
 			}
 		}
 	}
 
-	public static class MeemClientImpl<T> implements MeemClient, ContentClient {
-		private PigeonHole<T> pigeonHole;
-		private T result = null;
+	/**
+	 * PigeonHole Timeout value
+	 */
+	private static final long timeout = Long.parseLong(System.getProperty(PigeonHole.PROPERTY_TIMEOUT, "60000"));
 
-		public MeemClientImpl(PigeonHole<T> pigeonHole) {
-			this.pigeonHole = pigeonHole;
-		}
+	/** Logger for the class */
+	private static final Logger logger = Logger.getAnonymousLogger();
 
-		public void referenceAdded(Reference reference) {
-			result = reference.getTarget();
-		}
-
-		public void referenceRemoved(Reference reference) {
-			result = null;
-		}
-
-		public void contentSent() {
-			if (pigeonHole != null) {
-				pigeonHole.put(result);
-				pigeonHole = null;
-			}
-		}
-
-		public void contentFailed(String reason) {
-			if (pigeonHole != null) {
-				pigeonHole.put(null);
-				pigeonHole = null;
-			}
-		}
-	}
 }

@@ -18,7 +18,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.openmaji.implementation.server.manager.gateway.GatewayManagerWedge;
-import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.filter.ExactMatchFilter;
 import org.openmaji.meem.filter.Filter;
@@ -26,10 +25,10 @@ import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
 
-import java.util.logging.Level;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,18 +76,21 @@ public class CategoryHelper {
 	 * @return Hashtable of CategoryEntries
 	 */
 
-	@SuppressWarnings("unchecked")
 	public static Map<String, CategoryEntry> getCategoryEntries(Meem categoryMeem) {
-		PigeonHole pigeonHole = new PigeonHole();
+		PigeonHole<Map<String, CategoryEntry>> pigeonHole = new PigeonHole<Map<String, CategoryEntry>>();
 		CategoryClient categoryClient = new AllEntriesCallback(pigeonHole);
-		Facet proxy = GatewayManagerWedge.getTargetFor(categoryClient, CategoryClient.class);
+		CategoryClient proxy = GatewayManagerWedge.getTargetFor(categoryClient, CategoryClient.class);
 
-		Reference reference = Reference.spi.create(DEFAULT_CATEGORY_OUTBOUND_FACET_IDENTIFIER, proxy, true);
+		Reference<CategoryClient> reference = Reference.spi.create(DEFAULT_CATEGORY_OUTBOUND_FACET_IDENTIFIER, proxy, true);
 
 		categoryMeem.addOutboundReference(reference, true);
 
 		try {
-			return (Map<String, CategoryEntry>) pigeonHole.get(TIMEOUT);
+			return (Map<String, CategoryEntry>) pigeonHole.get(timeout);
+		}
+		catch (ContentException e) {
+			logger.log(Level.INFO, "ContentException waiting for CategoryEntries", e);
+			return null;
 		}
 		catch (TimeoutException e) {
 			logger.log(Level.INFO, "Timeout waiting for CategoryEntries", e);
@@ -99,18 +101,28 @@ public class CategoryHelper {
 		}
 	}
 
+	/**
+	 * 
+	 * @param categoryMeem
+	 * @param entryName
+	 * @return
+	 */
 	public static CategoryEntry getCategoryEntry(Meem categoryMeem, String entryName) {
-		PigeonHole pigeonHole = new PigeonHole();
+		PigeonHole<CategoryEntry> pigeonHole = new PigeonHole<CategoryEntry>();
 		CategoryClient categoryClient = new SingleEntryCallback(pigeonHole);
-		Facet proxy = GatewayManagerWedge.getTargetFor(categoryClient, CategoryClient.class);
+		CategoryClient proxy = GatewayManagerWedge.getTargetFor(categoryClient, CategoryClient.class);
 		Filter filter = new ExactMatchFilter(entryName);
 
-		Reference reference = Reference.spi.create(DEFAULT_CATEGORY_OUTBOUND_FACET_IDENTIFIER, proxy, true, filter);
+		Reference<CategoryClient> reference = Reference.spi.create(DEFAULT_CATEGORY_OUTBOUND_FACET_IDENTIFIER, proxy, true, filter);
 
 		categoryMeem.addOutboundReference(reference, true);
 
 		try {
-			return (CategoryEntry) pigeonHole.get(TIMEOUT);
+			return pigeonHole.get(timeout);
+		}
+		catch (ContentException e) {
+			logger.log(Level.INFO, "ContentException waiting for CategoryEntry", e);
+			return null;
 		}
 		catch (TimeoutException e) {
 			logger.log(Level.INFO, "Timeout waiting for CategoryEntry", e);
@@ -122,7 +134,7 @@ public class CategoryHelper {
 	}
 
 	public static class AllEntriesCallback implements CategoryClient, ContentClient {
-		public AllEntriesCallback(PigeonHole pigeonHole) {
+		public AllEntriesCallback(PigeonHole<Map<String, CategoryEntry>> pigeonHole) {
 			this.pigeonHole = pigeonHole;
 		}
 
@@ -153,13 +165,13 @@ public class CategoryHelper {
 			}
 		}
 
-		private PigeonHole pigeonHole;
+		private PigeonHole<Map<String, CategoryEntry>> pigeonHole;
 
 		private Hashtable<String, CategoryEntry> allEntries = new Hashtable<String, CategoryEntry>();
 	};
 
 	public static class SingleEntryCallback implements CategoryClient, ContentClient {
-		public SingleEntryCallback(PigeonHole pigeonHole) {
+		public SingleEntryCallback(PigeonHole<CategoryEntry> pigeonHole) {
 			this.pigeonHole = pigeonHole;
 		}
 
@@ -187,12 +199,12 @@ public class CategoryHelper {
 			}
 		}
 
-		private PigeonHole pigeonHole;
+		private PigeonHole<CategoryEntry> pigeonHole;
 
 		private CategoryEntry singleEntry = null;
 	};
 
-	private static final long TIMEOUT = Long.parseLong(System.getProperty(ReferenceHelper.PIGEONHOLE_TIMEOUT, "30000"));
+	private static final long timeout = Long.parseLong(System.getProperty(PigeonHole.PROPERTY_TIMEOUT, "60000"));
 
 	private static final Logger logger = Logger.getAnonymousLogger();
 }

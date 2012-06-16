@@ -26,7 +26,6 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.server.helper.LifeCycleManagerHelper;
 import org.openmaji.server.helper.ReferenceHelper;
 import org.openmaji.server.presentation.PatternGroupWedge;
-import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.openmaji.system.meemkit.core.MeemkitEntryDescriptor;
 import org.openmaji.system.meemkit.core.ToolkitCategoryEntry;
@@ -382,9 +381,24 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 	 *            The toolkit category entry
 	 */
 
-	private void createToolkitCategory(String path, String resourceClassName, ToolkitCategoryEntry entry) {
+	private void createToolkitCategory(final String path, final String resourceClassName, final ToolkitCategoryEntry entry) {
 		Class<?>[] wedges = new Class[] { VariableMapWedge.class, CategoryWedge.class, PatternGroupWedge.class };
+		
 		Meem meem = LifeCycleManagerHelper.assembleMeem(wedges, LifeCycleState.READY, LifeCycleState.READY, path);
+		handleToolkitCategoryMeem(path, resourceClassName, entry, meem);
+		/*
+		LifeCycleManagerHelper.assembleMeem(wedges, LifeCycleState.READY, LifeCycleState.READY, path, new AsyncCallback<Meem>() {
+			public void result(Meem toolkitCategoryMeem) {
+				handleToolkitCategoryMeem(path, resourceClassName, entry, toolkitCategoryMeem);
+			}
+			public void exception(Exception e) {
+				logger.log(Level.INFO, "Problem getting category for toolkit path " + path);
+			}
+		});
+		*/
+	}
+	
+	private void handleToolkitCategoryMeem(String path, String resourceClassName, ToolkitCategoryEntry entry, Meem meem) {
 		if (meem == null) {
 			Exception ex = new Exception("LifeCycleManagerHelper returned null for assembleMeem() - category entry " + entry.getName());
 			errorHandlerConduit.thrown(ex);
@@ -413,10 +427,12 @@ public class MeemPatternInstallerWedge implements Wedge, MeemPatternControl {
 			if (icon != null && icon.length() > 0) {
 				icons.setSmallIcon(re.extract(icon));
 			}
+			// TODO do this asynchronously
 			VariableMap variableMap = (VariableMap) ReferenceHelper.getTarget(meem, "variableMap", VariableMap.class);
 			variableMap.update(InterMajik.ICONIC_PRESENTATION_KEY, icons);
 		}
 
+		// TODO do this asynchronously
 		ConfigurationHandler ch = (ConfigurationHandler) ReferenceHelper.getTarget(meem, "configurationHandler", ConfigurationHandler.class);
 		ConfigurationIdentifier ci = new ConfigurationIdentifier("MeemSystemWedge", "meemIdentifier");
 		ch.valueChanged(ci, entry.getName());

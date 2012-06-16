@@ -45,9 +45,11 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 		}
 
 		public void queue(Runnable runnable, long absoluteTime) {
+			// Scheduler thread should never call this
 		}
 
 		public void cancel(Runnable runnable) {
+			// Scheduler thread should never call this
 		}
 	});
 
@@ -64,14 +66,6 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 	private static int activeThreadCount;
 
 	private static int availableThreadCount;
-
-//	private static class ExitContinuation extends ThreadLocal<PigeonHole> {
-//		public PigeonHole initialValue() {
-//			return null;
-//		}
-//	}
-
-	//private static ExitContinuation exitContinuation = new ExitContinuation();
 
 	public static void startup() {
 		String activeThreadProperty = System.getProperty(ThreadManager.PROPERTY_THREADMANAGER_ACTIVE_THREADS);
@@ -190,17 +184,6 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 		// TODO cancel the queued job
 	}
 
-//	public static void exitContinuation(final PigeonHole pigeonHole) {
-//		Runnable runnable = new Runnable() {
-//			public void run() {
-//				exitContinuation.set(pigeonHole);
-//			}
-//		};
-//
-//		// NB: Don't need to secure this Runnable
-//		doQueuedRunnable(runnable);
-//	}
-
 	public static boolean isMajiThread() {
 		return Thread.currentThread().getThreadGroup() == poolThreadGroup;
 	}
@@ -209,28 +192,10 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 		public void run() {
 			for (;;) {
 				
-//				PigeonHole pigeonHole = exitContinuation.get();
-//				if (pigeonHole != null) {
-//					exitContinuation.set(null);
-//					synchronized (pigeonHole) {
-//						pigeonHole.notify();
-//					}
-//				}
-
 				Runnable runnable = null;
 
 				synchronized (readyRunnables) {
-//					if (pigeonHole == null) {
-						--activeThreadCount;
-//					}
-//					else 
-//					if (totalThreadCount <= MINIMUM_POOL_THREADS) {
-//						++availableThreadCount;
-//					}
-//					else {
-//						--totalThreadCount;
-//						break;
-//					}
+					--activeThreadCount;
 
 					while (activeThreadCount >= ACTIVE_THREADS || readyRunnables.isEmpty()) {
 						if (shouldExit && activeThreadCount == 0) {
@@ -248,7 +213,7 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 
 					++activeThreadCount;
 
-					runnable = (Runnable) readyRunnables.removeFirst();
+					runnable = readyRunnables.removeFirst();
 				}
 
 				if (DiagnosticLog.DIAGNOSE) {

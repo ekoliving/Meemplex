@@ -28,14 +28,14 @@ public interface MeemClient extends Facet {
 	 * 
 	 * @param reference <code>Reference</code> that was added. 
 	 */
-	public void referenceAdded(Reference reference);
+	public void referenceAdded(Reference<?> reference);
 
 	/**
 	 * Report that a previously-added <code>Reference</code> has been removed.
 	 * 
 	 * @param reference <code>Reference</code> that was removed. 
 	 */
-	public void referenceRemoved(Reference reference);
+	public void referenceRemoved(Reference<?> reference);
 
 
 /* ---------- Nested class for SPI ----------------------------------------- */

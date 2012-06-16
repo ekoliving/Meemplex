@@ -18,12 +18,16 @@ import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.definition.Direction;
 import org.openmaji.meem.filter.FacetFilter;
+import org.openmaji.meem.filter.Filter;
 import org.openmaji.meem.wedge.reference.Reference;
+import org.openmaji.server.utility.FacetCallbackTask;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
+import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.meem.FacetClient;
 import org.openmaji.system.meem.FacetItem;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 
 
 import java.util.logging.Level;
@@ -61,33 +65,58 @@ public class MeemHelper
 			throw new RuntimeException("meem cannot be null");
 		}
 
-		PigeonHole<Boolean> pigeonHole = new PigeonHole<Boolean>();
+		final PigeonHole<Boolean> pigeonHole = new PigeonHole<Boolean>();
+
+//		new FacetClientTask(meem, "facetClientFacet", filter, pigeonHole);
+		
 		FacetClient facetClient = new FacetClientCallback(pigeonHole);
 		
 		// get a non-blocking target
-		Facet proxy = GatewayManagerWedge.getTargetFor(facetClient, FacetClient.class);
-		
-		final Reference meemReference = Reference.spi.create("facetClientFacet", proxy, true, filter);
-
+		FacetClient proxy = GatewayManagerWedge.getTargetFor(facetClient, FacetClient.class);
+		final Reference<FacetClient> meemReference = Reference.spi.create("facetClientFacet", proxy, true, filter);
 		meem.addOutboundReference(meemReference, true);
 
 		try
 		{
-			Boolean found = (Boolean) pigeonHole.get(timeout);
-
+			Boolean found = pigeonHole.get();
 			return found.booleanValue();
+		}
+		catch (ContentException e)
+		{
+			logger.log(Level.INFO, "Content exception waiting for content for meemPath: " + meem.getMeemPath(), e);
+			return false;
 		}
 		catch (TimeoutException e)
 		{
 			logger.log(Level.INFO, "Timeout waiting for content for meemPath: " + meem.getMeemPath(), e);
 			return false;			
 		}
-		finally
-		{
-			GatewayManagerWedge.revokeTarget(proxy, facetClient);
-		}
 	}
 
+	
+	private static class FacetClientTask extends FacetCallbackTask<FacetClient, Boolean>{
+		public FacetClientTask(Meem meem, String facetName, Filter filter, AsyncCallback<Boolean> callback) {
+			super(meem, facetName, filter, callback);
+		}
+		
+		public FacetClientTask(Meem meem, String facetName, Filter filter, PigeonHole<Boolean> pigeonHole) {
+			super(meem, facetName, filter, pigeonHole);
+		}
+		
+		protected FacetClient getFacetListener() {
+			return new FacetClientListener();
+		}
+		
+		private class FacetClientListener extends FacetListener implements FacetClient {
+			public void facetsAdded(FacetItem[] facetItems) {
+				boolean found = (facetItems != null && facetItems.length > 0);
+				setResult(found);
+			}
+			public void facetsRemoved(FacetItem[] facetItems) {
+			}
+		}
+	}
+	
 	public static class FacetClientCallback implements FacetClient, ContentClient {
 
 		public FacetClientCallback(PigeonHole<Boolean> pigeonHole)
@@ -131,8 +160,6 @@ public class MeemHelper
 		private PigeonHole<Boolean> pigeonHole;
 		private Boolean found = Boolean.FALSE;
 	}
-
-	private static final long timeout = 60000;
 
 	/** Logger for the class */
 	private static final Logger logger = Logger.getAnonymousLogger();

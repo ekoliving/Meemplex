@@ -15,7 +15,6 @@ import java.net.URL;
 
 import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.manager.lifecycle.meemkit.MeemkitClassloaderMonitor;
-import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClient;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleTransition;
@@ -25,6 +24,7 @@ import org.openmaji.server.helper.ReferenceHelper;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.gateway.ServerGateway;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.openmaji.system.meemkit.core.MeemkitManager;
 
@@ -87,8 +87,8 @@ public class MeemSpaceCreateUtility
       {
         ServerGateway serverGateway = ServerGateway.spi.create();
         LifeCycleClient client = new MyLifeCycleClient(readyPigeonHole);
-        Facet proxy = serverGateway.getTargetFor(client, LifeCycleClient.class);
-        Reference reference = Reference.spi.create("lifeCycleClient", proxy, true, null);
+        LifeCycleClient proxy = serverGateway.getTargetFor(client, LifeCycleClient.class);
+        Reference<LifeCycleClient> reference = Reference.spi.create("lifeCycleClient", proxy, true, null);
         meemkitManagerMeem.addOutboundReference(reference, false);
       }
     };
@@ -99,6 +99,10 @@ public class MeemSpaceCreateUtility
     {
     	// wait to receive LifeCycleClient
       readyPigeonHole.get(15000);
+    }
+    catch ( ContentException ex )
+    {
+      throw new IOException("Content Exception waiting for the MeemkitManager to go READY");
     }
     catch ( TimeoutException ex )
     {
@@ -147,8 +151,8 @@ public class MeemSpaceCreateUtility
         ServerGateway serverGateway = ServerGateway.spi.create();
         PigeonHole<String> pigeonHole = new PigeonHole<String>();
         MeemkitClassloaderMonitor client = new MyMeemkitClassloaderMonitor(pigeonHole);
-        Facet proxy = serverGateway.getTargetFor(client, MeemkitClassloaderMonitor.class);
-        Reference reference = Reference.spi.create("meemkitClassloaderMonitorClient", proxy, true);
+        MeemkitClassloaderMonitor proxy = serverGateway.getTargetFor(client, MeemkitClassloaderMonitor.class);
+        Reference<MeemkitClassloaderMonitor> reference = Reference.spi.create("meemkitClassloaderMonitorClient", proxy, true);
         meemkitManagerMeem.addOutboundReference(reference, false);
 
         numberInstalled++;
@@ -167,9 +171,13 @@ public class MeemSpaceCreateUtility
 	        {
 	          pigeonHole.get(60000);
 	        }
+	        catch ( ContentException ex )
+	        {
+	          throw new IOException("ContentException waiting for " + meemkitUrl, ex);
+	        }
 	        catch ( TimeoutException ex )
 	        {
-	          throw new IOException("Timeout waiting for " + meemkitUrl);
+	          throw new IOException("Timeout waiting for " + meemkitUrl, ex);
 	        }
 	        finally
 	        {

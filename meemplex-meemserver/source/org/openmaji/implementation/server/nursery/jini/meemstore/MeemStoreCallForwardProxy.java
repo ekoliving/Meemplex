@@ -15,7 +15,7 @@ package org.openmaji.implementation.server.nursery.jini.meemstore;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.HashMap;
+import java.util.Map;
 
 
 import org.openmaji.meem.MeemPath;
@@ -73,14 +73,14 @@ public class MeemStoreCallForwardProxy
     meemStoreCallForwardServer.destroyMeem(meemPath);
   }
 
-  public HashMap getMeemContent(
+  public Map<MeemPath, MeemContent> getMeemContent(
     Filter filter)
     throws RemoteException{
 
     return(meemStoreCallForwardServer.getMeemContent(filter));
   }
 
-  public HashMap getMeemDefinition(
+  public Map<MeemPath, MeemDefinition> getMeemDefinition(
     Filter filter)
     throws RemoteException{
 

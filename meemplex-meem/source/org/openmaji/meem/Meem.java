@@ -95,14 +95,14 @@ public interface Meem extends Facet, DependencyHandler /*, Lifecycle */ {
 	 * @param automaticRemove If this is true, the reference will be removed immediately
 	 * after initial content is sent to it.
 	 */
-	public void addOutboundReference(Reference reference, boolean automaticRemove);
+	public void addOutboundReference(Reference<?> reference, boolean automaticRemove);
 
 	/**
 	 * Remove a previously-added Reference from one of this Meem's outbound facets.
 	 *
 	 * @param reference Reference to remove
 	 */
-	public void removeOutboundReference(Reference reference);
+	public void removeOutboundReference(Reference<?> reference);
 
 
 	/**

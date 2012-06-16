@@ -13,8 +13,8 @@ import java.lang.ref.WeakReference;
 /**
  * @author mg
  */
-public interface WeakReferenceProvider {
+public interface WeakReferenceProvider <T> {
 
-	public WeakReference obtainWeakReference();
+	public WeakReference<T> obtainWeakReference();
 	
 }

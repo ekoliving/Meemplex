@@ -9,9 +9,10 @@
 
 package org.openmaji.implementation.server.thread;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
+import java.util.Set;
 
 import org.openmaji.implementation.server.Common;
 
@@ -36,8 +37,10 @@ public class ThreadPool
   int     counter       = 0;                 // thread counter for identification of threads
   long    maxWaitTime   = 5000;              // maximum length of time to wait for a Thread from the ThreadPool
   int     maxThreads    = 10;                // maximum number of threads in the pool
-  Vector  freeThreads   = new Vector();      // a list of threads that are available
-  HashSet usedThreads   = new HashSet();     // the set of threads that are currently allocated
+  
+  List<MonitoredThread>  freeThreads   = new ArrayList<MonitoredThread>();      // a list of threads that are available
+  
+  Set<MonitoredThread> usedThreads   = new HashSet<MonitoredThread>();     // the set of threads that are currently allocated
   PoolMonitor monitor   = new PoolMonitor(); // for monitoring the used threads in the pool
   Object  syncObject    = new Object();      // for synchronization
 
@@ -156,7 +159,7 @@ public class ThreadPool
       long lastTime = thisTime;
       synchronized (syncObject) {
         if (freeThreads.size() > 0) {
-          thread = (MonitoredThread)freeThreads.remove(0);
+          thread = freeThreads.remove(0);
           usedThreads.add(thread);
           syncObject.notifyAll();
         }
@@ -335,9 +338,7 @@ public class ThreadPool
     {
       // check for threads that are taking too long
       long currentTime = System.currentTimeMillis();
-      Iterator iter = usedThreads.iterator();
-      while (iter.hasNext()) {
-        MonitoredThread thread = (MonitoredThread)iter.next();
+      for (MonitoredThread thread : usedThreads) {
         if (thread.isAlive()) {
           long reasonableTime = thread.getReasonableTime();
           if (reasonableTime > 0) {

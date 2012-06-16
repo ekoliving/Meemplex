@@ -108,7 +108,7 @@ functionEnd:
 void scriptLoaded(String script) {
   scriptLoadedSet.add(script);
 
-  printToLog("Script loaded: " + script);
+  //printToLog("Script loaded: " + script);
 }
 
 /*

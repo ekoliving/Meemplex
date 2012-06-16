@@ -21,6 +21,7 @@ import org.openmaji.server.helper.ReferenceHelper;
 import org.openmaji.server.utility.PigeonHole;
 import org.openmaji.server.utility.TimeoutException;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
+import org.openmaji.system.meem.wedge.reference.ContentException;
 
 
 /**
@@ -43,7 +44,7 @@ public class CacheHelper {
 
 		CacheClientImpl cacheClient = new CacheClientImpl();
 
-		Reference cacheReference = Reference.spi.create("cacheClient", cacheClient, false);
+		Reference<CacheClient> cacheReference = Reference.spi.create("cacheClient", (CacheClient)cacheClient, false);
 
 		cacheMeem.addOutboundReference(cacheReference, false);
 
@@ -61,30 +62,30 @@ public class CacheHelper {
 	}
 
 	public Object remove(Object key) {
-		CacheClientImpl cacheClient = new CacheClientImpl();
+		CacheClient cacheClient = new CacheClientImpl();
 
-		Reference cacheReference = Reference.spi.create("cacheClient", cacheClient, false);
+		Reference<CacheClient> cacheReference = Reference.spi.create("cacheClient", cacheClient, false);
 
 		cacheMeem.addOutboundReference(cacheReference, false);
 
 		cache.remove(key);
 
-		Object value = cacheClient.getValue();
+		Object value = ((CacheClientImpl)cacheClient).getValue();
 
 		cacheMeem.removeOutboundReference(cacheReference);
 
 		return value;
 	}
 
-	public Map getEntries() {
+	public Map<?,?> getEntries() {
 
 		CacheContentClient cacheContentClient = new CacheContentClient();
 
-		Reference cacheClientReference = Reference.spi.create("cacheClient", cacheContentClient, true);
+		Reference<CacheContentClient> cacheClientReference = Reference.spi.create("cacheClient", cacheContentClient, true);
 
 		cacheMeem.addOutboundReference(cacheClientReference, false);
 
-		Map map = cacheContentClient.getMap();
+		Map<?,?> map = cacheContentClient.getMap();
 
 		cacheMeem.removeOutboundReference(cacheClientReference);
 
@@ -93,7 +94,7 @@ public class CacheHelper {
 
 	private final class CacheClientImpl implements CacheClient {
 
-		private PigeonHole valueHole = new PigeonHole();
+		private PigeonHole<Object> valueHole = new PigeonHole<Object>();
 		private long timeout = 60000;
 		private boolean miss = false;
 		
@@ -129,6 +130,9 @@ public class CacheHelper {
 				else
 					return result;
 			}
+			catch (ContentException ex) {
+				return null;
+			}
 			catch (TimeoutException ex) {
 				return null;
 			}
@@ -138,8 +142,8 @@ public class CacheHelper {
 
 	private final class CacheContentClient implements CacheClient, ContentClient {
 
-		private Map map = new HashMap();
-		private PigeonHole mapHole = new PigeonHole();
+		private Map<Object, Object> map = new HashMap<Object, Object>();
+		private PigeonHole<Map<?,?>> mapHole = new PigeonHole<Map<?,?>>();
 		private long timeout = 60000;
 
 		/**
@@ -171,9 +175,12 @@ public class CacheHelper {
 		public void contentFailed(String reason) {
 		}
 
-		public Map getMap() {
+		public Map<?,?> getMap() {
 			try {
-				return (Map) mapHole.get(timeout);
+				return mapHole.get(timeout);
+			}
+			catch (ContentException ex) {
+				return null;
 			}
 			catch (TimeoutException ex) {
 				return null;

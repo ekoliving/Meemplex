@@ -74,7 +74,7 @@ public class ShutdownHelper extends Thread {
 
 			//System.err.println("getting LCM reference");
 
-			lifeCycle = (LifeCycle) ReferenceHelper.getTarget(essentialLifeCycleManagerMeem, "lifeCycle", LifeCycle.class);
+			lifeCycle = ReferenceHelper.getTarget(essentialLifeCycleManagerMeem, "lifeCycle", LifeCycle.class);
 
 			//System.err.println("lcm reference: " + lifeCycle);
 

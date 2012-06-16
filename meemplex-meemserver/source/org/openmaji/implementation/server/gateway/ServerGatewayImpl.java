@@ -292,9 +292,9 @@ public class ServerGatewayImpl implements ServerGateway {
 
 		private FacetConsumer<T> consumer;
 
-		private Facet proxy;
+		private MeemClient proxy;
 
-		public static <T extends Facet> Facet getProxy(Meem meem, FacetConsumer<T> consumer) {
+		public static <T extends Facet> MeemClient getProxy(Meem meem, FacetConsumer<T> consumer) {
 			MeemClientImpl<T> meemClient = new MeemClientImpl<T>(meem, consumer);
 			return meemClient.getProxy();
 		}
@@ -304,12 +304,13 @@ public class ServerGatewayImpl implements ServerGateway {
 			this.consumer = consumer;
 		}
 
-		public void referenceAdded(Reference reference) {
-			T facet = reference.getTarget();
+		@SuppressWarnings("unchecked")
+		public void referenceAdded(Reference<?> reference) {
+			T facet = (T) reference.getTarget();
 			consumer.facet(meem, reference.getFacetIdentifier(), facet);
 		}
 
-		public void referenceRemoved(Reference reference) {
+		public void referenceRemoved(Reference<?> reference) {
 			consumer.facet(meem, reference.getFacetIdentifier(), null);
 		}
 
@@ -327,7 +328,7 @@ public class ServerGatewayImpl implements ServerGateway {
 			revokeProxy();
 		}
 
-		private Facet getProxy() {
+		private MeemClient getProxy() {
 			if (proxy == null) {
 				this.proxy = GatewayManagerWedge.getTargetFor(this, MeemClient.class);
 			}

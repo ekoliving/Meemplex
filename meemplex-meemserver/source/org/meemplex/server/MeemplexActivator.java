@@ -1,11 +1,9 @@
 package org.meemplex.server;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.PrivilegedAction;
 import java.util.Collection;
-import java.util.logging.Level;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,25 +11,19 @@ import javax.security.auth.Subject;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.meemplex.system.MeemkitService;
-import org.openmaji.implementation.server.manager.lifecycle.hyperspace.HyperSpaceMeem;
 import org.openmaji.implementation.server.manager.lifecycle.meemkit.MeemPatternControl;
 import org.openmaji.implementation.server.nursery.scripting.telnet.util.TelnetSessionLog;
 import org.openmaji.implementation.server.security.auth.MeemCoreRootAuthority;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.space.Space;
-import org.openmaji.server.helper.EssentialMeemHelper;
 import org.openmaji.server.helper.HyperSpaceHelper;
-import org.openmaji.server.helper.LifeCycleManagerHelper;
-import org.openmaji.server.helper.MeemPathResolverHelper;
 import org.openmaji.server.helper.ReferenceHelper;
 import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.gateway.ServerGateway;
-import org.openmaji.system.manager.lifecycle.EssentialLifeCycleManager;
 import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.meemkit.core.MeemkitDescriptor;
 import org.openmaji.system.meemserver.MeemServer;
-import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -40,9 +32,6 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-
 /**
  * An OSGI Bundle activator for Meemplex
  * 
@@ -50,7 +39,10 @@ import bsh.Interpreter;
  *
  */
 public class MeemplexActivator implements BundleActivator {
+	
 	private static final Logger logger = Logger.getAnonymousLogger();
+	
+	private static final boolean TRACE = true;
 	
 	private static final String PROP_HOME = "org.openmaji.directory";
 	
@@ -58,17 +50,20 @@ public class MeemplexActivator implements BundleActivator {
 	
 	private BundleContext bundleContext = null;
 	
-	private String meemplexPath = "/Users/stormboy/Projects/majiklab/openmaji-meemserver/";
+	private String meemplexPath = "/Users/stormboy/Projects/Meemplex/source/meemplex-meemserver/";
 	
 	/**
 	 * Start the Bundle
 	 */
 	public void start(BundleContext bc) throws Exception {
-		logger.log(Level.INFO, "Starting " + bc.getBundle().getSymbolicName());
+		if (TRACE) {
+			logger.log(Level.INFO, "Starting " + bc.getBundle().getSymbolicName());
+		}
 
 		this.bundleContext = bc;
 		
-		startMeemEngine();		//start the meemplex engine.
+		//start the meemplex engine.
+		startMeemEngine();
 
 		// get hyperspace before handling meemkits
 		HyperSpaceHelper.getInstance().getHyperSpaceMeem(new AsyncCallback<Meem>() {
@@ -82,7 +77,7 @@ public class MeemplexActivator implements BundleActivator {
 	}
 
 	/**
-	 * Stop the bundle
+	 * Stop this bundle.  Stop the meemplex engine.
 	 */
 	public void stop(BundleContext bc) throws Exception {
 		try {
@@ -121,10 +116,13 @@ public class MeemplexActivator implements BundleActivator {
 	 */
 	private void startMeemEngine() {
 
+		// use Eclipse FileLocator to get the root of this bundle.
 		try {
 			URL entry = bundleContext.getBundle().getEntry("/");
 			String path = FileLocator.toFileURL(entry).getPath(); 
-			logger.log(Level.INFO, "URL to MeemServer bundle is: " + path);
+			if (TRACE) {
+				logger.log(Level.INFO, "URL to MeemServer bundle is: " + path);
+			}
 			meemplexPath = path;
 		}
 		catch (IOException e) {
@@ -135,14 +133,22 @@ public class MeemplexActivator implements BundleActivator {
 //		ServiceReference<URLConverter> ref = bundleContext.getServiceReference(URLConverter.class);
 //		URLConverter urlConverter = (URLConverter) bc.getService(ref);
 //		meemplexPath = urlConverter.toFileURL(meemplexEntry).getPath();
-		
-		logger.log(Level.INFO, "launching meemplex. base directory: " + meemplexPath);
+
+		if (TRACE) {
+			logger.log(Level.INFO, "launching meemplex. base directory: " + meemplexPath);
+		}
 
 		// set up system properties
 		if (System.getProperty(PROP_HOME) == null) {
 			System.setProperty(PROP_HOME, meemplexPath);
 		}
 		System.setProperty("java.security.policy", meemplexPath + "/conf/security/all.policy");
+		
+		/*
+		System.setProperty("java.rmi.server.RMIClassLoaderSpi", "net.jini.loader.pref.PreferredClassProvider");
+		System.setSecurityManager(new RMISecurityManager());
+		*/
+		
 		if (System.getProperty("org.openmaji.properties") == null) {
 			System.setProperty("org.openmaji.properties", "conf/meemServer_01.properties");
 		}
@@ -150,7 +156,30 @@ public class MeemplexActivator implements BundleActivator {
 		MeemEngineLauncher.instance().launch();
 	}
 
+	/**
+	 * Filter for Meemkit OSGI services.
+	 */
 	private static final String MEEMKIT_FILTER = "(" + Constants.OBJECTCLASS + "=" + MeemkitService.class.getCanonicalName() + ")";
+	
+	/**
+	 * Start listening for OSGI Meemkit services
+	 * 
+	 * @param bc
+	 * @throws Exception
+	 */
+	private void listenForMeemkits(BundleContext bc) throws Exception {
+		// start listening for services
+		bc.addServiceListener(meemkitListener, MEEMKIT_FILTER);
+		
+		// get services that may already be registered in the bundle context
+		Collection<ServiceReference<MeemkitService>> serviceRefs = bc.getServiceReferences(MeemkitService.class, null);
+		for (ServiceReference<MeemkitService> serviceRef : serviceRefs) {
+			MeemkitService meemkitService = bc.getService(serviceRef);
+			if (meemkitService != null) {
+				meemkitListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, serviceRef));
+			}
+		}
+	}
 	
 	/**
 	 * The listener for MeemKit OSGI services
@@ -177,22 +206,13 @@ public class MeemplexActivator implements BundleActivator {
 		}
 	};
 
-	private void listenForMeemkits(BundleContext bc) throws Exception {
-		bc.addServiceListener(meemkitListener, MEEMKIT_FILTER);
-		Collection<ServiceReference<MeemkitService>> serviceRefs = bc.getServiceReferences(MeemkitService.class, null);
-		for (ServiceReference<MeemkitService> serviceRef : serviceRefs) {
-			MeemkitService meemkitService = bc.getService(serviceRef);
-			if (meemkitService != null) {
-				meemkitListener.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, serviceRef));
-			}
-		}
-	}
-	
 	/**
 	 * 
 	 */
 	private void loadMeemkit(String name, MeemkitService meemkit) {
-		logger.log(Level.INFO, "loading meemkit: " + name);
+		if (TRACE) {
+			logger.log(Level.INFO, "loading meemkit: " + name);
+		}
 		
 		final MeemkitDescriptor meemkitDescriptor = meemkit.getDescriptor();
 		
@@ -200,22 +220,20 @@ public class MeemplexActivator implements BundleActivator {
 			try {
 				ServerGateway gateway = ServerGateway.spi.create(MeemCoreRootAuthority.getSubject());
 				
-				// install pattern meems
+				// install Meemkit pattern meems using the meemPatternControl facet of the MeemkitManagerMeem
 				MeemPath meemkitManagerPath = MeemPath.spi.create(Space.HYPERSPACE, MeemServer.spi.getEssentialMeemsCategoryLocation() + "/meemkitManager");
 				Meem meemkitManagerMeem = gateway.getMeem(meemkitManagerPath);
-			    final MeemPatternControl meemPatternControl = ReferenceHelper.getTarget(meemkitManagerMeem, "meemPatternControl", MeemPatternControl.class);
 
-			    Runnable runnable = new Runnable() {
-					public void run() {
-					    Subject.doAs(MeemCoreRootAuthority.getSubject(), new PrivilegedAction<Void>() {
-					    	public Void run() {
-					    	    meemPatternControl.installPatternMeems(meemkitDescriptor);
-					    	    return null;
-					    	}
-						});
+				ReferenceHelper.getTarget(meemkitManagerMeem, "meemPatternControl", MeemPatternControl.class, new AsyncCallback<MeemPatternControl>() {
+					public void result(MeemPatternControl meemPatternControl) {
+						installMeemkitPatternMeems(meemPatternControl, meemkitDescriptor);
+					};
+					public void exception(Exception e) {
+						if (TRACE) {
+							logger.log(Level.INFO, "Could not get meemPatternControl facet from MeemkitManagerMeem", e);
+						}
 					}
-				};
-				ThreadManager.spi.create().queue(runnable);
+				});
 			}
 			catch (Exception e) {
 				logger.log(Level.INFO, "Problem installing pattern meems", e);
@@ -224,10 +242,36 @@ public class MeemplexActivator implements BundleActivator {
 		
 		// TODO load singletons/instances for the meemkit
 	}
-	
+
 	/**
+	 * Install meemkit patterns when the meemPatternControl facet of the MeemkitManager Meem has been resolved.
 	 * 
+	 * @param meemPatternControl
+	 * 	The meemPatternControl facet
+	 * @param meemkitDescriptor
+	 * 	The meemkit descriptor that describes the meemkit patterns to install
 	 */
+	private void installMeemkitPatternMeems(final MeemPatternControl meemPatternControl, final MeemkitDescriptor meemkitDescriptor) {
+	    Runnable runnable = new Runnable() {
+			public void run() {
+			    Subject.doAs(MeemCoreRootAuthority.getSubject(), new PrivilegedAction<Void>() {
+			    	public Void run() {
+						if (TRACE) {
+							logger.log(Level.INFO, "Installing pattern meems for meemkit " + meemkitDescriptor.getHeader().getName());
+						}
+			    	    meemPatternControl.installPatternMeems(meemkitDescriptor);
+			    	    return null;
+			    	}
+				});
+			}
+		};
+		ThreadManager.spi.create().queue(runnable);
+	}
+
+	/**
+	 * TODO automatic creation of hyperspace 
+	 */
+	/*
 	private void createHyperspace() throws EvalError, FileNotFoundException, IOException  {
 //		ServerGateway gateway =  ServerGateway.spi.create();
 //		MeemPath essentialLcmPath = MeemPath.spi.create(Space.HYPERSPACE, MeemServer.spi.getEssentialMeemsCategoryLocation() + "/meemkitLifeCycleManager");
@@ -247,20 +291,19 @@ public class MeemplexActivator implements BundleActivator {
 
 		interpreter.eval("createMeemSpace();");
 		
-		/*
-		LifeCycleManagerHelper.createMeem(
-				HyperSpaceMeem.getMeemDefinition(), 
-				EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier())
-			);
-			
-		  HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
-		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM);
-		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_INSTALLATION); 
-		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_LIBRARY);  
-		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN); 
-		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_CONFIGURATION);
-		  */
+//		LifeCycleManagerHelper.createMeem(
+//				HyperSpaceMeem.getMeemDefinition(), 
+//				EssentialMeemHelper.getEssentialMeem(EssentialLifeCycleManager.spi.getIdentifier())
+//			);
+//			
+//		  HyperSpaceHelper hsh = HyperSpaceHelper.getInstance();
+//		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM);
+//		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_INSTALLATION); 
+//		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_LIBRARY);  
+//		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN); 
+//		  hsh.createPath(StandardHyperSpaceCategory.MAJI_SYSTEM_CONFIGURATION);
 	}
+*/
 	
 	/**
 	 * 

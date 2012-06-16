@@ -74,21 +74,26 @@ import java.util.logging.Logger;
  */
 public class MeemServerControllerWedge implements MeemServerController, Wedge, LifeCycleManagerClient, MeemResolverClient {
 
+	public MeemCore meemCore;
+	
+	
 	public MeemClientConduit meemClientConduit; // outbound
 
-	public MeemCore meemCore;
-	private Map<DependencyAttribute, String> meemServers = new HashMap<DependencyAttribute, String>();
-	private Map<Serializable, DependencyAttribute> dependencyAttributes = new HashMap<Serializable, DependencyAttribute>();
-	
 	public DependencyHandler dependencyHandlerConduit;
+	
 	public DependencyClient dependencyClientConduit = new DependencyClientConduit();
 
 	public Category categoryConduit;
 
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
+	
 	private String localMeemServerName = MeemServer.spi.getName();
 
+	private Map<DependencyAttribute, String> meemServers = new HashMap<DependencyAttribute, String>();
+	
+	private Map<Serializable, DependencyAttribute> dependencyAttributes = new HashMap<Serializable, DependencyAttribute>();
+	
 	/**
 	 * 
 	 */
@@ -100,7 +105,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 
 		Meem meemResolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
 
-		Reference reference =
+		Reference<MeemResolverClient> reference =
 			Reference.spi.create(
 				"meemResolverClient",
 				(MeemResolverClient) meemCore.getTarget("meemResolverClient"),
@@ -133,7 +138,6 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 		String identifier = MeemServer.spi.getIdentifier() + " " + meemServerName;
 
 		// add dependency
-		
 		DependencyAttribute dependencyAttribute = new DependencyAttribute(
 				DependencyType.WEAK,
 				Scope.LOCAL,
@@ -141,42 +145,32 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 				"lifeCycleManagerClient",
 				new ExactMatchFilter(identifier),
 				false);
-		
 		dependencyAttributes.put(identifier, dependencyAttribute);
-
 		dependencyHandlerConduit.addDependency("lifeCycleManagerClient", dependencyAttribute, LifeTime.TRANSIENT);
-
 		meemServers.put(dependencyAttribute, meemServerName);
 	}
 
-	private final class CreateMeemTask implements MeemClientCallback {
-		//private Meem parentLifeCycleManagerMeem;
+	/**
+	 * 
+	 */
+	private final class CreateMeemTask implements MeemClientCallback<LifeCycleManager> {
 		private String meemServerName;
 
 		public CreateMeemTask(String meemServerName, Meem parentLifeCycleManagerMeem) {
-			//this.parentLifeCycleManagerMeem = parentLifeCycleManagerMeem;
 			this.meemServerName = meemServerName;
-
 			meemClientConduit.provideReference(parentLifeCycleManagerMeem, "lifeCycleManager", LifeCycleManager.class, this);
 		}
 
-		/**
-		 */
-		public void referenceProvided(Reference reference) {
+		public void referenceProvided(Reference<LifeCycleManager> reference) {
 			if (reference == null) {
 				logger.log(Level.INFO, "change - no lifeCycleManager facet.");
 				return;
 			}
-
-			LifeCycleManager lifeCycleManager = (LifeCycleManager) reference.getTarget();
+			LifeCycleManager lifeCycleManager = reference.getTarget();
 			MeemDefinition meemServerMeemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(MeemServerMeem.class);
-
 			String identifier = MeemServer.spi.getIdentifier() + " " + meemServerName;
-
 			MeemAttribute meemAttribute = new MeemAttribute(identifier);
-
 			meemServerMeemDefinition.setMeemAttribute(meemAttribute);
-
 			lifeCycleManager.createMeem(meemServerMeemDefinition, LifeCycleState.READY);
 		}
 	}
@@ -184,25 +178,18 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 	/**
 	 * Set access for other to READ only.
 	 */
-	private final class SetAccessTask implements MeemClientCallback {
-		//private Meem meem;
+	private final class SetAccessTask implements MeemClientCallback <AccessControl>{
 
 		public SetAccessTask(Meem meem) {
-			//this.meem = meem;
-
 			meemClientConduit.provideReference(meem, "accessControl", AccessControl.class, this);
 		}
 
-		/**
-		 */
-		public void referenceProvided(Reference reference) {
+		public void referenceProvided(Reference<AccessControl> reference) {
 			if (reference == null) {
 				logger.log(Level.INFO, "change - no lifeCycleManager facet.");
 				return;
 			}
-
-			AccessControl accessControl = (AccessControl) reference.getTarget();
-
+			AccessControl accessControl = reference.getTarget();
 			accessControl.addAccess(Principals.OTHER, AccessLevel.READ);
 		}
 	}
@@ -210,32 +197,26 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 	/**
 	  * Add the passed in entry to the passed in category.
 	  */
-	private final class AddEntryTask implements MeemClientCallback {
-		//private Meem category;
+	private final class AddEntryTask implements MeemClientCallback<Category> {
 		private String entryName;
 		private Meem entryMeem;
 
 		public AddEntryTask(Meem category, String entryName, Meem entryMeem) {
-			//this.category = category;
 			this.entryName = entryName;
 			this.entryMeem = entryMeem;
-
 			meemClientConduit.provideReference(category, "category", Category.class, this);
 		}
 
-		/**
-		 */
-		public void referenceProvided(Reference reference) {
+		public void referenceProvided(Reference<Category> reference) {
 			if (reference == null) {
 				logger.log(Level.INFO, "change - no lifeCycleManager facet.");
 				return;
 			}
-
-			Category cat = (Category) reference.getTarget();
-
+			Category cat = reference.getTarget();
 			cat.addEntry(entryName, entryMeem);
 		}
 	}
+	
 	/* --------------- LifeCycleManagerClient methods ------------- */
 
 	/**
@@ -259,18 +240,24 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 			categoryConduit.addEntry(meemServerName, meem);
 
 			// add the new MeemServer Meem to the deployment category in hyperspace
-
-			MeemPathResolverHelper.getInstance().resolveMeemPath(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.DEPLOYMENT), new AsyncCallback<Meem>() {
-				public void result(Meem deploymentMeem) {
-					handleDeploymentMeem(deploymentMeem, meemServerName, meem);
-				}
-				public void exception(Exception e) {
-				}
-			});
-
+			boolean ASYNC= false;
+			if (ASYNC) {
+				// TODO make this async approach work
+				MeemPathResolverHelper.getInstance().resolveMeemPath(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.DEPLOYMENT), new AsyncCallback<Meem>() {
+					public void result(Meem deploymentMeem) {
+						handleDeploymentMeem(deploymentMeem, meemServerName, meem);
+					}
+					public void exception(Exception e) {
+						logger.log(Level.INFO, "Could not resolve deployment meem at" + StandardHyperSpaceCategory.DEPLOYMENT, e);
+					}
+				});
+			}
+			else {
+				Meem deploymentMeem = MeemPathResolverHelper.getInstance().resolveMeemPath(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.DEPLOYMENT));
+				handleDeploymentMeem(deploymentMeem, meemServerName, meem);
+			}
 
 		}
-
 	}
 
 	/**
@@ -330,7 +317,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 
 		public void dependencyConnected(DependencyAttribute dependencyAttribute) {
 			if (meemServers.containsKey(dependencyAttribute)) {
-				String meemServerName = (String) meemServers.remove(dependencyAttribute);
+				String meemServerName = meemServers.remove(dependencyAttribute);
 				new CreateMeemTask(meemServerName, dependencyAttribute.getMeem());
 			}
 		}

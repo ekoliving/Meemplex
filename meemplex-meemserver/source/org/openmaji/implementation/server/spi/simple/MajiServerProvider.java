@@ -32,7 +32,7 @@ import org.openmaji.system.spi.SpecificationType;
 
 public class MajiServerProvider extends MajiSystemProvider {
 
-	private static Hashtable<Class<?>, SpecificationEntry> specificationEntries = new Hashtable<Class<?>, SpecificationEntry>();
+	private static Map<Class<?>, SpecificationEntry<?>> specificationEntries = new HashMap<Class<?>, SpecificationEntry<?>>();
 
 	private static boolean mutable = true;
 
@@ -41,18 +41,18 @@ public class MajiServerProvider extends MajiSystemProvider {
 		mutable = false;
 	}
 
-	public Object create(Class<?> specification, Object[] args) {
+	public <T> T create(Class<T> specification, Object[] args) {
 
-		SpecificationEntry specificationEntry = specificationEntries.get(specification);
+		SpecificationEntry<T> specificationEntry = (SpecificationEntry<T>) specificationEntries.get(specification);
 
 		if (specificationEntry == null) {
 			throw new IllegalArgumentException("Couldn't create unknown Specification: " + specification);
 		}
 
-		Object instance = null;
+		T instance = null;
 
 		try {
-			Class<?> implementation = specificationEntry.getImplementation();
+			Class<T> implementation = specificationEntry.getImplementation();
 
 			if (args == null) {
 				instance = implementation.newInstance();
@@ -73,11 +73,11 @@ public class MajiServerProvider extends MajiSystemProvider {
 					}
 				}
 
-				Constructor<?> matchConstructor = null;
-				Constructor<?>[] constructors = implementation.getConstructors();
+				Constructor<T> matchConstructor = null;
+				Constructor<T>[] constructors = (Constructor<T>[]) implementation.getConstructors();
 
 				for (int i = 0; i < constructors.length; i++) {
-					Constructor<?> constructor = constructors[i];
+					Constructor<T> constructor = constructors[i];
 					Class<?>[] parameters = constructor.getParameterTypes();
 					if (parameters.length != argsClasses.length) {
 						continue;
@@ -111,7 +111,7 @@ public class MajiServerProvider extends MajiSystemProvider {
 					//
 					Method method = implementation.getMethod("getInstance", argsClasses);
 
-					instance = method.invoke(implementation, args);
+					instance = (T) method.invoke(implementation, args);
 				}
 				catch (InvocationTargetException ex) {
 					ex.getCause().printStackTrace();
