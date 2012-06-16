@@ -13,7 +13,6 @@
 
 package org.openmaji.server.helper;
 
-import org.openmaji.implementation.server.manager.gateway.GatewayManagerWedge;
 import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemClient;
