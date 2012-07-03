@@ -1,2 +1,4 @@
 classes
 logs
+.DS_Store
+.gwt
