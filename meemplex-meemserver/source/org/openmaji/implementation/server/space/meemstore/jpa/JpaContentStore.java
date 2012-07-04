@@ -22,7 +22,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;

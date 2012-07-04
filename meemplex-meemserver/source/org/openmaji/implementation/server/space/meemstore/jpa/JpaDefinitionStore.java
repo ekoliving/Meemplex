@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
@@ -311,7 +310,6 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 			logger.log(Level.INFO, "getting version of " + meemPath);
 		}
 
-
 		int version = -1;
 
 		try {
@@ -324,7 +322,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 			em.getTransaction().commit();
 		}
 		catch (Exception e) {
-			logger.log(Level.INFO, "Exception while removing MeemDefinition " + meemPath.toString(), e);
+			logger.log(Level.INFO, "Exception while getting version of MeemDefinition " + meemPath.toString(), e);
 		}
 		finally {
 			PersistenceContext.instance().release();

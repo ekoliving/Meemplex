@@ -1,8 +1,13 @@
 package org.openmaji.server.utility;
 
 import java.lang.reflect.ParameterizedType;
+import java.security.PrivilegedAction;
+
+import javax.security.auth.Subject;
 
 import org.openmaji.implementation.server.manager.gateway.GatewayManagerWedge;
+import org.openmaji.implementation.server.security.DoAsMeem;
+import org.openmaji.implementation.server.security.auth.MeemCoreRootAuthority;
 import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.filter.Filter;
@@ -64,7 +69,7 @@ public abstract class FacetCallbackTask <F extends Facet, T> {
 	 * @param listenerParams
 	 */
 	//@SuppressWarnings("unchecked")
-	public FacetCallbackTask(Meem meem, String facetName, Filter filter, AsyncCallback<T> callback) {
+	public FacetCallbackTask(final Meem meem, String facetName, Filter filter, AsyncCallback<T> callback) {
 		this.callback = callback;
 		this.listener = getFacetListener();
 		
@@ -75,7 +80,12 @@ public abstract class FacetCallbackTask <F extends Facet, T> {
 		this.clientProxy = GatewayManagerWedge.getTargetFor(listener, type);
 		
 		// queue timeout event
-		ThreadManager.spi.create().queue(doTimeout, System.currentTimeMillis()+timeout);
+		Subject.doAs(MeemCoreRootAuthority.getSubject(), new PrivilegedAction<Void>() {
+			public Void run() {
+				ThreadManager.spi.create().queue(doTimeout, System.currentTimeMillis()+timeout);
+				return null;
+			}
+		});
 
 		// create a reference to add to the meem
 		Reference<F> reference = Reference.spi.create(facetName, clientProxy, true, filter);

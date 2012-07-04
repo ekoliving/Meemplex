@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.PrivilegedAction;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,11 +49,26 @@ public class MeemplexActivator implements BundleActivator {
 	
 	private static final String PROP_HOME = "org.openmaji.directory";
 	
-	private static final boolean INSTALL_PATTERNS = true;
+	/**
+	 * This flag will be set to true if installMeems() is invoked.  This will allow new meemkits to be installed as they
+	 * come.
+	 */
+	private static boolean installPatterns = false;
+
+	/**
+	 * A set of discovered meemkits.
+	 */
+	private static Map<String, MeemkitService> meemkits = new HashMap<String, MeemkitService>();
 	
+	/**
+	 * The OSGI bundle context.
+	 */
 	private BundleContext bundleContext = null;
-	
-	private String meemplexPath = "/Users/stormboy/Projects/Meemplex/source/meemplex-meemserver/";
+
+	/**
+	 * The home path for meemplex 
+	 */
+	private String meemplexPath = null;
 	
 	/**
 	 * Start the Bundle
@@ -88,6 +106,21 @@ public class MeemplexActivator implements BundleActivator {
 		}
 	}
 	
+	
+	public static void installMeemkits() {
+		installPatterns = true;
+		for (Entry<String, MeemkitService> entry : meemkits.entrySet()) {
+			installMeemkit(entry.getValue().getDescriptor());
+		}
+	}
+	
+	public static void installMeemkit(String name) {
+		MeemkitService meemkitService = meemkits.get(name);
+		if (meemkitService != null) {
+			installMeemkit(meemkitService.getDescriptor());
+		}
+	}
+	
 	/**
 	 * Handle hyperspace meem.
 	 * 
@@ -101,7 +134,7 @@ public class MeemplexActivator implements BundleActivator {
 
 			logger.log(Level.INFO, "got hyperspace: " + hyperSpaceMeem );
 			try {
-				Thread.sleep(6000);	// make sure hyperspace categories are created before proceeding
+				//Thread.sleep(6000);	// make sure hyperspace categories are created before proceeding
 									// TODO remove this wait hack - listen for meemkitmanager becoming ready
 				listenForMeemkits(bundleContext);
 			}
@@ -209,35 +242,44 @@ public class MeemplexActivator implements BundleActivator {
 	/**
 	 * 
 	 */
-	private void loadMeemkit(String name, MeemkitService meemkit) {
+	private static void loadMeemkit(String name, MeemkitService meemkit) {
 		if (TRACE) {
-			logger.log(Level.INFO, "loading meemkit: " + name);
+			logger.log(Level.INFO, "found meemkit: " + name);
 		}
 		
-		final MeemkitDescriptor meemkitDescriptor = meemkit.getDescriptor();
+		meemkits.put(name, meemkit);
 		
-		if (INSTALL_PATTERNS) {		// load pattern meems and wedges
-			try {
-				ServerGateway gateway = ServerGateway.spi.create(MeemCoreRootAuthority.getSubject());
-				
-				// install Meemkit pattern meems using the meemPatternControl facet of the MeemkitManagerMeem
-				MeemPath meemkitManagerPath = MeemPath.spi.create(Space.HYPERSPACE, MeemServer.spi.getEssentialMeemsCategoryLocation() + "/meemkitManager");
-				Meem meemkitManagerMeem = gateway.getMeem(meemkitManagerPath);
+		if (installPatterns) {		// load pattern meems and wedges
+			MeemkitDescriptor meemkitDescriptor = meemkit.getDescriptor();
+			installMeemkit(meemkitDescriptor);
+		}
+		
+	}
+	
+	private static void installMeemkit(final MeemkitDescriptor meemkitDescriptor) {
+		if (TRACE) {
+			logger.log(Level.INFO, "installing meemkit: " + meemkitDescriptor.getHeader().getName());
+		}
+		try {
+			ServerGateway gateway = ServerGateway.spi.create(MeemCoreRootAuthority.getSubject());
+			
+			// install Meemkit pattern meems using the meemPatternControl facet of the MeemkitManagerMeem
+			MeemPath meemkitManagerPath = MeemPath.spi.create(Space.HYPERSPACE, MeemServer.spi.getEssentialMeemsCategoryLocation() + "/meemkitManager");
+			Meem meemkitManagerMeem = gateway.getMeem(meemkitManagerPath);
 
-				ReferenceHelper.getTarget(meemkitManagerMeem, "meemPatternControl", MeemPatternControl.class, new AsyncCallback<MeemPatternControl>() {
-					public void result(MeemPatternControl meemPatternControl) {
-						installMeemkitPatternMeems(meemPatternControl, meemkitDescriptor);
-					};
-					public void exception(Exception e) {
-						if (TRACE) {
-							logger.log(Level.INFO, "Could not get meemPatternControl facet from MeemkitManagerMeem", e);
-						}
+			ReferenceHelper.getTarget(meemkitManagerMeem, "meemPatternControl", MeemPatternControl.class, new AsyncCallback<MeemPatternControl>() {
+				public void result(MeemPatternControl meemPatternControl) {
+					installMeemkitPatternMeems(meemPatternControl, meemkitDescriptor);
+				};
+				public void exception(Exception e) {
+					if (TRACE) {
+						logger.log(Level.INFO, "Could not get meemPatternControl facet from MeemkitManagerMeem", e);
 					}
-				});
-			}
-			catch (Exception e) {
-				logger.log(Level.INFO, "Problem installing pattern meems", e);
-			}
+				}
+			});
+		}
+		catch (Exception e) {
+			logger.log(Level.INFO, "Problem installing pattern meems", e);
 		}
 		
 		// TODO load singletons/instances for the meemkit
@@ -251,7 +293,7 @@ public class MeemplexActivator implements BundleActivator {
 	 * @param meemkitDescriptor
 	 * 	The meemkit descriptor that describes the meemkit patterns to install
 	 */
-	private void installMeemkitPatternMeems(final MeemPatternControl meemPatternControl, final MeemkitDescriptor meemkitDescriptor) {
+	private static void installMeemkitPatternMeems(final MeemPatternControl meemPatternControl, final MeemkitDescriptor meemkitDescriptor) {
 	    Runnable runnable = new Runnable() {
 			public void run() {
 			    Subject.doAs(MeemCoreRootAuthority.getSubject(), new PrivilegedAction<Void>() {
@@ -308,9 +350,11 @@ public class MeemplexActivator implements BundleActivator {
 	/**
 	 * 
 	 */
-	private void unloadMeemkit(String name) {
+	private static void unloadMeemkit(String name) {
 		logger.log(Level.INFO, "unloading meemkit: " + name);
-
+		
+		meemkits.remove(name);
+		
 		// TODO remove singletons
 		// TODO remove pattern meems
 		// TODO remove pattern wedge

@@ -13,7 +13,6 @@ package org.openmaji.implementation.server.space;
 
 import java.util.*;
 
-
 import org.openmaji.implementation.server.Common;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.Wedge;
@@ -29,10 +28,8 @@ import org.openmaji.system.space.Category;
 import org.openmaji.system.space.CategoryClient;
 import org.openmaji.system.space.CategoryEntry;
 
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * @author mg
@@ -42,12 +39,11 @@ import java.util.logging.Logger;
 public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 
 	private static final Logger logger = Logger.getAnonymousLogger();
-	
+
 	private static final Level LOG_LEVEL = Common.getLogLevelVerbose();
 
-
 	/* -------------------- outbound facets ------------------------- */
-	
+
 	public CategoryClient categoryClient;
 	public final ContentProvider categoryClientProvider = new ContentProvider() {
 		public void sendContent(Object target, Filter filter) throws ContentException {
@@ -55,20 +51,19 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 
 			synchronized (entries) {
 				if (filter == null) {
-						//categoryClientTarget.entriesAdded((CategoryEntry[])entriesMap.values().toArray(arraySpec));
-						// send entries in the order they were added
-						categoryClientTarget.entriesAdded((CategoryEntry[])entries.toArray(arraySpec));
+					// send entries in the order they were added
+					categoryClientTarget.entriesAdded(entries.toArray(arraySpec));
 				}
 				else if (filter instanceof ExactMatchFilter) {
 					ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
 					Object template = exactMatchFilter.getTemplate();
-	
+
 					if (template instanceof String) {
 						String stringTemplate = (String) template;
-						CategoryEntry entry = (CategoryEntry) entriesMap.get(stringTemplate);
+						CategoryEntry entry = entriesMap.get(stringTemplate);
 
 						if (entry != null) {
-							categoryClientTarget.entriesAdded(new CategoryEntry[] {entry});
+							categoryClientTarget.entriesAdded(new CategoryEntry[] { entry });
 						}
 					}
 					else {
@@ -83,29 +78,26 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 	};
 
 	/* -------------------- conduits ---------------------- */
-	
+
 	public Category categoryConduit = new CategoryConduitImpl(this);
-	
+
 	public CategoryClient categoryClientConduit = null;
-	
+
 	public ManagedPersistenceHandler managedPersistenceHandlerConduit;
 
-
 	/* ------------------- persisted properties ---------------- */
-	
+
 	/** a map of entryentriesMap names to entries */
 	public Map<String, CategoryEntry> entriesMap = new HashMap<String, CategoryEntry>();
-	
+
 	/** an ordered list of entries */
-	public List<CategoryEntry> entries = new Vector<CategoryEntry>();
-
-	private static final CategoryEntry[] arraySpec = new CategoryEntry[0];
-
+	public List<CategoryEntry> entries = new ArrayList<CategoryEntry>();
 
 	/* ------------------ Category interface -------------------- */
-	
+
 	/**
-	 * @see org.openmaji.system.space.Category#addEntry(java.lang.String, org.openmaji.meem.Meem)
+	 * @see org.openmaji.system.space.Category#addEntry(java.lang.String,
+	 *      org.openmaji.meem.Meem)
 	 */
 	public void addEntry(String entryName, Meem meem) {
 		if (entryName == null) {
@@ -116,24 +108,24 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 			if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY && entriesMap.containsKey(entryName)) {
 				logger.log(LOG_LEVEL, "Overwriting entry " + entriesMap.get(entryName));
 			}
-			
+
 			// remove existing entry if it exists
 			removeEntry(entryName);
-			
+
 			if (meem != null) {
-		
+
 				CategoryEntry categoryEntry = new CategoryEntry(entryName, meem);
-				
+
 				entriesMap.put(entryName, categoryEntry);
 				entries.add(categoryEntry);
-		
+
 				if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY) {
 					logger.log(LOG_LEVEL, this.toString() + " added entry: " + entryName + " meemPath: " + meem.getMeemPath());
 				}
-		
+
 				// persist content
 				managedPersistenceHandlerConduit.persist();
-		
+
 				categoryClient.entriesAdded(new CategoryEntry[] { categoryEntry });
 				categoryClientConduit.entriesAdded(new CategoryEntry[] { categoryEntry });
 			}
@@ -147,15 +139,15 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 		synchronized (entries) {
 			CategoryEntry categoryEntry = entriesMap.remove(entryName);
 			entries.remove(categoryEntry);
-	
+
 			if (categoryEntry != null) {
-	
+
 				if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY)
 					logger.log(LOG_LEVEL, "removed entry: " + entryName + " meemPath: " + categoryEntry.getMeem().getMeemPath());
-	
+
 				// persist content
 				managedPersistenceHandlerConduit.persist();
-	
+
 				categoryClient.entriesRemoved(new CategoryEntry[] { categoryEntry });
 				categoryClientConduit.entriesRemoved(new CategoryEntry[] { categoryEntry });
 			}
@@ -163,7 +155,8 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 	}
 
 	/**
-	 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String, java.lang.String)
+	 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String,
+	 *      java.lang.String)
 	 */
 	public void renameEntry(String oldEntryName, String newEntryName) {
 
@@ -171,74 +164,26 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 			CategoryEntry oldCategoryEntry = entriesMap.remove(oldEntryName);
 			int i = entries.indexOf(oldCategoryEntry);
 			if (oldCategoryEntry != null) {
-	
+
 				CategoryEntry newCategoryEntry = oldCategoryEntry.rename(newEntryName);
-	
+
 				entriesMap.put(newEntryName, newCategoryEntry);
-				if (i >=0) {
+				if (i >= 0) {
 					entries.set(i, newCategoryEntry);
 				}
-	
+
 				if (Common.TRACE_ENABLED && Common.TRACE_CATEGORY)
 					logger.log(LOG_LEVEL, "renamed entry: " + oldEntryName + " to " + newEntryName);
-	
+
 				// persist content
 				managedPersistenceHandlerConduit.persist();
-	
+
 				categoryClient.entryRenamed(oldCategoryEntry, newCategoryEntry);
 				categoryClientConduit.entryRenamed(oldCategoryEntry, newCategoryEntry);
 			}
 		}
 	}
 
-	
-	/* ----------------- FilterChecker interface -------------- */
-	
-	/* (non-Javadoc)
-	 * @see org.openmaji.meem.filter.FilterChecker#invokeMethodCheck(org.openmaji.meem.filter.Filter, java.lang.String, java.lang.Object[])
-	 */
-	/*
-	public boolean invokeMethodCheck(Filter filter, String methodName, Object[] args) 
-		throws IllegalFilterException 
-	{
-		// check if outbound method invocation should occur.
-	
-		if (filter == null) {
-			return true;
-		}
-		
-		if (filter instanceof ExactMatchFilter) {
-			Object template = ((ExactMatchFilter)filter).getTemplate();
-			
-			if (methodName.equals("entriesAdded")) {
-				CategoryEntry[] entries = (CategoryEntry[]) args[0];
-				for (int i=0; i<entries.length; i++) {
-					if (entries[i].getName().equals(template))
-						return true;
-				}
-			}
-			else if (methodName.equals("entriesRemoved")) {
-				CategoryEntry[] entries = (CategoryEntry[]) args[0];
-				for (int i=0; i<entries.length; i++) {
-					if (entries[i].getName().equals(template))
-						return true;
-				}
-			}
-			else if(methodName.equals("entryRenamed")) {
-				CategoryEntry oldEntry = (CategoryEntry) args[0];
-				CategoryEntry newEntry = (CategoryEntry) args[1];
-				if (oldEntry.getName().equals(template)) {
-					return true;
-				}
-				if (newEntry.getName().equals(template)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	*/
-	
 	/*------------------- Category conduit -----------------*/
 
 	private final class CategoryConduitImpl implements Category {
@@ -250,7 +195,8 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 		}
 
 		/**
-		 * @see org.openmaji.system.space.Category#addEntry(java.lang.String, org.openmaji.meem.Meem)
+		 * @see org.openmaji.system.space.Category#addEntry(java.lang.String,
+		 *      org.openmaji.meem.Meem)
 		 */
 		public void addEntry(String entryName, Meem meem) {
 			categoryWedge.addEntry(entryName, meem);
@@ -264,26 +210,26 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 		}
 
 		/**
-		 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String, java.lang.String)
+		 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String,
+		 *      java.lang.String)
 		 */
 		public void renameEntry(String oldEntryName, String newEntryName) {
 			categoryWedge.renameEntry(oldEntryName, newEntryName);
 		}
 
 	}
-	
+
 	/* ---------- MeemDefinitionProvider method(s) ----------------------------- */
 
-  private MeemDefinition meemDefinition = null;
+	private MeemDefinition meemDefinition = null;
 
-  public MeemDefinition getMeemDefinition() {
-    if (meemDefinition == null) {
-      meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(
-        new Class[] {this.getClass()}
-      );
-    }
-    
-    return(meemDefinition);
-  }
+	public MeemDefinition getMeemDefinition() {
+		if (meemDefinition == null) {
+			meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(new Class[] { this.getClass() });
+		}
 
+		return (meemDefinition);
+	}
+
+	private static final CategoryEntry[] arraySpec = new CategoryEntry[0];
 }

@@ -174,4 +174,6 @@ Bundle-ClassPath: lib/activation.jar,
  lib/jini/sharedvm.jar,
  lib/jini/start.jar,
  lib/jini/sun-util.jar,
- lib/jini/tools.jar
+ lib/jini/tools.jar,
+ lib/orient-commons-1.0.1.jar,
+ lib/orientdb-core-1.0.1.jar

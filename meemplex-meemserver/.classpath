@@ -6,6 +6,8 @@
 	<classpathentry kind="lib" path="lib/jini/jini-ext.jar"/>
 	<classpathentry kind="lib" path="lib/jini/start.jar"/>
 	<classpathentry kind="lib" path="lib/jini/classserver.jar"/>
+	<classpathentry kind="lib" path="lib/orient-commons-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/orientdb-core-1.0.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="source"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
