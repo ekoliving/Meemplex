@@ -1,0 +1,6 @@
+
+Temporarily disabled logging hook and security hook.
+
+org.openmaji.implementation.server.spi.MajiServerInitializer
+
+org.openmaji.implementation.server.meem.invocation.InvocationListIdentifierProviderImpl 
