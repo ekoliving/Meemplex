@@ -1,7 +1,5 @@
 package org.meemplex.internet.gwt.client.widget;
 
-import org.meemplex.internet.gwt.client.facets.Linear;
-import org.meemplex.internet.gwt.shared.BindingFactory;
 import org.meemplex.internet.gwt.shared.FacetClasses;
 import org.meemplex.internet.gwt.shared.FacetEvent;
 import org.meemplex.internet.gwt.shared.FacetEventListener;

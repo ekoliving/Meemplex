@@ -189,9 +189,9 @@ public class MajiServerInitializer {
 			 * Alphabetical order please !
 			 */
 
-	        new SpecificationEntry(org.openmaji.system.meem.hook.flightrecorder.FlightRecorderHook.class, SpecificationType.SYSTEM_HOOK, org.openmaji.implementation.server.meem.hook.flightrecorder.FlightRecorderHookWedge.class),
+//	        new SpecificationEntry(org.openmaji.system.meem.hook.flightrecorder.FlightRecorderHook.class, SpecificationType.SYSTEM_HOOK, org.openmaji.implementation.server.meem.hook.flightrecorder.FlightRecorderHookWedge.class),
 
-	        new SpecificationEntry(org.openmaji.system.meem.hook.security.InboundSecurityHook.class, SpecificationType.SYSTEM_HOOK, org.openmaji.implementation.server.meem.hook.security.InboundSecurityHookWedge.class),
+//	        new SpecificationEntry(org.openmaji.system.meem.hook.security.InboundSecurityHook.class, SpecificationType.SYSTEM_HOOK, org.openmaji.implementation.server.meem.hook.security.InboundSecurityHookWedge.class),
 
 	        /*
 			 * ---------- Miscellaneous Object(s) --------------------------------------

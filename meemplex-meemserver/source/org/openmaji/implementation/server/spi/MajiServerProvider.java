@@ -215,7 +215,7 @@ public class MajiServerProvider extends MajiSystemProvider {
 	 * 
 	 */
 	public synchronized SpecificationEntry getSpecificationEntry(Class<?> specification) {
-		return ((SpecificationEntry) specificationEntries.get(specification));
+		return (specificationEntries.get(specification));
 	}
 
 	/**

@@ -208,7 +208,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 	 */
 	public void remove(MeemPath meemPath) {
 		
-		// rely on Definition store to remove data
+		// TODO rely on Definition store to remove data
 
 		if (DEBUG) {
 			logger.log(Level.INFO, "Removing " + meemPath);

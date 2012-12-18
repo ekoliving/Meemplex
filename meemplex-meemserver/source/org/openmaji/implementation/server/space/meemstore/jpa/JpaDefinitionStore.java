@@ -284,6 +284,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 		try {
 			EntityManager em = PersistenceContext.instance().getEntityManager();
 			em.getTransaction().begin();
+			
 			MeemEntity meemEntity = em.find(MeemEntity.class, meemPath.getLocation());
 			if (meemEntity != null) {
 				Map<String, WedgeEntity> wedges = meemEntity.getWedges();
@@ -295,6 +296,7 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 				}
 				em.remove(meemEntity);
 			}
+			
 			em.getTransaction().commit();
 		}
 		catch (Exception e) {
@@ -367,15 +369,6 @@ public class JpaDefinitionStore implements MeemStoreDefinitionStore {
 		return paths;
 	}
 
-	private FacetDefinition getFacetDefinition(String facetId, Collection<FacetDefinition> facetDefs) {
-		for (FacetDefinition facetDef : facetDefs) {
-			if (facetId.equals(facetDef.getFacetAttribute().getIdentifier())) {
-				return facetDef;
-			}
-		}
-		return null;
-	}
-	
 	private FacetEntity getFacetEntity(String facetId, Collection<FacetEntity> facetEntities) {
 		for (FacetEntity facetEntity : facetEntities) {
 			if (facetId.equals(facetEntity.getName())) {

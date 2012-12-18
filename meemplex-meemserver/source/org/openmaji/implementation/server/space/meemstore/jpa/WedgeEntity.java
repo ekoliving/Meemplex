@@ -45,7 +45,7 @@ public class WedgeEntity {
 	 */
 	private Integer sortIndex;
 	
-	@OneToMany(mappedBy="wedge", orphanRemoval=true)
+	@OneToMany(mappedBy="wedge", orphanRemoval=true, cascade=CascadeType.ALL)
 	@OrderBy("sortIndex")
 	private List<FacetEntity> facets;
 	

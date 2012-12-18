@@ -19,47 +19,43 @@ import org.openmaji.system.meem.hook.flightrecorder.FlightRecorderHook;
 import org.openmaji.system.meem.hook.security.InboundSecurityHook;
 import org.openmaji.system.spi.MajiSystemProvider;
 
-
 /**
  * The normal "production" invocation list generator.
  */
 
-public class InvocationListIdentifierProviderImpl
-  implements InvocationListIdentifierProvider {
+public class InvocationListIdentifierProviderImpl implements InvocationListIdentifierProvider {
 
-  private List<String> inList = null;
-  
-  private MajiSystemProvider majiSystemProvider = null;
+	private List<String> inList = null;
 
-  public InvocationListIdentifierProviderImpl() {
-    Properties properties = System.getProperties();
+	private MajiSystemProvider majiSystemProvider = null;
 
-    inList = new ArrayList<String>();
-    
-    if (majiSystemProvider == null) {
-      majiSystemProvider = MajiSystemProvider.systemProvider();
-    }
+	public InvocationListIdentifierProviderImpl() {
+		Properties properties = System.getProperties();
 
-    String flightRecorderStatus =
-      properties.getProperty(FlightRecorderHook.PROPERTY_ENABLE);
+		inList = new ArrayList<String>();
 
-    if (flightRecorderStatus != null) {
-      if (flightRecorderStatus.equals(FlightRecorderHook.ENABLE_INBOUND)  ||
-          flightRecorderStatus.equals(FlightRecorderHook.ENABLE_INOUTBOUND)) {
+		if (majiSystemProvider == null) {
+			majiSystemProvider = MajiSystemProvider.systemProvider();
+		}
 
-        inList.add(
-          majiSystemProvider.getImplementation(FlightRecorderHook.class).getName()
-        );
-      }
-    }
+		String flightRecorderStatus = properties.getProperty(FlightRecorderHook.PROPERTY_ENABLE);
+		if (flightRecorderStatus != null) {
+			if (flightRecorderStatus.equals(FlightRecorderHook.ENABLE_INBOUND) || flightRecorderStatus.equals(FlightRecorderHook.ENABLE_INOUTBOUND)) {
+				inList.add(majiSystemProvider.getImplementation(FlightRecorderHook.class).getName());
+			}
+		}
 
-    inList.add(
-      majiSystemProvider.getImplementation(InboundSecurityHook.class).getName()
-    );
-  }
+		/*
+		String securityHookStatus = properties.getProperty(InboundSecurityHook.PROPERTY_ENABLE);
+		if (flightRecorderStatus != null) {
+			if (flightRecorderStatus.equals(InboundSecurityHook.ENABLE_INBOUND)) {
+				inList.add(majiSystemProvider.getImplementation(InboundSecurityHook.class).getName());
+			}
+		}
+		*/
+	}
 
-  public Iterator<String> generate()
-  {
-      return(inList.iterator());
-  }
+	public Iterator<String> generate() {
+		return (inList.iterator());
+	}
 }
