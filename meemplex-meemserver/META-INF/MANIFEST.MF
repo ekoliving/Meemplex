@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Meem Server
 Bundle-SymbolicName: org.meemplex.meemserver;singleton:=true
-Bundle-Version: 1.0.0.1
+Bundle-Version: 1.0.1
 Bundle-Vendor: Sugar Coding
 DynamicImport-Package: *
 Eclipse-BuddyPolicy: registered
@@ -118,29 +118,25 @@ Export-Package: javax.mail,
  org.openmaji.server.presentation,
  org.openmaji.server.presentation.hyperspace.images,
  org.openmaji.server.utility
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.osgi.framework,
- org.osgi.service.event,
- org.osgi.service.http
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: org.eclipse.core.runtime,
+ org.osgi.framework;version="[1.3.0,2.0.0)",
+ org.osgi.service.event;version="[1.3.0,2.0.0)",
+ org.osgi.service.http;version="[1.0.0,2.0.0)"
 Bundle-Activator: org.meemplex.server.MeemplexActivator
-Require-Bundle: org.meemplex.system;bundle-version="1.0.0";visibility:=reexport,
- org.mortbay.jetty.server;bundle-version="6.1.23",
- org.mortbay.jetty.util;bundle-version="6.1.23",
- org.eclipse.core.runtime;bundle-version="3.7.0"
+Require-Bundle: org.meemplex.system;bundle-version="[1.0.1,1.2.0)";visibility:=reexport,
+ org.eclipse.jetty.server;bundle-version="[8.1.0,9.1.0)",
+ org.eclipse.jetty.util;bundle-version="[8.1.0,9.1.0)"
 Bundle-ClassPath: lib/activation.jar,
  lib/bcprov.jar,
  lib/bsf.jar,
  lib/bsh.jar,
  lib/derby.jar,
  lib/eclipselink.jar,
- lib/javax.persistence_2.0.3.jar,
  lib/jdom.jar,
  lib/jline-2.6.jar,
- lib/mail.jar,
- lib/org.eclipse.paho.client.mqttv3.jar,
  lib/jini/classserver.jar,
  lib/jini/jini-core.jar,
- build/classes/,
  lib/jini/asm-3.2.jar,
  lib/jini/asm-commons-3.2.jar,
  lib/jini/browser.jar,
@@ -175,5 +171,8 @@ Bundle-ClassPath: lib/activation.jar,
  lib/jini/start.jar,
  lib/jini/sun-util.jar,
  lib/jini/tools.jar,
- lib/orient-commons-1.0.1.jar,
- lib/orientdb-core-1.0.1.jar
+ lib/orient-commons-1.2.jar,
+ lib/orientdb-core-1.2.jar,
+ target/classes,
+ lib/javax.persistence_2.0.3.jar,
+ lib/mail.jar
