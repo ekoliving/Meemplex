@@ -19,6 +19,9 @@
 
 package org.openmaji.implementation.common;
 
+import org.meemplex.meem.Facet;
+import org.meemplex.meem.FacetContent;
+import org.meemplex.service.model.Direction;
 import org.openmaji.common.Binary;
 import org.openmaji.implementation.common.DebugFlag;
 import org.openmaji.meem.Wedge;
@@ -57,29 +60,31 @@ import java.util.logging.Logger;
  * @see org.openmaji.common.Binary
  */
 
+@org.meemplex.meem.Wedge
 public class BinaryWedge implements Binary, Wedge {
 
 	private static final Logger logger = Logger.getAnonymousLogger();
 
+	@Facet(direction=Direction.IN, name="binaryInput")
+	public Binary binaryInput = this;
+	
 	/**
 	 * Binary client (out-bound Facet)
 	 */
+	@Facet(direction=Direction.OUT, name="binaryOutput")
 	public Binary binaryClient;
 
+	/**
+	 * Send content to a Binary client that has just had its Reference added.
+	 */
+	@FacetContent(facet="binaryOutput")
 	public final ContentProvider binaryClientProvider = new ContentProvider() {
-		/**
-		 * Send content to a Binary client that has just had its Reference added.
-		 *
-		 * @param target           Reference to the target Meem
-		 * @param filter           No Filters are currently implemented
-		 */
 		public void sendContent(Object target, Filter filter) {
 			if (DebugFlag.TRACE) {
 				logger.log(Level.FINE, "sendContent() - invoked");
 			}
 			
-			// only send value if one has been received on the binaryStateConduit, 
-			// otherwise the value is invalid.
+			// only send value if one has been received on the binaryStateConduit, otherwise the value is invalid.
 			if (value != null) {
 				((Binary) target).valueChanged(value);
 			}

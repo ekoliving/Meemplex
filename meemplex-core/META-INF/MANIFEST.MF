@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Meemplex Core
 Bundle-SymbolicName: org.meemplex.core;singleton:=true
-Bundle-Version: 1.0.0.1
+Bundle-Version: 1.0.1
 Bundle-Vendor: Sugar Coding
 DynamicImport-Package: *
 Eclipse-RegisterBuddy: org.meemplex.meemserver
@@ -23,7 +23,7 @@ Export-Package: org.openmaji.common,
  org.openmaji.implementation.util.wedge,
  org.openmaji.util
 Import-Package: org.osgi.framework;version="1.6.0"
-Require-Bundle: org.meemplex.meemserver;bundle-version="1.0.0";visibility:=reexport
-Bundle-ClassPath: build/classes/
+Require-Bundle: org.meemplex.meemserver;bundle-version="[1.0.0,1.2.0)";visibility:=reexport
+Comment: Bundle-ClassPath: target/classes
 Bundle-Activator: org.meemplex.core.CoreActivator
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

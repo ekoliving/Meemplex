@@ -37,4 +37,5 @@ public class RegexConst
   public static final String FLOAT_REGEX = "([-+]?[0-9]*[\\.]?[0-9]*([eE][-+]?[0-9]+)?)";
 
   public static final String IP_ADDRESS = "(\\b((25[0-5]|2[0-4]\\d|[01]\\d\\d|\\d?\\d)\\.){3}(25[0-5]|2[0-4]\\d|[01]\\d\\d|\\d?\\d)\\b)";
+  
 }

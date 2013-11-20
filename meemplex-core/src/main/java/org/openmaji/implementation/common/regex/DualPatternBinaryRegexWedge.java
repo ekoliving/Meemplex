@@ -25,8 +25,6 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.meem.wedge.lifecycle.WedgeValidationException;
 
-
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
