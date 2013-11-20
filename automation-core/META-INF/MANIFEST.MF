@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Meemplex Automation core
 Bundle-SymbolicName: org.meemplex.automation.core;singleton:=true
-Bundle-Version: 1.0.0.1
+Bundle-Version: 1.0.1
 Bundle-Vendor: Sugar Coding
 Eclipse-RegisterBuddy: org.meemplex.meemserver
 Export-Package: org.meemplex.automation.core,
@@ -20,9 +20,10 @@ Export-Package: org.meemplex.automation.core,
  org.openmaji.implementation.automation.serial,
  org.openmaji.implementation.automation.serial.devices,
  org.openmaji.implementation.automation.subsystem
-Require-Bundle: org.meemplex.core;bundle-version="1.0.0";visibility:=reexport
+Require-Bundle: org.meemplex.core;bundle-version="[1.0.0,1.2.0)";visibility:=reexport
 Bundle-ClassPath: library/jcl.jar,
  library/javax.comm.jar,
  build/classes/
 Bundle-Activator: org.meemplex.automation.core.AutomationCoreActivator
 Import-Package: org.osgi.framework;version="1.6.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

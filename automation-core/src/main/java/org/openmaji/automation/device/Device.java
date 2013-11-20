@@ -35,5 +35,5 @@ public interface Device extends Facet
    * 
    * @param description The new device description.
    */
-  public void descriptionChanged(DeviceDescription description);
+  void descriptionChanged(DeviceDescription description);
 }

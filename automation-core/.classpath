@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="source"/>
-	<classpathentry exported="true" kind="lib" path="build/classes/"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="library/javax.comm.jar"/>
-	<classpathentry kind="lib" path="library/jcl.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/meemplex-core"/>
+	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry exported="true" kind="lib" path="library/jcl.jar"/>
+	<classpathentry exported="true" kind="lib" path="library/javax.comm.jar"/>
+	<classpathentry exported="true" kind="lib" path="build/classes" sourcepath="build/classes"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
