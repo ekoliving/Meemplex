@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
 Bundle-Name: Meemplex Meem
 Bundle-SymbolicName: org.meemplex.meem
-Bundle-Version: 1.0.0.1
+Bundle-Version: 1.0.1
 Bundle-Vendor: Sugar Coding
 DynamicImport-Package: *
 Export-Package: org.meemplex.meem,
@@ -22,4 +22,4 @@ Export-Package: org.meemplex.meem,
  org.openmaji.spi,
  org.openmaji.utility,
  org.openmaji.utility.uid
-Bundle-ClassPath: build/classes/
+Comment: Bundle-ClassPath: target/classes

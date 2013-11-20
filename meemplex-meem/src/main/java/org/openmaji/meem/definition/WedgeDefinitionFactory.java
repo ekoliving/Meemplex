@@ -9,6 +9,8 @@
 
 package org.openmaji.meem.definition;
 
+import java.lang.reflect.Field;
+
 import org.openmaji.spi.MajiSPI;
 
 /**
@@ -39,6 +41,8 @@ public interface WedgeDefinitionFactory {
 
 	public WedgeDefinition createWedgeDefinition(Class<?> wedgeSpecification);
 
+	public WedgeDefinition createWedgeDefinition(Field wedgeSpecification);
+	
 	public WedgeDefinition inspectWedgeDefinition(Class<?> wedgeSpecification);
 
 	/**

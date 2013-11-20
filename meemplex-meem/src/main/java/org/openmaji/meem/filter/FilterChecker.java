@@ -65,6 +65,7 @@ public interface FilterChecker {
 
   public boolean invokeMethodCheck(
     Filter   filter,
+    String   facetName,
     String   methodName,
     Object[] args)
     throws   IllegalFilterException;

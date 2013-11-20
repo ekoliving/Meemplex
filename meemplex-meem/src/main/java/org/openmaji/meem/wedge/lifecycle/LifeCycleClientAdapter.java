@@ -45,7 +45,6 @@ import org.openmaji.meem.wedge.error.ErrorHandler;
 public class LifeCycleClientAdapter 
 	implements LifeCycleClient 
 {
-	private Wedge 	parent;
 	
 	public MeemContext meemContext;
 	
@@ -59,9 +58,14 @@ public class LifeCycleClientAdapter
 	 */
 	public Vote lifeCycleControlConduit;
 	
-	public LifeCycleClientAdapter(
-		Wedge	parent)
-	{
+	private Wedge 	parent;
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param parent
+	 */
+	public LifeCycleClientAdapter(Wedge	parent) {
 		this.parent = parent;
 	}
 	

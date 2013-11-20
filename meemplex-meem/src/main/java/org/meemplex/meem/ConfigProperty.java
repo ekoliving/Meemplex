@@ -5,7 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Used to annotate an attribute to be used as a configuration property
  * for a Wedge.
@@ -41,4 +40,11 @@ public @interface ConfigProperty {
 	 * @return
 	 */
 	PropertyType type() default PropertyType.STRING;
+
+	/**
+	 * The maximum lifecycle state that the property can be changed in.
+	 * 
+	 * @return
+	 */
+	LifeCycleState maxLifeCycleState() default LifeCycleState.LOADED;
 }

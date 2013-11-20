@@ -19,7 +19,7 @@ public @interface Wedge {
 	 *  
 	 * @return
 	 */
-	String name();
+	String name() default "";
 	
 	String description() default "";
 }

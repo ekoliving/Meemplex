@@ -61,18 +61,7 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleTransition;
  * </ul>
  */
 public class ConfigurationClientAdapter implements ConfigurationClient {
-	private Map<ConfigurationIdentifier, ConfigurationSpecification> specificationMap = new HashMap<ConfigurationIdentifier, ConfigurationSpecification>();
-
-	private Wedge parent;
-
-	private Class<? extends Wedge> specification;
-
-	private boolean initialised = false;
-
-	private ConfigurationSpecification[] initialSpecifications = null;
-
-	private LifeCycleState currentState;
-
+	
 	public MeemContext meemContext;
 
 	public ConfigurationClient configurationClientConduit;
@@ -224,6 +213,84 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 		}
 	};
 
+	/**
+	 * Basic constructor - in this case the adapter will listen for any configuration property defined by the ConfigurationSpecifications it contains.
+	 * 
+	 * @param parent
+	 *            the wedge containing the adapter.
+	 */
+	public ConfigurationClientAdapter(Wedge parent) {
+		this.parent = parent;
+		this.specification = parent.getClass();
+	}
+
+	/**
+	 * Constructor which limits the configuration properties listened for to those described in the specifications.
+	 * 
+	 * @param parent
+	 * @param specifications
+	 */
+	public ConfigurationClientAdapter(Wedge parent, ConfigurationSpecification[] specifications) {
+		this(parent);
+
+		initialSpecifications = specifications;
+	}
+
+	/**
+	 * Broadcast that our configuration has changed.
+	 * 
+	 * @param oldSpecifications
+	 *            our original, if any, property specifications.
+	 * @param newSpecifications
+	 *            the specifications for the properties, if any, we are now listening for.
+	 */
+	public final void specificationChanged(ConfigurationSpecification[] oldSpecifications, ConfigurationSpecification[] newSpecifications) {
+		initialise();
+
+		if (oldSpecifications != null) {
+			for (int i = 0; i < oldSpecifications.length; i++) {
+				specificationMap.remove(oldSpecifications[i].getIdentifier());
+			}
+		}
+
+		for (int i = 0; i < newSpecifications.length; i++) {
+			ConfigurationSpecification specification = newSpecifications[i];
+			specificationMap.put(specification.getIdentifier(), specification);
+		}
+
+		//performConfigurationAvailableChanged(oldSpecifications, newSpecifications);
+	}
+
+	/**
+	 * Broadcast that a particular property has had a change accepted.
+	 * 
+	 * @param id
+	 *            the identifier associated with the property whose change we have accepted.
+	 * @param value
+	 *            the value the property now has.
+	 */
+	public final void valueAccepted(ConfigurationIdentifier id, Serializable value) {
+		initialise();
+
+		//performConfigurationAccepted(id, value);
+	}
+
+	/**
+	 * Broadcast that a particular change attempt has been rejected.
+	 * 
+	 * @param id
+	 *            the property the rejection is associated with.
+	 * @param value
+	 *            the value that was rejected.
+	 * @param reason
+	 *            the reason for the rejection.
+	 */
+	public final void valueRejected(ConfigurationIdentifier id, Serializable value, Serializable reason) {
+		initialise();
+
+		//performConfigurationRejected(id, value, reason);
+	}
+
 	private void initialise() {
 		if (initialised) {
 			return;
@@ -312,107 +379,19 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 		initialised = true;
 	}
 
-	/**
-	 * Basic constructor - in this case the adapter will listen for any configuration property defined by the ConfigurationSpecifications it contains.
-	 * 
-	 * @param parent
-	 *            the wedge containing the adapter.
-	 */
-	public ConfigurationClientAdapter(Wedge parent) {
-		this.parent = parent;
-		this.specification = parent.getClass();
-	}
-
-	/**
-	 * Constructor which limits the configuration properties listened for to those described in the specifications.
-	 * 
-	 * @param parent
-	 * @param specifications
-	 */
-	public ConfigurationClientAdapter(Wedge parent, ConfigurationSpecification[] specifications) {
-		this(parent);
-
-		initialSpecifications = specifications;
-	}
-
-	/**
-	 * Broadcast that our configuration has changed.
-	 * 
-	 * @param oldSpecifications
-	 *            our original, if any, property specifications.
-	 * @param newSpecifications
-	 *            the specifications for the properties, if any, we are now listening for.
-	 */
-	public final void specificationChanged(ConfigurationSpecification[] oldSpecifications, ConfigurationSpecification[] newSpecifications) {
-		initialise();
-
-		if (oldSpecifications != null) {
-			for (int i = 0; i < oldSpecifications.length; i++) {
-				specificationMap.remove(oldSpecifications[i].getIdentifier());
-			}
-		}
-
-		for (int i = 0; i < newSpecifications.length; i++) {
-			ConfigurationSpecification specification = newSpecifications[i];
-			specificationMap.put(specification.getIdentifier(), specification);
-		}
-
-		//performConfigurationAvailableChanged(oldSpecifications, newSpecifications);
-	}
-
-	/**
-	 * Broadcast that a particular property has had a change accepted.
-	 * 
-	 * @param id
-	 *            the identifier associated with the property whose change we have accepted.
-	 * @param value
-	 *            the value the property now has.
-	 */
-	public final void valueAccepted(ConfigurationIdentifier id, Serializable value) {
-		initialise();
-
-		//performConfigurationAccepted(id, value);
-	}
-
-	/**
-	 * Broadcast that a particular change attempt has been rejected.
-	 * 
-	 * @param id
-	 *            the property the rejection is associated with.
-	 * @param value
-	 *            the value that was rejected.
-	 * @param reason
-	 *            the reason for the rejection.
-	 */
-	public final void valueRejected(ConfigurationIdentifier id, Serializable value, Serializable reason) {
-		initialise();
-
-		//performConfigurationRejected(id, value, reason);
-	}
-
-//	/*
-//	 * @deprecated do not use!
-//	 */
-//	public final void performConfigurationProvide(ConfigurationClient client, Filter filter) {
-//	};
-//
-//	/*
-//	 * @deprecated do not use!
-//	 */
-//	public final void performConfigurationAvailableChanged(ConfigurationSpecification[] specification, ConfigurationSpecification[] value) {
-//	}
-//
-//	/*
-//	 * @deprecated do not use!
-//	 */
-//	public final void performConfigurationAccepted(ConfigurationIdentifier id, Serializable value) {
-//	}
-//
-//	/*
-//	 * @deprecated do not use!
-//	 */
-//	public final void performConfigurationRejected(ConfigurationIdentifier id, Serializable value, Serializable reason) {
-//	}
-
 	private static final Logger logger = Logger.getAnonymousLogger();
+	
+	private Map<ConfigurationIdentifier, ConfigurationSpecification> specificationMap = new HashMap<ConfigurationIdentifier, ConfigurationSpecification>();
+
+	private Wedge parent;
+
+	private Class<? extends Wedge> specification;
+
+	private boolean initialised = false;
+
+	private ConfigurationSpecification[] initialSpecifications = null;
+
+	private LifeCycleState currentState;
+
+
 }

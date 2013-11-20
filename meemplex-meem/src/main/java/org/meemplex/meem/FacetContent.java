@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  * @author stormboy
  *
  */
-@Retention(value=RetentionPolicy.RUNTIME)
-@Target(value=ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.FIELD })
 public @interface FacetContent {
 	/**
 	 * Name of the Facet to provide content for.
