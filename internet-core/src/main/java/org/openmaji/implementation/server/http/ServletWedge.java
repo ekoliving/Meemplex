@@ -1,6 +1,7 @@
 package org.openmaji.implementation.server.http;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.meemplex.meem.Conduit;
 import org.meemplex.meem.ConfigProperty;
@@ -91,11 +92,24 @@ public class ServletWedge implements org.openmaji.meem.Wedge {
 	public transient ConfigurationSpecification debugSpecification = new ConfigurationSpecification("servlet path", Boolean.TYPE, LifeCycleState.LOADED);
 
 	
+	Map<String, String> properties = new HashMap<String, String>();
+	
 	/* ---------------- getters and setters for configuration ----------------- */
 	
 	public void setParams(String params) {
-		// TODO check params are valid
-		String[] pa = params.split(",");
+		// check params are valid
+		this.properties = new HashMap<String, String>();
+
+		// set properties
+		if (params != null) {
+			String[] pa = params.split(",");
+			for (String param : pa) {
+				String[] entry = param.split("=");
+				if (entry != null && entry.length > 1) {
+					properties.put(entry[0].trim(), entry[1].trim());
+				}
+			}
+		}
 		
 		// TODO set params
 		
@@ -145,19 +159,6 @@ public class ServletWedge implements org.openmaji.meem.Wedge {
 	 * Send servlet details to the servletConsumerConduit
 	 */
 	public void commence() {
-		Properties properties = new Properties();
-
-		// set properties
-		if (params != null) {
-			String[] pa = params.split(",");
-			for (String param : pa) {
-				String[] entry = param.split("=");
-				if (entry != null && entry.length > 1) {
-					properties.setProperty(entry[0].trim(), entry[1].trim());
-				}
-			}
-		}
-
 		// send servlet details down servletConsumerConduit
 		servletConsumerConduit.servlet(getServletName(), getServletPath(), getServletClass(), properties);
 	}

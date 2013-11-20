@@ -7,7 +7,6 @@ package org.openmaji.implementation.server.http;
 import java.net.BindException;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.Servlet;
@@ -17,15 +16,21 @@ import org.openmaji.meem.*;
 import org.openmaji.meem.wedge.configuration.*;
 import org.openmaji.meem.wedge.lifecycle.*;
 import org.openmaji.utility.TestHarness;
-
+import org.meemplex.meem.Conduit;
+import org.meemplex.meem.ConfigProperty;
+import org.meemplex.meem.Content;
 import org.meemplex.meem.Wedge;
-import org.mortbay.jetty.*;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.handler.*;
-import org.mortbay.jetty.security.*;
-import org.mortbay.jetty.servlet.*;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.util.MultiException;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.*;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.MultiException;
+import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 /**
  * @author Warren Bloomer
@@ -44,23 +49,27 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 	/**
 	 * The conduit through which this Wedge alerts errors in configuration changes
 	 */
+	@Conduit
 	public ConfigurationClient  configurationClientConduit = new ConfigurationClientAdapter(this);
 
 	/**
 	 * The conduit through which this Wedge will signal whether or not is able to go READY
 	 */
+	@Conduit
 	public Vote              lifeCycleControlConduit;
 
 	/**
 	 * The conduit through which we are alerted to life cycle changes
 	 */
+	@Conduit
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 	
 	/**
 	 * Conduit on which to receive Servlets
 	 */
+	@Conduit
 	public ServletConsumer servletConsumerConduit = new ServletConsumer() {
-		public void servlet(String name, String path, String classname, java.util.Properties properties) {
+		public void servlet(String name, String path, String classname, Map<String,String> properties) {
 			ServletSpec spec = new ServletSpec(name, path, classname, properties);
 			addServlet(spec);
 		};
@@ -69,6 +78,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 	/**
 	 * for adding resource handler
 	 */
+	@Conduit
 	public MapConsumer resourceMapConduit = new MapConsumer() {
 		public void add(String contextPath, String resourcePath) {
 			resourceSpecs.put(contextPath, resourcePath);
@@ -90,6 +100,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 	/**
 	 * For receiving webapp spec (context path and path to war file)
 	 */
+	@Conduit
 	public MapConsumer webappMapConduit = new MapConsumer() {
 		public void add(String contextPath, String resourcePath) {
 			webappSpecs.put(contextPath, resourcePath);
@@ -111,17 +122,32 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 
 	/* ------------------------ persisted properties -------------------- */
 
+	@Content
 	public String servletContextString = "/maji";
+	
+	@Content
 	public String meemkitContextString = "/meemkits";
 	
 	// configurable properties
+	@ConfigProperty(description="The port for this web server to listener on")
 	public int     port             = 8000;
+	
+	@ConfigProperty
 	public boolean useSSL           = false;
+	
+	@ConfigProperty(description="whether client authentication is required")
 	public boolean needClientAuth   = false;		// whether to use client authentication
+	
+	@ConfigProperty
 	public String  sslKeystore      = "";
+	
+	@ConfigProperty
 	public String  sslPassword      = "";
+	
+	@ConfigProperty
 	public String  sslKeyPassword   = "";
 	
+	@ConfigProperty(description="Number of seconds before a user session times out")
 	public long    sessionTimeout   = 120;  // in seconds
 
 
@@ -141,9 +167,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 	
 	private HandlerCollection handlerCollection;
 
-	private Context servletContext;
-	//private Context fileContext;
-	//private Context webAppContext;
+	private ServletContextHandler servletContext;
 
 	private HashSet<ServletSpec> servletSpecs = new HashSet<ServletSpec>();
 	
@@ -225,7 +249,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 		
 		if (server == null) {
 			// stop excessive logging
-			org.mortbay.log.Log.setLog(null);
+			Log.setLog(null);
 			System.setProperty("DEBUG", "false");
 			System.setProperty("VERBOSE", "false");
 			 
@@ -234,16 +258,24 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 
 		Connector connector = null;
 		if (useSSL) {
+			SslContextFactory contextFactory = new SslContextFactory();
+			contextFactory.setKeyStore(sslKeystore);
+			contextFactory.setKeyStorePassword(sslPassword);
+			contextFactory.setKeyManagerPassword(sslKeyPassword);
+			contextFactory.setNeedClientAuth(needClientAuth);
+			connector = new SslSelectChannelConnector(contextFactory);
+			
 			// Setup JSSE keystore and set parameters here correctly
-			connector = new SslSocketConnector();
-			((SslSocketConnector)connector).setKeystore(sslKeystore);
-			((SslSocketConnector)connector).setPassword(sslPassword);
-			((SslSocketConnector)connector).setKeyPassword(sslKeyPassword);
-			((SslSocketConnector)connector).setNeedClientAuth(needClientAuth);
+//			connector = new SslSocketConnector();
+//			((SslSocketConnector)connector).setKeystore(sslKeystore);
+//			((SslSocketConnector)connector).setPassword(sslPassword);
+//			((SslSocketConnector)connector).setKeyPassword(sslKeyPassword);
+//			((SslSocketConnector)connector).setNeedClientAuth(needClientAuth);
 			// uses an entry in the keystore called "jetty"
 		}
 		else { 
-			connector = new SocketConnector();
+			//connector = new SocketConnector();
+			connector = new SelectChannelConnector();
 		}
 		connector.setPort(port);
 		server.addConnector(connector);
@@ -254,7 +286,8 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 		
 
 		// create servlet context
-		servletContext = new Context(handlerCollection, servletContextString, Context.SESSIONS);
+		servletContext = new ServletContextHandler(handlerCollection, servletContextString, ServletContextHandler.SESSIONS);
+//		servletContext = new ServletContextHandler(handlerCollection, servletContextString, ServletContextHandler.SESSIONS);
 
 		// create web app context
 		//webAppContext = new Context(handlerCollection, webAppContextString, Context.SESSIONS);
@@ -350,7 +383,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 		}
 	}
 	
-	private void addServletsToContext(Context context) 
+	private void addServletsToContext(ServletContextHandler context) 
 		throws InstantiationException, IllegalAccessException, ClassNotFoundException, Exception
 	{
 		synchronized (servletSpecs) {
@@ -362,7 +395,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 		}
 	}
 
-	private void addServletToContext(Context context, ServletSpec spec) 
+	private void addServletToContext(ServletContextHandler context, ServletSpec spec) 
 		throws InstantiationException, IllegalAccessException, ClassNotFoundException, Exception
 	{
 		if (context == null) {
@@ -379,10 +412,12 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 
 		ServletHolder servletHolder = new ServletHolder( ObjectUtility.getClass(Servlet.class, spec.getClassname()) );
 		context.addServlet(servletHolder, spec.getPath());
+		servletHolder.setInitParameters(spec.getProperties());
 
-		Properties properties = spec.getProperties();
-		servletHolder.setInitParameters(properties);
-
+//		Class<Servlet> servletClass = ObjectUtility.getClass(Servlet.class, spec.getClassname());
+//		Dynamic servletRegistration = context.addServlet(servletClass, spec.getPath());
+//		servletRegistration.setInitParameters(spec.getProperties());
+		
 //		if (restartContext) {
 //			context.start();
 //		}
@@ -413,7 +448,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 			logger.log(Level.INFO, "serving: " + resourceHandler.getBaseResource());
 			
 			ContextHandler contextHandler = new ContextHandler(contextPath);
-			contextHandler.addHandler(resourceHandler);
+			contextHandler.setHandler(resourceHandler);
 			
 			handlerCollection.addHandler(contextHandler);
 			
@@ -474,15 +509,15 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 		private final String name;
 		private final String path;
 		private final String classname;
-		private final Properties properties;
+		private final Map<String, String> properties;
 		
-		public ServletSpec(String name, String path, String classname, Properties properties) {
+		public ServletSpec(String name, String path, String classname, Map<String,String> properties) {
 			this.name = name;
 			this.path = path;
 			this.classname = classname;
 
 			if (properties == null) {
-				properties = new Properties();
+				properties = new HashMap<String, String>();
 			}			
 			this.properties = properties;
 		}
@@ -499,7 +534,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 			return classname;
 		}
 		
-		public Properties getProperties() {
+		public Map<String, String> getProperties() {
 			return properties;
 		}
 	}
