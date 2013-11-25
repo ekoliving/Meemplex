@@ -3,7 +3,6 @@ package org.openmaji.implementation.server.space.meemstore.orientdb;
 import java.io.File;
 import java.util.Properties;
 
-import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.space.meemstore.MeemStoreWedge;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentPool;
@@ -71,6 +70,7 @@ public class DatabasePool {
 			db.close();
 			created = true;
 		}
+
 		db = ODatabaseDocumentPool.global().acquire("local:" + dbPath, username, password);
 
 		return db;

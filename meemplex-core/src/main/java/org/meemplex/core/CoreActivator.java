@@ -28,8 +28,6 @@ public class CoreActivator implements BundleActivator {
 		}
 		public MeemkitDescriptor getDescriptor() {
 			URL meemkitUrl = getDescriptorUrl();
-			//logger.log(Level.INFO, "got meemkit resource: " + meemkitUrl);
-			
 			MeemkitDescriptor descriptor = MeemkitUtility.createMeemkitDescriptor(meemkitUrl);
 		    return descriptor;
 		}

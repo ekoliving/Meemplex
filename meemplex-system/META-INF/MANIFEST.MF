@@ -41,5 +41,5 @@ Export-Package: org.meemplex.system,
  org.openmaji.system.spi,
  org.openmaji.system.utility
 Require-Bundle: org.meemplex.meem;bundle-version="[1.0.1,1.2.0)";visibility:=reexport
-Bundle-ClassPath: target/classes
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+

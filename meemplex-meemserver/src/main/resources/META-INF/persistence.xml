@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence">
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
 	<persistence-unit name="meemstore" transaction-type="RESOURCE_LOCAL">
-	<!-- 
-		<provider>oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider</provider>
--->		
-<!-- 
-		<provider>oracle.toplink.essentials.PersistenceProvider</provider>
-		 -->
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		 
 		<class>org.openmaji.implementation.server.space.meemstore.jpa.MeemEntity</class>
 		<class>org.openmaji.implementation.server.space.meemstore.jpa.WedgeEntity</class>
 		<class>org.openmaji.implementation.server.space.meemstore.jpa.FacetEntity</class>
 		<class>org.openmaji.implementation.server.space.meemstore.jpa.ContentEntity</class>
-
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 <!-- 		
 			<property name="eclipselink.jdbc.url" value="jdbc:mysql://localhost:3306/test" />

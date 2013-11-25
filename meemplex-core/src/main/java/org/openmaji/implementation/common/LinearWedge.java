@@ -7,6 +7,11 @@
 
 package org.openmaji.implementation.common;
 
+import org.meemplex.meem.Conduit;
+import org.meemplex.meem.Content;
+import org.meemplex.meem.Facet;
+import org.meemplex.meem.FacetContent;
+import org.meemplex.service.model.Direction;
 import org.openmaji.common.Linear;
 import org.openmaji.common.PercentagePosition;
 import org.openmaji.common.Position;
@@ -14,6 +19,11 @@ import org.openmaji.implementation.common.DebugFlag;
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
+
+
+
+
+
 
 
 
@@ -51,6 +61,8 @@ import java.util.logging.Logger;
  * @version 1.0
  */
 
+@org.meemplex.meem.Wedge(name="LinearWedge")
+
 public class LinearWedge implements Linear, Wedge
 {
   private static final Logger logger = Logger.getAnonymousLogger();
@@ -59,7 +71,10 @@ public class LinearWedge implements Linear, Wedge
    * Linear client (out-bound Facet)
    */
 
+  @Facet(direction=Direction.OUT)
   public Linear linearClient;
+  
+  @FacetContent(facet="linearOutput")
   public final ContentProvider linearClientProvider = new ContentProvider()
   {
       /**
@@ -79,19 +94,21 @@ public class LinearWedge implements Linear, Wedge
   /**
    * Position state maintained by this Linear Wedge and persisted by the Maji framework
    */
-
+  @Content
   public Position position = new PercentagePosition();
 
   /**
    * The conduit through which incoming control message arrive from other Wedges in the Meem. 
    */
 
+  @Conduit(name="linearControl")
   public Linear linearControlConduit = null;
 
   /**
    * The conduit through which state changes are sent out to other Wedges in the Meem. 
    */
 
+  @Conduit(name="linearState")
   public Linear linearStateConduit = new LinearStateConduit();
 
 
@@ -120,7 +137,7 @@ public class LinearWedge implements Linear, Wedge
    * @author Chris Kakris
    */
 
-  class LinearStateConduit implements Linear
+  private class LinearStateConduit implements Linear
   {
     /**
      * Respond to a value change by simply passing the change on to any Meems

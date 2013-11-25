@@ -19,6 +19,7 @@
 
 package org.openmaji.implementation.common;
 
+import org.meemplex.meem.Conduit;
 import org.meemplex.meem.Facet;
 import org.meemplex.meem.FacetContent;
 import org.meemplex.service.model.Direction;
@@ -29,6 +30,7 @@ import org.openmaji.meem.filter.Filter;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClient;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleClientAdapter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
+
 
 
 
@@ -96,18 +98,21 @@ public class BinaryWedge implements Binary, Wedge {
 	 * request to change the value of the binary thing.  
 	 */
 
+	@Conduit(name="binaryControl")
 	public Binary binaryControlConduit;
 
 	/**
 	 * The conduit through which state changes are received other Wedges in the Meem. 
 	 */
 
+	@Conduit(name="binaryState")
 	public Binary binaryStateConduit = new BinaryStateConduit();
 	
 	/**
 	 * LifeCycleClient conduit.
 	 */
 	
+	@Conduit(name="lifeCycleClient")
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 	
 	/**
@@ -167,12 +172,14 @@ public class BinaryWedge implements Binary, Wedge {
 	/**
 	 * Called when the meem LifeCycle state goes from 'loaded' to 'pending'
 	 */
+	//@OnCommence
 	protected void commence() {
 	}
 
 	/**
 	 * Called when the meem LifeCycle state goes from 'pending' to 'loaded'
 	 */
+	//@OnConlude
 	protected void conclude() {
 		this.value = null;
 	}

@@ -1,24 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/javax.persistence_2.0.5.v201212031355.jar"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsf.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/derby.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/eclipselink.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/orient-commons-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/orientdb-core-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jline-2.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/orient-commons-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/orientdb-core-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="target/classes" sourcepath="target/classes"/>
-	<classpathentry kind="lib" path="lib/javax.persistence_2.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/mail.jar"/>
-	<classpathentry kind="lib" path="lib/jini/reggie.jar"/>
-	<classpathentry kind="lib" path="lib/jini/start.jar"/>
-	<classpathentry kind="lib" path="lib/jini/classserver.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/classserver.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/asm-3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/asm-commons-3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/browser.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/checkconfigurationfile.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/checkser.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/classdep.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/computedigest.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/computehttpmdcodebase.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/destroy.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/envcheck.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/extra.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/fiddler.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/group.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/jarwrapper.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/jsk-lib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/jsk-platform.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/jsk-resources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/mahalo.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/mercury.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/norm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/outrigger-snaplogstore.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/outrigger.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/phoenix-group.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/phoenix-init.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/phoenix.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/preferredlistgen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/reference-collections-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/reggie.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/serviceui.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/sharedvm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/start.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jini/tools.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

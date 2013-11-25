@@ -7,12 +7,16 @@
 
 package org.openmaji.implementation.common;
 
+import org.meemplex.meem.Facet;
+import org.meemplex.service.model.Direction;
 import org.openmaji.common.LinearList;
 import org.openmaji.common.Position;
 import org.openmaji.implementation.common.DebugFlag;
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
+
+
 
 
 
@@ -47,8 +51,8 @@ public class LinearListWedge implements LinearList, Wedge
   /**
    * Variable client (out-bound Facet)
    */
-
-  public LinearList linearListClient;
+  @Facet(direction=Direction.OUT, name="linearListClient")
+  LinearList linearListClient;
   
   public final ContentProvider linearListClientProvider = new ContentProvider()
   {

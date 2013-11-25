@@ -80,6 +80,36 @@ public class MeemplexActivator implements BundleActivator {
 
 		this.bundleContext = bc;
 		
+		/*
+		URL persistenceUrl = bc.getBundle().getEntry("/META-INF/persistence.xml");
+		StringBuffer sb = new StringBuffer();
+		InputStream is = persistenceUrl.openStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		for (String line = br.readLine(); line != null; line = br.readLine()) {
+			sb.append(line);
+			sb.append('\n');
+		}
+		logger.info("got persistence URL: " + sb);
+		*/
+		/*
+		 * osgi.unit.name
+				The name of the persistence unit for the EntityManagerFactory service.
+			osgi.unit.version
+				The version of the persistence bundle.
+			osgi.unit.provider
+				The name of the persistence provider implementation class for the EntityManagerFactory service.
+		 */
+		
+//		ServiceReference<?>[] emfs = bc.getServiceReferences((String)null, null);
+//		for (ServiceReference<?> emfr : emfs) {
+//			logger.info("got emf service: " + emfr);
+//		}
+//		bc.addServiceListener(new ServiceListener() {
+//			public void serviceChanged(ServiceEvent event) {
+//				logger.info("got service: " + event);
+//			}
+//		});
+				
 		//start the meemplex engine.
 		startMeemEngine();
 

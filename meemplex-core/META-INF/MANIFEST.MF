@@ -24,6 +24,5 @@ Export-Package: org.openmaji.common,
  org.openmaji.util
 Import-Package: org.osgi.framework;version="1.6.0"
 Require-Bundle: org.meemplex.meemserver;bundle-version="[1.0.0,1.2.0)";visibility:=reexport
-Comment: Bundle-ClassPath: target/classes
 Bundle-Activator: org.meemplex.core.CoreActivator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

@@ -18,7 +18,7 @@ public class PersistenceContext {
 
 	private static PersistenceContext instance;
 	
-	private Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, Object> properties = new HashMap<String, Object>();
 	
 	private EntityManagerFactory emf;
 	
@@ -38,7 +38,7 @@ public class PersistenceContext {
 		return instance;
 	}
 	
-	public synchronized void config(Map<String, String> properties) {
+	public synchronized void config(Map<String, Object> properties) {
 		if (emf == null) {
 			properties.put("javax.persistence.provider", "org.eclipse.persistence.jpa.PersistenceProvider");
 			properties.put("eclipselink.ddl-generation", "create-tables");
@@ -51,8 +51,25 @@ public class PersistenceContext {
 			properties.put("toplink.ddl-generation", "create-tables");
 			*/
 
-			this.properties = properties;
+//			try {
+//				StringBuffer sb = new StringBuffer();
+//				URL url = this.getClass().getClassLoader().getResource("/META-INF/persistence.xml");
+//				BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+//				for (String line = br.readLine(); line != null; line = br.readLine()) {
+//					sb.append(line);
+//					sb.append('\n');
+//				}
+//				logger.info("got persistence URL: " + sb);
+//			}
+//			catch (Exception e) {
+//				logger.log(Level.INFO, "problem", e);
+//			}
 			
+			//properties.put(PersistenceUnitProperties.CLASSLOADER, this.getClass().getClassLoader());
+			
+			//EntityManagerFactoryBuilder.createEntityManagerFactory()
+
+			this.properties = properties;
 			this.emf = Persistence.createEntityManagerFactory(PersistenceContext.PERSISTENCE_UNIT, properties);
 			if (debug) {
 				logger.log(Level.INFO, "persistence factory setup successfully: " + emf);

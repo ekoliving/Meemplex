@@ -77,9 +77,9 @@ public class OrientContentStore implements MeemStoreContentStore {
 		MeemContent meemContent = new MeemContent();
 
 		// This classloader change is to allows classes loaded by eclipse to perform Class.forName()
-		ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
+		//ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
-			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+			//Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
 			ODatabaseDocumentTx db = DatabasePool.getDatabase();
 			try {
@@ -125,8 +125,11 @@ public class OrientContentStore implements MeemStoreContentStore {
 				db.close();
 			}
 		}
+		catch (Exception e) {
+			logger.log(Level.INFO, "Exception while loading MeemContent " + meemPath.toString(), e);
+		}
 		finally {
-			Thread.currentThread().setContextClassLoader(previousClassLoader);
+			//Thread.currentThread().setContextClassLoader(previousClassLoader);
 		}
 
 		return meemContent;

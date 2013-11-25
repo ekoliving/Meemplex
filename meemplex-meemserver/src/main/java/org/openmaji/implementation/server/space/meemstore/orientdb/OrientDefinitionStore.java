@@ -73,34 +73,39 @@ public class OrientDefinitionStore implements MeemStoreDefinitionStore {
 			logger.log(Level.INFO, "Loading MeemDefinition for: " + meemPath);
 		}
 		
-		ODatabaseDocumentTx db = DatabasePool.getDatabase();
-		
 		MeemDefinition definition = null;
-
-		// This classloader change is to allows classes loaded by eclipse to perform Class.forName()
-		ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
+		
 		try {
-			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-			db.begin();
-			List<ODocument> result = db.command(queryGetMeem).execute(meemPath.getLocation());
-			if (result != null && result.size() > 0) {
-				ODocument meem = result.get(0);
-				byte[] bytes = meem.field("definition");
-				if (bytes != null) {
-					definition = new SerializableObject<MeemDefinition>().fromStream(bytes).getObject();
+			ODatabaseDocumentTx db = DatabasePool.getDatabase();
+			
+			// This classloader change is to allows classes loaded by eclipse to perform Class.forName()
+			//ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
+			try {
+				//Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+				db.begin();
+				List<ODocument> result = db.command(queryGetMeem).execute(meemPath.getLocation());
+				if (result != null && result.size() > 0) {
+					ODocument meem = result.get(0);
+					byte[] bytes = meem.field("definition");
+					if (bytes != null) {
+						definition = new SerializableObject<MeemDefinition>().fromStream(bytes).getObject();
+					}
+					else {
+						logger.log(Level.INFO, "no meem definition found for " + meemPath + " name " + meem.field("name"));
+					}
 				}
-				else {
-					logger.log(Level.INFO, "no meem definition found for " + meemPath + " name " + meem.field("name"));
-				}
+				db.commit();
 			}
-			db.commit();
+			catch (Exception e) {
+				db.rollback();
+			}
+			finally {
+				db.close();
+				//Thread.currentThread().setContextClassLoader(previousClassLoader);
+			}
 		}
 		catch (Exception e) {
-			db.rollback();
-		}
-		finally {
-			db.close();
-			Thread.currentThread().setContextClassLoader(previousClassLoader);
+			logger.log(Level.INFO, "Exception while loading MeemDefinitions " + meemPath.toString(), e);
 		}
 
 		return definition;

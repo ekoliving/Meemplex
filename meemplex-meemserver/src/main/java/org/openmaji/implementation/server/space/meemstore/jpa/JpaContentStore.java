@@ -70,7 +70,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 		}
 		this.url = "jdbc:derby:" + database + ";create=true";
 		
-		HashMap<String, String> myProperties = new HashMap<String, String>();
+		HashMap<String, Object> myProperties = new HashMap<String, Object>();
 		myProperties.put("javax.persistence.jdbc.driver", driver);
 		myProperties.put("javax.persistence.jdbc.url", url);
 		myProperties.put("javax.persistence.jdbc.user", username);
@@ -102,9 +102,9 @@ public class JpaContentStore implements MeemStoreContentStore {
 		MeemContent meemContent = new MeemContent();
 
 		// This classloader change is to allows classes loaded by eclipse to perform Class.forName()
-		ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
+		//ClassLoader previousClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
-			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+			//Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
 			try {
 				EntityManager em = PersistenceContext.instance().getEntityManager();
@@ -129,7 +129,7 @@ public class JpaContentStore implements MeemStoreContentStore {
 			}
 		}
 		finally {
-			Thread.currentThread().setContextClassLoader(previousClassLoader);
+			//Thread.currentThread().setContextClassLoader(previousClassLoader);
 		}
 
 		return meemContent;

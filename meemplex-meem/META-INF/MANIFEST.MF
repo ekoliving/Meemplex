@@ -22,4 +22,3 @@ Export-Package: org.meemplex.meem,
  org.openmaji.spi,
  org.openmaji.utility,
  org.openmaji.utility.uid
-Comment: Bundle-ClassPath: target/classes

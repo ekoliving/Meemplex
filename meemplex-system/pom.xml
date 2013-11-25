@@ -17,8 +17,6 @@
 			<groupId>org.meemplex</groupId>
 			<artifactId>org.meemplex.meem</artifactId>
 			<version>1.0.1</version>
-			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
-
 </project>
