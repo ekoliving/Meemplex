@@ -21,9 +21,9 @@ Export-Package: org.meemplex.automation.core,
  org.openmaji.implementation.automation.serial.devices,
  org.openmaji.implementation.automation.subsystem
 Require-Bundle: org.meemplex.core;bundle-version="[1.0.0,1.2.0)";visibility:=reexport
-Bundle-ClassPath: library/jcl.jar,
- library/javax.comm.jar,
- build/classes/
+Bundle-ClassPath: .,
+ library/jcl.jar,
+ library/javax.comm.jar
 Bundle-Activator: org.meemplex.automation.core.AutomationCoreActivator
 Import-Package: org.osgi.framework;version="1.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

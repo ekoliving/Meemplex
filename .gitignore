@@ -2,3 +2,5 @@ classes
 logs
 .DS_Store
 .gwt
+/target
+.metadata

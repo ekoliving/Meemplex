@@ -8,7 +8,6 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;

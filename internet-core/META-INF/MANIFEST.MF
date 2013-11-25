@@ -10,13 +10,12 @@ Export-Package: org.openmaji.implementation.emulator,
  org.openmaji.implementation.network.images,
  org.openmaji.implementation.server.http,
  org.openmaji.implementation.server.log
-Require-Bundle: org.meemplex.core;bundle-version="[1.0.0,1.2.0)";visibility:=reexport,
- org.meemplex.automation.core;bundle-version="1.0.0";visibility:=reexport,
+Require-Bundle: org.meemplex.automation.core;bundle-version="[1.0.0,1.2.0)";visibility:=reexport,
  javax.servlet;bundle-version="2.5.0";visibility:=reexport,
- org.eclipse.jetty.server;bundle-version="8.1",
- org.eclipse.jetty.util;bundle-version="8.1",
- org.eclipse.jetty.servlet;bundle-version="8.1.0",
- org.eclipse.jetty.webapp;bundle-version="8.1.0"
+ org.eclipse.jetty.server;bundle-version="[8.0.0,9.2.0)",
+ org.eclipse.jetty.util;bundle-version="[8.0.0,9.2.0)",
+ org.eclipse.jetty.servlet;bundle-version="[8.0.0,9.2.0)",
+ org.eclipse.jetty.webapp;bundle-version="[8.0.0,9.2.0)"
 Import-Package: javax.servlet;version="2.5.0",
  org.osgi.framework;version="1.6.0"
 Bundle-Activator: org.meemplex.internet.core.InternetCoreActivator
