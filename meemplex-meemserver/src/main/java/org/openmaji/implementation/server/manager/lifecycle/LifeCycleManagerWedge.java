@@ -66,19 +66,19 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 
 	public MeemCore meemCore;
 
+	
 	/* ------------------------------ outbound facets --------------------------------- */
 
 	public LifeCycleManagerClient lifeCycleManagerClient;
 
-	public final AsyncContentProvider lifeCycleManagerClientProvider = new AsyncContentProvider() {
+	public final AsyncContentProvider<LifeCycleManagerClient> lifeCycleManagerClientProvider = new AsyncContentProvider<LifeCycleManagerClient>() {
 
-		public void asyncSendContent(Object target, Filter filter, ContentClient contentClient) {
-			LifeCycleManagerClient lifeCycleManagerClientTarget = (LifeCycleManagerClient) target;
-
+		public void asyncSendContent(LifeCycleManagerClient client, Filter filter, ContentClient contentClient) {
 			if (filter == null) {
 				for (Meem meem : getMeems()) {
-					lifeCycleManagerClientTarget.meemCreated(meem, UNIDENTIFIED);
+					client.meemCreated(meem, UNIDENTIFIED);
 				}
+				contentClient.contentSent();
 			}
 			else if (filter instanceof CreateMeemFilter) {
 				if (DEBUG) {
@@ -88,25 +88,23 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 				CreateMeemFilter createMeemFilter = (CreateMeemFilter) filter;
 				UID uid = UID.spi.create();
 				String location = uid.getUIDString();
-				PendingCreateMeem pendingCreateMeem = new PendingCreateMeem(lifeCycleManagerClientTarget, contentClient);
+				PendingCreateMeem pendingCreateMeem = new PendingCreateMeem(client, contentClient);
 
 				pendingCreateMeems.put(location, pendingCreateMeem);
-
 				internalMeemFactoryConduit.createMeem(createMeemFilter.meemDefinition, createMeemFilter.lifeCycleState, location);
 
 				return;
 			}
 			else if (filter instanceof ExactMatchFilter) {
-				ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
-
+				ExactMatchFilter<?> exactMatchFilter = (ExactMatchFilter<?>) filter;
 				Object template = exactMatchFilter.getTemplate();
 				if (template instanceof MeemPath) {
 					MeemPath meemPath = (MeemPath) template;
 					Meem meem = getMeem(meemPath);
-
 					if (meem != null) {
-						lifeCycleManagerClientTarget.meemCreated(meem, UNIDENTIFIED);
+						client.meemCreated(meem, UNIDENTIFIED);
 					}
+					contentClient.contentSent();
 				}
 				// else if (template instanceof String) {
 				// String identifier = (String) template;
@@ -114,19 +112,19 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 				// }
 				else {
 					contentClient.contentFailed("Unsupported template type: " + template.getClass());
-					return;
 				}
 			}
 			else {
 				contentClient.contentFailed("Unsupported filter type: " + filter.getClass());
-				return;
 			}
-
-			contentClient.contentSent();
 		}
 	};
 
+	/**
+	 * MeemRegistry outbound facet
+	 */
 	public MeemRegistry meemRegistry;
+
 
 	/* ------------------------------ conduits --------------------------------- */
 
@@ -151,14 +149,14 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 	public LifeCycleManagerShutdownClient lifeCycleManagerShutdownClientConduit; // outbound
 
 	public Vote lifeCycleControlConduit;
-
+	
 	/* --------------------------------- private members ------------------------------ */
 
 	// Collection of LifeCycle managed Meems
 	private Map<MeemPath, Meem> meems = new HashMap<MeemPath, Meem>();
 
 	// Collection of LifeCycle DependencyAttributes for managed Meems
-	private Map<MeemPath, Reference> meemLifeCycleReferences = new HashMap<MeemPath, Reference>();
+	private Map<MeemPath, Reference<?>> meemLifeCycleReferences = new HashMap<MeemPath, Reference<?>>();
 
 	// Collection of meem cores
 	// -mg- this is only used by the change parent lcm methods
@@ -186,6 +184,10 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 
 	private Map<MeemPath, LifeCycleManager> changeLCMValues = new HashMap<MeemPath, LifeCycleManager>();
 
+	
+	public LifeCycleManagerWedge() {
+	}
+	
 	/* ----------------------- lifecycle methods ------------------------------ */
 
 	public void commence() {
@@ -227,15 +229,12 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			if (transition.equals(LifeCycleTransition.LOADED_PENDING)) {
 				commence();
 			}
-
-			if (transition.equals(LifeCycleTransition.READY_PENDING)) {
+			else if (transition.equals(LifeCycleTransition.READY_PENDING)) {
 				conclude();
 			}
-
-			if (transition.equals(LifeCycleTransition.PENDING_LOADED)) {
+			else if (transition.equals(LifeCycleTransition.PENDING_LOADED)) {
 				removeDependencies();
 			}
-
 		}
 
 		public void lifeCycleStateChanged(LifeCycleTransition transition) {
@@ -339,7 +338,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 
 		// remove LifeCycle Reference
 
-		Reference lifeCycleClientReference = (Reference) meemLifeCycleReferences.remove(meemPath);
+		Reference<?> lifeCycleClientReference = meemLifeCycleReferences.remove(meemPath);
 		meem.removeOutboundReference(lifeCycleClientReference);
 
 		meems.remove(meemPath);
@@ -381,13 +380,20 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 
 				// set up MeemRegistryClient Dependency
 				DependencyAttribute meemRegistryClientDependencyAttribute = new DependencyAttribute(
-				// DependencyType.STRONG,
-				        DependencyType.WEAK, Scope.LOCAL, meemCore.getMeemRegistry(), "meemRegistryClient", new ExactMatchFilter(meem.getMeemPath()), true);
+				        DependencyType.WEAK, Scope.LOCAL, meemCore.getMeemRegistry(), "meemRegistryClient", ExactMatchFilter.create(meem.getMeemPath()), true);
 
 				registerMeemDependencyAttributes.put(meemRegistryClientDependencyAttribute, meem);
 				registerMeemValues.put(meem, meemRegistryClientDependencyAttribute);
 
+				if (DEBUG) {
+					logger.info("adding dependency on meemRegistryClientLCM");
+				}
 				dependencyHandlerConduit.addDependency("meemRegistryClientLCM", meemRegistryClientDependencyAttribute, LifeTime.TRANSIENT);
+			}
+			else {
+				if (DEBUG) {
+					logger.info("meem already registered");
+				}
 			}
 		}
 	}
@@ -472,19 +478,18 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			String identifier = (String) args[1];
 
 			if (identifier != null) {
-				if (((ExactMatchFilter) filter).getTemplate().equals(identifier))
+				if (((ExactMatchFilter<?>) filter).getTemplate().equals(identifier))
 					return (true);
 			}
 
 			meemPath = ((Meem) args[0]).getMeemPath();
 		}
-
-		if (methodName.equals("meemDestroyed")) {
+		else if (methodName.equals("meemDestroyed")) {
 			meemPath = ((Meem) args[0]).getMeemPath();
 		}
 
 		if (meemPath != null) {
-			return ((ExactMatchFilter) filter).getTemplate().equals(meemPath);
+			return ((ExactMatchFilter<?>) filter).getTemplate().equals(meemPath);
 		}
 
 		return false;
@@ -529,15 +534,15 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			}
 			
 			LifeCycleClient lifeCycleClient = new MyLifeCycleClient(meem);
-			lifeCycleClient = (LifeCycleClient) meemCore.getTargetFor(lifeCycleClient, LifeCycleClient.class);
+			lifeCycleClient = meemCore.getTargetFor(lifeCycleClient, LifeCycleClient.class);
 
-			Reference lifeCycleClientReference = Reference.spi.create("lifeCycleClient", lifeCycleClient, true);
+			Reference<LifeCycleClient> lifeCycleClientReference = Reference.spi.create("lifeCycleClient", lifeCycleClient, true);
 			meem.addOutboundReference(lifeCycleClientReference, false);
 
 			meemLifeCycleReferences.put(meem.getMeemPath(), lifeCycleClientReference);
 
 			// register meem
-			Integer requestId = (Integer) unregisteredMeems.get(meem.getMeemPath());
+			Integer requestId = unregisteredMeems.get(meem.getMeemPath());
 			if (requestId != null) {
 				if (DEBUG) {
 					logger.log(Level.INFO,  "registerMeem: " + meem.getMeemPath());
@@ -582,11 +587,14 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 		 * 
 		 */
 		public void meemCreated(Meem meem, String identifier) {
+			if (DEBUG) {
+				logger.info("meem created: \"" + identifier + "\" : " + meem + ". location: " + meem.getMeemPath().getLocation());
+			}
 			lifeCycleManagerClient.meemCreated(meem, identifier);
 
+			// resolve for the PendingCreateMeem if exists.i.e. if a client is waiting for the Meem, notify
 			String location = meem.getMeemPath().getLocation();
-			PendingCreateMeem pendingCreateMeem = (PendingCreateMeem) pendingCreateMeems.remove(location);
-
+			PendingCreateMeem pendingCreateMeem = pendingCreateMeems.remove(location);
 			if (pendingCreateMeem != null) {
 				pendingCreateMeem.resolve(meem, identifier);
 			}
@@ -626,7 +634,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			}
 
 			if (registerMeemDependencyAttributes.containsKey(dependencyAttribute)) {
-				Meem meem = (Meem) registerMeemDependencyAttributes.get(dependencyAttribute);
+				Meem meem = registerMeemDependencyAttributes.get(dependencyAttribute);
 				if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
 					logger.log(logLevel, "Registering " + meem);
 				}
@@ -665,7 +673,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 	private final class LifeCycleAdapterClientConduit implements LifeCycleAdapterClient {
 
 		public void lifeCycleStateChanged(MeemPath meemPath, LifeCycleTransition transition) {
-			Integer requestId = (Integer) unregisteredMeems.get(meemPath);
+			Integer requestId = unregisteredMeems.get(meemPath);
 			if (DEBUG) {
 				logger.log(Level.INFO, "lifeCycleStateChanged: " + meemPath + " - " + transition + " - " + requestId);
 			}
@@ -712,8 +720,11 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 	 * @see org.openmaji.system.manager.registry.MeemRegistryClient#meemRegistered(org.openmaji.meem.Meem)
 	 */
 	public void meemRegistered(Meem meem) {
+//		if (DEBUG) {
+//			logger.info("Meem is now registered: " + meem);
+//		}
 		// remove dependency
-		DependencyAttribute meemRegistryClientDependencyAttribute = (DependencyAttribute) registerMeemValues.remove(meem);
+		DependencyAttribute meemRegistryClientDependencyAttribute = registerMeemValues.remove(meem);
 		if (meemRegistryClientDependencyAttribute != null) {
 			registerMeemDependencyAttributes.remove(meemRegistryClientDependencyAttribute);
 			dependencyHandlerConduit.removeDependency(meemRegistryClientDependencyAttribute);
@@ -721,7 +732,7 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 			if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
 				logger.log(logLevel, "Got MeemRegistered " + meem);
 			}
-			Integer requestId = (Integer) unregisteredMeems.remove(meem.getMeemPath());
+			Integer requestId = unregisteredMeems.remove(meem.getMeemPath());
 			if (requestId != null) {
 				// lifeCycleManagerMiscClientConduit.meemBuilt(meem.getMeemPath(), meem, requestId.intValue());
 				lifeCycleManagerMiscClientConduit.lifeCycleReferenceAdded(meem);
@@ -731,7 +742,6 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 
 	private final class PendingCreateMeem {
 		private final LifeCycleManagerClient lifeCycleManagerClient;
-
 		private final ContentClient contentClient;
 
 		public PendingCreateMeem(LifeCycleManagerClient lifeCycleManagerClient, ContentClient contentClient) {
@@ -741,11 +751,11 @@ public class LifeCycleManagerWedge implements Wedge, LifeCycleManagementClientLC
 
 		public void resolve(Meem meem, String identifier) {
 			if (meem == null) {
-				contentClient.contentFailed("Could not create Meem");
+				this.contentClient.contentFailed("Could not create Meem");
 			}
 			else {
-				lifeCycleManagerClient.meemCreated(meem, identifier);
-				contentClient.contentSent();
+				this.lifeCycleManagerClient.meemCreated(meem, identifier);
+				this.contentClient.contentSent();
 			}
 		}
 	};

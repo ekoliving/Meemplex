@@ -77,18 +77,18 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 
 	private int WEDGE_ID = this.hashCode();
 
-	private Set categoryEntries = new HashSet();
-	private Set categoryPaths = new HashSet();
+	private Set<CategoryEntry> categoryEntries = new HashSet<CategoryEntry>();
+	private Set<MeemPath> categoryPaths = new HashSet<MeemPath>();
 
-	private Map initialLifeCycleStates = new HashMap();
-	private Map meemDefinitions = new HashMap();
+	private Map<MeemPath, LifeCycleState> initialLifeCycleStates = new HashMap<MeemPath, LifeCycleState>();
+	private Map<MeemPath, MeemDefinition> meemDefinitions = new HashMap<MeemPath, MeemDefinition>();
 
-	private Map meems = new HashMap();
-	private Map activatedMeems = new HashMap();
-	private Map activatingMeems = new HashMap();
+	private Map<MeemPath, Meem> meems = new HashMap<MeemPath, Meem>();
+	private Map<MeemPath, Meem> activatedMeems = new HashMap<MeemPath, Meem>();
+	private Map<MeemPath, List<ActivationTarget>> activatingMeems = new HashMap<MeemPath, List<ActivationTarget>>();
 
 	// TODO[peter] Examine the use of this collection -> not cleaned up properly?
-	private Map changeLCMDependencyAttributes = new HashMap();
+	private Map<Object, Object> changeLCMDependencyAttributes = new HashMap<Object, Object>();
 
 	public MeemContext meemContext;
 
@@ -105,7 +105,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 
 			Meem meem = (Meem) args[0];
 			if (meem != null) {
-				ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
+				ExactMatchFilter<?> exactMatchFilter = (ExactMatchFilter<?>) filter;
 				return exactMatchFilter.getTemplate().equals(meem.getMeemPath());
 			}
 		}
@@ -116,35 +116,34 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 
 	// outbound facets
 	public MeemRegistryClient meemRegistryClient;
-	public final AsyncContentProvider meemRegistryClientProvider = new AsyncContentProvider() {
+	
+	public final AsyncContentProvider<MeemRegistryClient> meemRegistryClientProvider = new AsyncContentProvider<MeemRegistryClient>() {
 		
-		public void asyncSendContent(Object target, Filter filter, ContentClient contentClient) {
-			final MeemRegistryClient meemRegistryClient = (MeemRegistryClient) target;
-
+		public void asyncSendContent(final MeemRegistryClient target, Filter filter, ContentClient contentClient) {
 			if (filter instanceof ExactMatchFilter) {
-				ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
+				ExactMatchFilter<?> exactMatchFilter = (ExactMatchFilter<?>) filter;
 				Object template = exactMatchFilter.getTemplate();
 
 				if (template instanceof MeemPath) {
 					MeemPath meemPath = (MeemPath) exactMatchFilter.getTemplate();
 
-					Meem meem = (Meem) activatedMeems.get(meemPath);
+					Meem meem = activatedMeems.get(meemPath);
 
 					if (meem != null) {
 						if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
 							logger.log(logLevel, "Already activated Meem: " + meemPath + " : " + meem);
 						}
 
-						meemRegistryClient.meemRegistered(meem);
+						target.meemRegistered(meem);
 						contentClient.contentSent();
 					}
 					else if (categoryPaths.contains(meemPath)) {
 
-						List clients = (List) activatingMeems.get(meemPath);
+						List<ActivationTarget> clients = activatingMeems.get(meemPath);
 
 						boolean shouldActivate = false;
 						if (clients == null) {
-							clients = new ArrayList();
+							clients = new ArrayList<ActivationTarget>();
 							activatingMeems.put(meemPath, clients);
 
 							if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLEMANAGER) {
@@ -154,7 +153,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 							shouldActivate = true;
 						}
 
-						ActivationTarget client = new ActivationTarget(meemRegistryClient, contentClient);
+						ActivationTarget client = new ActivationTarget(target, contentClient);
 
 						clients.add(client);
 
@@ -320,11 +319,10 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 
 				// all we need to do is to activate the meem
 				
-				List clients = (List) activatingMeems.get(meemPath);
+				List<ActivationTarget> clients = activatingMeems.get(meemPath);
 				if (clients == null) {
-					clients = new ArrayList();
+					clients = new ArrayList<ActivationTarget>();
 					activatingMeems.put(meemPath, clients);
-					
 					activationConduit.activate(meemPath);
 				}
 
@@ -341,7 +339,7 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 	private void notifyClients(MeemPath meemPath) {
 		initialLifeCycleStates.remove(meemPath);
 		MeemDefinition meemDefinition = (MeemDefinition) meemDefinitions.remove(meemPath);
-		Meem meem = (Meem) meems.remove(meemPath);
+		Meem meem = meems.remove(meemPath);
 
 		String identifier = meemDefinition.getMeemAttribute().getIdentifier();
 
@@ -466,12 +464,12 @@ public class LazyLifeCycleManagerWedge implements Wedge, LifeCycleManager, LifeC
 		}
 
 		private void handle(MeemPath meemPath, Meem meem) {		
-			List clients = (List) activatingMeems.remove(meemPath);
+			List<ActivationTarget> clients = activatingMeems.remove(meemPath);
 
 			if (clients != null) {
-				Iterator iterator = clients.iterator();
+				Iterator<ActivationTarget> iterator = clients.iterator();
 				while (iterator.hasNext()) {
-					ActivationTarget client = (ActivationTarget) iterator.next();
+					ActivationTarget client = iterator.next();
 
 					if (meem != null) {
 						client.meemRegistryClient.meemRegistered(meem);

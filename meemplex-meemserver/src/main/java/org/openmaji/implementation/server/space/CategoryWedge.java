@@ -45,17 +45,16 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 	/* -------------------- outbound facets ------------------------- */
 
 	public CategoryClient categoryClient;
-	public final ContentProvider categoryClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws ContentException {
-			CategoryClient categoryClientTarget = (CategoryClient) target;
-
+	
+	public final ContentProvider<CategoryClient> categoryClientProvider = new ContentProvider<CategoryClient>() {
+		public void sendContent(CategoryClient client, Filter filter) throws ContentException {
 			synchronized (entries) {
 				if (filter == null) {
 					// send entries in the order they were added
-					categoryClientTarget.entriesAdded(entries.toArray(arraySpec));
+					client.entriesAdded(entries.toArray(arraySpec));
 				}
 				else if (filter instanceof ExactMatchFilter) {
-					ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
+					ExactMatchFilter<?> exactMatchFilter = (ExactMatchFilter<?>) filter;
 					Object template = exactMatchFilter.getTemplate();
 
 					if (template instanceof String) {
@@ -63,7 +62,7 @@ public class CategoryWedge implements Category, MeemDefinitionProvider, Wedge {
 						CategoryEntry entry = entriesMap.get(stringTemplate);
 
 						if (entry != null) {
-							categoryClientTarget.entriesAdded(new CategoryEntry[] { entry });
+							client.entriesAdded(new CategoryEntry[] { entry });
 						}
 					}
 					else {

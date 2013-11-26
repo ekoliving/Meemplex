@@ -57,11 +57,11 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 
 	public Meemkit meemkitOutput;
 
-	public final ContentProvider meemkitOutputProvider = new MeemkitOutputProvider();
+	public final ContentProvider<Meemkit> meemkitOutputProvider = new MeemkitOutputProvider();
 
 	public MeemkitLifeCycleManagerClient meemkitLifeCycleManagerClient;
 
-	public final ContentProvider meemkitLifeCycleManagerClientProvider = new MeemkitLifeCycleManagerClientProvider();
+	public final ContentProvider<MeemkitLifeCycleManagerClient> meemkitLifeCycleManagerClientProvider = new MeemkitLifeCycleManagerClientProvider();
 
 	/* ---------------------------- conduits ------------------------ */
 
@@ -185,7 +185,7 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 			dependencyHandlerConduit.addDependency(proxy, dependencyAttribute, LifeTime.TRANSIENT);
 
 			URL descriptorURL = (URL) context;
-			MeemClientCallback callback = new MeemkitCallback(identifier, descriptorURL);
+			MeemClientCallback<Meemkit> callback = new MeemkitCallback(identifier, descriptorURL);
 			meemClientConduit.provideReference(meem, "meemkit", Meemkit.class, callback);
 
 			requestContext.end();
@@ -210,7 +210,7 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 
 	/* ------------------------------------------------------------------------ */
 
-	private class MeemkitCallback implements MeemClientCallback {
+	private class MeemkitCallback implements MeemClientCallback<Meemkit> {
 		private final String identifier;
 
 		private final URL descriptorURL;
@@ -220,8 +220,8 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 			this.descriptorURL = descriptorURL;
 		}
 
-		public void referenceProvided(Reference reference) {
-			Meemkit meemkit = (Meemkit) reference.getTarget();
+		public void referenceProvided(Reference<Meemkit> reference) {
+			Meemkit meemkit = reference.getTarget();
 			meemkit.detailsChanged(new String[] { identifier }, new URL[] { descriptorURL });
 		}
 	}
@@ -246,18 +246,18 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 
 	/* ------------------------------------------------------------------------ */
 
-	private class MeemkitLifeCycleManagerClientProvider implements ContentProvider {
-		public void sendContent(Object target, Filter filter) {
+	private class MeemkitLifeCycleManagerClientProvider implements ContentProvider<MeemkitLifeCycleManagerClient> {
+		public void sendContent(MeemkitLifeCycleManagerClient target, Filter filter) {
 			if (startedMeemkits == totalMeemkits) {
-				((MeemkitLifeCycleManagerClient) target).classLoadingCompleted();
+				target.classLoadingCompleted();
 			}
 		}
 	}
 
 	/* ------------------------------------------------------------------------ */
 
-	private class MeemkitOutputProvider implements ContentProvider {
-		public void sendContent(Object target, Filter filter) {
+	private class MeemkitOutputProvider implements ContentProvider<Meemkit> {
+		public void sendContent(Meemkit client, Filter filter) {
 			if (meemkitDescriptorLocations.size() == 0) {
 				return;
 			}
@@ -270,7 +270,6 @@ public class MeemkitLifeCycleManagerWedge implements MeemkitLifeCycleManager, We
 				descriptorLocations[i++] = meemkitDescriptorLocations.get(name);
 			}
 
-			Meemkit client = (Meemkit) target;
 			client.detailsChanged(names, descriptorLocations);
 		}
 	}

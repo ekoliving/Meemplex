@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import org.openmaji.implementation.server.manager.thread.PoolingThreadManagerWedge;
+import org.openmaji.system.manager.thread.Task;
 import org.openmaji.system.manager.thread.ThreadManager;
 
 /**
@@ -40,14 +41,14 @@ public class DecoupledInvocationProcessor implements ThreadManager, Runnable, Se
 		}
 	}
 
-	public void queue(final Runnable runnable, long absoluteTime) {
+	public Task queue(final Runnable runnable, long absoluteTime) {
 		Runnable delayedRunnable = new Runnable() {
 			public void run() {
 				queue(runnable);
 			}
 		};
 
-		PoolingThreadManagerWedge.queueRunnable(delayedRunnable, absoluteTime);
+		return PoolingThreadManagerWedge.queueRunnable(delayedRunnable, absoluteTime);
 	}
 
 	public void cancel(Runnable runnable) {

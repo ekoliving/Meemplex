@@ -81,7 +81,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 
 	private boolean meemkitLCMStarted = false;
 
-	private Reference meemkitLCMStartedReference;
+	private Reference<?> meemkitLCMStartedReference;
 
 	private String meemServerName = null;
 
@@ -142,7 +142,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 		// set the current meempath in the invocation context
 		InvocationContextTracker.getInvocationContext().put(InvocationContext.CURRENT_MEEM_PATH, meemPath);
 
-		AccessControl control = (AccessControl) selfAsMeemCore.getConduitSource("accessControl", AccessControl.class);
+		AccessControl control = selfAsMeemCore.getConduitSource("accessControl", AccessControl.class);
 
 		control.addAccess(Principals.OTHER, AccessLevel.READ_WRITE);
 
@@ -268,7 +268,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 
 			essentialMeemCores.put(meemDefinition.getMeemAttribute().getIdentifier(), meemCore);
 
-			AccessControl control = (AccessControl) meemCore.getConduitSource("accessControl", AccessControl.class);
+			AccessControl control = meemCore.getConduitSource("accessControl", AccessControl.class);
 
 			control.addAccess(Principals.OTHER, AccessLevel.READ_WRITE);
 
@@ -479,7 +479,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 	public void conclude() {
 		if (selfRestored) {
 			// deactivate all of our meems
-			Iterator meemIterator = essentialMeemCores.values().iterator();
+			Iterator<MeemCore> meemIterator = essentialMeemCores.values().iterator();
 
 			while (meemIterator.hasNext()) {
 				MeemCore meemCore = (MeemCore) meemIterator.next();
@@ -498,7 +498,7 @@ public class EssentialLifeCycleManagerWedge implements Wedge, EssentialLifeCycle
 	 * @see org.openmaji.implementation.server.manager.lifecycle.meemkit.MeemkitLifeCycleManagerClient#classLoadingCompleted()
 	 */
 	public void classLoadingCompleted() {
-		logger.log(Level.INFO, "Meemkit classloaders started");
+		//logger.log(Level.INFO, "Meemkit classloaders started");
 		meemkitLCMStarted = true;
 		startSelf();
 	}

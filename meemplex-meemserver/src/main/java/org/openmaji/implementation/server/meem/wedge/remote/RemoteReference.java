@@ -121,7 +121,7 @@ public class RemoteReference implements Reference {
 				MeemRegistryClientImpl meemRegistryClient = new MeemRegistryClientImpl();
 				Facet proxy = GatewayManagerWedge.getTargetFor(meemRegistryClient, MeemRegistryClient.class);
 
-				Filter filter = new ExactMatchFilter(meemPath);
+				Filter filter = ExactMatchFilter.create(meemPath);
 
 				registryReference = Reference.spi.create("meemRegistryClient", proxy, true, filter);
 

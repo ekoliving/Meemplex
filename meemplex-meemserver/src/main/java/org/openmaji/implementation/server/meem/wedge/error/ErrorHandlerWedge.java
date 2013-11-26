@@ -49,9 +49,9 @@ public class ErrorHandlerWedge implements ErrorHandler, Wedge {
 
 	public ErrorHandler errorHandlerClient;
 
-	public final ContentProvider errorHandlerClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) {
-			((ErrorHandler) target).thrown(lastThrowable);
+	public final ContentProvider<ErrorHandler> errorHandlerClientProvider = new ContentProvider<ErrorHandler>() {
+		public void sendContent(ErrorHandler target, Filter filter) {
+			target.thrown(lastThrowable);
 		}
 	};
 
@@ -105,7 +105,7 @@ public class ErrorHandlerWedge implements ErrorHandler, Wedge {
 //		meemClientConduit.provideReference(errorRepositoryMeem, "errorRepository", ErrorHandler.class, new ErrorCallback(throwable));
 	}
 
-	class ErrorCallback implements MeemClientCallback {
+	class ErrorCallback implements MeemClientCallback<ErrorHandler> {
 		private final Throwable throwable;
 
 		public ErrorCallback(Throwable throwable) {
@@ -115,9 +115,9 @@ public class ErrorHandlerWedge implements ErrorHandler, Wedge {
 		/*
 		 * @see org.openmaji.system.meem.wedge.reference.MeemClientCallback#referenceProvided(org.openmaji.meem.wedge.reference.Reference)
 		 */
-		public void referenceProvided(Reference reference) {
+		public void referenceProvided(Reference<ErrorHandler> reference) {
 			if (reference != null) {
-				ErrorHandler errorRepository = (ErrorHandler) reference.getTarget();
+				ErrorHandler errorRepository = reference.getTarget();
 
 				errorRepository.thrown(throwable);
 			}

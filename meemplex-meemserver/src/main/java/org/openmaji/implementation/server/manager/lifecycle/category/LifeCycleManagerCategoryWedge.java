@@ -16,10 +16,7 @@ import java.util.*;
 
 import org.openmaji.implementation.server.Common;
 
-
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemContext;
@@ -41,41 +38,33 @@ import org.openmaji.system.space.CategoryEntry;
  * This is the Category that will store all the meems that this LifeCycleManager
  * is resposible for.
  * 
- * A lot of this code comes from CategoryWedge. There is probably a better way of 
- * doing this.
+ * A lot of this code comes from CategoryWedge. There is probably a better way
+ * of doing this.
  * </p>
- *
- * @author  mg
+ * 
+ * @author mg
  * @version 1.0
  */
 public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, LifeCycleManagementClientCategory, Wedge {
 
 	private static final Logger logger = Logger.getAnonymousLogger();
-	
+
 	public MeemContext meemContext;
 
 	public LifeCycleManagerCategoryClient lifeCycleManagerCategoryClient;
-	public final ContentProvider lifeCycleManagerCategoryClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws ContentException {
-			LifeCycleManagerCategoryClient categoryClient = (LifeCycleManagerCategoryClient) target;
 
+	public final ContentProvider<LifeCycleManagerCategoryClient> lifeCycleManagerCategoryClientProvider = new ContentProvider<LifeCycleManagerCategoryClient>() {
+		
+		public void sendContent(LifeCycleManagerCategoryClient client, Filter filter) throws ContentException {
 			if (filter == null) {
-				categoryClient.entriesAdded((CategoryEntry[])entries.values().toArray(new CategoryEntry[0]));
+				client.entriesAdded((CategoryEntry[]) entries.values().toArray());
 			}
 			else if (filter instanceof ExactMatchFilter) {
-				ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
-				Object template = exactMatchFilter.getTemplate();
-
-				if (template instanceof String) {
-					String stringTemplate = (String) template;
-					CategoryEntry entry = (CategoryEntry) entries.get(stringTemplate);
-
-					if (entry != null) {
-						categoryClient.entriesAdded(new CategoryEntry[] {entry});
-					}
-				}
-				else {
-					throw new ContentException("Unsupported template type: " + template.getClass());
+				ExactMatchFilter<String> exactMatchFilter = (ExactMatchFilter<String>) filter;
+				String template = exactMatchFilter.getTemplate();
+				CategoryEntry entry = (CategoryEntry) entries.get(template);
+				if (entry != null) {
+					client.entriesAdded(new CategoryEntry[] { entry });
 				}
 			}
 			else {
@@ -87,35 +76,39 @@ public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, 
 	/**
 	 * Persisted field.
 	 */
-	public Map entries = new HashMap();
+	public Map<String, CategoryEntry> entries = new HashMap<String, CategoryEntry>();
 
 	/**
 	 * Dependecies
 	 */
-	private Map lcmDependencies = new HashMap();
+	private Map<Meem, DependencyAttribute> lcmDependencies = new HashMap<Meem, DependencyAttribute>();
 
+	/*
+	 * ------------------------------ conduits
+	 * --------------------------------------
+	 */
 
-	/* ------------------------------ conduits -------------------------------------- */
-	
 	public ManagedPersistenceHandler managedPersistenceHandlerConduit;
-	
+
 	public LifeCycleManagerCategoryConduit lifeCycleManagerCategoryConduit = new LifeCycleManagerCategoryConduitImpl();
-	
+
 	public LifeCycleManagerCategoryClient lifeCycleManagerCategoryClientConduit;
-	
+
 	public DependencyHandler dependencyHandlerConduit; // outbound
 
+	/*
+	 * --------------------------- Category interface
+	 * -------------------------------
+	 */
 
-	/* --------------------------- Category interface ------------------------------- */
-	
 	/**
-	 * @see org.openmaji.system.space.Category#addEntry(java.lang.String, org.openmaji.meem.Meem)
+	 * @see org.openmaji.system.space.Category#addEntry(java.lang.String,
+	 *      org.openmaji.meem.Meem)
 	 */
 	public void addEntry(String entryName, Meem meem) {
 		// add dependency
 
-		DependencyAttribute lcmDependencyAttribute =
-			new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, meem, "lifeCycleManagerClient", null, true);
+		DependencyAttribute lcmDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, meem, "lifeCycleManagerClient", null, true);
 
 		dependencyHandlerConduit.addDependency("lifeCycleManagerClientCategory", lcmDependencyAttribute, LifeTime.TRANSIENT);
 
@@ -126,29 +119,35 @@ public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, 
 	 * @see org.openmaji.system.space.Category#removeEntry(java.lang.String)
 	 */
 	public void removeEntry(String entryName) {
-		
+
 		CategoryEntry categoryEntry = (CategoryEntry) entries.get(entryName);
 
 		if (categoryEntry != null) {
 
 			LifeCycleManager selfLifeCycleManager = (LifeCycleManager) meemContext.getTarget("lifeCycleManager");
-			
-			//-mg- this should be replaced with an unbound meem when they appear
+
+			// -mg- this should be replaced with an unbound meem when they
+			// appear
 			selfLifeCycleManager.destroyMeem(categoryEntry.getMeem());
 		}
 	}
 
 	/**
-	 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String, java.lang.String)
+	 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String,
+	 *      java.lang.String)
 	 */
 	public void renameEntry(String oldEntryName, String newEntryName) {
 		lifeCycleManagerCategoryConduit.renameEntry(oldEntryName, newEntryName);
 	}
 
-	/* ---------------------- LifeCycleManagementClient methods -------------------- */
+	/*
+	 * ---------------------- LifeCycleManagementClient methods
+	 * --------------------
+	 */
 
 	/**
-	 * @see org.openmaji.system.meem.wedge.lifecycle.LifeCycleManagementClient#parentLifeCycleManagerChanged(org.openmaji.meem.Meem, org.openmaji.system.manager.lifecycle.LifeCycleManager)
+	 * @see org.openmaji.system.meem.wedge.lifecycle.LifeCycleManagementClient#parentLifeCycleManagerChanged(org.openmaji.meem.Meem,
+	 *      org.openmaji.system.manager.lifecycle.LifeCycleManager)
 	 */
 	public void parentLifeCycleManagerChanged(Meem meem, LifeCycleManager lifeCycleManager) {
 
@@ -161,11 +160,14 @@ public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, 
 		dependencyHandlerConduit.removeDependency(dependencyAttribute);
 	}
 
-	/* ------------------------ LifeCycleManagerCategory conduit -------------------------------*/
+	/*
+	 * ------------------------ LifeCycleManagerCategory conduit
+	 * -------------------------------
+	 */
 
 	/*
-	 * This is the conduit class. This is the only place where entries are really added/removed 
-	 * from the category. 
+	 * This is the conduit class. This is the only place where entries are
+	 * really added/removed from the category.
 	 */
 	private final class LifeCycleManagerCategoryConduitImpl implements LifeCycleManagerCategoryConduit {
 		public void addEntry(String entryName, Meem meem) {
@@ -199,15 +201,16 @@ public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, 
 				// persist content
 				managedPersistenceHandlerConduit.persist();
 
-				lifeCycleManagerCategoryClient.entriesRemoved(new CategoryEntry[] {categoryEntry});
-				lifeCycleManagerCategoryClientConduit.entriesRemoved(new CategoryEntry[] {categoryEntry});
-				
+				lifeCycleManagerCategoryClient.entriesRemoved(new CategoryEntry[] { categoryEntry });
+				lifeCycleManagerCategoryClientConduit.entriesRemoved(new CategoryEntry[] { categoryEntry });
+
 			}
 
 		}
 
 		/**
-		 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String, java.lang.String)
+		 * @see org.openmaji.system.space.Category#renameEntry(java.lang.String,
+		 *      java.lang.String)
 		 */
 		public void renameEntry(String oldEntryName, String newEntryName) {
 			CategoryEntry oldCategoryEntry = (CategoryEntry) entries.remove(oldEntryName);
@@ -226,13 +229,9 @@ public class LifeCycleManagerCategoryWedge implements LifeCycleManagerCategory, 
 		}
 
 		public void sendContent() {
-			Iterator iter = entries.values().iterator();
-			while (iter.hasNext()) {
-				CategoryEntry entry = (CategoryEntry) iter.next();
-
+			for (CategoryEntry entry : entries.values()) {
 				lifeCycleManagerCategoryClientConduit.entriesAdded(new CategoryEntry[] { entry });
 			}
-
 			lifeCycleManagerCategoryClientConduit.contentSent();
 		}
 	}

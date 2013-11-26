@@ -27,19 +27,19 @@ import java.lang.reflect.*;
  * @version 1.0
  */
 
-public interface Conduit extends InvocationHandler {
+public interface Conduit<T> extends InvocationHandler {
 
-  public void addTarget(Object target)
+  public void addTarget(T target)
     throws IllegalArgumentException;
 
   public String getIdentifier();
 
-  public Object getProxy();
+  public T getProxy();
 
-  public Class<?> getSpecification();
+  public Class<T> getSpecification();
 
-  public void removeTarget(Object target);
+  public void removeTarget(T target);
 
-  public Object invoke(Object   proxy, Method   method, Object[] args)
+  public Object invoke(Object proxy, Method   method, Object[] args)
     throws   Throwable;
 }

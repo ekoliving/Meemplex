@@ -229,8 +229,7 @@ public class WedgeImpl {
 						conduitName = c.name();
 					}
 					
-					// conduit class must be a Facet (for now)
-					Class<? extends Facet> type = (Class<? extends Facet>)field.getType();
+					Class<?> type = field.getType();
 					
 					Object conduit = meemCore.getConduitSource(conduitName, type);
 					Object value = field.get(implementation);
@@ -240,13 +239,15 @@ public class WedgeImpl {
 							processFields(value);
 						}
 
+						Pair pair = asPair(type, value);
+						
 						if (Proxy.isProxyClass(conduit.getClass())) {
 							ConduitImpl conduitImpl = (ConduitImpl) Proxy.getInvocationHandler(conduit);
-							conduitImpl.addTarget(value, implementation);
+							conduitImpl.addTarget(pair.value, implementation);
 						}
 						else {
 							// this should never be called
-							meemCore.addConduitTarget(conduitName, type, value);
+							meemCore.addConduitTarget(conduitName, pair.spec, pair.value);
 						}
 					}
 
@@ -254,7 +255,7 @@ public class WedgeImpl {
 				}
 				// ConfigurationSpec
 				else if (Modifier.isPublic(field.getModifiers()) && field.getType() == ConfigurationSpecification.class) {
-					ConfigurationSpecification spec = (ConfigurationSpecification) field.get(implementation);
+					ConfigurationSpecification<?> spec = (ConfigurationSpecification<?>) field.get(implementation);
 					String valueName = field.getName().substring(0, field.getName().length() - "Specification".length());
 
 					spec.setIdentifier(new ConfigurationIdentifier(this.getWedgeAttribute().getIdentifier(), valueName));
@@ -598,6 +599,19 @@ public class WedgeImpl {
 		return meemCore.getMeemPath();
 	}
 
+	private static class Pair<T> {
+		Class<T> spec;
+		T value;
+		public Pair(Class<T> spec, T value) {
+			this.spec = spec;
+			this.value = value;
+		}
+	}
+	
+	private static <C> Pair<C> asPair(Class<C> spec, Object value) {
+		return new Pair<C>(spec, (C)value);
+	}
+	
 	/* ---------- Object class method overrides -------------------------------- */
 
 	/**

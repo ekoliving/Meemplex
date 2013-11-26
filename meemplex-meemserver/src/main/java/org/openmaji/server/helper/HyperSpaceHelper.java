@@ -85,7 +85,7 @@ public class HyperSpaceHelper {
 
 	public synchronized HyperSpace getHyperSpace() {
 		if (hyperSpace == null && hyperSpaceMeem != null) {
-			hyperSpace = (HyperSpace) ReferenceHelper.getTarget(getHyperSpaceMeem(), "hyperSpace", HyperSpace.class);
+			hyperSpace = ReferenceHelper.getTarget(getHyperSpaceMeem(), "hyperSpace", HyperSpace.class);
 		}
 
 		return hyperSpace;

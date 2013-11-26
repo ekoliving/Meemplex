@@ -114,7 +114,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		}
 	}
 
-	public final ContentProvider meemkitManagerClientOutputProvider = new MeemkitManagerClientProvider();
+	public final ContentProvider<MeemkitManagerClient> meemkitManagerClientOutputProvider = new MeemkitManagerClientProvider();
 
 	/**
 	 * 
@@ -135,7 +135,7 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		lcm.detailsChanged(names, urls);
 	}
 	
-	public final ContentProvider meemkitLifeCycleManagerOutputProvider = new MeemkitLifeCycleManagerProvider();
+	public final ContentProvider<MeemkitLifeCycleManager> meemkitLifeCycleManagerOutputProvider = new MeemkitLifeCycleManagerProvider();
 
 	/**
 	 * Category for grouping LCM
@@ -556,11 +556,11 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 		Meem resolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
 
 		MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_MEEM);
-		resolverMeemDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", new ExactMatchFilter(meemPath), false);
+		resolverMeemDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", ExactMatchFilter.create(meemPath), false);
 		dependencyHandlerConduit.addDependency(resolverClientFacet, resolverMeemDependencyAttribute, LifeTime.TRANSIENT);
 
 		meemPath = MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM_PATTERN_WEDGE);
-		resolverWedgeDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", new ExactMatchFilter(meemPath), false);
+		resolverWedgeDependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, resolverMeem, "meemResolverClient", ExactMatchFilter.create(meemPath), false);
 		dependencyHandlerConduit.addDependency(resolverClientFacet, resolverWedgeDependencyAttribute, LifeTime.TRANSIENT);
 	}
 
@@ -1229,9 +1229,8 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	/* ------------------------------------------------------------------------ */
 
-	private class MeemkitManagerClientProvider implements ContentProvider {
-		public void sendContent(Object target, Filter filter) {
-			MeemkitManagerClient client = (MeemkitManagerClient) target;
+	private class MeemkitManagerClientProvider implements ContentProvider<MeemkitManagerClient> {
+		public void sendContent(MeemkitManagerClient client, Filter filter) {
 			MeemkitDescriptor[] array = new MeemkitDescriptor[descriptors.size()];
 			descriptors.values().toArray(array);
 			client.meemkitDescriptorsAdded(array);
@@ -1244,9 +1243,8 @@ public class MeemkitManagerWedge implements Wedge, MeemkitManager, Meemkit, Jini
 
 	/* ------------------------------------------------------------------------ */
 
-	private class MeemkitLifeCycleManagerProvider implements ContentProvider {
-		public void sendContent(Object target, Filter filter) {
-			MeemkitLifeCycleManager lcm = (MeemkitLifeCycleManager) target;
+	private class MeemkitLifeCycleManagerProvider implements ContentProvider<MeemkitLifeCycleManager> {
+		public void sendContent(MeemkitLifeCycleManager lcm, Filter filter) {
 			String[] names = new String[installedMeemkits.size()];
 			URL[] urls = new URL[installedMeemkits.size()];
 			int index = 0;

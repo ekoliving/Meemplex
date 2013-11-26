@@ -71,7 +71,7 @@ public class SubsystemWedge implements Wedge, Subsystem {
 
 	public SubsystemClient subsystemClient;
 
-	public final ContentProvider subsystemClientProvider = new SubsystemClientContentProvider();
+	public final ContentProvider<SubsystemClient> subsystemClientProvider = new SubsystemClientContentProvider();
 
 	/* ---------------------------- conduits --------------------------- */
 
@@ -107,7 +107,8 @@ public class SubsystemWedge implements Wedge, Subsystem {
 
 	public String hyperSpacePath;
 
-	public transient ConfigurationSpecification hyperSpacePathSpecification = new StringConfigurationSpecification("Location in HyperSpace to create subsystem meems", LifeCycleState.READY);
+	public transient ConfigurationSpecification<String> hyperSpacePathSpecification 
+			= new StringConfigurationSpecification("Location in HyperSpace to create subsystem meems", LifeCycleState.READY);
 
 	/* ------------------------------ private members ----------------------- */
 
@@ -327,14 +328,12 @@ public class SubsystemWedge implements Wedge, Subsystem {
 
 	/* ------------------------------------------------------------------------ */
 
-	private class SubsystemClientContentProvider implements ContentProvider {
-		public void sendContent(Object target, Filter filter) throws ContentException {
-			SubsystemClient subsystemClient = (SubsystemClient) target;
-
+	private class SubsystemClientContentProvider implements ContentProvider<SubsystemClient> {
+		public void sendContent(SubsystemClient client, Filter filter) throws ContentException {
 			// send meemdefs and descriptions first.
-			subsystemClient.meemsAvailable(meemDefinitions, meemDescriptions);
-			subsystemClient.commissionStateChanged(commissionState);
-			subsystemClient.subsystemStateChanged(subsystemState);
+			client.meemsAvailable(meemDefinitions, meemDescriptions);
+			client.commissionStateChanged(commissionState);
+			client.subsystemStateChanged(subsystemState);
 		}
 	}
 }

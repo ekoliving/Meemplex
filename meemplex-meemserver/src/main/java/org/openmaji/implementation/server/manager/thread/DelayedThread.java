@@ -8,6 +8,8 @@
  */
 package org.openmaji.implementation.server.manager.thread;
 
+import org.openmaji.system.manager.thread.Task;
+
 class DelayedThread extends Thread {
 	private final Runnable runnable;
 
@@ -30,4 +32,14 @@ class DelayedThread extends Thread {
 			// ignore
 		}
 	}
+	
+	public Task getTask() {
+		return task;
+	}
+	
+	private Task task = new Task() {
+		public void cancel() {
+			DelayedThread.this.interrupt();
+		};
+	};
 }

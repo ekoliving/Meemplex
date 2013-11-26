@@ -145,7 +145,7 @@ public class HyperSpaceExport implements ManagedPersistenceClient, MeemDefinitio
 				MeemPath meemStorePath = MeemPath.spi.create(Space.MEEMSTORE, meem.getMeemPath().getLocation());
 
 				Reference meemDefinitionClientReference =
-					Reference.spi.create("meemDefinitionClient", this, true, new ExactMatchFilter(meemStorePath));
+					Reference.spi.create("meemDefinitionClient", this, true, ExactMatchFilter.create(meemStorePath));
 
 				meemStoreMeem.addOutboundReference(meemDefinitionClientReference, false);
 

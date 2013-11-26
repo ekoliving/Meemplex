@@ -109,7 +109,7 @@ public class PersistenceHandlerAdapterWedge implements Wedge, FilterChecker, Per
 					Scope.LOCAL,
 					meem,
 					"managedPersistenceClient",
-					new ExactMatchFilter(meem.getMeemPath()), 
+					ExactMatchFilter.create(meem.getMeemPath()), 
 					false);
 			
 			restoreClientDependencyAttributes.put(meem.getMeemPath(), clientDependencyAttribute);

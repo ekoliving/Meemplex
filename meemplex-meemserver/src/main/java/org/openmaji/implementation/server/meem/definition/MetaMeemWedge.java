@@ -32,10 +32,8 @@ import java.util.Iterator;
 
 import org.openmaji.implementation.server.meem.wedge.lifecycle.SystemLifeCycleClientAdapter;
 
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.definition.*;
@@ -79,55 +77,64 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 	/** Internal reference to MeemCore */
 	public MeemCore meemCore;
 
-	/* ------------------------------ outbound facets ------------------------------- */
-	
+	/*
+	 * ------------------------------ outbound facets
+	 * -------------------------------
+	 */
+
 	/**
 	 * MetaMeem (out-bound Facet)
 	 */
 	public MetaMeem metaMeemClient;
 
-	public final ContentProvider metaMeemClientProvider = new ContentProvider() {
-		public synchronized void sendContent(Object target, Filter filter) {
+	public final ContentProvider<MetaMeem> metaMeemClientProvider = new ContentProvider<MetaMeem>() {
+		public synchronized void sendContent(MetaMeem metaMeemClient, Filter filter) {
 			commence();
-			
-			MetaMeem metaMeemClient = (MetaMeem) target;
+
 			metaMeemClient.updateMeemAttribute(meemStructure.getMeemAttribute());
-			
+
 			for (Serializable wedgeKey : meemStructure.getWedgeAttributeKeys()) {
 				metaMeemClient.addWedgeAttribute(meemStructure.getWedgeAttribute(wedgeKey));
 				for (String facetKey : meemStructure.getFacetAttributeKeys(wedgeKey)) {
 					metaMeemClient.addFacetAttribute(wedgeKey, meemStructure.getFacetAttribute(facetKey));
 				}
-				
-				// send cached dependencies received from the dependencyHandlerConduit
+
+				// send cached dependencies received from the
+				// dependencyHandlerConduit
 				// TODO remove the dependencies from MetaMeem
-				
-				//logger.log(Level.INFO, "sending dependency attributes...");
+
+				// logger.log(Level.INFO, "sending dependency attributes...");
 				for (String facetId : facetDep.keySet()) {
 					DependencyAttribute dependencyAttribute = (DependencyAttribute) facetDep.get(facetId);
-					//logger.log(Level.INFO, "sending dependency attribute with meem: " + dependencyAttribute.getMeem());
+					// logger.log(Level.INFO,
+					// "sending dependency attribute with meem: " +
+					// dependencyAttribute.getMeem());
 					metaMeemClient.addDependencyAttribute(facetId, dependencyAttribute);
 				}
-				
+
 			}
 		}
 	};
 
+	/*
+	 * -------------------------------- conduits
+	 * --------------------------------
+	 */
 
-	/* -------------------------------- conduits -------------------------------- */
-	
 	public LifeCycleClient lifeCycleClientConduit = new SystemLifeCycleClientAdapter(this);
 
 	public MeemClientConduit meemClientConduit;
 
 	public DependencyHandler dependencyHandlerConduit;
-	
-	public DependencyClient dependencyClientConduit = new  DependencyClientConduit();
 
+	public DependencyClient dependencyClientConduit = new DependencyClientConduit();
 
-	/* ----------------------------- private members ---------------------------- */
-	
-	//private boolean commenced = false;
+	/*
+	 * ----------------------------- private members
+	 * ----------------------------
+	 */
+
+	// private boolean commenced = false;
 
 	private MeemStructureListener meemStructureListener = new MeemStructureListenerImpl();
 
@@ -136,28 +143,27 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 	 * it is a map from facetId to DependencyAttribute
 	 */
 	private HashMap<String, DependencyAttribute> facetDep = new HashMap<String, DependencyAttribute>();
-	
+
 	/**
 	 * Mapping of dependency id to facetId
 	 */
 	private HashMap<Serializable, String> depFacet = new HashMap<Serializable, String>();
-	
+
 	/**
 	 * Map of dependency keys to DependencyAttributes
 	 */
 	private HashMap<Serializable, DependencyAttribute> dependencies = new HashMap<Serializable, DependencyAttribute>();
-	
 
-	
-	/* -------------------------------------------------------------------------- */
-	
+	/*
+	 * --------------------------------------------------------------------------
+	 */
+
 	/**
 	 * Constructor
 	 */
 	public MetaMeemWedge() {
 		super(null);
 	}
-
 
 	/* ---------- MetaMeemStructureAdapter method(s) --------------------------- */
 
@@ -169,55 +175,52 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 			meemStructure = meemCore.getMeemStructure();
 			meemStructure.setMeemStructureListener(meemStructureListener);
 			// this.structure = meemStructure;
-			//commenced = true;
+			// commenced = true;
 		}
 	}
 
 	/* ----------------------- override some MetaMeem methods ------------------ */
-	
-	/* TODO enable these 
-	public void addDependencyAttribute(Object facetId, DependencyAttribute dependencyAttribute) {
-		if (DEBUG) {
-			logger.log(Level.INFO, "addDependencyAttribute: " + dependencyAttribute);
-		}
 
-		// assume permanent
-		dependencyHandlerConduit.addDependency((String)facetId, dependencyAttribute, LifeTime.PERMANENT);
-	}
-*/
+	/*
+	 * TODO enable these public void addDependencyAttribute(Object facetId,
+	 * DependencyAttribute dependencyAttribute) { if (DEBUG) {
+	 * logger.log(Level.INFO, "addDependencyAttribute: " + dependencyAttribute);
+	 * }
+	 * 
+	 * // assume permanent
+	 * dependencyHandlerConduit.addDependency((String)facetId,
+	 * dependencyAttribute, LifeTime.PERMANENT); }
+	 */
 
 	public void removeDependencyAttribute(Serializable dependencyId) {
-		
+
 		if (DEBUG) {
 			logger.log(Level.INFO, "removeDependencyAttribute( " + dependencyId + ")");
 		}
-		
+
 		DependencyAttribute dependencyAttribute;
 
 		synchronized (dependencies) {
 			dependencyAttribute = (DependencyAttribute) dependencies.get(dependencyId);
 		}
-		
+
 		if (dependencyAttribute == null) {
 			logger.log(Level.INFO, "Unknown dependency for: " + dependencyId);
 			return;
 		}
-		
+
 		super.removeDependency(dependencyAttribute);
 	}
 
-/*
-	public void updateDependencyAttribute(DependencyAttribute dependencyAttribute) {
-		
-		if (DEBUG) {
-			logger.log(Level.INFO, "updateDependencyAttribute: " + dependencyAttribute);
-		}
-		
-		dependencyHandlerConduit.updateDependency(dependencyAttribute);
-	}
-
-	*/
-
+	/*
+	 * public void updateDependencyAttribute(DependencyAttribute
+	 * dependencyAttribute) {
+	 * 
+	 * if (DEBUG) { logger.log(Level.INFO, "updateDependencyAttribute: " +
+	 * dependencyAttribute); }
+	 * 
+	 * dependencyHandlerConduit.updateDependency(dependencyAttribute); }
+	 */
 
 	/* ---------------------------- private members ---------------------------- */
 
@@ -288,26 +291,26 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 			meemClientConduit.provideReference(meemCore.getMeemStore(), "meemStore", MeemStore.class, new ReferenceCallbackImpl(meemDefinition));
 		}
 	}
-	
+
 	/* --------------------------- inner classes ------------------------ */
 
 	/**
 	 * 
 	 */
-	private final class ReferenceCallbackImpl implements MeemClientCallback {
+	private final class ReferenceCallbackImpl implements MeemClientCallback<MeemStore> {
 		MeemDefinition meemDefinition;
 
 		ReferenceCallbackImpl(MeemDefinition meemDefinition) {
 			this.meemDefinition = meemDefinition;
 		}
 
-		public void referenceProvided(Reference reference) {
+		public void referenceProvided(Reference<MeemStore> reference) {
 			if (reference == null) {
 				logger.log(Level.WARNING, "no meemStore reference found can't persist meemDefinition!");
 				return;
 			}
 
-			MeemStore meemStore = (MeemStore) reference.getTarget();
+			MeemStore meemStore = reference.getTarget();
 
 			meemStore.storeMeemDefinition(meemCore.getMeemPath(), meemDefinition);
 		}
@@ -390,7 +393,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 			if (DEBUG) {
 				logger.log(Level.INFO, "dependencyAttributeRemoved: " + dependencyAttribute);
 			}
-			
+
 			// remove dependency via the dependencyHandlerConduit
 			dependencyHandlerConduit.removeDependency(dependencyAttribute);
 		}
@@ -400,7 +403,7 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 	 * class to receive dependencyclientconduit messages
 	 */
 	private final class DependencyClientConduit implements DependencyClient {
-		
+
 		public void dependencyAdded(String facetId, DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
 				logger.log(Level.INFO, "dependencyAdded: " + facetId + " - " + dependencyAttribute);
@@ -410,12 +413,12 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 				depFacet.put(dependencyAttribute.getKey(), facetId);
 				dependencies.put(dependencyAttribute.getKey(), dependencyAttribute);
 			}
-			
-			//meemStructure.add(facet, dependency);
-			
+
+			// meemStructure.add(facet, dependency);
+
 			metaMeemClient.addDependencyAttribute(facetId, dependencyAttribute);
 		}
-		
+
 		public void dependencyRemoved(DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
 				logger.log(Level.INFO, "dependencyRemoved: " + dependencyAttribute);
@@ -431,12 +434,12 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 
 			metaMeemClient.removeDependencyAttribute(dependencyAttribute.getKey());
 		}
-		
+
 		public void dependencyUpdated(DependencyAttribute dependencyAttribute) {
 			if (DEBUG) {
 				logger.log(Level.INFO, "dependencyUpdated: " + dependencyAttribute);
 			}
-			
+
 			// update the dependency attribute in dependencies cache
 			synchronized (facetDep) {
 				String facetId = depFacet.get(dependencyAttribute.getKey());
@@ -451,42 +454,37 @@ public class MetaMeemWedge extends MetaMeemStructureAdapter implements MetaMeem,
 
 		public void dependencyConnected(DependencyAttribute dependencyAttribute) {
 		}
-		
+
 		public void dependencyDisconnected(DependencyAttribute dependencyAttribute) {
-		}		
+		}
 	}
 
 }
 /*
-final class MetaMeem2MeemStructure {
-	static public void metaMeemToMeemStructure(MetaMeem metaMeem, MeemStructure meemStructure) {
-
-		metaMeem.updateMeemAttribute(meemStructure.getMeemAttribute());
-
-		synchronized (meemStructure) {
-			Iterator wedgeAttributeKeys = meemStructure.getWedgeAttributeKeys();
-
-			while (wedgeAttributeKeys.hasNext()) {
-				Object wedgeKey = wedgeAttributeKeys.next();
-
-				WedgeAttribute wedgeAttribute = meemStructure.getWedgeAttribute(wedgeKey);
-				metaMeem.addWedgeAttribute(wedgeAttribute);
-
-				Iterator facetAttributeKeys = meemStructure.getFacetAttributeKeys(wedgeKey);
-
-				while (facetAttributeKeys.hasNext()) {
-					Object facetKey = facetAttributeKeys.next();
-
-					metaMeem.addFacetAttribute(wedgeKey, meemStructure.getFacetAttribute(facetKey));
-
-					Object dependencyKey = meemStructure.getDependencyKeyFromFacetKey(facetKey);
-
-					if (dependencyKey != null) {
-						metaMeem.addDependencyAttribute(facetKey, meemStructure.getDependencyAttribute(dependencyKey));
-					}
-				}
-			}
-		}
-	}
-}
-*/
+ * final class MetaMeem2MeemStructure { static public void
+ * metaMeemToMeemStructure(MetaMeem metaMeem, MeemStructure meemStructure) {
+ * 
+ * metaMeem.updateMeemAttribute(meemStructure.getMeemAttribute());
+ * 
+ * synchronized (meemStructure) { Iterator wedgeAttributeKeys =
+ * meemStructure.getWedgeAttributeKeys();
+ * 
+ * while (wedgeAttributeKeys.hasNext()) { Object wedgeKey =
+ * wedgeAttributeKeys.next();
+ * 
+ * WedgeAttribute wedgeAttribute = meemStructure.getWedgeAttribute(wedgeKey);
+ * metaMeem.addWedgeAttribute(wedgeAttribute);
+ * 
+ * Iterator facetAttributeKeys = meemStructure.getFacetAttributeKeys(wedgeKey);
+ * 
+ * while (facetAttributeKeys.hasNext()) { Object facetKey =
+ * facetAttributeKeys.next();
+ * 
+ * metaMeem.addFacetAttribute(wedgeKey,
+ * meemStructure.getFacetAttribute(facetKey));
+ * 
+ * Object dependencyKey = meemStructure.getDependencyKeyFromFacetKey(facetKey);
+ * 
+ * if (dependencyKey != null) { metaMeem.addDependencyAttribute(facetKey,
+ * meemStructure.getDependencyAttribute(dependencyKey)); } } } } } }
+ */

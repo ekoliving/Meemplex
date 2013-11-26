@@ -19,11 +19,12 @@ import org.openmaji.implementation.server.nursery.diagnostic.DiagnosticLog;
 import org.openmaji.implementation.server.nursery.diagnostic.events.thread.CreatePoolThreadEvent;
 import org.openmaji.implementation.server.nursery.diagnostic.events.thread.PoolThreadEndTaskEvent;
 import org.openmaji.implementation.server.nursery.diagnostic.events.thread.PoolThreadStartTaskEvent;
-
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.definition.*;
 import org.openmaji.meem.wedge.error.ErrorHandler;
+import org.openmaji.system.manager.thread.Task;
 import org.openmaji.system.manager.thread.ThreadManager;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,8 +45,9 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 			PoolingThreadManagerWedge.queueRunnable(runnable);
 		}
 
-		public void queue(Runnable runnable, long absoluteTime) {
+		public Task queue(Runnable runnable, long absoluteTime) {
 			// Scheduler thread should never call this
+			return null;
 		}
 
 		public void cancel(Runnable runnable) {
@@ -132,9 +134,10 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 		doQueuedRunnable(secureRunnable);
 	}
 
-	public static void queueRunnable(final Runnable runnable, long absoluteTime) {
+	public static Task queueRunnable(final Runnable runnable, long absoluteTime) {
 		if (absoluteTime < System.currentTimeMillis()) {
 			queueRunnable(runnable);
+			return null;
 		}
 		else {
 			Subject subject = Subject.getSubject(AccessController.getContext());
@@ -146,7 +149,7 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 				}
 			};
 
-			schedulerThread.queue(delayedRunnable, absoluteTime);
+			return schedulerThread.queue(delayedRunnable, absoluteTime);
 		}
 	}
 
@@ -162,9 +165,10 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 	/**
 	 * Queue a Runnable to be started no earlier than the passed in time
 	 */
-	public synchronized void queue(final Runnable runnable, long absoluteTime) {
+	public synchronized Task queue(final Runnable runnable, long absoluteTime) {
 		if (absoluteTime < System.currentTimeMillis()) {
 			queue(runnable);
+			return null;
 		}
 		else {
 			Subject subject = Subject.getSubject(AccessController.getContext());
@@ -176,7 +180,7 @@ public class PoolingThreadManagerWedge implements ThreadManager, MeemDefinitionP
 				}
 			};
 
-			schedulerThread.queue(delayedRunnable, absoluteTime);
+			return schedulerThread.queue(delayedRunnable, absoluteTime);
 		}
 	}
 

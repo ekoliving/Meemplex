@@ -93,9 +93,8 @@ public class InboundSecurityHookWedge
 	
     public AccessControlClient      accessControlClient;
     
-    public final ContentProvider    accessControlClientProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) throws ContentException {
-            AccessControlClient     client = (AccessControlClient)target;
+    public final ContentProvider<AccessControlClient>    accessControlClientProvider = new ContentProvider<AccessControlClient>() {
+        public void sendContent(AccessControlClient client, Filter filter) throws ContentException {
             Object template = null;
             if (filter != null && filter instanceof ExactMatchFilter) {
             	template = ((ExactMatchFilter)filter).getTemplate();

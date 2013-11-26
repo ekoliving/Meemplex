@@ -67,12 +67,15 @@ public class MeemInvocationSource<T extends Facet> implements InvocationHandler
 	private FilterChecker filterChecker = null;
 
 	private final FacetImpl<T> facet;
-	public final ContentProvider contentProvider;
-	public final AsyncContentProvider asyncContentProvider;
+	public final ContentProvider<T> contentProvider;
+	public final AsyncContentProvider<T> asyncContentProvider;
 
 
-	public MeemInvocationSource(FacetImpl<T> facet, AsyncContentProvider asyncContentProvider,
-		ContentProvider contentProvider, FilterChecker filterChecker)
+	public MeemInvocationSource(
+			FacetImpl<T>            facet, 
+			AsyncContentProvider<T> asyncContentProvider,
+			ContentProvider<T>      contentProvider, 
+			FilterChecker           filterChecker)
 	{
 		this.facet = facet;
 	    this.asyncContentProvider = asyncContentProvider;
@@ -85,9 +88,11 @@ public class MeemInvocationSource<T extends Facet> implements InvocationHandler
 	 */
 	public void addReference(final Reference<T> reference)
 	{
-//		if (DEBUG) {
-//			System.err.println("---add reference: " + reference);
-//		}
+		if (TRACE_ENABLED) {
+			if ("meemRegistry".equals(reference.getFacetIdentifier())) {
+				logger.info("---add reference: " + reference + "\n\t" + facet + "\n\t" + this);
+			}
+		}
 		synchronized (references) {
 			references.add(reference);
 		}
@@ -98,9 +103,11 @@ public class MeemInvocationSource<T extends Facet> implements InvocationHandler
 	 */
 	public boolean removeReference(Reference<T> reference)
 	{
-//		if (DEBUG) {
-//			System.err.println("---remove reference: " + reference);
-//		}
+		if (TRACE_ENABLED) {
+			if ("meemRegistry".equals(reference.getFacetIdentifier())) {
+				logger.info("---remove reference: " + reference+ "\n\t" + facet + "\n\t" + this);
+			}
+		}
 		synchronized (references) {
 			return references.remove(reference);
 		}
@@ -122,7 +129,10 @@ public class MeemInvocationSource<T extends Facet> implements InvocationHandler
 		}
 
 		if (TRACE_ENABLED) {
-			logger.log(Level.INFO, "--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
+			if (method.getName().equals("registerMeem")) {
+				logger.log(Level.INFO, "--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
+				logger.log(Level.INFO, "--> out references: " + references.size() + "\n\t" + facet + "\n\t" + this);
+			}
 		}
 		
 		synchronized (references) {
@@ -159,6 +169,12 @@ public class MeemInvocationSource<T extends Facet> implements InvocationHandler
 			
 				HashSet<Reference<T>> invalidReferences = new HashSet<Reference<T>>();
 				for (Reference<T> reference : references) {
+					if (TRACE_ENABLED) {
+						if (method.getName().equals("registerMeem")) {
+							logger.log(Level.INFO, "--> out ref: " + reference);
+						}
+					}
+
 					if (reference instanceof RemoteReference) {
 						boolean isValid = ((RemoteReference) reference).isValid();
 						if (!isValid) {
@@ -204,11 +220,13 @@ public class MeemInvocationSource<T extends Facet> implements InvocationHandler
 						DiagnosticLog.log(new OutboundInvocationEvent(facet.getWedgeImpl().getMeemPath(), targetMeemPath, method, args));
 					}
 					
-					if (TRACE_ENABLED) {
-						logger.log(Level.INFO, "--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
-					}
-					if (TRACE_ENABLED) {
-						logger.log(Level.INFO, "... to: " + targetMeemPath + " : " + facet.getIdentifier() + " . " + method.getName());
+					if (method.getName().equals("registerMeem")) {
+						if (TRACE_ENABLED) {
+							logger.log(Level.INFO, "--> out: " + facet.getWedgeImpl().getMeemPath() + " : " + facet.getWedgeImpl().getImplementationClassName() + " : " + facet.getIdentifier() + " . " + method.getName());
+						}
+						if (TRACE_ENABLED) {
+							logger.log(Level.INFO, "... to: " + targetMeemPath + " : " + facet.getIdentifier() + " . " + method.getName());
+						}
 					}
 					
 					invocation.invoke(reference.getTarget(), errorHandlerConduit);

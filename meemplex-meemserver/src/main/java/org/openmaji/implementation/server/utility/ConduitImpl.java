@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.classloader.MajiClassLoader;
 import org.openmaji.implementation.server.classloader.SystemExportList;
@@ -36,35 +38,45 @@ import org.openmaji.meem.wedge.error.ErrorHandler;
  * @version 1.0
  */
 
-public class ConduitImpl implements Conduit {
+public class ConduitImpl<T> implements Conduit<T> {
+	
+	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private final String identifier;
 
-	private final Class<?> specification;
+	private final Class<T> specification;
 
-	private final HashSet<Object> targets = new HashSet<Object>();
+	private final HashSet<T> targets = new HashSet<T>();
 
 	/**
 	 * A map of objects to their conduit target objects relating to this conduit.
 	 */
-	private final HashMap<Object, Object> targetDeclarers = new HashMap<Object, Object>();
+	private final HashMap<Object, T> targetDeclarers = new HashMap<Object, T>();
 
 	private final ErrorHandler errorHandler;
 
-	private Object proxy = null;
+	private T proxy = null;
 
-	public ConduitImpl(String identifier, Class<?> specification) {
-		this(identifier, specification, null);
+	public static <T> Conduit<T> create(String identifier, Class<T> specification) {
+		return new ConduitImpl<T>(identifier, specification, null);
 	}
-
-	public ConduitImpl(String identifier, Class<?> specification, ErrorHandler errorHandler) {
+	
+	public static <T> Conduit<T> create(String identifier, Class<T> specification, ErrorHandler errorHandler) {
+		return new ConduitImpl<T>(identifier, specification, errorHandler);
+	}
+	
+//	public ConduitImpl(String identifier, Class<?> specification) {
+//		this(identifier, specification, null);
+//	}
+//
+	private ConduitImpl(String identifier, Class<T> specification, ErrorHandler errorHandler) {
 
 		this.identifier = identifier;
 		this.specification = specification;
 		this.errorHandler = errorHandler;
 	}
 
-	public void addTarget(Object target) throws IllegalArgumentException {
+	public void addTarget(T target) throws IllegalArgumentException {
 
 		if (!specification.isInstance(target)) {
 			throw new IllegalArgumentException("Conduit target " + target + " does not match specification type: " + specification);
@@ -80,12 +92,12 @@ public class ConduitImpl implements Conduit {
 	 * @param owner
 	 * @throws IllegalArgumentException
 	 */
-	public void addTarget(Object target, Object owner) throws IllegalArgumentException {
+	public void addTarget(T target, Object owner) throws IllegalArgumentException {
 		addTarget(target);
 		targetDeclarers.put(owner, target);
 	}
 
-	public void removeTarget(Object target) {
+	public void removeTarget(T target) {
 		targets.remove(target);
 	}
 
@@ -98,7 +110,7 @@ public class ConduitImpl implements Conduit {
 		return (identifier);
 	}
 
-	public Object getProxy() {
+	public T getProxy() {
 		if (proxy == null) {
 			Class<?>[] interfaces = new Class[] { specification };
 
@@ -110,13 +122,18 @@ public class ConduitImpl implements Conduit {
 				classLoader = SystemExportList.getInstance().getClassLoaderFor(specification.getName());
 			}
 
-			proxy = Proxy.newProxyInstance(classLoader, interfaces, this);
+			try {
+				proxy = (T) Proxy.newProxyInstance(classLoader, interfaces, this);
+			}
+			catch (ClassCastException e) {
+				logger.log(Level.INFO, "problem casting with " + specification.getName(), e);
+			}
 		}
 
 		return (proxy);
 	}
 
-	public Class<?> getSpecification() {
+	public Class<T> getSpecification() {
 		return (specification);
 	}
 
@@ -136,7 +153,7 @@ public class ConduitImpl implements Conduit {
 			return Boolean.valueOf(args[0] == proxy);
 		}
 
-		for (Object target : targets) {
+		for (T target : targets) {
 			try {
 				method.invoke(target, args);
 			}

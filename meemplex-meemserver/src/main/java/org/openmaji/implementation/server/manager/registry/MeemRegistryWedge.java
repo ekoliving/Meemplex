@@ -70,13 +70,11 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 
 	public MeemRegistryClient meemRegistryClient;
 
-	public final ContentProvider meemRegistryClientProvider = new ContentProvider() {
-		public synchronized void sendContent(Object target, Filter filter) {
-
-			MeemRegistryClient meemRegistryClient = (MeemRegistryClient) target;
+	public final ContentProvider<MeemRegistryClient> meemRegistryClientProvider = new ContentProvider<MeemRegistryClient>() {
+		public synchronized void sendContent(MeemRegistryClient client, Filter filter) {
 
 			if (filter instanceof ExactMatchFilter) {
-				ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
+				ExactMatchFilter<?> exactMatchFilter = (ExactMatchFilter<?>) filter;
 
 				if (exactMatchFilter.getTemplate() instanceof MeemPath) {
 					MeemPath meemPath = (MeemPath) exactMatchFilter.getTemplate();
@@ -87,8 +85,11 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 						meem = locateRemoteMeem(meemPath);
 					}
 
+					if (DEBUG) {
+						logger.info("$$$ sending to client for " + meemPath + " : " + meem);
+					}
 					if (meem != null) {
-						meemRegistryClient.meemRegistered(meem);
+						client.meemRegistered(meem);
 					}
 				}
 			}
@@ -110,7 +111,9 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 	 */
 
 	public void registerMeem(Meem meem) {
-		//logger.log(Level.INFO, "registerMeem(): " + meem);
+		if (DEBUG) {
+			logger.log(Level.INFO, "registerMeem(): " + meem);
+		}
 
 		MeemPath meemPath = meem.getMeemPath();
 
@@ -172,8 +175,11 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 		if (methodName.equals("meemRegistered") || methodName.equals("meemDeregistered")) {
 
 			Meem meem = (Meem) args[0];
+			if (DEBUG) {
+				logger.info("invokeMethodCheck: for " + meem + " and filter " + ((ExactMatchFilter<?>) filter).getTemplate());
+			}
 			if (meem != null) {
-				ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
+				ExactMatchFilter<?> exactMatchFilter = (ExactMatchFilter<?>) filter;
 				return exactMatchFilter.getTemplate().equals(meem.getMeemPath());
 			}
 		}
@@ -206,6 +212,8 @@ public class MeemRegistryWedge implements MeemRegistry, MeemDefinitionProvider, 
 
 	private static final Logger logger = Logger.getAnonymousLogger();
 
+	private static final boolean DEBUG = false;
+	
 	/**
 	 * Acquire the Maji system-wide logging level.
 	 */

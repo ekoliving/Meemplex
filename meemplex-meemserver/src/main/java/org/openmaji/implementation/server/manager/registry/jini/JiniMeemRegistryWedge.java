@@ -82,10 +82,8 @@ public class JiniMeemRegistryWedge implements Wedge, JiniMeemRegistry, MeemDefin
 
 	public JiniMeemRegistryClient jiniMeemRegistryClient;
 
-	public final AsyncContentProvider jiniMeemRegistryClientProvider = new AsyncContentProvider() {
-		public void asyncSendContent(Object target, Filter filter, ContentClient contentClient) {
-
-			JiniMeemRegistryClient client = (JiniMeemRegistryClient) target;
+	public final AsyncContentProvider<JiniMeemRegistryClient> jiniMeemRegistryClientProvider = new AsyncContentProvider<JiniMeemRegistryClient>() {
+		public void asyncSendContent(JiniMeemRegistryClient client, Filter filter, ContentClient contentClient) {
 
 			if (filter instanceof ExactMatchFilter) {
 				Object template = ((ExactMatchFilter) filter).getTemplate();
@@ -130,7 +128,7 @@ public class JiniMeemRegistryWedge implements Wedge, JiniMeemRegistry, MeemDefin
 					Scope.LOCAL, 
 					localRegistryGatewayMeem,
 					"meemRegistryClient", 
-					new ExactMatchFilter(scopedMeemPath), 
+					ExactMatchFilter.create(scopedMeemPath), 
 					true
 				);
 		}

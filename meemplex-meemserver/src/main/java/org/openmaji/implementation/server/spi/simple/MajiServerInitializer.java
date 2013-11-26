@@ -463,37 +463,37 @@ public class MajiServerInitializer {
 	  org.openmaji.implementation.server.utility.MeemUtilityImpl.class
 	),
 	
-	new SpecificationEntry(
+	new SpecificationEntry<org.openmaji.implementation.server.manager.lifecycle.persisting.PersistingLifeCycleManagerMeem>(
       org.openmaji.implementation.server.manager.lifecycle.persisting.PersistingLifeCycleManagerMeem.class,
       SpecificationType.OBJECT,
       org.openmaji.implementation.server.manager.lifecycle.persisting.PersistingLifeCycleManagerMeem.class
     ),
 		
-    new SpecificationEntry(
+    new SpecificationEntry<org.openmaji.meem.wedge.reference.Reference>(
   		org.openmaji.meem.wedge.reference.Reference.class,
       SpecificationType.OBJECT,
       org.openmaji.implementation.server.meem.wedge.reference.ReferenceImpl.class
     ),
 	
-    new SpecificationEntry(
+    new SpecificationEntry<org.openmaji.system.gateway.ServerGateway>(
             org.openmaji.system.gateway.ServerGateway.class,
             SpecificationType.OBJECT,
             org.openmaji.implementation.server.gateway.ServerGatewayImpl.class
     ),
 
-    new SpecificationEntry(
+    new SpecificationEntry<org.openmaji.utility.uid.UID>(
         org.openmaji.utility.uid.UID.class,
         SpecificationType.OBJECT,
         org.openmaji.implementation.server.utility.uid.UIDImpl.class
       ),
 
-    new SpecificationEntry(
+    new SpecificationEntry<org.openmaji.system.manager.lifecycle.subsystem.Subsystem>(
       org.openmaji.system.manager.lifecycle.subsystem.Subsystem.class,
       SpecificationType.WEDGE,
       org.openmaji.implementation.server.manager.lifecycle.subsystem.SubsystemWedge.class
     ),
 
-    new SpecificationEntry(
+    new SpecificationEntry<org.openmaji.meem.definition.WedgeDefinitionFactory>(
       org.openmaji.meem.definition.WedgeDefinitionFactory.class,
       SpecificationType.OBJECT,
       org.openmaji.implementation.server.meem.definition.WedgeDefinitionFactoryImpl.class

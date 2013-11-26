@@ -16,6 +16,7 @@ package org.openmaji.implementation.server.manager.thread;
 import org.openmaji.implementation.server.nursery.statistics.StatisticsClient;
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
+import org.openmaji.system.manager.thread.Task;
 import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.meem.core.MeemCore;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
@@ -39,10 +40,10 @@ class ThreadManagerWedge implements ThreadManager, Wedge
     public MeemCore meemCore;
 
     public StatisticsClient	statsGatherer;
-    public final ContentProvider statsGathererProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter)
+    public final ContentProvider<StatisticsClient> statsGathererProvider = new ContentProvider<StatisticsClient>() {
+        public void sendContent(StatisticsClient target, Filter filter)
         {
-            ((StatisticsClient)target).statisticsChanged(new ThreadManagerStatistics(runner, atRunner));
+            target.statisticsChanged(new ThreadManagerStatistics(runner, atRunner));
         }
     };
 
@@ -55,9 +56,9 @@ class ThreadManagerWedge implements ThreadManager, Wedge
         atRunner.queue(runnable, 0);
     }
 
-	public void queue(Runnable	runnable, long absoluteTime)
+	public Task queue(Runnable	runnable, long absoluteTime)
 	{
-			atRunner.queue(runnable, absoluteTime);
+			return atRunner.queue(runnable, absoluteTime);
 	}
 	
 	public void cancel(Runnable runnable) {

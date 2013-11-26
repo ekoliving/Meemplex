@@ -33,9 +33,9 @@ public class ConfigurationHandlerWedge implements ConfigurationHandler, Wedge {
 	 */
 	public ConfigurationClient configClient;
 
-	public final ContentProvider configClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws ContentException {
-			configurationProviderConduit.provideConfiguration((ConfigurationClient) target, filter);
+	public final ContentProvider<ConfigurationClient> configClientProvider = new ContentProvider<ConfigurationClient>() {
+		public void sendContent(ConfigurationClient target, Filter filter) throws ContentException {
+			configurationProviderConduit.provideConfiguration(target, filter);
 		}
 	};
 
@@ -45,7 +45,7 @@ public class ConfigurationHandlerWedge implements ConfigurationHandler, Wedge {
 	 * Conduit on which to receive changes of configuration values configuration of this meem.
 	 */
 	public ConfigurationClient configurationClientConduit = new ConfigurationClient() {
-		public void specificationChanged(ConfigurationSpecification[] oldSpecifications, ConfigurationSpecification[] newSpecifications) {
+		public void specificationChanged(ConfigurationSpecification<?>[] oldSpecifications, ConfigurationSpecification<?>[] newSpecifications) {
 			configClient.specificationChanged(oldSpecifications, newSpecifications);
 		}
 

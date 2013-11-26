@@ -67,6 +67,8 @@ public class MeemInvocationTarget implements InvocationHandler, Serializable
 	
 	private static final Logger logger = Logger.getAnonymousLogger();
 	
+	private static final boolean TRACE_ENABLED = false;
+	
 	private transient Facet implementation;
 	private transient ContentClient contentClient;
 	private transient MeemCoreImpl meemCoreImpl;
@@ -173,11 +175,20 @@ public class MeemInvocationTarget implements InvocationHandler, Serializable
 			return handleObjectMethods(proxy, method, args);
 		}
 
-//		if (Common.TRACE_ENABLED) {
-//			Object meemId = meemCoreImpl.getMeemStructure().getMeemAttribute().getIdentifier();
-//			meemId = meemId == null || meemId.toString().isEmpty() ? meemPath : meemId;
-//			logger.log(Level.INFO, "<-- in:  " + meemId + " : " + facetIdentifier + " . " + method.getName());
-//		}
+		if (TRACE_ENABLED) {
+			if (method.getName().equals("registerMeem")) {
+				Object meemId = meemCoreImpl.getMeemStructure().getMeemAttribute().getIdentifier();
+				meemId = meemId == null || meemId.toString().isEmpty() ? meemPath : meemId;
+				StringBuilder sb = new StringBuilder();
+				if (args != null) {
+					for (Object arg : args) {
+						sb.append(arg);
+						sb.append(", ");
+					}
+				}
+				logger.log(Level.INFO, "<-- in:  " + meemId + " : " + facetIdentifier + " . " + method.getName() + " (" + sb + ")");
+			}
+		}
 
 		if (decClass == Meem.class && args == null)
 		{
@@ -222,6 +233,7 @@ public class MeemInvocationTarget implements InvocationHandler, Serializable
 		}
 		else if (implementation == null)
 		{
+logger.info("!!! invoke fail, no implementation");
 			invocation.fail();
 		}
 		else

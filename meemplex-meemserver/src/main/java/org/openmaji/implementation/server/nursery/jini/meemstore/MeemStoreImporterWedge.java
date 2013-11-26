@@ -29,7 +29,6 @@ import net.jini.lookup.ServiceDiscoveryManager;
 import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.manager.registry.MeemRegistryJiniUtility;
 
-
 import org.openmaji.meem.*;
 import org.openmaji.meem.definition.*;
 import org.openmaji.meem.filter.Filter;
@@ -44,249 +43,204 @@ import org.openmaji.system.space.meemstore.MeemStoreClient;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MeemStoreImporterWedge
-  implements MeemStore, MeemStoreCallBack, Wedge {
+public class MeemStoreImporterWedge implements MeemStore, MeemStoreCallBack, Wedge {
 
-  public MeemStoreClient meemStoreClient;  // Outbound Facet
+	public MeemStoreClient meemStoreClient; // Outbound Facet
 
-  public MeemContentClient meemContentClient;  // Outbound Facet
+	public MeemContentClient meemContentClient; // Outbound Facet
 
-  public final ContentProvider meemContentClientProvider =
-    new MeemContentClientContentProvider();  // Inner class defined below
+	// Inner class defined below
+	public final ContentProvider<MeemContentClient> meemContentClientProvider = new MeemContentClientContentProvider();
 
-  public MeemDefinitionClient meemDefinitionClient;  // Outbound Facet
+	public MeemDefinitionClient meemDefinitionClient; // Outbound Facet
 
-  public final ContentProvider meemDefinitionClientProvider =
-    new MeemDefinitionClientContentProvider();  // Inner class defined below
+	// Inner class defined below
+	public final ContentProvider<MeemDefinitionClient> meemDefinitionClientProvider = new MeemDefinitionClientContentProvider(); 
 
- public LifeCycleClient	lifeCycleClientConduit = new LifeCycleClientAdapter(this);
- 
-  private static MeemStoreImporterWedge meemStoreImporterWedge;  // Singleton
+	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
-  private MeemStoreCallForward meemStoreCallForward = null;
+	private static MeemStoreImporterWedge meemStoreImporterWedge; // Singleton
 
-  private static final Logger logger = Logger.getAnonymousLogger();
+	private MeemStoreCallForward meemStoreCallForward = null;
 
-  private Configuration configuration = null;
+	private static final Logger logger = Logger.getAnonymousLogger();
 
-  private ServiceDiscoveryManager serviceDiscoveryManager = null;
+	private Configuration configuration = null;
 
-  private static Class<?>[] serviceInterfaces =
-    new Class[] { MeemStoreCallForward.class };
+	private ServiceDiscoveryManager serviceDiscoveryManager = null;
 
-  private static ServiceTemplate serviceTemplate =
-    new ServiceTemplate(null, serviceInterfaces, null);
+	private static Class<?>[] serviceInterfaces = new Class[] { MeemStoreCallForward.class };
 
-  public static MeemStoreImporterWedge getInstance() {
-    if (meemStoreImporterWedge == null) {
-      throw new RuntimeException("meemStoreImporterWedge not instantiated");
-    }
+	private static ServiceTemplate serviceTemplate = new ServiceTemplate(null, serviceInterfaces, null);
 
-    return(meemStoreImporterWedge);
-  }
+	public static MeemStoreImporterWedge getInstance() {
+		if (meemStoreImporterWedge == null) {
+			throw new RuntimeException("meemStoreImporterWedge not instantiated");
+		}
 
-  public MeemStoreImporterWedge() {
-    meemStoreImporterWedge = this;
-  }
+		return (meemStoreImporterWedge);
+	}
 
-  public void commence() {
-/* ---------- Jini initialization ------------------------------------------ */
+	public MeemStoreImporterWedge() {
+		meemStoreImporterWedge = this;
+	}
 
-    String majitekDirectory =
-      System.getProperty(Common.PROPERTY_MAJI_HOME);
+	public void commence() {
+		/*
+		 * ---------- Jini initialization
+		 * ------------------------------------------
+		 */
 
-    if (majitekDirectory == null) {
-      throw new RuntimeException(
-        "Empty Majitek directory property: " +
-         Common.PROPERTY_MAJI_HOME
-      );
-    }
+		String majitekDirectory = System.getProperty(Common.PROPERTY_MAJI_HOME);
 
-    try {
-      configuration = ConfigurationProvider.getInstance(
-        new String[] {
-          majitekDirectory +
-          System.getProperty(MeemRegistryJiniUtility.JINI_CONFIGURATION_FILE)
-        }
-      );
+		if (majitekDirectory == null) {
+			throw new RuntimeException("Empty Majitek directory property: " + Common.PROPERTY_MAJI_HOME);
+		}
 
-      if (serviceDiscoveryManager == null) {
-        try {
-          serviceDiscoveryManager = (ServiceDiscoveryManager)
-            configuration.getEntry(
-              "org.openmaji.implementation.server.nursery.jini.meemstore.MeemStoreExporterWedge",
-              "serviceDiscovery",
-              ServiceDiscoveryManager.class
-            );
-        }
-        catch (NoSuchEntryException noSuchEntryException) {
-        /* Default to search in the public group */
-          serviceDiscoveryManager = new ServiceDiscoveryManager(
-            new LookupDiscovery(
-              DiscoveryGroupManagement.ALL_GROUPS, configuration
-            ),
-            null,
-            configuration
-          );
-        }
-      }
+		try {
+			configuration = ConfigurationProvider.getInstance(new String[] { majitekDirectory + System.getProperty(MeemRegistryJiniUtility.JINI_CONFIGURATION_FILE) });
 
-/* ---------- Jini Service lookup ------------------------------------------ */
+			if (serviceDiscoveryManager == null) {
+				try {
+					serviceDiscoveryManager = (ServiceDiscoveryManager) configuration.getEntry("org.openmaji.implementation.server.nursery.jini.meemstore.MeemStoreExporterWedge", "serviceDiscovery",
+							ServiceDiscoveryManager.class);
+				}
+				catch (NoSuchEntryException noSuchEntryException) {
+					/* Default to search in the public group */
+					serviceDiscoveryManager = new ServiceDiscoveryManager(new LookupDiscovery(DiscoveryGroupManagement.ALL_GROUPS, configuration), null, configuration);
+				}
+			}
 
-      ServiceItem serviceItem = serviceDiscoveryManager.lookup(
-        serviceTemplate, null, Long.MAX_VALUE
-      );
+			/*
+			 * ---------- Jini Service lookup
+			 * ------------------------------------------
+			 */
 
-      meemStoreCallForward = (MeemStoreCallForward) serviceItem.service;
+			ServiceItem serviceItem = serviceDiscoveryManager.lookup(serviceTemplate, null, Long.MAX_VALUE);
 
-      logger.log(Level.INFO, "Jini Service lookup: " + serviceItem.serviceID);
-    }
-    catch (Exception exception) {
-      throw new RuntimeException("Exception:" + exception);
-    }
-  }
+			meemStoreCallForward = (MeemStoreCallForward) serviceItem.service;
 
-  public void conclude() {
-  }
+			logger.log(Level.INFO, "Jini Service lookup: " + serviceItem.serviceID);
+		}
+		catch (Exception exception) {
+			throw new RuntimeException("Exception:" + exception);
+		}
+	}
 
-/* ---------- Inbound Facet: MeemStore ------------------------------------- */
+	public void conclude() {
+	}
 
-  public void storeMeemContent(
-    MeemPath    meemPath,
-    MeemContent meemContent) {
+	/* ---------- Inbound Facet: MeemStore ------------------------------------- */
 
-    try {
-      logger.log(Level.INFO, "# storeMeemContent(" + meemPath + ")");
+	public void storeMeemContent(MeemPath meemPath, MeemContent meemContent) {
 
-      meemStoreCallForward.storeMeemContent(meemPath, meemContent);
-    }
-    catch (Exception exception) {
-      logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
-    }
-  }
+		try {
+			logger.log(Level.INFO, "# storeMeemContent(" + meemPath + ")");
 
-  public void storeMeemDefinition(
-    MeemPath       meemPath,
-    MeemDefinition meemDefinition) {
+			meemStoreCallForward.storeMeemContent(meemPath, meemContent);
+		}
+		catch (Exception exception) {
+			logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
+		}
+	}
 
-    try {
-      logger.log(Level.INFO, "# storeMeemDefinition(" + meemPath + ")");
+	public void storeMeemDefinition(MeemPath meemPath, MeemDefinition meemDefinition) {
 
-      meemStoreCallForward.storeMeemDefinition(meemPath, meemDefinition);
-    }
-    catch (Exception exception) {
-      logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
-    }
-  }
+		try {
+			logger.log(Level.INFO, "# storeMeemDefinition(" + meemPath + ")");
 
-  public void destroyMeem(
-    MeemPath meemPath) {
+			meemStoreCallForward.storeMeemDefinition(meemPath, meemDefinition);
+		}
+		catch (Exception exception) {
+			logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
+		}
+	}
 
-    try {
-      logger.log(Level.INFO, "# destroyMeem(" + meemPath + ")");
+	public void destroyMeem(MeemPath meemPath) {
 
-      meemStoreCallForward.destroyMeem(meemPath);
-    }
-    catch (Exception exception) {
-      logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
-    }
-  }
+		try {
+			logger.log(Level.INFO, "# destroyMeem(" + meemPath + ")");
 
-/* ---------- Interface: MeemStoreCallBack --------------------------------- */
+			meemStoreCallForward.destroyMeem(meemPath);
+		}
+		catch (Exception exception) {
+			logger.log(Level.WARNING, "# MeemStoreCallForward: " + exception);
+		}
+	}
 
-  public void meemStored(
-    MeemPath meemPath)
-    throws RemoteException {
+	/* ---------- Interface: MeemStoreCallBack --------------------------------- */
 
-    logger.log(Level.INFO, "# meemStored(" + meemPath + ")");
+	public void meemStored(MeemPath meemPath) throws RemoteException {
 
-    meemStoreClient.meemStored(meemPath);
-  }
+		logger.log(Level.INFO, "# meemStored(" + meemPath + ")");
 
-  public void meemDestroyed(
-    MeemPath meemPath)
-    throws RemoteException {
+		meemStoreClient.meemStored(meemPath);
+	}
 
-    logger.log(Level.INFO, "# meemDestroyed(" + meemPath + ")");
+	public void meemDestroyed(MeemPath meemPath) throws RemoteException {
 
-    meemStoreClient.meemDestroyed(meemPath);
-  }
+		logger.log(Level.INFO, "# meemDestroyed(" + meemPath + ")");
 
-  public void meemContentChanged(
-    MeemPath    meemPath,
-    MeemContent meemContent)
-    throws RemoteException {
+		meemStoreClient.meemDestroyed(meemPath);
+	}
 
-    logger.log(Level.INFO, "# meemContentChanged(" + meemPath + ")");
+	public void meemContentChanged(MeemPath meemPath, MeemContent meemContent) throws RemoteException {
 
-    meemContentClient.meemContentChanged(meemPath, meemContent);
-  }
+		logger.log(Level.INFO, "# meemContentChanged(" + meemPath + ")");
 
-  public void meemDefinitionChanged(
-    MeemPath       meemPath,
-    MeemDefinition meemDefinition)
-    throws RemoteException {
+		meemContentClient.meemContentChanged(meemPath, meemContent);
+	}
 
-    logger.log(Level.INFO, "# meemDefinitionChanged(" + meemPath + ")");
+	public void meemDefinitionChanged(MeemPath meemPath, MeemDefinition meemDefinition) throws RemoteException {
 
-    meemDefinitionClient.meemDefinitionChanged(meemPath, meemDefinition);
-  }
+		logger.log(Level.INFO, "# meemDefinitionChanged(" + meemPath + ")");
 
-/* ---------- ContentProvider: MeemContentClient --------------------------- */
+		meemDefinitionClient.meemDefinitionChanged(meemPath, meemDefinition);
+	}
 
-  private final class MeemContentClientContentProvider
-    implements ContentProvider {
+	/* ---------- ContentProvider: MeemContentClient --------------------------- */
 
-    public void sendContent(
-      Object target,
-      Filter filter) {
+	private final class MeemContentClientContentProvider implements ContentProvider<MeemContentClient> {
 
-      try {
-        logger.log(Level.INFO, "# getMeemContents(" + filter + ")");
+		public void sendContent(MeemContentClient client, Filter filter) {
 
-        MeemContentClient meemContentClient = (MeemContentClient) target;
+			try {
+				logger.log(Level.INFO, "# getMeemContents(" + filter + ")");
 
-        Map<MeemPath, MeemContent> meemContents = meemStoreCallForward.getMeemContent(filter);
+				Map<MeemPath, MeemContent> meemContents = meemStoreCallForward.getMeemContent(filter);
 
-        for (Entry<MeemPath, MeemContent> contentEntry : meemContents.entrySet()) {
-          MeemPath meemPath = contentEntry.getKey();
-          MeemContent meemContent = contentEntry.getValue();
-          meemContentClient.meemContentChanged(meemPath, meemContent);
-        }
-      }
-      catch (Exception exception) {
-        logger.log(Level.WARNING, "# sendContent(): " + exception);
-      }
-    }
-  }
+				for (Entry<MeemPath, MeemContent> contentEntry : meemContents.entrySet()) {
+					MeemPath meemPath = contentEntry.getKey();
+					MeemContent meemContent = contentEntry.getValue();
+					client.meemContentChanged(meemPath, meemContent);
+				}
+			}
+			catch (Exception exception) {
+				logger.log(Level.WARNING, "# sendContent(): " + exception);
+			}
+		}
+	}
 
-/* ---------- ContentProvider: MeemDefinitionClient ------------------------ */
+	/* ---------- ContentProvider: MeemDefinitionClient ------------------------ */
 
-  private final class MeemDefinitionClientContentProvider
-    implements ContentProvider {
+	private final class MeemDefinitionClientContentProvider implements ContentProvider<MeemDefinitionClient> {
 
-    public void sendContent(
-      Object target,
-      Filter filter) {
+		public void sendContent(MeemDefinitionClient client, Filter filter) {
 
-      try {
-        logger.log(Level.INFO, "# getMeemDefinitions(" + filter + ")");
+			try {
+				logger.log(Level.INFO, "# getMeemDefinitions(" + filter + ")");
 
-        MeemDefinitionClient meemDefinitionClient =
-          (MeemDefinitionClient) target;
+				Map<MeemPath, MeemDefinition> meemDefinitions = meemStoreCallForward.getMeemDefinition(filter);
 
-        Map<MeemPath, MeemDefinition> meemDefinitions =
-          meemStoreCallForward.getMeemDefinition(filter);
-
-        for (Entry<MeemPath, MeemDefinition> defEntry : meemDefinitions.entrySet()) {
-          MeemPath meemPath = defEntry.getKey();
-          MeemDefinition meemDefinition = defEntry.getValue();
-          meemDefinitionClient.meemDefinitionChanged(meemPath, meemDefinition);
-        }
-      }
-      catch (Exception exception) {
-        logger.log(Level.WARNING, "# sendContent(): " + exception);
-      }
-    }
-  }
+				for (Entry<MeemPath, MeemDefinition> defEntry : meemDefinitions.entrySet()) {
+					MeemPath meemPath = defEntry.getKey();
+					MeemDefinition meemDefinition = defEntry.getValue();
+					client.meemDefinitionChanged(meemPath, meemDefinition);
+				}
+			}
+			catch (Exception exception) {
+				logger.log(Level.WARNING, "# sendContent(): " + exception);
+			}
+		}
+	}
 }

@@ -166,13 +166,13 @@ public class ServerGatewayImpl implements ServerGateway {
 	public <T extends Facet> void getTarget(final Meem meem, final String facetIdentifier, final Class<T> specification, final AsyncCallback<T> callback) {
 		Subject.doAs(subject, new PrivilegedAction<Void>() {
 			public Void run() {
-				Facet proxy = MeemClientImpl.getProxy(meem, new FacetConsumer<T>() {
+				MeemClient proxy = MeemClientImpl.getProxy(meem, new FacetConsumer<T>() {
 					public void facet(Meem meem, String facetId, T target) {
 						callback.result(target);
 					};
 				});
 				Filter filter = new FacetDescriptor(facetIdentifier, specification);
-				Reference targetReference = Reference.spi.create("meemClientFacet", proxy, true, filter);
+				Reference<MeemClient> targetReference = Reference.spi.create("meemClientFacet", proxy, true, filter);
 				meem.addOutboundReference(targetReference, true);	// a one-off retrieval of content
 
 				return null;
@@ -188,7 +188,7 @@ public class ServerGatewayImpl implements ServerGateway {
 	public <T extends Facet> T getTarget(final Meem meem, final String facetIdentifier, final Class<T> specification) {
 		return Subject.doAs(subject, new PrivilegedAction<T>() {
 			public T run() {
-				T facet = (T) ReferenceHelper.getTarget(meem, facetIdentifier, specification);
+				T facet = ReferenceHelper.getTarget(meem, facetIdentifier, specification);
 				if (facet == null) {
 					return null;
 				}

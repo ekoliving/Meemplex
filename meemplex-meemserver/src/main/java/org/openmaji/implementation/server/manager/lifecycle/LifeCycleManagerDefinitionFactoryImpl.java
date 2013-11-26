@@ -36,7 +36,7 @@ public class LifeCycleManagerDefinitionFactoryImpl implements LifeCycleManagerDe
 	/**
 	 * @see org.openmaji.system.manager.lifecycle.LifeCycleManagerDefinitionFactory#createPersisting(java.lang.Class[])
 	 */
-	public MeemDefinition createPersisting(Class[] wedges) {
+	public MeemDefinition createPersisting(Class<?>[] wedges) {
 		MeemDefinition meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(PersistingLifeCycleManagerMeem.class);
 
 		return addApplicationWedges(meemDefinition, wedges);
@@ -45,13 +45,13 @@ public class LifeCycleManagerDefinitionFactoryImpl implements LifeCycleManagerDe
 	/**
 	 * @see org.openmaji.system.manager.lifecycle.LifeCycleManagerDefinitionFactory#createTransient(java.lang.Class[])
 	 */
-	public MeemDefinition createTransient(Class[] wedges) {
+	public MeemDefinition createTransient(Class<?>[] wedges) {
 		MeemDefinition meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(TransientLifeCycleManagerMeem.class);
 		
 		return addApplicationWedges(meemDefinition, wedges);
 	}
 	
-	private MeemDefinition addApplicationWedges(MeemDefinition meemDefinition, Class[] applicationWedges) {
+	private MeemDefinition addApplicationWedges(MeemDefinition meemDefinition, Class<?>[] applicationWedges) {
 		for (int i = 0; i < applicationWedges.length; i++) {
 			WedgeDefinition wedgeDefinition = DefinitionFactory.spi.create().createWedgeDefinition(applicationWedges[i]);
 			

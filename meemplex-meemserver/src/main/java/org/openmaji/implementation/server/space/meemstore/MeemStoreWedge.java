@@ -54,10 +54,9 @@ public class MeemStoreWedge
 	 * MeemStoreClient (out-bound Facet)
 	 */
 	public MeemStoreClient meemStoreClient;
-	public final ContentProvider meemStoreClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws IllegalArgumentException {
+	public final ContentProvider<MeemStoreClient> meemStoreClientProvider = new ContentProvider<MeemStoreClient>() {
+		public void sendContent(MeemStoreClient client, Filter filter) throws IllegalArgumentException {
 
-			MeemStoreClient meemStoreClient = (MeemStoreClient) target;
 			Collection<MeemPath> valueSet;
 			
 			synchronized (meemPaths) {
@@ -66,14 +65,14 @@ public class MeemStoreWedge
 				if (filter == null) {
 					// send paths of all stored meems
 					for (MeemPath meemPath : valueSet) {
-						meemStoreClient.meemStored(meemPath);
+						client.meemStored(meemPath);
 					}
 				}
 				else if (filter instanceof ExactMatchFilter) {
 					// determine whether the meem is stored in this MeemStore
-					MeemPath meemPath = (MeemPath) ((ExactMatchFilter) filter).getTemplate();
+					MeemPath meemPath = (MeemPath) ((ExactMatchFilter<?>) filter).getTemplate();
 					if (valueSet.contains(meemPath)) {
-						meemStoreClient.meemStored(meemPath);
+						client.meemStored(meemPath);
 					}
 				}
 			}
@@ -84,10 +83,9 @@ public class MeemStoreWedge
 	 * MeemContentClient (out-bound Facet)
 	 */
 	public MeemContentClient meemContentClient;
-	public final ContentProvider meemContentClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws IllegalArgumentException {
+	public final ContentProvider<MeemContentClient> meemContentClientProvider = new ContentProvider<MeemContentClient>() {
+		public void sendContent(MeemContentClient client, Filter filter) throws IllegalArgumentException {
 
-			MeemContentClient meemContentClient = (MeemContentClient) target;
 			Collection<MeemPath> valueSet;
 			synchronized (meemPaths) {
 				valueSet = meemPaths.values();
@@ -96,7 +94,7 @@ public class MeemStoreWedge
 					logger.log(Level.INFO, "!!!! No filter for meem content client");
 					
 					for (MeemPath meemPath : valueSet) {
-						meemContentClient.meemContentChanged(meemPath, contentStore.load(meemPath));
+						client.meemContentChanged(meemPath, contentStore.load(meemPath));
 					}
 				}
 				else if (filter instanceof ExactMatchFilter) {
@@ -104,14 +102,14 @@ public class MeemStoreWedge
 					 * If it is an exact match filter, grab the MeemPath out of it. 
 					 * If that MeemPath isn't in the list, send back an empty MeemContent
 					 */
-					Object filterObject = ((ExactMatchFilter) filter).getTemplate();
+					Object filterObject = ((ExactMatchFilter<?>) filter).getTemplate();
 					if (filterObject instanceof MeemPath) {
 						MeemPath filterPath = (MeemPath) filterObject;
 						if (valueSet.contains(filterPath)) {
-							meemContentClient.meemContentChanged(filterPath, contentStore.load(filterPath));
+							client.meemContentChanged(filterPath, contentStore.load(filterPath));
 						}
 						else {
-							meemContentClient.meemContentChanged(filterPath, new MeemContent());
+							client.meemContentChanged(filterPath, new MeemContent());
 						}
 					}
 				}
@@ -123,10 +121,9 @@ public class MeemStoreWedge
 	 * MeemDefinitionClient (out-bound Facet)
 	 */
 	public MeemDefinitionClient meemDefinitionClient;
-	public final ContentProvider meemDefinitionClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws IllegalArgumentException {
+	public final ContentProvider<MeemDefinitionClient> meemDefinitionClientProvider = new ContentProvider<MeemDefinitionClient>() {
+		public void sendContent(MeemDefinitionClient client, Filter filter) throws IllegalArgumentException {
 
-			MeemDefinitionClient meemDefinitionClient = (MeemDefinitionClient) target;
 			Collection<MeemPath> valueSet;
 			synchronized (meemPaths) {
 				valueSet = meemPaths.values();
@@ -134,7 +131,7 @@ public class MeemStoreWedge
 				if (filter == null) {
 					logger.log(Level.INFO, "!!!! No filter for meem definition client");
 					for (MeemPath meemPath : valueSet) {
-						meemDefinitionClient.meemDefinitionChanged(meemPath, definitionStore.load(meemPath));
+						client.meemDefinitionChanged(meemPath, definitionStore.load(meemPath));
 					}
 				}
 				else if (filter instanceof ExactMatchFilter) {
@@ -142,10 +139,10 @@ public class MeemStoreWedge
 					if (filterObject instanceof MeemPath) {
 						MeemPath filterPath = (MeemPath) filterObject;
 						if (valueSet.contains(filterPath)) {
-							meemDefinitionClient.meemDefinitionChanged(filterPath, definitionStore.load(filterPath));
+							client.meemDefinitionChanged(filterPath, definitionStore.load(filterPath));
 						}
 						else {
-							meemDefinitionClient.meemDefinitionChanged(filterPath, null);
+							client.meemDefinitionChanged(filterPath, null);
 						}
 					}
 				}

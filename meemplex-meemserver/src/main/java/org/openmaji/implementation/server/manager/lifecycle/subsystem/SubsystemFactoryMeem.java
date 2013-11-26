@@ -35,7 +35,7 @@ public class SubsystemFactoryMeem implements MeemDefinitionProvider
 		if (meemDefinition == null)
 		{
 			
-			Class[] classes = new Class[] { 
+			Class<?>[] classes = new Class[] { 
 					LifeCycleManagerWedge.class, 
 					LifeCycleAdapterWedge.class, 
 					ActivationWedge.class, 

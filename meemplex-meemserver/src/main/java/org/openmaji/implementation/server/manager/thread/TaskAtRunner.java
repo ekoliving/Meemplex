@@ -8,6 +8,8 @@
  */
 package org.openmaji.implementation.server.manager.thread;
 
+import org.openmaji.system.manager.thread.Task;
+
 public class TaskAtRunner extends Thread
 {
 	private long taskCount;
@@ -15,12 +17,13 @@ public class TaskAtRunner extends Thread
 	TaskAtRunner()
 	{}
 
-	void queue(Runnable runnable, long absoluteTime)
+	Task queue(Runnable runnable, long absoluteTime)
 	{
 		taskCount++;
 
-		Thread thread = new DelayedThread(runnable, absoluteTime);
+		DelayedThread thread = new DelayedThread(runnable, absoluteTime);
 		thread.start();
+		return thread.getTask();
 	}
 
 	public long getTaskCount()

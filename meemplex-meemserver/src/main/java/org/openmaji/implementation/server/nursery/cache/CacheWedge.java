@@ -13,40 +13,39 @@
 package org.openmaji.implementation.server.nursery.cache;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-
 /**
  * <p>
  * ...
  * </p>
- * @author  mg
+ * 
+ * @author mg
  * @version 1.0
  */
 public class CacheWedge implements Wedge, Cache {
 
-	private HashMap cacheMap = new HashMap();
+	private HashMap<Object, Object> cacheMap = new HashMap<Object, Object>();
 
-    public CacheClient cacheClient;
-    public final ContentProvider cacheClientProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) {
-            for (Iterator i = cacheMap.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-
-                ((CacheClient) target).hit(entry.getKey(), entry.getValue());
-            }
-        }
-    };
+	public CacheClient cacheClient;
+	
+	public final ContentProvider<CacheClient> cacheClientProvider = new ContentProvider<CacheClient>() {
+		public void sendContent(CacheClient target, Filter filter) {
+			for (Entry<?, ?> entry : cacheMap.entrySet()) {
+				target.hit(entry.getKey(), entry.getValue());
+			}
+		}
+	};
 
 	public synchronized void check(Object key) {
 		if (cacheMap.containsKey(key)) {
 			cacheClient.hit(key, cacheMap.get(key));
-		} else {
+		}
+		else {
 			cacheClient.miss(key);
 		}
 	}
@@ -59,7 +58,8 @@ public class CacheWedge implements Wedge, Cache {
 		if (cacheMap.containsKey(key)) {
 			Object value = cacheMap.remove(key);
 			cacheClient.removed(key, value);
-		} else {
+		}
+		else {
 			cacheClient.removed(key, null);
 		}
 	}

@@ -49,19 +49,17 @@ public class AuthenticatorLookupWedge implements Wedge,  MeemDefinitionProvider,
 	private static final Logger logger = Logger.getAnonymousLogger();
 
 	public  AuthenticatorStatus authenticatorStatus;
-	public final ContentProvider authenticatorStatusProvider = 
-		new ContentProvider() {
-			public void sendContent(Object target, Filter filter)
-				throws ContentException 
-			{
+	
+	public final ContentProvider<AuthenticatorStatus> authenticatorStatusProvider = new ContentProvider<AuthenticatorStatus>() {
+		public void sendContent(AuthenticatorStatus target, Filter filter) throws ContentException  {
 				if (authenticator == null) {
-					((AuthenticatorStatus)target).authenticatorLost();					
+					target.authenticatorLost();					
 				}
 				else {
-					((AuthenticatorStatus)target).authenticatorLocated();
+					target.authenticatorLocated();
 				}
-			}
-		};
+		}
+	};
 	
 	private LookupDiscoveryManager  lookupDiscoveryManager  = null;
 	private ServiceDiscoveryManager serviceDiscoveryManager = null;

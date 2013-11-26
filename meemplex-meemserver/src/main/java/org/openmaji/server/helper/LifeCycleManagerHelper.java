@@ -56,6 +56,14 @@ import java.util.logging.Logger;
 
 public class LifeCycleManagerHelper {
 
+	private static final String FACET_LCM = "lifeCycleManager"; // LifeCycleManager facet
+	
+	// outbound facet of lifeCycleManagerMeem
+	private static final String FACET_LC_MGR_CLIENT = "lifeCycleManagerClient";
+	
+	private static final String FACET_LC_MGMT_CLIENT = "lifeCycleManagementClient";
+	
+	
 	/**
 	 * Reference to the Transient LifeCycleManager (local per-JVM instance)
 	 */
@@ -179,24 +187,29 @@ public class LifeCycleManagerHelper {
 		throw new RuntimeException("cannot create category entry");
 	}
 
+	/**
+	 * 
+	 * @param meemDefinition
+	 * @param resolvedMeem
+	 * 	Meem to use as lifecycle manager
+	 * @param initialState
+	 * @return
+	 * @throws RuntimeException
+	 */
 	public static Meem doCreateMeem(MeemDefinition meemDefinition, Meem resolvedMeem, LifeCycleState initialState) throws RuntimeException {
 
 		// check to see if the resolved meem is a LifeCycleManager
-		LifeCycleManager lifeCycleManager = ReferenceHelper.getTarget(resolvedMeem, "lifeCycleManager", LifeCycleManager.class);
+		LifeCycleManager lifeCycleManager = ReferenceHelper.getTarget(resolvedMeem, FACET_LCM, LifeCycleManager.class);
 
 		if (lifeCycleManager == null) {
 			// get the LCM from the LifeCycleManagement facet
 			PigeonHole<LifeCycleManager> pigeonHole = new PigeonHole<LifeCycleManager>();
-			new LifeCycleManagementClientTask(resolvedMeem, "lifeCycleManagementClient", null, pigeonHole);
+			new LifeCycleManagementClientTask(resolvedMeem, FACET_LC_MGMT_CLIENT, null, pigeonHole);
 			try {
 				lifeCycleManager = pigeonHole.get(timeout);
 			}
-			catch (ContentException ex) {
-				logger.log(Level.INFO, "Timeout waiting for LifecycleManager", ex);
-				lifeCycleManager = null;
-			}
-			catch (TimeoutException ex) {
-				logger.log(Level.INFO, "Timeout waiting for LifecycleManager", ex);
+			catch (ContentException | TimeoutException ex) {
+				logger.log(Level.INFO, "Timeout waiting for LifeCycleManager", ex);
 				lifeCycleManager = null;
 			}
 
@@ -205,10 +218,8 @@ public class LifeCycleManagerHelper {
 			}
 
 			resolvedMeem = (Meem) lifeCycleManager;
-//			resolvedMeem = client.getMeem();
 		}
 
-//		return createMeem(meemDefinition, resolvedMeem, lifeCycleManager, initialState);
 		return createMeem(meemDefinition, resolvedMeem, initialState);
 	}
 
@@ -275,7 +286,7 @@ public class LifeCycleManagerHelper {
 		final PigeonHole<Meem> pigeonHole = new PigeonHole<Meem>();
 		
 		Filter filter = new CreateMeemFilter(meemDefinition, initialState);
-		new MeemCreationTask(lifeCycleManagerMeem, "lifeCycleManagerClient", filter, pigeonHole);
+		new MeemCreationTask(lifeCycleManagerMeem, FACET_LC_MGR_CLIENT, filter, pigeonHole);
 
 		try {
 			return pigeonHole.get(timeout);
@@ -300,7 +311,7 @@ public class LifeCycleManagerHelper {
 	 */
 	public static void createMeem(MeemDefinition meemDefinition, final Meem lifeCycleManagerMeem, final LifeCycleState initialState, AsyncCallback<Meem> callback) {
 		Filter filter = new CreateMeemFilter(meemDefinition, initialState);
-		new MeemCreationTask(lifeCycleManagerMeem, "lifeCycleManagerClient", filter, callback);
+		new MeemCreationTask(lifeCycleManagerMeem, FACET_LC_MGR_CLIENT, filter, callback);
 	}
 	
 	/**
@@ -386,6 +397,33 @@ public class LifeCycleManagerHelper {
 	}
 	
 	/**
+	 * Get the lifecycle manager for a Meem.
+	 * 
+	 * @param resolvedMeem
+	 * 		Is either a LCM, or we get the LCM managing this Meem.
+	 * 
+	 * @param callback
+	 * @throws RuntimeException
+	 */
+	public static void getLifeCycleManagerFor(final Meem meem, final AsyncCallback<LifeCycleManager> callback) throws RuntimeException {
+
+		// check to see if the resolved meem is a LifeCycleManager
+		ReferenceHelper.getTarget(meem, FACET_LCM, LifeCycleManager.class, new AsyncCallback<LifeCycleManager>() {
+			public void result(LifeCycleManager result) {
+				if (result != null) {
+					callback.result(result);
+				}
+				else {
+					new LifeCycleManagementClientTask(meem, FACET_LC_MGMT_CLIENT, null, callback);
+				}
+			}
+			public void exception(Exception e) {
+				new LifeCycleManagementClientTask(meem, FACET_LC_MGMT_CLIENT, null, callback);
+			}
+		});
+	}
+
+	/**
 	 * 
 	 * @param meem
 	 * @param lifeCycleStateLimit
@@ -455,6 +493,7 @@ public class LifeCycleManagerHelper {
 		
 		class LifeCycleManagerClientImpl extends FacetListener implements LifeCycleManagerClient {
 			public void meemCreated(Meem meem, String identifier) {
+				///logger.info("=== Meem created: " + meem + " " + identifier);
 				setResult(meem);
 			}
 			public void meemDestroyed(Meem meem) {

@@ -12,7 +12,8 @@
  */
 package org.openmaji.server.helper;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openmaji.meem.Meem;
 
@@ -27,7 +28,7 @@ import org.openmaji.meem.Meem;
  */
 public class EssentialMeemHelper {
 
-	private static Hashtable<String, Meem>  essentialMeems = new Hashtable<String, Meem>();
+	private static Map<String, Meem>  essentialMeems = new HashMap<String, Meem>();
 	private static boolean locked = false;
 
 	/**
@@ -39,6 +40,7 @@ public class EssentialMeemHelper {
 	}
 
 	public static void setEssentialMeem(String meemIdentifier, Meem meem) {
+		//System.out.println("set essential meem: " + meemIdentifier + " : " + meem.getMeemPath() + " : locked=" + locked);
 		if (!locked) {
 			essentialMeems.put(meemIdentifier, meem);
 		}		
@@ -50,6 +52,7 @@ public class EssentialMeemHelper {
 	 * @return The MeemPath to the requested Meem
 	 */
 	public static Meem getEssentialMeem(String meemIdentifier) {
+		//System.out.println("getting essential meem: " + meemIdentifier + " : " + essentialMeems.get(meemIdentifier));
 		return essentialMeems.get(meemIdentifier);		
 	}
 }

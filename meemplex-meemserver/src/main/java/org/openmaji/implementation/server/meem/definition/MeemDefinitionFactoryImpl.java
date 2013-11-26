@@ -122,50 +122,26 @@ public class MeemDefinitionFactoryImpl implements MeemDefinitionFactory {
 	}
 
 	/**
-	 * Note: If a "specification" is a class, then it will be used directly. Otherwise, if it is an interface, then the nested spi.create() method will be looked for.
+	 * Note: If a "specification" is a class, then it will be used directly. Otherwise, if it is an interface, then the nested 
+	 * spi.create() method will be looked for.
 	 */
 
 	public MeemDefinition createMeemDefinition(Class<?>[] wedgeSpecifications) {
-
-		// HashMap usedClasses = new HashMap();
 		MeemDefinition meemDefinition = new MeemDefinition();
-
-		for (int index = 0; index < wedgeSpecifications.length; index++) {
-			meemDefinition.addWedgeDefinition(wedgeDefinitionFactory.createWedgeDefinition(wedgeSpecifications[index]));
-
-			// automatic wedge identifier clash removal
-			// Class spec = wedgeSpecifications[index];
-			// WedgeDefinition wedgeDefinition = wedgeDefinitionFactory.createWedgeDefinition(spec);
-			//
-			// Integer count = (Integer) usedClasses.get(spec);
-			// if (count == null) {
-			// count = new Integer(1);
-			// }
-			// else {
-			// WedgeAttribute wedgeAttribute = wedgeDefinition.getWedgeAttribute();
-			// count = new Integer(count.intValue()+1);
-			// wedgeAttribute.setIdentifier(wedgeAttribute.getIdentifier() + count);
-			// }
-			// meemDefinition.addWedgeDefinition(wedgeDefinition);
-			// usedClasses.put(spec, count);
+		for (Class<?> wedgeSpec : wedgeSpecifications) {
+			meemDefinition.addWedgeDefinition(wedgeDefinitionFactory.createWedgeDefinition(wedgeSpec));
 		}
 
 		return (meemDefinition);
 	}
 
 	/**
-	 * Note: If a "specification" is a class, then it will be used directly. Otherwise, if it is an interface, then the nested spi.create() method will be looked for.
+	 * Note: If a "specification" is a class, then it will be used directly. Otherwise, if it is an interface, then the nested 
+	 * spi.create() method will be looked for.
 	 */
 
 	public MeemDefinition createMeemDefinition(Collection<Class<?>> wedgeSpecifications) {
-
-		MeemDefinition meemDefinition = new MeemDefinition();
-
-		for (Class<?> cls : wedgeSpecifications) {
-			meemDefinition.addWedgeDefinition(wedgeDefinitionFactory.createWedgeDefinition(cls));
-		}
-
-		return (meemDefinition);
+		return createMeemDefinition(wedgeSpecifications.toArray(new Class<?>[]{}));
 	}
 
 	/**

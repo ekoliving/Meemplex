@@ -185,7 +185,7 @@ public class RemoteInvocationHandler {
 			resolving = true;
 			Meem resolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
 			MeemResolverClient meemResolverClient = (MeemResolverClient) GatewayManagerWedge.getTargetFor(this, MeemResolverClient.class);
-			Filter filter = new ExactMatchFilter(meemPath);
+			Filter filter = ExactMatchFilter.create(meemPath);
 
 			resolverReference = Reference.spi.create("meemResolverClient", meemResolverClient, true, filter);
 

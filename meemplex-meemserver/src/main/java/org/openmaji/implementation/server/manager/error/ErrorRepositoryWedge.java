@@ -18,7 +18,6 @@ import org.openmaji.implementation.server.request.RequestTracker;
 
 
 import java.util.logging.Level;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.meem.*;
@@ -50,31 +49,25 @@ public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker,
 	
 	public MeemClientConduit meemClientConduit;
 
-	public final ContentProvider errorRepositoryClientProvider = new ContentProvider() {
-		public synchronized void sendContent(Object target, Filter filter) {
-			ErrorHandler client = (ErrorHandler) target;
+	public final ContentProvider<ErrorHandler> errorRepositoryClientProvider = new ContentProvider<ErrorHandler>() {
+		public synchronized void sendContent(ErrorHandler client, Filter filter) {
 
 			if (filter == null) {
 				RequestStack currentRequestStack = RequestTracker.getRequestStack();
-				Iterator iterator = errorMap.entrySet().iterator();
-				while (iterator.hasNext()) {
-					Map.Entry entry = (Map.Entry) iterator.next();
-
-					RequestTracker.setRequestStack((RequestStack) entry.getKey());
-					client.thrown((Throwable) entry.getValue());
+				for (Map.Entry<RequestStack, Throwable> entry : errorMap.entrySet()) {
+					RequestTracker.setRequestStack(entry.getKey());
+					client.thrown(entry.getValue());
 				}
 				RequestTracker.setRequestStack(currentRequestStack);
-			} else if (filter instanceof RequestFilter) {
+			}
+			else if (filter instanceof RequestFilter) {
 				RequestStack currentRequestStack = RequestTracker.getRequestStack();
-
 				Request request = ((RequestFilter) filter).getRequest();
 
-				Iterator iterator = errorMap.keySet().iterator();
-				while (iterator.hasNext()) {
-					RequestStack requestStack = (RequestStack) iterator.next();
+				for (RequestStack requestStack : errorMap.keySet()) {
 					if (requestStack.peekRequest().equals(request)) {
 						RequestTracker.setRequestStack(requestStack);
-						client.thrown((Throwable) errorMap.get(requestStack));
+						client.thrown(errorMap.get(requestStack));
 						break;
 					}
 				}
@@ -83,7 +76,7 @@ public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker,
 		}
 	};
 
-	private MaximumSizeMap errorMap = new MaximumSizeMap();
+	private MaximumSizeMap<RequestStack, Throwable> errorMap = new MaximumSizeMap<RequestStack, Throwable>();
 
 	private static Timer timer = new Timer(true);
 
@@ -93,10 +86,10 @@ public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker,
 
 	public ConfigurationClient configurationClientConduit = new ConfigurationClientAdapter(this);
 
-	public transient ConfigurationSpecification numberOfErrorsSpecification = new ConfigurationSpecification(
+	public transient ConfigurationSpecification<Integer> numberOfErrorsSpecification = ConfigurationSpecification.create(
 			"Number of errors to keep", Integer.class, LifeCycleState.READY);
 
-	public transient ConfigurationSpecification errorLifeTimeSpecification = new ConfigurationSpecification(
+	public transient ConfigurationSpecification<Integer> errorLifeTimeSpecification = ConfigurationSpecification.create(
 			"Maximum time to keep error (msec)", Integer.class, LifeCycleState.READY);
 
 	public void setNumberOfErrors(Integer numberOfErrors) {
@@ -160,13 +153,13 @@ public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker,
 		return false;
 	}
 
-	class MaximumSizeMap extends LinkedHashMap {
+	class MaximumSizeMap<K, V> extends LinkedHashMap<K, V> {
 		private static final long serialVersionUID = 958238884334L;
 		
 		/**
 		 * @see java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)
 		 */
-		protected boolean removeEldestEntry(Entry eldest) {
+		protected boolean removeEldestEntry(Entry<K, V> eldest) {
 			if (size() > numberOfErrors.intValue()) {
 				return true;
 			}
@@ -194,15 +187,16 @@ public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker,
 	 * @see org.openmaji.meem.definition.MeemDefinitionProvider#getMeemDefinition()
 	 */
 	public MeemDefinition getMeemDefinition() {
-    Class[] wedges = new Class[1];
-    wedges[0] = ErrorRepositoryWedge.class;
-    MeemDefinition meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(wedges);
-    MeemDefinitionUtility.renameFacetIdentifier(meemDefinition,"ErrorRepositoryWedge","errorHandler","errorRepository");
+		Class<?>[] wedges = new Class[] {
+				ErrorRepositoryWedge.class
+			};
+		MeemDefinition meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(wedges);
+		MeemDefinitionUtility.renameFacetIdentifier(meemDefinition,"ErrorRepositoryWedge","errorHandler","errorRepository");
     
 		return meemDefinition;
 	}
 	
-	class ErrorCallback implements MeemClientCallback {
+	private class ErrorCallback implements MeemClientCallback<ErrorHandler> {
 		private final Throwable throwable;
 
 		public ErrorCallback(Throwable throwable) {
@@ -212,10 +206,9 @@ public class ErrorRepositoryWedge implements ErrorHandler, Wedge, FilterChecker,
 		/*
 		 * @see org.openmaji.system.meem.wedge.reference.MeemClientCallback#referenceProvided(org.openmaji.meem.wedge.reference.Reference)
 		 */
-		public void referenceProvided(Reference reference) {
+		public void referenceProvided(Reference<ErrorHandler> reference) {
 			if (reference != null) {
-				ErrorHandler errorRepository = (ErrorHandler) reference.getTarget();
-
+				ErrorHandler errorRepository = reference.getTarget();
 				errorRepository.thrown(throwable);
 			}
 		}

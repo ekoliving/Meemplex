@@ -57,11 +57,10 @@ public class DependencyHandlerWedge implements DependencyHandler, Wedge {
 	/* ------------------- outbound facets ------------------ */
 	
     public DependencyClient dependencyClient;
-    public final ContentProvider dependencyClientProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) {
-            DependencyClient dependencyClientTarget = (DependencyClient) target;
-
-            sendDependencyContent(dependencyClientTarget);
+    
+    public final ContentProvider<DependencyClient> dependencyClientProvider = new ContentProvider<DependencyClient>() {
+        public void sendContent(DependencyClient client, Filter filter) {
+            sendDependencyContent(client);
         }
     };
 

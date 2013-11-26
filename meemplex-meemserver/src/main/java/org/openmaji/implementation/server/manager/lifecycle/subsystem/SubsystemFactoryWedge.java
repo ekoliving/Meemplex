@@ -9,13 +9,12 @@ package org.openmaji.implementation.server.manager.lifecycle.subsystem;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.manager.lifecycle.activation.ActivationClient;
-
 import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemPath;
@@ -46,7 +45,6 @@ import org.openmaji.system.space.hyperspace.StandardHyperSpaceCategory;
 import org.openmaji.system.utility.CategoryUtility;
 import org.openmaji.system.utility.MeemUtility;
 
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,7 +68,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 	public SubsystemFactoryClient subsystemFactoryClient;
 
-	public final ContentProvider subsystemFactoryClientProvider = new SubsystemFactoryContentProvider();
+	public final ContentProvider<SubsystemFactoryClient> subsystemFactoryClientProvider = new SubsystemFactoryContentProvider();
 
 	/* --------------------- conduits -------------------- */
 
@@ -96,9 +94,9 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 	private DependencyAttribute patternCategoryDependencyAttribute;
 
-	private final Hashtable<String, MeemDefinition> meemDefinitions = new Hashtable<String, MeemDefinition>();
+	private final Map<String, MeemDefinition> meemDefinitions = new HashMap<String, MeemDefinition>();
 
-	private final Hashtable<String, Meem> meems = new Hashtable<String, Meem>();
+	private final Map<String, Meem> meems = new HashMap<String, Meem>();
 
 	private final MeemUtility meemUtility = MeemUtility.spi.get();
 
@@ -190,10 +188,9 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 			return;
 		}
 
-		Enumeration enumeration = meems.keys();
-		while (enumeration.hasMoreElements()) {
-			String subsystemName = (String) enumeration.nextElement();
-			Meem knownMeem = (Meem) meems.get(subsystemName);
+		for (Entry<String, Meem> entry : meems.entrySet()) {
+			String subsystemName = entry.getKey();
+			Meem knownMeem = entry.getValue();
 			if (meem.equals(knownMeem)) {
 				getInstalledCategory().removeEntry(subsystemName);
 				lifeCycleManagerConduit.destroyMeem(meem);
@@ -219,17 +216,15 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 			return null;
 		}
 
-		Iterator iterator = meemDefinition.getWedgeDefinitions().iterator();
 		ArrayList<WedgeDefinition> list = new ArrayList<WedgeDefinition>();
-		while (iterator.hasNext()) {
-			WedgeDefinition def = (WedgeDefinition) iterator.next();
-			if (def.getWedgeAttribute().isSystemWedge())
+		for (WedgeDefinition def :  meemDefinition.getWedgeDefinitions()) {
+			if (def.getWedgeAttribute().isSystemWedge()) {
 				list.add(def);
+			}
 		}
 
 		MeemDefinition newMeemDefinition = (MeemDefinition) meemDefinition.clone();
-		for (int i = 0; i < list.size(); i++) {
-			WedgeDefinition def = (WedgeDefinition) list.get(i);
+		for (WedgeDefinition def : list) {
 			newMeemDefinition.removeWedgeDefinition(def);
 		}
 
@@ -492,24 +487,20 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 	/* --------------- ContentProvider ---------------------------------------- */
 
-	private class SubsystemFactoryContentProvider implements ContentProvider {
-		public synchronized void sendContent(Object target, Filter filter) {
-			SubsystemFactoryClient client = (SubsystemFactoryClient) target;
+	private class SubsystemFactoryContentProvider implements ContentProvider<SubsystemFactoryClient> {
+		public synchronized void sendContent(SubsystemFactoryClient client, Filter filter) {
 
 			if (meemDefinitions.size() != 0) {
 				MeemDefinition[] definitions = new MeemDefinition[meemDefinitions.size()];
-				Enumeration enumeration = meemDefinitions.elements();
 				int index = 0;
-				while (enumeration.hasMoreElements()) {
-					definitions[index++] = (MeemDefinition) enumeration.nextElement();
+				for (MeemDefinition def : meemDefinitions.values()) {
+					definitions[index++] = def;
 				}
 				client.definitionsAdded(definitions);
 			}
 
 			if (meems.size() != 0) {
-				Enumeration enumeration = meems.elements();
-				while (enumeration.hasMoreElements()) {
-					Meem meem = (Meem) enumeration.nextElement();
+				for (Meem meem : meems.values()) {
 					MeemDefinition meemDefinition = meemUtility.getMeemDefinition(meem);
 					client.subsystemCreated(meem, meemDefinition);
 				}
@@ -541,7 +532,7 @@ public class SubsystemFactoryWedge implements Wedge, SubsystemFactory, CategoryC
 
 			meemDefinition = new MeemDefinition();
 
-			Reference metaMeemClientReference = Reference.spi.create("metaMeemClient", meemCore.getTargetFor(this, MetaMeem.class), true);
+			Reference<MetaMeem> metaMeemClientReference = Reference.spi.create("metaMeemClient", meemCore.getTargetFor(this, MetaMeem.class), true);
 			meem.addOutboundReference(metaMeemClientReference, true);
 		}
 

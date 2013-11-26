@@ -9,6 +9,8 @@ package org.openmaji.implementation.server.meem;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.classloader.SystemExportList;
 import org.openmaji.implementation.server.meem.invocation.MeemInvocationSource;
@@ -54,8 +56,8 @@ public class OutboundFacetImpl <T extends Facet> extends FacetImpl<T> {
 		if (meemInvocationSource == null) {
 			Object target = getWedgeImpl().getImplementation();
 
-			AsyncContentProvider asyncContentProvider = null;
-			ContentProvider contentProvider = null;
+			AsyncContentProvider<T> asyncContentProvider = null;
+			ContentProvider<T> contentProvider = null;
 
 			try {
 				Class<?> targetClass = target.getClass();
@@ -71,15 +73,20 @@ public class OutboundFacetImpl <T extends Facet> extends FacetImpl<T> {
 					Class<?> type = contentProviderField.getType();
 
 					if (AsyncContentProvider.class.isAssignableFrom(type)) {
-						asyncContentProvider = (AsyncContentProvider) contentProviderField.get(target);
+						asyncContentProvider = (AsyncContentProvider<T>) contentProviderField.get(target);
 					}
 					else if (ContentProvider.class.isAssignableFrom(type)) {
-						contentProvider = (ContentProvider) contentProviderField.get(target);
+						contentProvider = (ContentProvider<T>) contentProviderField.get(target);
 					}
 				}
 			}
+			catch(NoSuchFieldException e) {
+				// ignore
+			}
 			catch (Exception e) {
-				//logger.log(Level.INFO, "Problem creating content provider", e);
+				if (DEBUG) {
+					logger.log(Level.INFO, "Problem creating content provider", e);
+				}
 			}
 
 			FilterChecker filterChecker = target instanceof FilterChecker ? (FilterChecker) target : null;
@@ -114,4 +121,8 @@ public class OutboundFacetImpl <T extends Facet> extends FacetImpl<T> {
 	private final FacetOutboundAttribute facetOutboundAttribute;
 
 	private MeemInvocationSource<T> meemInvocationSource = null;
+	
+	private static final Logger logger = Logger.getAnonymousLogger();
+	
+	private static final boolean DEBUG = true;
 }

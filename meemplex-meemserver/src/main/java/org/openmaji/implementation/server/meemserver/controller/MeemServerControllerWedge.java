@@ -110,7 +110,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 				"meemResolverClient",
 				(MeemResolverClient) meemCore.getTarget("meemResolverClient"),
 				true,
-				new ExactMatchFilter(meemServerPath));
+				ExactMatchFilter.create(meemServerPath));
 
 		meemResolverMeem.addOutboundReference(reference, true);
 	}
@@ -143,7 +143,7 @@ public class MeemServerControllerWedge implements MeemServerController, Wedge, L
 				Scope.LOCAL,
 				parentLifeCycleManagerMeem,
 				"lifeCycleManagerClient",
-				new ExactMatchFilter(identifier),
+				ExactMatchFilter.create(identifier),
 				false);
 		dependencyAttributes.put(identifier, dependencyAttribute);
 		dependencyHandlerConduit.addDependency("lifeCycleManagerClient", dependencyAttribute, LifeTime.TRANSIENT);

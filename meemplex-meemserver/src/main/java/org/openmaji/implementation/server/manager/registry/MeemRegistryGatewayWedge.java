@@ -14,7 +14,6 @@ package org.openmaji.implementation.server.manager.registry;
 
 import java.util.*;
 
-
 import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.meem.core.MeemCoreImpl;
 import org.openmaji.implementation.server.meem.wedge.lifecycle.SystemLifeCycleClientAdapter;
@@ -51,54 +50,47 @@ import java.util.logging.Logger;
  * <p>
  * ...
  * </p>
- * @author  mg
+ * 
+ * @author mg
  * @version 1.0
  */
-public class MeemRegistryGatewayWedge
-  implements MeemRegistryGateway, MeemDefinitionProvider, Wedge {
+public class MeemRegistryGatewayWedge implements MeemRegistryGateway, MeemDefinitionProvider, Wedge {
 
 	public MeemCore meemCore;
 
-  private static MeemRegistryGatewayWedge
-    meemRegistryGatewayWedgeSingleton = null;
+	private static MeemRegistryGatewayWedge meemRegistryGatewayWedgeSingleton = null;
 
-  public LifeCycle lifeCycleConduit;
+	public LifeCycle lifeCycleConduit;
 
-  public LifeCycleClient lifeCycleClientConduit =
-    new SystemLifeCycleClientAdapter(this);
-  
-  public DependencyHandler dependencyHandlerConduit;
+	public LifeCycleClient lifeCycleClientConduit = new SystemLifeCycleClientAdapter(this);
 
-  public synchronized void commence() {
-    if (meemRegistryGatewayWedgeSingleton != null) {
-      logger.log(Level.WARNING,
-        
-        "Another MeemRegistryGateway Meem already commenced. " +
-        "Self-destruct sequence initiated !"
-      );
+	public DependencyHandler dependencyHandlerConduit;
 
-      lifeCycleConduit.changeLifeCycleState(LifeCycleState.ABSENT);
-    }
-    else {
-      meemRegistryGatewayWedgeSingleton = this;
-    }
-  }
+	public synchronized void commence() {
+		if (meemRegistryGatewayWedgeSingleton != null) {
+			logger.log(Level.WARNING,
 
-	// note in this case contentSent actually means "I've received the request" - since this is
+			"Another MeemRegistryGateway Meem already commenced. " + "Self-destruct sequence initiated !");
+
+			lifeCycleConduit.changeLifeCycleState(LifeCycleState.ABSENT);
+		}
+		else {
+			meemRegistryGatewayWedgeSingleton = this;
+		}
+	}
+
+	// note in this case contentSent actually means "I've received the request"
+	// - since this is
 	// an essential meem we can get away with this...
 
 	public MeemRegistryClient meemRegistryClient;
 
-	public final AsyncContentProvider meemRegistryClientProvider = new AsyncContentProvider()
-	{
-		public void asyncSendContent(Object target, Filter filter, ContentClient contentClient)
-		{
-			MeemRegistryClient meemRegistryClientTarget = (MeemRegistryClient) target;
-
+	public final AsyncContentProvider<MeemRegistryClient> meemRegistryClientProvider = new AsyncContentProvider<MeemRegistryClient>() {
+		public void asyncSendContent(MeemRegistryClient client, Filter filter, ContentClient contentClient) {
 			MeemPath meemPath = null;
 			Scope scope = null;
 			if (filter instanceof ExactMatchFilter) {
-				Object template = ((ExactMatchFilter) filter).getTemplate();
+				Object template = ((ExactMatchFilter<?>) filter).getTemplate();
 				if (template instanceof MeemPath) {
 					meemPath = (MeemPath) template;
 					scope = Scope.DISTRIBUTED;
@@ -113,20 +105,19 @@ public class MeemRegistryGatewayWedge
 			Meem registryMeem = checkMeemRegistries(meemPath);
 
 			if (registryMeem != null) {
-				meemRegistryClientTarget.meemRegistered(registryMeem);
+				client.meemRegistered(registryMeem);
 				contentClient.contentSent();
 			}
 			else {
-				new MeemRegistryClientTask(meemPath, getMeemRegistries(scope),
-					meemRegistryClientTarget, contentClient);
+				new MeemRegistryClientTask(meemPath, getMeemRegistries(scope), client, contentClient);
 			}
 		}
 
 		private Meem checkMeemRegistries(MeemPath meemPath) {
 			synchronized (registryList) {
-				Iterator i = registryList.iterator();
+				Iterator<Meem> i = registryList.iterator();
 				while (i.hasNext()) {
-					Meem registry = (Meem) i.next();
+					Meem registry = i.next();
 					if (registry.getMeemPath().equals(meemPath)) {
 						return registry;
 					}
@@ -141,22 +132,17 @@ public class MeemRegistryGatewayWedge
 	/**
 	 * Map of MeemRegistry Meems
 	 */
-	private static List registryListLocal = Collections.synchronizedList(new ArrayList());
-	private static List registryList = Collections.synchronizedList(new ArrayList());
-	
-	private static Map monitoredPaths = Collections.synchronizedMap(new HashMap());
+	private static List<Meem> registryListLocal = Collections.synchronizedList(new ArrayList<Meem>());
+	private static List<Meem> registryList = Collections.synchronizedList(new ArrayList<Meem>());
+
+	private static Map<ScopedMeemPath, MeemRegistryMonitorTask> monitoredPaths = Collections.synchronizedMap(new HashMap<ScopedMeemPath, MeemRegistryMonitorTask>());
 
 	// Helper for getting all known MeemRegistries
-	public static Meem[] getMeemRegistries()
-	{
-		Meem[] meems = null;
-
-		synchronized (registryList)
-		{
-			meems = (Meem[]) registryList.toArray(new Meem[registryList.size()]);
+	public static Meem[] getMeemRegistries() {
+		synchronized (registryList) {
+			Meem[] meems = registryList.toArray(new Meem[registryList.size()]);
+			return meems;
 		}
-
-		return meems;
 	}
 
 	private Meem[] getMeemRegistries(Scope scope) {
@@ -173,82 +159,78 @@ public class MeemRegistryGatewayWedge
 		return getMeemRegistries();
 	}
 
-	private static void addRegistry(Meem registryMeem, boolean local)
-	{
-		if (registryList.contains(registryMeem))
-		{
+	private static void addRegistry(Meem registryMeem, boolean local) {
+		if (registryList.contains(registryMeem)) {
 			logger.log(logLevelVerbose, "addRegistry(): ignoring - already present - " + registryMeem.getMeemPath());
 			return;
 		}
 
-		if (Common.TRACE_ENABLED && Common.TRACE_MEEMREGISTRY)
-		{
+		if (Common.TRACE_ENABLED && Common.TRACE_MEEMREGISTRY) {
 			logger.log(logLevelVerbose, "addRegistry(): " + registryMeem.getMeemPath());
 		}
 
 		//
 		// the zeroeth spot is reserved for the meemRegistry always added first.
 		//
-		if (local && registryList.size() > 1)
-		{
+		if (local && registryList.size() > 1) {
 			registryList.add(1, registryMeem);
 		}
-		else
-		{
+		else {
 			registryList.add(registryMeem);
 		}
 
-		if (local)
-		{
+		if (local) {
 			registryListLocal.add(registryMeem);
 		}
-		
-		Set tasks;
-		synchronized(monitoredPaths) {
-			tasks = new HashSet(monitoredPaths.values());
+
+		Set<MeemRegistryMonitorTask> tasks;
+		synchronized (monitoredPaths) {
+			tasks = new HashSet<MeemRegistryMonitorTask>(monitoredPaths.values());
 		}
-		
+
 		Scope scope = null;
 		if (local) {
 			scope = Scope.LOCAL;
-		} else {
+		}
+		else {
 			scope = Scope.DISTRIBUTED;
 		}
 
-		Iterator i = tasks.iterator();
+		Iterator<MeemRegistryMonitorTask> i = tasks.iterator();
 		while (i.hasNext()) {
-			MeemRegistryMonitorTask meemRegistryMonitorTask = (MeemRegistryMonitorTask) i.next();
+			MeemRegistryMonitorTask meemRegistryMonitorTask = i.next();
 			meemRegistryMonitorTask.registryAdded(registryMeem, scope);
 		}
 	}
 
 	/**
-	 * Ideally we'd just pass the meem here, rather than assume we can cast meem from the
-	 * resolver facet, the problem is that to get the resolver facet we need to resolve the meem,
-	 * which involves more than just the registry...
+	 * Ideally we'd just pass the meem here, rather than assume we can cast meem
+	 * from the resolver facet, the problem is that to get the resolver facet we
+	 * need to resolve the meem, which involves more than just the registry...
 	 * <p>
-	 * Registries are searched in the order added, unless added using addLocalRegistry below.
-	 *
-	 * @param registryMeem Registry meem.
+	 * Registries are searched in the order added, unless added using
+	 * addLocalRegistry below.
+	 * 
+	 * @param registryMeem
+	 *            Registry meem.
 	 */
-	public static void addRemoteRegistry(Meem registryMeem)
-	{
+	public static void addRemoteRegistry(Meem registryMeem) {
 		addRegistry(registryMeem, false);
 	}
 
 	/**
-	 * Add a registry known to be local to the VM. The effect of this is that the registry gets
-	 * added to the front of the registry list rather than the end.
-	 *
-	 * @param registryMeem  Registry meem.
+	 * Add a registry known to be local to the VM. The effect of this is that
+	 * the registry gets added to the front of the registry list rather than the
+	 * end.
+	 * 
+	 * @param registryMeem
+	 *            Registry meem.
 	 */
-	public static void addLocalRegistry(Meem registryMeem)
-	{
+	public static void addLocalRegistry(Meem registryMeem) {
 		addRegistry(registryMeem, true);
 	}
 
-	public class MeemRegistryClientTask implements MeemRegistryClient, ContentClient
-	{
+	public class MeemRegistryClientTask implements MeemRegistryClient, ContentClient {
 		private final MeemPath meemPath;
 		private final Meem[] meemRegistries;
 		private final MeemRegistryClient client;
@@ -257,12 +239,7 @@ public class MeemRegistryGatewayWedge
 		private Meem meem = null;
 		private MeemRegistryClient proxy = null;
 
-		public MeemRegistryClientTask(
-			MeemPath meemPath,
-			Meem[] meemRegistries,
-			MeemRegistryClient client,
-			ContentClient contentClient)
-		{
+		public MeemRegistryClientTask(MeemPath meemPath, Meem[] meemRegistries, MeemRegistryClient client, ContentClient contentClient) {
 			this.meemPath = meemPath;
 			this.meemRegistries = meemRegistries;
 			this.client = client;
@@ -271,33 +248,32 @@ public class MeemRegistryGatewayWedge
 			proceed();
 		}
 
-		public void meemRegistered(Meem meem)
-		{
+		public void meemRegistered(Meem meem) {
+			//System.out.println("MeemRegistryClientTask: registered Meem: " + meem);
 			this.meem = meem;
+			client.meemRegistered(meem);
 		}
 
 		/**
 		 * @see org.openmaji.system.manager.registry.MeemRegistryClient#meemDeregistered(org.openmaji.meem.Meem)
 		 */
-		public void meemDeregistered(Meem meem)
-		{
+		public void meemDeregistered(Meem meem) {
+			//System.out.println("MeemRegistryClientTask: deregistered Meem: " + meem);
 			this.meem = null;
+			client.meemDeregistered(meem);
 		}
 
 		/**
 		 * @see org.openmaji.system.meem.wedge.reference.ContentClient#contentSent()
 		 */
-		public void contentSent()
-		{
+		public void contentSent() {
+			//System.out.println("MeemRegistryClientTask: calling contentSent() for meempath: " + meemPath + " meem: " + meem);
 			complete();
 
-			if (meem == null)
-			{
+			if (meem == null) {
 				proceed();
 			}
-			else
-			{
-				client.meemRegistered(meem);
+			else {
 				contentClient.contentSent();
 			}
 		}
@@ -305,78 +281,69 @@ public class MeemRegistryGatewayWedge
 		/**
 		 * @see org.openmaji.system.meem.wedge.reference.ContentClient#contentFailed(java.lang.String)
 		 */
-		public void contentFailed(String reason)
-		{
+		public void contentFailed(String reason) {
+			//System.out.println("MeemRegistryClientTask: calling contentFailed() for meempath: " + meemPath + " : " + reason);
 			complete();
 			contentClient.contentFailed(reason);
 		}
 
-		private void proceed()
-		{
-			if (index >= meemRegistries.length)
-			{
+		private void proceed() {
+			if (index >= meemRegistries.length) {
 				contentClient.contentSent();
 			}
-			else
-			{
-				proxy = (MeemRegistryClient) meemCore.getLimitedTargetFor(
-					this, MeemRegistryClient.class);
+			else {
+				proxy = meemCore.getLimitedTargetFor(this, MeemRegistryClient.class);
 
-				Reference reference = Reference.spi.create("meemRegistryClient", proxy, true,
-					new ExactMatchFilter(meemPath));
-
+				Reference<MeemRegistryClient> reference = Reference.spi.create("meemRegistryClient", proxy, true, ExactMatchFilter.create(meemPath));
+				//System.out.println("MeemRegistryClientTask: adding ref to registery " + index);
 				meemRegistries[index++].addOutboundReference(reference, true);
 			}
 		}
 
-		private void complete()
-		{
+		private void complete() {
 			((MeemCoreImpl) meemCore).revokeTargetProxy(proxy, this);
 			proxy = null;
 		}
 	}
 
-/* --------- Monitor --------------- */
+	/* --------- Monitor --------------- */
 
-	public MeemClient meemReferenceClientConduit = new MeemClient()
-	{
-		public void referenceAdded(Reference reference)
-		{
+	public MeemClient meemReferenceClientConduit = new MeemClient() {
+		public void referenceAdded(Reference<?> reference) {
 			Facet target = reference.getTarget();
-			if (target instanceof MeemRegistryClient)
-			{
+			if (target instanceof MeemRegistryClient) {
 				MeemRegistryClient client = (MeemRegistryClient) target;
-				Object template = ((ExactMatchFilter) reference.getFilter()).getTemplate();
-				
+				Object template = ((ExactMatchFilter<?>) reference.getFilter()).getTemplate();
+
 				ScopedMeemPath scopedMeemPath;
 				if (template instanceof MeemPath) {
-					scopedMeemPath = new ScopedMeemPath((MeemPath)template, Scope.DISTRIBUTED);
-				} else 
-				if (template instanceof ScopedMeemPath) {
+					scopedMeemPath = new ScopedMeemPath((MeemPath) template, Scope.DISTRIBUTED);
+				}
+				else if (template instanceof ScopedMeemPath) {
 					scopedMeemPath = (ScopedMeemPath) template;
-				} else {
+				}
+				else {
 					throw new RuntimeException("Unknown template type " + template.getClass().getName());
 				}
-				
+
 				addPathToWatch(scopedMeemPath, client);
 			}
 		}
 
-		public void referenceRemoved(Reference reference)
-		{
+		public void referenceRemoved(Reference<?> reference) {
 			Facet target = reference.getTarget();
-			if (target instanceof MeemRegistryClient)
-			{
+			if (target instanceof MeemRegistryClient) {
 				MeemRegistryClient client = (MeemRegistryClient) target;
-				Object template = ((ExactMatchFilter) reference.getFilter()).getTemplate();
+				Object template = ((ExactMatchFilter<?>) reference.getFilter()).getTemplate();
 
 				ScopedMeemPath scopedMeemPath;
 				if (template instanceof MeemPath) {
-					scopedMeemPath = new ScopedMeemPath((MeemPath)template, Scope.DISTRIBUTED);
-				} else 
-				if (template instanceof ScopedMeemPath) {
+					scopedMeemPath = new ScopedMeemPath((MeemPath) template, Scope.DISTRIBUTED);
+				}
+				else if (template instanceof ScopedMeemPath) {
 					scopedMeemPath = (ScopedMeemPath) template;
-				} else {
+				}
+				else {
 					throw new RuntimeException("Unknown template type " + template.getClass().getName());
 				}
 
@@ -384,13 +351,13 @@ public class MeemRegistryGatewayWedge
 			}
 		}
 	};
-	
+
 	private void addPathToWatch(ScopedMeemPath scopedMeemPath, MeemRegistryClient client) {
 
 		MeemRegistryMonitorTask meemRegistryMonitorTask;
 		synchronized (monitoredPaths) {
-			meemRegistryMonitorTask = (MeemRegistryMonitorTask) monitoredPaths.get(scopedMeemPath); 
-			
+			meemRegistryMonitorTask = (MeemRegistryMonitorTask) monitoredPaths.get(scopedMeemPath);
+
 			if (meemRegistryMonitorTask == null) {
 				meemRegistryMonitorTask = new MeemRegistryMonitorTask(scopedMeemPath);
 				monitoredPaths.put(scopedMeemPath, meemRegistryMonitorTask);
@@ -399,71 +366,73 @@ public class MeemRegistryGatewayWedge
 
 		meemRegistryMonitorTask.addClient(client);
 	}
-	
+
 	private void terminateMonitor(ScopedMeemPath scopedMeemPath, MeemRegistryClient client) {
-		MeemRegistryMonitorTask meemRegistryMontiorTask = (MeemRegistryMonitorTask) monitoredPaths.get(scopedMeemPath); 
+		MeemRegistryMonitorTask meemRegistryMontiorTask = (MeemRegistryMonitorTask) monitoredPaths.get(scopedMeemPath);
 		if (meemRegistryMontiorTask != null) {
 			meemRegistryMontiorTask.removeClient(client);
-		}	
+		}
 	}
-	
+
 	private class MeemRegistryMonitorTask implements MeemRegistryClient {
-		private Set clients = new HashSet();
+		private Set<MeemRegistryClient> clients = new HashSet<MeemRegistryClient>();
 		private final ScopedMeemPath scopedMeemPath;
 		private boolean listening = false;
-		private Map dependencyAttributes = new HashMap();
+		private Map<Meem, DependencyAttribute> dependencyAttributes = new HashMap<Meem, DependencyAttribute>();
 		private MeemRegistryClient clientTask;
 		private Meem foundMeem = null;
-	
+
 		public MeemRegistryMonitorTask(ScopedMeemPath scopedMeemPath) {
 			this.scopedMeemPath = scopedMeemPath;
 
-			clientTask = (MeemRegistryClient) meemCore.getLimitedTargetFor(this, MeemRegistryClient.class);			
+			clientTask = (MeemRegistryClient) meemCore.getLimitedTargetFor(this, MeemRegistryClient.class);
 		}
 
 		public void addClient(MeemRegistryClient client) {
-			synchronized(clients) {
-				clients.add(client);		
+			synchronized (clients) {
+				clients.add(client);
 			}
 			if (!listening) {
 				start();
-			} else if (foundMeem != null){
+			}
+			else if (foundMeem != null) {
 				client.meemRegistered(foundMeem);
 			}
 		}
 
 		public void removeClient(MeemRegistryClient client) {
-			synchronized(clients) {
+			synchronized (clients) {
 				clients.remove(client);
 			}
 			if (clients.isEmpty()) {
 				stop();
 			}
 		}
-		
+
 		private void start() {
 			if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
 				logger.log(logLevelVerbose, "*** watching: " + scopedMeemPath);
 			}
 
 			listening = true;
-			
+
 			Meem[] meemRegistries = getMeemRegistries(scopedMeemPath.getScope());
 
 			for (int i = 0; i < meemRegistries.length; i++) {
-				DependencyAttribute dependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, meemRegistries[i], "meemRegistryClient", new ExactMatchFilter(scopedMeemPath.getMeemPath()), true);
+				DependencyAttribute dependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, meemRegistries[i], "meemRegistryClient", ExactMatchFilter.create(scopedMeemPath
+						.getMeemPath()), true);
 				dependencyAttributes.put(meemRegistries[i], dependencyAttribute);
 				dependencyHandlerConduit.addDependency(clientTask, dependencyAttribute, LifeTime.TRANSIENT);
 			}
 		}
-		
+
 		private void stop() {
 			listening = false;
-			
+
 			Meem[] meemRegistries = getMeemRegistries(scopedMeemPath.getScope());
 
-			for (int i = 0; i < meemRegistries.length; i++) {				
-				DependencyAttribute dependencyAttribute = (DependencyAttribute) dependencyAttributes.remove(meemRegistries[i]);
+			for (int i = 0; i < meemRegistries.length; i++) {
+				DependencyAttribute dependencyAttribute = dependencyAttributes.remove(meemRegistries[i]);
 				if (dependencyAttribute != null) {
 					dependencyHandlerConduit.removeDependency(dependencyAttribute);
 				}
@@ -475,34 +444,34 @@ public class MeemRegistryGatewayWedge
 		 */
 		public void meemRegistered(Meem meem) {
 			foundMeem = meem;
-			synchronized(clients) {
-				for (Iterator i = clients.iterator(); i.hasNext(); ) {
-					MeemRegistryClient client = (MeemRegistryClient) i.next();		
+			synchronized (clients) {
+				for (MeemRegistryClient client : clients) {
 					client.meemRegistered(meem);
 				}
 			}
 		}
-		
+
 		/**
 		 * @see org.openmaji.system.manager.registry.MeemRegistryClient#meemDeregistered(org.openmaji.meem.Meem)
 		 */
 		public void meemDeregistered(Meem meem) {
 			foundMeem = null;
-			synchronized(clients) {
-				for (Iterator i = clients.iterator(); i.hasNext(); ) {
-					((MeemRegistryClient)i.next()).meemDeregistered(meem);
+			synchronized (clients) {
+				for (MeemRegistryClient client : clients) {
+					client.meemDeregistered(meem);
 				}
 			}
 		}
-		
+
 		public void registryAdded(Meem meemRegistryMeem, Scope scope) {
 			if (scopedMeemPath.getScope().equals(scope) || scopedMeemPath.getScope().equals(Scope.DISTRIBUTED)) {
-				DependencyAttribute dependencyAttribute = new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, meemRegistryMeem, "meemRegistryClient", new ExactMatchFilter(scopedMeemPath.getMeemPath()), true);
+				DependencyAttribute dependencyAttribute 
+					= new DependencyAttribute(DependencyType.WEAK, Scope.LOCAL, meemRegistryMeem, "meemRegistryClient", ExactMatchFilter.create(scopedMeemPath.getMeemPath()), true);
 				dependencyAttributes.put(meemRegistryMeem, dependencyAttribute);
 				dependencyHandlerConduit.addDependency(clientTask, dependencyAttribute, LifeTime.TRANSIENT);
 			}
 		}
-		
+
 		public void registryRemoved(Meem meemRegistryMeem, Scope scope) {
 			if (scopedMeemPath.getScope().equals(scope) || scopedMeemPath.getScope().equals(Scope.DISTRIBUTED)) {
 				DependencyAttribute dependencyAttribute = (DependencyAttribute) dependencyAttributes.remove(meemRegistryMeem);
@@ -513,31 +482,29 @@ public class MeemRegistryGatewayWedge
 		}
 	}
 
-/* ---------- MeemDefinitionProvider method(s) ----------------------------- */
+	/* ---------- MeemDefinitionProvider method(s) ----------------------------- */
 
-  private MeemDefinition meemDefinition = null;
+	private MeemDefinition meemDefinition = null;
 
-  public MeemDefinition getMeemDefinition() {
-    if (meemDefinition == null) {
-      meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(
-        new Class[] { this.getClass(), CategoryWedge.class}
-      );
-    }
+	public MeemDefinition getMeemDefinition() {
+		if (meemDefinition == null) {
+			meemDefinition = MeemDefinitionFactory.spi.create().createMeemDefinition(new Class[] { this.getClass(), CategoryWedge.class });
+		}
 
-    return(meemDefinition);
-  }
+		return (meemDefinition);
+	}
 
-/* ---------- Logging fields ----------------------------------------------- */
+	/* ---------- Logging fields ----------------------------------------------- */
 
-  /**
-   * Create the per-class Software Zoo Logging V2 reference.
-   */
+	/**
+	 * Create the per-class Software Zoo Logging V2 reference.
+	 */
 
-  private static final Logger logger = Logger.getAnonymousLogger();
+	private static final Logger logger = Logger.getAnonymousLogger();
 
-  /**
-   * Acquire the Maji system-wide verbose logging level.
-   */
+	/**
+	 * Acquire the Maji system-wide verbose logging level.
+	 */
 
-  private static final Level logLevelVerbose = Common.getLogLevelVerbose();
+	private static final Level logLevelVerbose = Common.getLogLevelVerbose();
 }

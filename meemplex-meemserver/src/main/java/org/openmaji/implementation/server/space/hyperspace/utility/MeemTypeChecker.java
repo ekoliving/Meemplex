@@ -59,7 +59,7 @@ public class MeemTypeChecker {
 		MeemDefinitionClient definitionClient = new MeemDefinitionClientImpl(pigeonHole);
 
 		Reference<MeemDefinitionClient> meemDefinitionClientReference =
-			Reference.spi.create("meemDefinitionClient", definitionClient, true, new ExactMatchFilter(meemPath));
+			Reference.spi.create("meemDefinitionClient", definitionClient, true, ExactMatchFilter.create(meemPath));
 
 		meemStoreMeem.addOutboundReference(meemDefinitionClientReference, true);
 

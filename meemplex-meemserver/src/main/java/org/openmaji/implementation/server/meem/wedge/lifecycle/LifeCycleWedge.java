@@ -15,11 +15,9 @@ package org.openmaji.implementation.server.meem.wedge.lifecycle;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openmaji.implementation.server.Common;
-
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.Wedge;
@@ -35,12 +33,12 @@ import org.openmaji.system.meem.wedge.reference.ContentProvider;
 import org.openmaji.system.meem.wedge.reference.MeemClientCallback;
 import org.openmaji.system.meem.wedge.reference.MeemClientConduit;
 
-
 /**
  * <p>
  * ...
  * </p>
- * @author  mg
+ * 
+ * @author mg
  * @version 1.0
  */
 public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManagement, Wedge {
@@ -53,41 +51,37 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 
 	private LifeCycleState currentState = LifeCycleState.DORMANT;
 	private LifeCycleTransition lastTransition = LifeCycleTransition.ABSENT_DORMANT;
-	
+
 	private boolean destroying = false;
 
-	//outbound facets
+	// outbound facets
 	public LifeCycleClient lifeCycleClient = null;
-	public final ContentProvider lifeCycleClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) {
-			LifeCycleClient client = (LifeCycleClient) target;
+	public final ContentProvider<LifeCycleClient> lifeCycleClientProvider = new ContentProvider<LifeCycleClient>() {
+		public void sendContent(LifeCycleClient client, Filter filter) {
 			client.lifeCycleStateChanged(lastTransition);
 		}
 	};
 
 	public LifeCycleLimit lifeCycleLimitClient = null;
-	public final ContentProvider lifeCycleLimitClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) {
-			LifeCycleLimit lifeCycleLimitClient = (LifeCycleLimit) target;
-			lifeCycleLimitClient.limitLifeCycleState(maxState);
+	public final ContentProvider<LifeCycleLimit> lifeCycleLimitClientProvider = new ContentProvider<LifeCycleLimit>() {
+		public void sendContent(LifeCycleLimit client, Filter filter) {
+			client.limitLifeCycleState(maxState);
 		}
 	};
 
 	public LifeCycleManagementClient lifeCycleManagementClient = null;
-	public final ContentProvider lifeCycleManagementClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) {
-			LifeCycleManagementClient client = (LifeCycleManagementClient) target;
+	public final ContentProvider<LifeCycleManagementClient> lifeCycleManagementClientProvider = new ContentProvider<LifeCycleManagementClient>() {
+		public void sendContent(LifeCycleManagementClient client, Filter filter) {
 			client.parentLifeCycleManagerChanged(meemCore.getSelf(), parentLifeCycleManager);
 		}
 	};
 
-
 	/*
-	 * This is the field that stores the Meems parent LifeCycleManager.
-	 * It really shouldn't be public, but until persistence is sorted out a 
-	 * bit more, it has to be.
+	 * This is the field that stores the Meems parent LifeCycleManager. It
+	 * really shouldn't be public, but until persistence is sorted out a bit
+	 * more, it has to be.
 	 */
-	// -mg- make sure this doesn't stay public 
+	// -mg- make sure this doesn't stay public
 	public MeemPath parentLifeCycleManagerMeemPath = null;
 	private LifeCycleManager parentLifeCycleManager = null;
 
@@ -102,18 +96,17 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 	private Map<String, Boolean> systemWedgeVotes = new HashMap<String, Boolean>();
 	private Map<String, Boolean> applicationWedgeVotes = new HashMap<String, Boolean>();
 
-	private Map<LifeCycleTransition, Vector<String>> transitionVotes = new HashMap<LifeCycleTransition, Vector<String>>();
+	private Map<LifeCycleTransition, List<String>> transitionVotes = new HashMap<LifeCycleTransition, List<String>>();
 	private LifeCycleTransition waitingTransition = null;
 	private LifeCycleState waitingTargetState = null;
-	
-	
+
 	/**
 	 * @see org.openmaji.system.meem.wedge.lifecycle.LifeCycleManagement#changeParentLifeCycleManager(org.openmaji.system.manager.lifecycle.LifeCycleManager)
 	 */
 	public void changeParentLifeCycleManager(LifeCycleManager lifeCycleManager) {
-		/* -mg- 
-		 * This should check to make sure the call came from the current parent LCM
-		 * but can't do this at the moment, so we'll pretend it did.
+		/*
+		 * -mg- This should check to make sure the call came from the current
+		 * parent LCM but can't do this at the moment, so we'll pretend it did.
 		 */
 		LifeCycleManager oldLCM = parentLifeCycleManager;
 		parentLifeCycleManager = lifeCycleManager;
@@ -123,12 +116,12 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 		if (oldLCM != null) {
 			managedPersistenceHandlerConduit.persist();
 		}
-		
+
 		if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLE) {
 			logger.log(LOG_LEVEL, "Parent LifeCycleManager changed: " + lifeCycleManager + " Meem: " + meemCore.getMeemPath());
 		}
 
-		// notify clients		
+		// notify clients
 		lifeCycleManagementClient.parentLifeCycleManagerChanged(meemCore.getSelf(), lifeCycleManager);
 
 		if (oldLCM != null) {
@@ -152,7 +145,7 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 		if (currentStateIndex > maxStateIndex) {
 			performTransitions(maxState);
 		}
-		
+
 		lifeCycleLimitClient.limitLifeCycleState(state);
 	}
 
@@ -160,8 +153,9 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 	 */
 	public void changeLifeCycleState(LifeCycleState newState) {
 
-		//logger.log(Level.INFO, "meem changing LC state: " + meemCore.getMeemPath() + " - " + newState);
-		
+		// logger.log(Level.INFO, "meem changing LC state: " +
+		// meemCore.getMeemPath() + " - " + newState);
+
 		// make sure the state is changing
 		if (newState.equals(currentState))
 			return;
@@ -169,7 +163,7 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 		if (newState.equals(LifeCycleState.PENDING)) {
 			newState = LifeCycleState.READY;
 		}
-		
+
 		if (newState.equals(LifeCycleState.ABSENT) && !destroying) {
 			destroying = true;
 			destroySelf();
@@ -201,22 +195,19 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 
 			int nextStateIndex = currentStateIndex + increment;
 
-			LifeCycleTransition transition =
-				new LifeCycleTransition(
-					(LifeCycleState) LifeCycleState.STATES.get(currentStateIndex),
-					(LifeCycleState) LifeCycleState.STATES.get(nextStateIndex));
+			LifeCycleTransition transition = new LifeCycleTransition(LifeCycleState.STATES.get(currentStateIndex), LifeCycleState.STATES.get(nextStateIndex));
 
 			waitingTransition = transition;
 			waitingTargetState = newState;
-			
+
 			if (!checkTransitionVotes(transition)) {
 				break;
 			}
-			
+
 			if (!performTransition(transition)) {
 				break;
 			}
-			
+
 			waitingTransition = null;
 			waitingTargetState = null;
 
@@ -229,7 +220,6 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 		if (!currentState.equals(transition.getPreviousState())) {
 			return false;
 		}
-		
 
 		if (transition.equals(LifeCycleTransition.PENDING_READY)) {
 			if (!checkVotes()) {
@@ -237,7 +227,8 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 			}
 		}
 
-		//logger.log(LOG_LEVEL, "Performing Transition : " + transition + " : " + meemCore.getMeemPath());
+		// logger.log(LOG_LEVEL, "Performing Transition : " + transition + " : "
+		// + meemCore.getMeemPath());
 
 		currentState = transition.getCurrentState();
 
@@ -246,14 +237,14 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 			applicationWedgeVotes.clear();
 		}
 
-//		if (transition.equals(LifeCycleTransition.DORMANT_ABSENT)) {
-//			destroySelf();
-//		}
+		// if (transition.equals(LifeCycleTransition.DORMANT_ABSENT)) {
+		// destroySelf();
+		// }
 
 		lifeCycleClient.lifeCycleStateChanging(transition);
 		lifeCycleClientConduit.lifeCycleStateChanging(transition);
 
-		//currentState = transition.getCurrentState();			
+		// currentState = transition.getCurrentState();
 
 		if (!currentState.equals(transition.getCurrentState())) {
 			return false;
@@ -267,14 +258,14 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 
 		lifeCycleClient.lifeCycleStateChanged(transition);
 		lifeCycleClientConduit.lifeCycleStateChanged(transition);
-		
+
 		return true;
 	}
 
 	private void destroySelf() {
 		Meem lifeCycleManagerMeem = meemCore.getLifeCycleManager();
 
-	 	meemClientConduit.provideReference(lifeCycleManagerMeem, "lifeCycleManager", LifeCycleManager.class, new ReferenceCallbackImpl());
+		meemClientConduit.provideReference(lifeCycleManagerMeem, "lifeCycleManager", LifeCycleManager.class, new ReferenceCallbackImpl());
 	}
 
 	private boolean checkVotes() {
@@ -307,33 +298,28 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 		return true;
 	}
 
-	private final class ReferenceCallbackImpl
-		implements MeemClientCallback
-	{
-		public void referenceProvided(Reference reference)
-		{
-			if (reference == null)
-			{
+	private final class ReferenceCallbackImpl implements MeemClientCallback<LifeCycleManager> {
+		public void referenceProvided(Reference<LifeCycleManager> reference) {
+			if (reference == null) {
 				logger.log(Level.INFO, "no lifeCycleManager reference found can't destroy self!");
 				return;
 			}
-        	
-			LifeCycleManager lifeCycleManager = (LifeCycleManager) reference.getTarget();
-
+			LifeCycleManager lifeCycleManager = reference.getTarget();
 			lifeCycleManager.destroyMeem(meemCore.getSelf());
 		}
 	}
-	
+
 	private boolean checkTransitionVotes(LifeCycleTransition transition) {
 		List<String> votes = transitionVotes.get(transition);
 
 		if (votes == null || votes.size() == 0) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
-	
+
 	/* --------------- LifeCycleControlConduit class ---------- */
 
 	private final class LifeCycleControlConduit implements Vote {
@@ -344,11 +330,13 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 			if (currentState.equals(LifeCycleState.LOADED)) {
 				// should only get votes from system wedges at this time
 				systemWedgeVotes.put(voterIdentification, Boolean.valueOf(goodToGo));
-			} else {
+			}
+			else {
 				Boolean vote = (Boolean) systemWedgeVotes.get(voterIdentification);
 				if (vote != null) {
 					systemWedgeVotes.put(voterIdentification, Boolean.valueOf(goodToGo));
-				} else {
+				}
+				else {
 					// its from an application wedge
 					applicationWedgeVotes.put(voterIdentification, Boolean.valueOf(goodToGo));
 				}
@@ -361,7 +349,8 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 						}
 						performTransitions(LifeCycleState.READY);
 					}
-				} else {
+				}
+				else {
 					// go to pending
 					if (currentState.equals(LifeCycleState.READY)) {
 						if (Common.TRACE_ENABLED && Common.TRACE_LIFECYCLE) {
@@ -372,29 +361,29 @@ public class LifeCycleWedge implements LifeCycle, LifeCycleLimit, LifeCycleManag
 				}
 			}
 		}
-		
+
 		public void vote(String voterIdentification, LifeCycleTransition transition, boolean goodToGo) {
-			Vector<String> votes = transitionVotes.get(transition);
-			
+			List<String> votes = transitionVotes.get(transition);
+
 			if (goodToGo) {
 				// voting true
-				
+
 				if (votes != null) {
 					votes.remove(voterIdentification);
 				}
-				
+
 				if (transition.equals(waitingTransition)) {
 					performTransitions(waitingTargetState);
 				}
-				
-			} else {
+
+			}
+			else {
 				// voting false
-				
 				if (votes == null) {
-					votes = new Vector<String>();
+					votes = new ArrayList<String>();
 					transitionVotes.put(transition, votes);
 				}
-				
+
 				votes.add(voterIdentification);
 			}
 		}

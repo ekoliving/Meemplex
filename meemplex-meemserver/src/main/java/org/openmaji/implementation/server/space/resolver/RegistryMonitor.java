@@ -54,7 +54,7 @@ public class RegistryMonitor implements MeemRegistryClient {
 
 	public void addPathToWatch(MeemPath meemPath) {
 		Facet proxy = meemCore.getTargetFor(this, MeemRegistryClient.class);
-		Filter filter = new ExactMatchFilter(meemPath);
+		Filter filter = ExactMatchFilter.create(meemPath);
 		Reference<?> reference = Reference.spi.create("meemRegistryClient", proxy, false, filter);
 		
 		references.put(meemPath, reference);

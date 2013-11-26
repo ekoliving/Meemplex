@@ -38,8 +38,8 @@ public class VariableMapWedge implements VariableMap, Wedge {
 	public Map<Serializable, Serializable> map = new HashMap<Serializable, Serializable>();
 
     public VariableMapClient variableMapClient;
-    public final ContentProvider variableMapClientProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) {
+    public final ContentProvider<VariableMapClient> variableMapClientProvider = new ContentProvider<VariableMapClient>() {
+        public void sendContent(VariableMapClient client, Filter filter) {
             Set<Entry<Serializable, Serializable>> entrySet = map.entrySet();
             
             Entry<Serializable, Serializable>[] entries = new Entry[entrySet.size()];
@@ -48,7 +48,6 @@ public class VariableMapWedge implements VariableMap, Wedge {
             for (int i = 0; i < entries.length; i++) {
             	variableMapEntries[i] = new VariableMapEntry(entries[i].getKey(), entries[i].getValue());
             }
-            VariableMapClient client = (VariableMapClient) target;
             client.changed(variableMapEntries);
         }
     };

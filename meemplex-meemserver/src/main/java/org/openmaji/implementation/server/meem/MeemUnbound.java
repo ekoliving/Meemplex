@@ -541,7 +541,7 @@ public class MeemUnbound implements Meem, Serializable {
 	private final class RegistryClient implements MeemRegistryClient, ContentClient {
 		private final Client parent;
 		private final MeemPath meemPath;
-		private final Reference reference;
+		private final Reference<MeemRegistryClient> reference;
 		private final MeemRegistryClient proxy;
 		private boolean hasContentSent = false;
 		private Meem meem = null;
@@ -550,9 +550,9 @@ public class MeemUnbound implements Meem, Serializable {
 			this.parent = parent;
 			this.meemPath = meemPath;
 
-			this.proxy = (MeemRegistryClient) GatewayManagerWedge.getTargetFor(this, MeemRegistryClient.class);
+			this.proxy = GatewayManagerWedge.getTargetFor(this, MeemRegistryClient.class);
 
-			reference = Reference.spi.create("meemRegistryClient", proxy, true, new ExactMatchFilter(meemPath));
+			reference = Reference.spi.create("meemRegistryClient", proxy, true, ExactMatchFilter.create(meemPath));
 
 			Meem registryMeem = EssentialMeemHelper.getEssentialMeem(MeemRegistryGateway.spi.getIdentifier());
 
@@ -604,7 +604,7 @@ public class MeemUnbound implements Meem, Serializable {
 	private final class ResolverClient implements MeemResolverClient, ContentClient {
 		private Client parent;
 
-		private final Reference reference;
+		private final Reference<MeemResolverClient> reference;
 
 		private boolean hasContentSent = false;
 
@@ -614,8 +614,8 @@ public class MeemUnbound implements Meem, Serializable {
 			this.parent = parent;
 
 			Meem resolverMeem = EssentialMeemHelper.getEssentialMeem(MeemResolver.spi.getIdentifier());
-			MeemResolverClient proxy = (MeemResolverClient) GatewayManagerWedge.getTargetFor(this, MeemResolverClient.class);
-			Filter filter = new ExactMatchFilter(meemPath);
+			MeemResolverClient proxy = GatewayManagerWedge.getTargetFor(this, MeemResolverClient.class);
+			Filter filter = ExactMatchFilter.create(meemPath);
 
 			this.reference = Reference.spi.create("meemResolverClient", proxy, true, filter);
 

@@ -8,6 +8,7 @@
  */
 package org.openmaji.implementation.server.meem.wedge.reference;
 
+import org.openmaji.meem.Facet;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 
@@ -15,7 +16,7 @@ import org.openmaji.system.meem.wedge.reference.ContentClient;
 /**
  * @author Peter
  */
-public interface AsyncContentProvider
+public interface AsyncContentProvider<T extends Facet>
 {
-	void asyncSendContent(Object target, Filter filter, ContentClient contentClient);
+	void asyncSendContent(T target, Filter filter, ContentClient contentClient);
 }

@@ -12,20 +12,18 @@
  */
 package org.openmaji.implementation.server.nursery.cache;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
+import java.util.Map.Entry;
 
 import org.openmaji.implementation.server.Common;
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * <p>
@@ -41,12 +39,11 @@ public class LRUCacheWedge implements Wedge, LRUCache, Cache {
 	LRU cache = new LRU(100);
 	
     public CacheClient cacheClient;
-    public final ContentProvider cacheClientProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) {
-            for (Iterator i = cache.entrySet().iterator(); i.hasNext();) {
-                Map.Entry entry = (Map.Entry) i.next();
-
-                ((CacheClient) target).hit(entry.getKey(), entry.getValue());
+    
+    public final ContentProvider<CacheClient> cacheClientProvider = new ContentProvider<CacheClient>() {
+        public void sendContent(CacheClient target, Filter filter) {
+            for (Entry<Object, Object> entry : cache.entrySet()) {
+                target.hit(entry.getKey(), entry.getValue());
             }
         }
     };
@@ -83,7 +80,7 @@ public class LRUCacheWedge implements Wedge, LRUCache, Cache {
 	}
 
 	
-	private class LRU extends LinkedHashMap {
+	private class LRU extends LinkedHashMap<Object, Object> {
 		private static final long serialVersionUID = 2634575427909499639L;
 		
 		int maxEntries = 10;
@@ -93,7 +90,7 @@ public class LRUCacheWedge implements Wedge, LRUCache, Cache {
 			this.maxEntries = maxEntries;
 		}
 
-		protected boolean removeEldestEntry(Map.Entry eldest) {
+		protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
 			if (size() > maxEntries) {
 				removeEntry((String)eldest.getKey());
 			}

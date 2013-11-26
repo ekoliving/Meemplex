@@ -88,7 +88,7 @@ public class MeemStoreAdapterWedge implements Wedge, MeemDefinitionClient, MeemC
 				Scope.LOCAL,
 				meemCore.getMeemStore(),
 				"meemContentClient",
-				new ExactMatchFilter(meemPath), 
+				ExactMatchFilter.create(meemPath), 
 				true);
 
 		contentDependencyAttributes.add(contentDependencyAttribute);
@@ -127,7 +127,7 @@ public class MeemStoreAdapterWedge implements Wedge, MeemDefinitionClient, MeemC
 				Scope.LOCAL,
 				meemCore.getMeemStore(), 
 				"meemStore", 
-				new ExactMatchFilter(new String()),
+				ExactMatchFilter.create(new String()),
 				true
 			);
 
@@ -156,7 +156,7 @@ public class MeemStoreAdapterWedge implements Wedge, MeemDefinitionClient, MeemC
 					Scope.LOCAL,
 					meemCore.getMeemStore(),
 					"meemDefinitionClient",
-					new ExactMatchFilter(meemPath), 
+					ExactMatchFilter.create(meemPath), 
 					true);
 
 			//definitionDependencyAttributes.put(meemPath, definitionDependencyAttribute);

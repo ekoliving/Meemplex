@@ -33,6 +33,12 @@
 
 package org.openmaji.server.utility;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openmaji.system.gateway.AsyncCallback;
+import org.openmaji.system.manager.thread.Task;
+import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.meem.wedge.reference.ContentException;
 
 /**
@@ -79,11 +85,49 @@ public final class PigeonHole<T> {
 
 	private int waitingThreads = 0;
 	
+	private List<AsyncCallback<T>> callbacks = new ArrayList<AsyncCallback<T>>();
+
+	/**
+	 * 
+	 * @param callback
+	 */
+	public synchronized void get(final AsyncCallback<T> callback) {
+		
+		if (pigeon != null) {
+			callback.result(pigeon);
+		}
+		else if (exception != null) {
+			callback.exception(exception);
+		}
+		else {
+			this.callbacks.add(callback);
+
+			// check for timeouts
+			final Task timeoutTask = ThreadManager.spi.create().queue(new Runnable() {
+				public void run() {
+					synchronized (PigeonHole.this) {
+						callbacks.remove(callback);
+						callback.exception(new TimeoutException());
+					}
+				}
+			}, System.currentTimeMillis() + timeout);
+			if (timeoutTask != null) {
+				this.callbacks.add(new AsyncCallback<T>() {
+					public void result(T result) {
+						timeoutTask.cancel();
+					}
+					public void exception(Exception e) {
+						timeoutTask.cancel();
+					}
+				});
+			}
+		}
+	}
 
 	public synchronized T get() throws ContentException, TimeoutException {
 		return get(timeout);
 	}
-	
+
 	/**
 	 * Retrieve an Object from the PigeonHole. If the PigeonHole is empty, then wait until it is filled.
 	 * 
@@ -152,11 +196,17 @@ public final class PigeonHole<T> {
 
 		this.received = true;
 		this.pigeon = pigeon;
+		for (AsyncCallback<T> callback : callbacks) {
+			callback.result(pigeon);
+		}
 		this.notify();
 	}
 	
 	public synchronized void exception(Exception e) {
 		this.exception = e;
+		for (AsyncCallback<T> callback : callbacks) {
+			callback.exception(exception);
+		}
 		notifyAll();
 	}
 }

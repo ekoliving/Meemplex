@@ -6,13 +6,13 @@ import java.security.PrivilegedAction;
 import javax.security.auth.Subject;
 
 import org.openmaji.implementation.server.manager.gateway.GatewayManagerWedge;
-import org.openmaji.implementation.server.security.DoAsMeem;
 import org.openmaji.implementation.server.security.auth.MeemCoreRootAuthority;
 import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.meem.wedge.reference.Reference;
 import org.openmaji.system.gateway.AsyncCallback;
+import org.openmaji.system.manager.thread.Task;
 import org.openmaji.system.manager.thread.ThreadManager;
 import org.openmaji.system.meem.wedge.reference.ContentClient;
 import org.openmaji.system.meem.wedge.reference.ContentException;
@@ -26,6 +26,8 @@ import org.openmaji.system.meem.wedge.reference.ContentException;
  * 
  * A subclass must implement the getFacetLister() function.  The facet listener should extend
  * the inner FacetListener class.
+ * 
+ * The subclass must also call setResult(T) to notify the callback of the value.  This will be called from the "facet listener"
  * 
  * @param <F>
  * 	The type of the facet to listen to to get the result
@@ -51,6 +53,7 @@ public abstract class FacetCallbackTask <F extends Facet, T> {
 	 */
 	protected F clientProxy;
 	
+	private Task timeoutTask;
 	private Runnable doTimeout = new Runnable() {
 		public void run() {
 			timeout();
@@ -82,7 +85,7 @@ public abstract class FacetCallbackTask <F extends Facet, T> {
 		// queue timeout event
 		Subject.doAs(MeemCoreRootAuthority.getSubject(), new PrivilegedAction<Void>() {
 			public Void run() {
-				ThreadManager.spi.create().queue(doTimeout, System.currentTimeMillis()+timeout);
+				timeoutTask = ThreadManager.spi.create().queue(doTimeout, System.currentTimeMillis()+timeout);
 				return null;
 			}
 		});
@@ -119,7 +122,11 @@ public abstract class FacetCallbackTask <F extends Facet, T> {
 	 * @param value
 	 */
 	protected void setResult(T value) {
+		if (result != null) {
+			System.out.println("overwriting result: " + result + " with " + value);
+		}
 		this.result = value;
+		//callback.result(result);		// for some reason we must send the result on contentSent
 	}
 
 	private void timeout() {
@@ -132,8 +139,10 @@ public abstract class FacetCallbackTask <F extends Facet, T> {
 	}
 	
 	private void cleanup() {
+		if (timeoutTask != null) {
+			timeoutTask.cancel();
+		}
 		if (clientProxy != null) {
-			ThreadManager.spi.create().cancel(doTimeout);
 			GatewayManagerWedge.revokeTarget(clientProxy, listener);
 			clientProxy = null;
 		}
@@ -143,7 +152,7 @@ public abstract class FacetCallbackTask <F extends Facet, T> {
 	 * Extend this for the listener
 	 *
 	 */
-	public abstract class FacetListener implements ContentClient {
+	protected abstract class FacetListener implements ContentClient {
 		
 		public void contentSent() {
 			if (callback != null) {

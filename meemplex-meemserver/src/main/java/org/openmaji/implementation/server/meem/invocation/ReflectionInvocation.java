@@ -127,11 +127,11 @@ public class ReflectionInvocation implements Invocation, Serializable
 	{
 		failureCount++;
 		
-		Class decClass = method.getDeclaringClass();
+		Class<?> decClass = method.getDeclaringClass();
 
 		if (decClass == Meem.class && method.getName().equals("addOutboundReference"))
 		{
-			Reference reference = (Reference) args[0];
+			Reference<?> reference = (Reference<?>) args[0];
 			ContentClient contentClient = MeemSystemWedge.getContentClientFromTarget(reference.getTarget());
 			contentClient.contentFailed("Proxy has been revoked");
 		}

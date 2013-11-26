@@ -13,6 +13,8 @@
 package org.openmaji.server.helper;
 
 import org.openmaji.meem.Meem;
+import org.openmaji.server.utility.PigeonHole;
+import org.openmaji.system.gateway.AsyncCallback;
 import org.openmaji.system.space.meemstore.MeemStore;
 
 
@@ -33,11 +35,29 @@ public class MeemStoreHelper {
 
 	public MeemStore getMeemStore() {
 		if (meemStore == null) {
-
 			Meem meem = EssentialMeemHelper.getEssentialMeem(MeemStore.spi.getIdentifier());
-			meemStore = (MeemStore) org.openmaji.server.helper.ReferenceHelper.getTarget(meem, "meemStore", MeemStore.class);
+			meemStore = ReferenceHelper.getTarget(meem, "meemStore", MeemStore.class);
 		}
 		return meemStore;
 	}
 
+	public void getMeemStore(AsyncCallback<MeemStore> callback) {
+		if (meemStore == null) {
+			final PigeonHole<MeemStore> promise = new PigeonHole<MeemStore>();
+			Meem meem = EssentialMeemHelper.getEssentialMeem(MeemStore.spi.getIdentifier());
+			ReferenceHelper.getTarget(meem, "meemStore", MeemStore.class, new AsyncCallback<MeemStore>() {
+				public void result(MeemStore result) {
+					MeemStoreHelper.meemStore = result;
+					promise.put(result);
+				}
+				public void exception(Exception e) {
+					promise.exception(e);
+				}
+			});
+			promise.get(callback);
+		}
+		else {
+			callback.result(meemStore);
+		}
+	}
 }

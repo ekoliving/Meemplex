@@ -10,6 +10,7 @@ package org.openmaji.implementation.server.manager.thread;
 
 import java.util.*;
 
+import org.openmaji.system.manager.thread.Task;
 import org.openmaji.system.manager.thread.ThreadManager;
 
 /**
@@ -79,15 +80,21 @@ public class SchedulerThread extends Thread {
 		}
 	}
 
-	protected void queue(Runnable runnable, long absoluteTime) {
+	protected Task queue(Runnable runnable, long absoluteTime) {
 		SchedulerEntry schedulerEntry = new SchedulerEntry(runnable, absoluteTime);
 
 		synchronized (jobQueue) {
 			addSchedulerEntry(schedulerEntry);
 			jobQueue.notify();
 		}
+		return schedulerEntry;
 	}
 
+	protected void cancel(Task task) {
+		SchedulerEntry entry = (SchedulerEntry)task;
+		cancel(entry.runnable);
+	}
+	
 	protected void cancel(Runnable runnable) {
 		synchronized (jobQueue) {
 			removeEntry(runnable);
@@ -115,7 +122,7 @@ public class SchedulerThread extends Thread {
 	/**
 	 * A Job
 	 */
-	private static class SchedulerEntry {
+	private class SchedulerEntry implements Task {
 		public SchedulerEntry(Runnable runnable, long absoluteTime) {
 			this.runnable = runnable;
 			this.absoluteTime = absoluteTime;
@@ -130,6 +137,11 @@ public class SchedulerThread extends Thread {
 		 * When to run the job.
 		 */
 		private final long absoluteTime;
+		
+		@Override
+		public void cancel() {
+			SchedulerThread.this.cancel(runnable);
+		}
 	};
 
 	/**
@@ -157,8 +169,9 @@ public class SchedulerThread extends Thread {
 				runnable.run();
 			}
 
-			public void queue(Runnable runnable, long absoluteTime) {
+			public Task queue(Runnable runnable, long absoluteTime) {
 				runnable.run();
+				return null;
 			}
 
 			public void cancel(Runnable runnable) {
@@ -177,9 +190,7 @@ public class SchedulerThread extends Thread {
 				}
 			};
 
-			SchedulerEntry schedulerEntry = new SchedulerEntry(runnable, time);
-
-			st.addSchedulerEntry(schedulerEntry);
+			Task schedulerEntry = st.queue(runnable, time);
 		}
 
 		st.run();

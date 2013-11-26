@@ -18,7 +18,7 @@ import org.openmaji.meem.wedge.reference.Reference;
 /**
  * @author Andy Gelme
  */
-public class ReferenceImpl implements Reference {
+public class ReferenceImpl<T extends Facet> implements Reference<T> {
 	private static final long serialVersionUID = -88281987L;
 
   /**
@@ -31,7 +31,7 @@ public class ReferenceImpl implements Reference {
    * Target of the specified Facet
    */
 
-  private Facet target;
+  private T target;
 
   /**
    * Indicates that the Provider Meem must send it's current content
@@ -58,7 +58,7 @@ public class ReferenceImpl implements Reference {
 
   public ReferenceImpl(
     String     facetIdentifier,
-    Facet      target,
+    T          target,
     Boolean    contentRequired,
     Filter     filter) {
 
@@ -121,7 +121,7 @@ public class ReferenceImpl implements Reference {
    * @return Target of the specified Facet
    */
 
-  public Facet getTarget() {
+  public T getTarget() {
     return(target);
   }
 

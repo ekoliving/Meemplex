@@ -15,7 +15,6 @@ package org.openmaji.implementation.server.nursery.space.type;
 import java.io.Serializable;
 import java.util.*;
 
-
 import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.manager.registry.MeemRegistryWedge;
 import org.openmaji.meem.Meem;
@@ -44,7 +43,8 @@ import java.util.logging.Logger;
  * <p>
  * ...
  * </p>
- * @author  mg
+ * 
+ * @author mg
  * @version 1.0
  */
 public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpace, FilterChecker {
@@ -52,61 +52,55 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 	private static final Logger logger = Logger.getAnonymousLogger();
 
 	private Vector<String> systemInterfaces = new Vector<String>();
-	
+
 	private HashMap<String, Set<MeemPath>> interfaces = new HashMap<String, Set<MeemPath>>();
-	
+
 	private HashMap<MeemPath, Set<String>> reverseInterfaces = new HashMap<MeemPath, Set<String>>();
 
-	private Reference reference = null;
-	
+	private Reference<MetaMeemClient> reference = null;
+
 	private Meem meem = null;
 
+	public TypeSpaceClient typeSpaceClient;
 	
-    public TypeSpaceClient typeSpaceClient;
-    public final ContentProvider typeSpaceClientProvider = new ContentProvider() {
-        public synchronized void sendContent(Object target, Filter filter) throws IllegalArgumentException {
-            TypeSpaceClient typeSpaceClient = (TypeSpaceClient) target;
-    
-            if (filter instanceof ExactMatchFilter) {
-                ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
-    
-                if (exactMatchFilter.getTemplate() instanceof String) {
-    
-                    String interfaceName = (String) exactMatchFilter.getTemplate();
-    
-                    Set interfaceList = (Set) interfaces.get(interfaceName);
-    
-                    if (interfaceList != null) {
-    
-                        for (Iterator i = interfaceList.iterator(); i.hasNext();) {
-                            MeemPath meemPath = (MeemPath) i.next();
-    
-                            typeSpaceClient.entriesAdded(new CategoryEntry[] {new CategoryEntry(meemPath.toString(), Meem.spi.get(meemPath))});
-                            
-                        }
-                    }
-                }
-            }
-        }
-    };
-    
+	public final ContentProvider<TypeSpaceClient> typeSpaceClientProvider = new ContentProvider<TypeSpaceClient>() {
+		public synchronized void sendContent(TypeSpaceClient client, Filter filter) throws IllegalArgumentException {
+
+			if (filter instanceof ExactMatchFilter) {
+				ExactMatchFilter<?> exactMatchFilter = (ExactMatchFilter<?>) filter;
+
+				if (exactMatchFilter.getTemplate() instanceof String) {
+
+					String interfaceName = (String) exactMatchFilter.getTemplate();
+
+					Set<MeemPath> interfaceList = interfaces.get(interfaceName);
+
+					if (interfaceList != null) {
+						for (MeemPath meemPath : interfaceList) {
+							client.entriesAdded(new CategoryEntry[] { new CategoryEntry(meemPath.toString(), Meem.spi.get(meemPath)) });
+						}
+					}
+				}
+			}
+		}
+	};
+
 	public TypeSpaceMeemRegistry() {
-    
-    MajiSystemProvider majiSystemProvider = MajiSystemProvider.systemProvider();
+
+		MajiSystemProvider majiSystemProvider = MajiSystemProvider.systemProvider();
 
 		// we don't want system facets showing up in here
 
-    Collection<Class> specifications = new ArrayList<Class>();
-    specifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_WEDGE));
-    specifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_HOOK));
-    
-    Iterator systemWedgeSpecifications = specifications.iterator();
+		Collection<Class> specifications = new ArrayList<Class>();
+		specifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_WEDGE));
+		specifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_HOOK));
+
+		Iterator systemWedgeSpecifications = specifications.iterator();
 
 		while (systemWedgeSpecifications.hasNext()) {
-      Class specification = (Class) systemWedgeSpecifications.next();
+			Class specification = (Class) systemWedgeSpecifications.next();
 
-      String wedgeImplementationName =
-       majiSystemProvider.getSpecificationEntry(specification).getImplementation().getName();
+			String wedgeImplementationName = majiSystemProvider.getSpecificationEntry(specification).getImplementation().getName();
 
 			systemInterfaces.add(wedgeImplementationName);
 		}
@@ -114,8 +108,9 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 		// most things will have org.openmaji.meem.Facet so we'll ignore it
 		systemInterfaces.add("org.openmaji.meem.Facet");
 
-		//everything will have the following as well
-		// -mg- is there a better way to find out about these instead of having them hardcoded?
+		// everything will have the following as well
+		// -mg- is there a better way to find out about these instead of having
+		// them hardcoded?
 		systemInterfaces.add("org.openmaji.meem.Meem");
 		systemInterfaces.add("org.openmaji.system.meem.core.MeemCore");
 
@@ -136,7 +131,7 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 			Set interfaceList = (Set) interfaces.get(interfaceName);
 
 			interfaceList.remove(meemPath);
-			
+
 			typeSpaceClient.entriesRemoved(new CategoryEntry[] { new CategoryEntry(meemPath.toString(), Meem.spi.get(meemPath)) });
 
 		}
@@ -148,7 +143,7 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 	 */
 	public void registerMeem(Meem meem) {
 		super.registerMeem(meem);
-		
+
 		logger.log(Common.getLogLevelVerbose(), "registerMeem: " + meem.getMeemPath());
 
 		reference = Reference.spi.create("metaMeemClient", new MetaMeemClient(meem.getMeemPath()), true, null);
@@ -164,8 +159,7 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 			throw new IllegalFilterException("Can't check filter: " + filter);
 		}
 
-		if (methodName.equals("entryAdded") || methodName.equals("entryRemoved"))
-		{
+		if (methodName.equals("entryAdded") || methodName.equals("entryRemoved")) {
 			CategoryEntry categoryEntry = (CategoryEntry) args[0];
 			if (categoryEntry != null) {
 				ExactMatchFilter exactMatchFilter = (ExactMatchFilter) filter;
@@ -175,8 +169,7 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 
 		return false;
 	}
-	
-	
+
 	private void addFacet(MeemPath meemPath, String interfaceName) {
 		try {
 			addInterface(meemPath, interfaceName);
@@ -188,7 +181,8 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 			for (int i = 0; i < interfaces.length; i++)
 				addInterface(meemPath, interfaces[i].getName());
 
-		} catch (ClassNotFoundException e) {
+		}
+		catch (ClassNotFoundException e) {
 			logger.log(Level.WARNING, "Error getting facet interface", e);
 		}
 	}
@@ -215,13 +209,12 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 			}
 
 			reverseInterfaceList.add(interfaceName);
-			
-			typeSpaceClient.entriesAdded(new CategoryEntry[] {new CategoryEntry(meemPath.toString(), Meem.spi.get(meemPath))});
-			// logger.log(Common.getLogLevelVerbose(), "interface added: " + interfaceName + " : " + meemPath);
+
+			typeSpaceClient.entriesAdded(new CategoryEntry[] { new CategoryEntry(meemPath.toString(), Meem.spi.get(meemPath)) });
+			// logger.log(Common.getLogLevelVerbose(), "interface added: " +
+			// interfaceName + " : " + meemPath);
 		}
 	}
-	
-	
 
 	private final class MetaMeemClient implements MetaMeem, ContentClient {
 
@@ -235,8 +228,8 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 		 */
 		public void addFacetAttribute(Serializable wedgeKey, FacetAttribute facetAttribute) {
 			// -mg- should we only have inbound facets?
-			//if (facetAttribute.isDirection(Direction.INBOUND))
-				addFacet(meemPath, facetAttribute.getInterfaceName());
+			// if (facetAttribute.isDirection(Direction.INBOUND))
+			addFacet(meemPath, facetAttribute.getInterfaceName());
 		}
 
 		/**
@@ -305,7 +298,5 @@ public class TypeSpaceMeemRegistry extends MeemRegistryWedge implements TypeSpac
 			meem.removeOutboundReference(reference);
 		}
 	}
-
-
 
 }

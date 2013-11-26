@@ -18,7 +18,6 @@ import org.openmaji.implementation.server.Common;
 import org.openmaji.implementation.server.manager.registry.jini.JiniMeemRegistryClient;
 import org.openmaji.implementation.server.meem.core.MeemCoreImpl;
 import org.openmaji.implementation.server.meem.invocation.MeemInvocationSource;
-
 import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemClient;
@@ -71,17 +70,16 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
      * FacetClient (out-bound Facet)
      */
     public FacetClient facetClientFacet;
-    public final ContentProvider facetClientFacetProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) {
-            FacetClient facetClient = (FacetClient) target;
-
+    
+    public final ContentProvider<FacetClient> facetClientFacetProvider = new ContentProvider<FacetClient>() {
+        public void sendContent(FacetClient client, Filter filter) {
             List<FacetItem> facetItems = new ArrayList<FacetItem>();
             
 			FacetFilter facetFilter = filter instanceof FacetFilter ? (FacetFilter) filter : null;
 
 			for (WedgeImpl wedgeImpl : ((MeemCoreImpl)meemCore).getWedgeImpls()) {
 				
-                for (FacetImpl facetImpl : wedgeImpl.getFacets()) {
+                for (FacetImpl<?> facetImpl : wedgeImpl.getFacets()) {
 					String identifier = facetImpl.getIdentifier();
 					Class<? extends Facet> specification = facetImpl.getSpecification();
 					Direction direction = facetImpl.getDirection();
@@ -95,7 +93,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 					facetItems.add(item);
                 }
             }
-            facetClient.facetsAdded(facetItems.toArray(new FacetItem[]{}));
+			client.facetsAdded(facetItems.toArray(new FacetItem[]{}));
         }
     };
 
@@ -105,29 +103,25 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 	public MeemClient meemClientFacet;
 	
 	// TODO provide a separate outbound facet for providing invocation target references for the meem versus references from this meem to others
-	public final ContentProvider meemClientFacetProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws ContentException {
-			if (filter == null || !(filter instanceof FacetDescriptor))
-			{
+	public final ContentProvider<MeemClient> meemClientFacetProvider = new ContentProvider<MeemClient>() {
+		public void sendContent(MeemClient client, Filter filter) throws ContentException {
+			if (filter == null || !(filter instanceof FacetDescriptor)) {
 				throw new ContentException("Filter not supported: " + filter);
 			}
 
 			FacetDescriptor facetDescriptor = (FacetDescriptor) filter;
 
-			InboundFacetImpl inboundFacetImpl =
-				((MeemCoreImpl) meemCore).getInboundFacetImpl(facetDescriptor.facetIdentifier);
+			InboundFacetImpl<?> inboundFacetImpl = ((MeemCoreImpl) meemCore).getInboundFacetImpl(facetDescriptor.facetIdentifier);
 
-			if (inboundFacetImpl != null
-				&& facetDescriptor.specification.isAssignableFrom(inboundFacetImpl.getSpecification()))
+			if (inboundFacetImpl != null && facetDescriptor.specification.isAssignableFrom(inboundFacetImpl.getSpecification()))
 			{
-				MeemClient meemClientTarget = (MeemClient) target;
-				Reference reference = Reference.spi.create(
+				Reference<?> reference = Reference.spi.create(
 						inboundFacetImpl.getIdentifier(),
 						meemCore.getTarget(inboundFacetImpl.getIdentifier()),
 						inboundFacetImpl.isContentRequired()
 					);
 
-				meemClientTarget.referenceAdded(reference);
+				client.referenceAdded(reference);
 			}
 		}
 	};
@@ -174,7 +168,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 	public String meemIdentifier = "Meem";
 
 	// Configuration
-	public transient ConfigurationSpecification meemIdentifierSpecification	= new ConfigurationSpecification(
+	public transient ConfigurationSpecification<String> meemIdentifierSpecification	= ConfigurationSpecification.create(
 		"The identifier for this Meem", String.class, LifeCycleState.READY);
 
 	public ConfigurationClient configurationClientConduit = new ConfigurationClientAdapter(this);
@@ -211,10 +205,12 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 	public <T extends Facet> void addOutboundReference(final Reference<T> reference, final boolean automaticRemove) {
 		final Facet target = reference.getTarget();
 
-//		if (Common.TRACE_ENABLED) {
-//			logger.log(Level.INFO, "adding outbound reference on " + getMeemPath() + " to " + reference);
-//		}
-		
+		//if (Common.TRACE_ENABLED) {
+//			if ("meemRegistry".equals(reference.getFacetIdentifier())) {
+//				logger.log(Level.INFO, "--- adding outbound reference on " + getMeemPath() + " to " + reference + "\n\t" + reference.getFacetIdentifier());
+//			}
+		//}
+
 		ContentClient contentClient = getContentClientFromTarget(target);
 
 		try {
@@ -232,6 +228,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 			{
 				if (meemInvocationSource.asyncContentProvider != null)
 				{
+
 					if (!automaticRemove) {
 						final ContentClient completionContentClient = contentClient;
 						contentClient = new ContentClient() {
@@ -255,6 +252,12 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 							private boolean done = false;
 						};
 					}
+					
+//					logger.log(Level.INFO, "--- asyncContentProvider... " + meemInvocationSource.getFacetAttribute().getIdentifier() + " : " + reference.getTarget().getClass().getInterfaces()[0]);
+//					meemInvocationSource.asyncContentProvider.asyncSendContent(
+//							(T)LoggerProxyFactory.createProxy(meemInvocationSource.getFacetAttribute().getIdentifier(), reference.getTarget().getClass()),
+//							reference.getFilter(),
+//							contentClient);
 
 					meemInvocationSource.asyncContentProvider.asyncSendContent(
 						reference.getTarget(), reference.getFilter(), contentClient);
@@ -264,6 +267,11 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 
 				if (meemInvocationSource.contentProvider != null)
 				{
+//					logger.log(Level.INFO, "--- contentProvider... " + meemInvocationSource.getFacetAttribute().getIdentifier() + " : " + reference.getTarget().getClass().getInterfaces()[0]);
+//					meemInvocationSource.contentProvider.sendContent(
+//							(T)LoggerProxyFactory.createProxy(meemInvocationSource.getFacetAttribute().getIdentifier(), reference.getTarget().getClass()),
+//							reference.getFilter());
+
 					meemInvocationSource.contentProvider.sendContent(
 						reference.getTarget(), reference.getFilter());
 				}
@@ -336,7 +344,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 		if ((filter instanceof FacetFilter)) {
 			if (methodName.equals("referenceAdded") || methodName.equals("referenceRemoved")) {
 				FacetFilter facetFilter = (FacetFilter) filter;
-				Reference reference = (Reference) args[0];
+				Reference<?> reference = (Reference<?>) args[0];
 	
 				return facetFilter.match(reference.getFacetIdentifier(), reference.getTarget().getClass());
 			}
@@ -344,7 +352,7 @@ public class MeemSystemWedge implements Meem, Wedge, FilterChecker {
 		else if (filter instanceof ReferenceFilter) {
 			if (methodName.equals("referenceAdded") || methodName.equals("referenceRemoved")) {
 				ReferenceFilter referenceFilter = (ReferenceFilter) filter;
-				Reference reference = (Reference) args[0];
+				Reference<?> reference = (Reference<?>) args[0];
 				
 				return referenceFilter.matches(reference);
 			}			

@@ -281,7 +281,7 @@ public class GenesisImpl implements Genesis {
 		MajiSystemProvider majiSystemProvider = MajiSystemProvider.systemProvider();
 
 		for (Class<?> meemSpecification : majiSystemProvider.getSpecifications(specificationType)) {
-			SpecificationEntry specificationEntry = majiSystemProvider.getSpecificationEntry(meemSpecification);
+			SpecificationEntry<?> specificationEntry = majiSystemProvider.getSpecificationEntry(meemSpecification);
 
 			String meemIdentifier = specificationEntry.getIdentifier();
 

@@ -29,24 +29,20 @@ public class MeemClientWedge implements Wedge
 
 	private class MeemClientImpl implements MeemClientConduit
 	{
-        public void provideReference(Meem meem, String inboundFacetIdentifier, Class specification, MeemClientCallback referenceCallback)
+        public <T extends Facet> void provideReference(Meem meem, String inboundFacetIdentifier, Class<T> specification, MeemClientCallback<T> referenceCallback)
         {
 			if (meem.equals(meemCore.getSelf()))
 			{
-				Reference inboundReference = Reference.spi.create(inboundFacetIdentifier,
-							meemCore.getTarget(inboundFacetIdentifier), false);
-							
+				Reference<T> inboundReference = Reference.spi.create(inboundFacetIdentifier, (T)meemCore.getTarget(inboundFacetIdentifier), false);
 				referenceCallback.referenceProvided(inboundReference);
 				return;
 			}
 			
-            CallbackReferenceClient myReferenceClient =
-                new CallbackReferenceClient(referenceCallback);
+            CallbackReferenceClient<T> myReferenceClient = new CallbackReferenceClient<T>(referenceCallback);
 
-            MeemClient meemClientProxy = (MeemClient)
-                meemCore.getLimitedTargetFor(myReferenceClient, MeemClient.class);
+            MeemClient meemClientProxy =  meemCore.getLimitedTargetFor(myReferenceClient, MeemClient.class);
 
-            Reference meemReference = Reference.spi.create(
+            Reference<MeemClient> meemReference = Reference.spi.create(
                 "meemClientFacet",
                 meemClientProxy,
                 true,
@@ -58,19 +54,19 @@ public class MeemClientWedge implements Wedge
         }
 	}
 	
-    public class CallbackReferenceClient implements MeemClient, ContentClient
+    public class CallbackReferenceClient<T extends Facet> implements MeemClient, ContentClient
     {
-        public CallbackReferenceClient(MeemClientCallback referenceCallback)
+        public CallbackReferenceClient(MeemClientCallback<T> referenceCallback)
         {
             this.referenceCallback = referenceCallback;
         }
 
-        public void referenceAdded(Reference reference)
+        public void referenceAdded(Reference<?> reference)
         {
-            this.reference = reference;
+            this.reference = (Reference<T>) reference;
         }
 
-        public void referenceRemoved(Reference reference)
+        public void referenceRemoved(Reference<?> reference)
         {
         }
 
@@ -92,7 +88,7 @@ public class MeemClientWedge implements Wedge
 			}
 		}
 
-        private MeemClientCallback referenceCallback;
-        private Reference reference = null;
+        private MeemClientCallback<T> referenceCallback;
+        private Reference<T> reference = null;
     }
 }

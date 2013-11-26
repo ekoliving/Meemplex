@@ -59,14 +59,13 @@ public class JiniMeemRegistryGatewayWedge implements Wedge, MeemRegistryGateway 
 	};
 	
 	public MeemRegistryClient meemRegistryClient;
-	public final AsyncContentProvider meemRegistryClientProvider = new AsyncContentProvider() {
-		public void asyncSendContent(Object target, Filter filter, ContentClient contentClient) {
+	
+	public final AsyncContentProvider<MeemRegistryClient> meemRegistryClientProvider = new AsyncContentProvider<MeemRegistryClient>() {
+		public void asyncSendContent(MeemRegistryClient client, Filter filter, ContentClient contentClient) {
 			if (getMeemRegistries().length == 0) {
 				contentClient.contentSent();
 				return;
 			}
-			
-			MeemRegistryClient client = (MeemRegistryClient) target;
 
 			MeemPath meemPath = null;
 			if (filter instanceof ExactMatchFilter) {
@@ -277,7 +276,7 @@ public class JiniMeemRegistryGatewayWedge implements Wedge, MeemRegistryGateway 
 
 				revokableTarget = RevokableExporterHelper.export(proxyRemote);
 
-				Filter filter = new ExactMatchFilter(meemPath);
+				Filter filter = ExactMatchFilter.create(meemPath);
 
 				Reference referenceRemote = Reference.spi.create(
 					"jiniMeemRegistryClient", revokableTarget.getTarget(), true, filter);
@@ -377,7 +376,7 @@ public class JiniMeemRegistryGatewayWedge implements Wedge, MeemRegistryGateway 
 		protected void setClientTask(JiniMeemRegistryClient clientTask) {
 			revokableTarget = RevokableExporterHelper.export(clientTask);
 
-			Filter filter = new ExactMatchFilter(meemPath);
+			Filter filter = ExactMatchFilter.create(meemPath);
 
 			this.reference = Reference.spi.create(
 				"jiniMeemRegistryClient", revokableTarget.getTarget(), true, filter);

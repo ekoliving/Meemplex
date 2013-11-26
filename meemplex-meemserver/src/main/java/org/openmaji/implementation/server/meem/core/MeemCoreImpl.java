@@ -104,7 +104,7 @@ public class MeemCoreImpl implements MeemBuilder, MeemCore {
 	 * Collection of Conduits
 	 */
 
-	private Hashtable<String, Conduit> conduits = new Hashtable<String, Conduit>();
+	private Hashtable<String, Conduit<?>> conduits = new Hashtable<String, Conduit<?>>();
 
 	/**
 	 * Collection of inbound facet proxies
@@ -246,22 +246,22 @@ public class MeemCoreImpl implements MeemBuilder, MeemCore {
 
 	/* ---------- MeemCore method(s) ---------------------------------------- */
 
-	public void addConduitTarget(String conduitIdentifier, Class<? extends Facet> specification, Object implementation) {
+	public <T> void addConduitTarget(String conduitIdentifier, Class<T> specification, T implementation) {
 
-		Conduit conduit = createConduit(conduitIdentifier, specification);
+		Conduit<T> conduit = createConduit(conduitIdentifier, specification);
 
 		conduit.addTarget(implementation);
 	}
 
-	private Conduit createConduit(String conduitIdentifier, Class<?> specification) {
-		Conduit conduit = conduits.get(conduitIdentifier);
+	private <T> Conduit<T> createConduit(String conduitIdentifier, Class<T> specification) {
+		Conduit<T> conduit = (Conduit<T>) conduits.get(conduitIdentifier);
 
 		if (conduit == null) {
 			if (conduitIdentifier.equals("errorHandler")) {
-				conduit = new ConduitImpl(conduitIdentifier, specification);
+				conduit = ConduitImpl.create(conduitIdentifier, specification);
 			}
 			else {
-				conduit = new ConduitImpl(conduitIdentifier, specification, (ErrorHandler) this.getConduitSource("errorHandler", ErrorHandler.class));
+				conduit = ConduitImpl.create(conduitIdentifier, specification, (ErrorHandler) this.getConduitSource("errorHandler", ErrorHandler.class));
 			}
 
 			conduits.put(conduitIdentifier, conduit);
@@ -270,15 +270,15 @@ public class MeemCoreImpl implements MeemBuilder, MeemCore {
 		return (conduit);
 	}
 
-	public Object getConduitSource(String conduitIdentifier, Class<? extends Facet> specification) {
-		Conduit conduit = createConduit(conduitIdentifier, specification);
+	public <T> T getConduitSource(String conduitIdentifier, Class<T> specification) {
+		Conduit<T> conduit = createConduit(conduitIdentifier, specification);
 
 		return (conduit.getProxy());
 	}
 
-	public void removeConduitTarget(String conduitIdentifier, Facet implementation) {
+	public <T> void removeConduitTarget(String conduitIdentifier, T implementation) {
 
-		Conduit conduit = conduits.get(conduitIdentifier);
+		Conduit<T> conduit = (Conduit<T>) conduits.get(conduitIdentifier);
 
 		if (conduit != null)
 			conduit.removeTarget(implementation);

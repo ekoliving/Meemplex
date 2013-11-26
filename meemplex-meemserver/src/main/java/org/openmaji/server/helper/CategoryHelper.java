@@ -111,7 +111,7 @@ public class CategoryHelper {
 		PigeonHole<CategoryEntry> pigeonHole = new PigeonHole<CategoryEntry>();
 		CategoryClient categoryClient = new SingleEntryCallback(pigeonHole);
 		CategoryClient proxy = GatewayManagerWedge.getTargetFor(categoryClient, CategoryClient.class);
-		Filter filter = new ExactMatchFilter(entryName);
+		Filter filter = ExactMatchFilter.create(entryName);
 
 		Reference<CategoryClient> reference = Reference.spi.create(DEFAULT_CATEGORY_OUTBOUND_FACET_IDENTIFIER, proxy, true, filter);
 
