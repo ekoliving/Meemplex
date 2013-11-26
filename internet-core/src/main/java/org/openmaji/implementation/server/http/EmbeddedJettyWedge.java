@@ -153,12 +153,12 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 
 	/* -------------------- configuration specifications -------------------- */
 	
-	public transient ConfigurationSpecification portSpecification           = new ConfigurationSpecification("The port for this web server to listener on", Integer.class);
-	public transient ConfigurationSpecification useSSLSpecification         = new ConfigurationSpecification("Whether the server should use SSL");
-	public transient ConfigurationSpecification needClientAuthSpecification = new ConfigurationSpecification("Whether to require client authentication");
-	public transient ConfigurationSpecification sslKeystoreSpecification    = new ConfigurationSpecification("Path to the keystore (for SSL)");
-	public transient ConfigurationSpecification sslPasswordSpecification    = new ConfigurationSpecification("Password for the keystore (for SSL)");
-	public transient ConfigurationSpecification sslKeyPasswordSpecification = new ConfigurationSpecification("Password for the key (for SSL)");
+	public transient ConfigurationSpecification<Integer> portSpecification           = ConfigurationSpecification.create("The port for this web server to listener on", Integer.class);
+	public transient ConfigurationSpecification<String> useSSLSpecification          = ConfigurationSpecification.create("Whether the server should use SSL");
+	public transient ConfigurationSpecification<String> needClientAuthSpecification  = ConfigurationSpecification.create("Whether to require client authentication");
+	public transient ConfigurationSpecification<String> sslKeystoreSpecification     = ConfigurationSpecification.create("Path to the keystore (for SSL)");
+	public transient ConfigurationSpecification<String> sslPasswordSpecification     = ConfigurationSpecification.create("Password for the keystore (for SSL)");
+	public transient ConfigurationSpecification<String> sslKeyPasswordSpecification  = ConfigurationSpecification.create("Password for the key (for SSL)");
 
 
 	/*--------------------------- private properties ------------------------- */
@@ -181,6 +181,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 	 * @param port
 	 */
 	public void setPort (Integer port) {
+		logger.info("!!!! port being set to: " + port);
 		this.port = port.intValue();
 	}
 	
@@ -188,8 +189,16 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 		this.useSSL = new Boolean(useSSL).booleanValue();
 	}
 	
+	public String getUseSSL() {
+		return Boolean.toString(this.useSSL);
+	}
+	
 	public void setNeedClientAuth(String clientAuth) {
 		this.needClientAuth = new Boolean(clientAuth).booleanValue();		
+	}
+	
+	public String getNeedClientAuth() {
+		return Boolean.toString(this.needClientAuth);
 	}
 	
 	public void setSslKeystore(String path) {
@@ -230,6 +239,7 @@ public class EmbeddedJettyWedge implements org.openmaji.meem.Wedge {
 	 */
 	public void commence() {
 		logger.log(Level.FINE, "commence() - invoked");
+		logger.info("STARTING SERVER");
 		startServer();
 	}
 	

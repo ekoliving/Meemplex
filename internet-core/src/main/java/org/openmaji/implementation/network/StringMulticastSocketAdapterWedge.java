@@ -111,7 +111,7 @@ public class StringMulticastSocketAdapterWedge
 
   /* ---------- ConfigurationChangeHandler listener ------------------------------- */
 
-  public transient ConfigurationSpecification hostSpecification = new ConfigurationSpecification("The multicast address to connect to");
+  public transient ConfigurationSpecification hostSpecification = ConfigurationSpecification.create("The multicast address to connect to");
   public transient ConfigurationSpecification portSpecification = new IntegerConfigurationSpecification("The port number on the remote host to connect to",0);
 
   public void setHost(String value) {

@@ -81,15 +81,15 @@ public class ServletWedge implements org.openmaji.meem.Wedge {
 
 	/* ----------------- configuration specifications ------------------------- */
 
-	public transient ConfigurationSpecification servletClassSpecification = new ConfigurationSpecification("servlet class");
+	public transient ConfigurationSpecification servletClassSpecification = ConfigurationSpecification.create("servlet class");
 
-	public transient ConfigurationSpecification servletNameSpecification = new ConfigurationSpecification("servlet name");
+	public transient ConfigurationSpecification servletNameSpecification = ConfigurationSpecification.create("servlet name");
 
-	public transient ConfigurationSpecification servletPathSpecification = new ConfigurationSpecification("servlet path");
+	public transient ConfigurationSpecification servletPathSpecification = ConfigurationSpecification.create("servlet path");
 	
-	public transient ConfigurationSpecification paramsSpecification = new ConfigurationSpecification("servlet parameters");
+	public transient ConfigurationSpecification paramsSpecification = ConfigurationSpecification.create("servlet parameters");
 	
-	public transient ConfigurationSpecification debugSpecification = new ConfigurationSpecification("servlet path", Boolean.TYPE, LifeCycleState.LOADED);
+	public transient ConfigurationSpecification debugSpecification = ConfigurationSpecification.create("servlet path", Boolean.TYPE, LifeCycleState.LOADED);
 
 	
 	Map<String, String> properties = new HashMap<String, String>();

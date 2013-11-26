@@ -44,9 +44,9 @@ public class WebAppWedge implements Wedge {
 	
 	/* ----------------- configuration specifications ------------------------- */
 
-	public transient ConfigurationSpecification contextPathSpecification = new ConfigurationSpecification("The context path");
+	public transient ConfigurationSpecification contextPathSpecification = ConfigurationSpecification.create("The context path");
 
-	public transient ConfigurationSpecification resourcePathSpecification = new ConfigurationSpecification("The path of the resources on the filesystem");
+	public transient ConfigurationSpecification resourcePathSpecification = ConfigurationSpecification.create("The path of the resources on the filesystem");
 
 	
 	/* ---------------- getters and setters for configuration ----------------- */

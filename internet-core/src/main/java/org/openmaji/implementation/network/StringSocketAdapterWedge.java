@@ -148,7 +148,7 @@ public class StringSocketAdapterWedge implements Wedge
 
 	public transient ConfigurationSpecification portSpecification = new IntegerConfigurationSpecification("Port", 1, 65536);
 
-	public transient ConfigurationSpecification lineTerminatorSpecification = new ConfigurationSpecification("Line terminator 2=NL 1=CR 0=none", Integer.class, LifeCycleState.READY);
+	public transient ConfigurationSpecification lineTerminatorSpecification = ConfigurationSpecification.create("Line terminator 2=NL 1=CR 0=none", Integer.class, LifeCycleState.READY);
 
 	/**
 	 * Sets the hostname to connect to.

@@ -48,11 +48,11 @@ public class WakeOnLanWedge implements Wedge
 
 	/* ------------- configuration specifications ----------------------- */
 
-	public transient ConfigurationSpecification broadcastAddressSpecification = new ConfigurationSpecification("Broadcast address");
+	public transient ConfigurationSpecification broadcastAddressSpecification = ConfigurationSpecification.create("Broadcast address");
 
-	public transient ConfigurationSpecification addressesSpecification = new ConfigurationSpecification("MAC addresses separated by spaces");
+	public transient ConfigurationSpecification addressesSpecification = ConfigurationSpecification.create("MAC addresses separated by spaces");
 
-	public transient ConfigurationSpecification waitTimeSpecification = new ConfigurationSpecification("Time, in seconds, between sending \"Wake On LAN\" messages");
+	public transient ConfigurationSpecification waitTimeSpecification = ConfigurationSpecification.create("Time, in seconds, between sending \"Wake On LAN\" messages");
 
 	public void setBroadcastAddress(String address) {
 		this.broadcastAddress = address;

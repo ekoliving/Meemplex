@@ -1,5 +1,6 @@
 package org.openmaji.implementation.server.http;
 
+import org.meemplex.meem.ConfigProperty;
 import org.openmaji.meem.Wedge;
 import org.openmaji.meem.wedge.configuration.ConfigurationClient;
 import org.openmaji.meem.wedge.configuration.ConfigurationClientAdapter;
@@ -35,19 +36,21 @@ public class FileResourceWedge implements Wedge {
 	/**
 	 *
 	 */
+	@ConfigProperty(description="The context path")
 	public String contextPath = "/meemkits";
 
 	/**
 	 * 
 	 */
+	@ConfigProperty(description="The path of the resources on the filesystem")
 	public String resourcePath = System.getProperty(MEEMKIT_MANAGER_DIR) + "/installed";
 
 	
 	/* ----------------- configuration specifications ------------------------- */
 
-	public transient ConfigurationSpecification contextPathSpecification = new ConfigurationSpecification("The context path");
+	public transient ConfigurationSpecification<String> contextPathSpecification = ConfigurationSpecification.create("The context path");
 
-	public transient ConfigurationSpecification resourcePathSpecification = new ConfigurationSpecification("The path of the resources on the filesystem");
+	public transient ConfigurationSpecification<String> resourcePathSpecification = ConfigurationSpecification.create("The path of the resources on the filesystem");
 
 	
 	/* ---------------- getters and setters for configuration ----------------- */
