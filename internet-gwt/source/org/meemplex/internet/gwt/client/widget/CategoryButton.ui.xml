@@ -1,6 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-
-	<g:Anchor ui:field="anchor" enabled="false">
-		<img src="images/loader.gif"></img>
-	</g:Anchor>
-</ui:UiBinder>
