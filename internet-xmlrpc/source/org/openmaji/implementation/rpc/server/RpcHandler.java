@@ -4,7 +4,6 @@
  */
 package org.openmaji.implementation.rpc.server;
 
-import java.io.Serializable;
 import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Hashtable;

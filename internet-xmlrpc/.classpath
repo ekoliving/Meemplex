@@ -7,6 +7,6 @@
 	<classpathentry exported="true" kind="lib" path="library/ws-commons-util-1.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="library/xmlrpc-client-3.1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="library/xmlrpc-common-3.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="library/xmlrpc-server-3.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="library/xmlrpc-server-3.1.3.jar" sourcepath="/Users/stormboy/.m2/repository/org/apache/xmlrpc/xmlrpc-server/3.1.3/xmlrpc-server-3.1.3-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

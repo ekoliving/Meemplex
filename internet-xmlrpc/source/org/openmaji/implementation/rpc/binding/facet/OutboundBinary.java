@@ -32,5 +32,4 @@ public class OutboundBinary extends OutboundBinding implements Binary {
 	public void valueChanged(boolean b) {		
 		send("valueChanged", new Serializable[] { new Boolean(b) });
 	}
-
 }

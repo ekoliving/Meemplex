@@ -1,5 +1,7 @@
 package org.openmaji.implementation.rpc.server;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.openmaji.implementation.server.http.ServletConsumer;
@@ -49,7 +51,7 @@ public class MajiRpcServletWedge implements Wedge {
 	
 	/* ----------------- configuration specifications ------------------------- */
 
-	public transient ConfigurationSpecification sessionTimeoutSpecification = new ConfigurationSpecification("Session timout in seconds");
+	public transient ConfigurationSpecification sessionTimeoutSpecification = ConfigurationSpecification.create("Session timout in seconds");
 
 	
 	/* ---------------- getters and setters for configuration ----------------- */
@@ -69,9 +71,9 @@ public class MajiRpcServletWedge implements Wedge {
 	 * 
 	 */
 	public void commence() {
-		String classname = MajiRpcServlet.class.getName();		
-		Properties properties = new Properties();
-		properties.setProperty(MajiRpcServlet.PARAM_SESSION_TIMEOUT, Long.toString(sessionTimeout*1000));
+		String classname = MajiRpcServlet.class.getName();
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put(MajiRpcServlet.PARAM_SESSION_TIMEOUT, Long.toString(sessionTimeout*1000));
 
 		servletConsumerConduit.servlet(servletName, servletPath, classname, properties);
 	}

@@ -40,7 +40,9 @@ public class FacetHandler <T extends Facet> {
 	private static boolean DEBUG = false;
 	
 	protected final MeemPath meemPath;
+	
 	protected final String   facetId;
+	
 	protected final Class<T>    facetClass;
 
 	protected final ServerGateway serverGateway;
@@ -53,16 +55,16 @@ public class FacetHandler <T extends Facet> {
 	private FacetHealthEvent          lastHealthEvent; 
 	
 	private LifeCycleClientImpl        lifeCycleClient;
+
+	private Reference<LifeCycleClient> lifeCycleReference;
 	
-	private Reference                  lifeCycleReference;
+	private MeemRegistryClientImpl     meemRegistryClient;
 	
-	private MeemRegistryClientImpl     meemRegistryClient = null;
+	private Reference<MeemRegistryClient> meemRegistryClientReference;
 	
-	private MeemPathResolverClientImpl meemPathResolverClient = null;
+	private MeemPathResolverClientImpl meemPathResolverClient;
 	
-	private Reference                  meemRegistryClientReference = null;
-	
-	private Reference                  meemPathResolverClientReference = null;
+	private Reference<MeemResolverClient> meemPathResolverClientReference;
 	
 	/** the current binding state */
 	protected int                      bindingState   = FacetHealthEvent.UNKNOWN;
@@ -248,7 +250,7 @@ public class FacetHandler <T extends Facet> {
 				"meemRegistryClient", 
 				meemRegistryClient.getProxy(), 
 				true, 
-				new ExactMatchFilter(meemPath)
+				ExactMatchFilter.create(meemPath)
 			);
 		
 		MeemPath meemRegistryMeemPath = 
@@ -280,7 +282,7 @@ public class FacetHandler <T extends Facet> {
 				"meemResolverClient",
 				meemPathResolverClient.getProxy(),
 				true,
-				new ExactMatchFilter(meemPath));
+				ExactMatchFilter.create(meemPath));
 
 		MeemPath meemResolverMeemPath = 
 			MeemPath.spi.create(
@@ -317,9 +319,9 @@ public class FacetHandler <T extends Facet> {
 	 */
 	public class MeemRegistryClientImpl implements MeemRegistryClient, ContentClient
 	{
-		private Facet proxy;
+		private MeemRegistryClient proxy;
 		
-		public Facet getProxy() {
+		public MeemRegistryClient getProxy() {
 			if (proxy == null) {
 				proxy   = serverGateway.getTargetFor(this, MeemRegistryClient.class);
 			}
@@ -354,9 +356,9 @@ public class FacetHandler <T extends Facet> {
 	 */
 	public class MeemPathResolverClientImpl implements MeemResolverClient, ContentClient
 	{
-		private Facet proxy;
+		private MeemResolverClient proxy;
 		
-		public Facet getProxy() {
+		public MeemResolverClient getProxy() {
 			if (proxy == null) {
 				proxy   = serverGateway.getTargetFor(this, MeemResolverClient.class);
 			}
@@ -401,9 +403,9 @@ public class FacetHandler <T extends Facet> {
 	 */
 	public class LifeCycleClientImpl implements LifeCycleClient //, ContentClient
 	{
-		private Facet proxy;
+		private LifeCycleClient proxy;
 		
-		public Facet getProxy() {
+		public LifeCycleClient getProxy() {
 			if (proxy == null) {
 				proxy   = serverGateway.getTargetFor(this, LifeCycleClient.class);
 			}
