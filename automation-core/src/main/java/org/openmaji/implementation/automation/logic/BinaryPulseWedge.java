@@ -49,9 +49,9 @@ public class BinaryPulseWedge implements Wedge {
 
 	
 	
-	public transient ConfigurationSpecification truePulseDurationSpecification = new ConfigurationSpecification("True pulse duration in milliseconds", Integer.class, LifeCycleState.READY);
+	public transient ConfigurationSpecification truePulseDurationSpecification = ConfigurationSpecification.create("True pulse duration in milliseconds", Integer.class, LifeCycleState.READY);
 
-	public transient ConfigurationSpecification falsePulseDurationSpecification = new ConfigurationSpecification("False pulse duration in milliseconds", Integer.class, LifeCycleState.READY);
+	public transient ConfigurationSpecification falsePulseDurationSpecification = ConfigurationSpecification.create("False pulse duration in milliseconds", Integer.class, LifeCycleState.READY);
 
 	/* -------------- persisted properies ------------------- */
 	

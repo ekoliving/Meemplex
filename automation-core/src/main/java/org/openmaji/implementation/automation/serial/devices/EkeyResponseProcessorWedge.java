@@ -60,9 +60,9 @@ public class EkeyResponseProcessorWedge implements Variable, Wedge, WedgeDefinit
   public Debug debugConduit = new MyDebugConduit();
 
   public int emulator;
-  public transient ConfigurationSpecification emulatorSpecification = new ConfigurationSpecification("Start emulator, 1=yes 0=no",Integer.class,LifeCycleState.LOADED);
+  public transient ConfigurationSpecification emulatorSpecification = ConfigurationSpecification.create("Start emulator, 1=yes 0=no",Integer.class,LifeCycleState.LOADED);
   public int demoMode;
-  public transient ConfigurationSpecification demoModeSpecification = new ConfigurationSpecification("Demo mode, 1=yes 0=no",Integer.class,LifeCycleState.LOADED);
+  public transient ConfigurationSpecification demoModeSpecification = ConfigurationSpecification.create("Demo mode, 1=yes 0=no",Integer.class,LifeCycleState.LOADED);
 
   private Thread emulatorThread;
   private volatile boolean stopRunning;

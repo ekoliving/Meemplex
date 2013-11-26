@@ -44,7 +44,7 @@ public class LoopbackLinearWedge implements Wedge {
 	public ConfigurationClient configurationClientConduit = new ConfigurationClientAdapter(this);
 
 	public transient ConfigurationSpecification positionSpecification = 
-		new ConfigurationSpecification(
+		ConfigurationSpecification.create(
 				"Position specified as 'value increment min max'",
 				String.class, 
 				LifeCycleState.READY

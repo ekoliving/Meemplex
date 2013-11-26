@@ -52,10 +52,10 @@ public class BinaryToVariableWedge implements Wedge, Binary {
 	public String offString = "X02\r\n";
 
 	public transient ConfigurationSpecification onStringSpecification  = 
-		new ConfigurationSpecification("The string value to send when the binary is switched off", String.class, LifeCycleState.READY);
+		ConfigurationSpecification.create("The string value to send when the binary is switched off", String.class, LifeCycleState.READY);
 	
 	public transient ConfigurationSpecification offStringSpecification  = 
-		new ConfigurationSpecification("The string value to send when the binary is switched on", String.class, LifeCycleState.READY);
+		ConfigurationSpecification.create("The string value to send when the binary is switched on", String.class, LifeCycleState.READY);
 	
 	/* --------------- property methods ----------- */
 

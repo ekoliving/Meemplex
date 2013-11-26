@@ -46,8 +46,8 @@ public class LoopbackPulseBinaryWedge implements Wedge
 
   private int debugLevel;
 
-  public transient ConfigurationSpecification truePulseDurationSpecification = new ConfigurationSpecification("True pulse duration in milliseconds",Integer.class,LifeCycleState.READY);
-  public transient ConfigurationSpecification falsePulseDurationSpecification = new ConfigurationSpecification("False pulse duration in milliseconds",Integer.class,LifeCycleState.READY);
+  public transient ConfigurationSpecification truePulseDurationSpecification = ConfigurationSpecification.create("True pulse duration in milliseconds",Integer.class,LifeCycleState.READY);
+  public transient ConfigurationSpecification falsePulseDurationSpecification = ConfigurationSpecification.create("False pulse duration in milliseconds",Integer.class,LifeCycleState.READY);
 
   /* ---------- configuration getters/setters ------------------------------- */
 

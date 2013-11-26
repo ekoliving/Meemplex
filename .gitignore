@@ -4,3 +4,4 @@ logs
 .gwt
 /target
 .metadata
+/RemoteSystemsTempFiles

@@ -54,8 +54,8 @@ public class SlowLoopbackLinearWedge implements Wedge
   public FloatPosition currentPosition = DEFAULT_POSITION;
   public int refreshPeriod = DEFAULT_REFRESH_PERIOD;
 
-  public transient ConfigurationSpecification refreshPeriodSpecification = new ConfigurationSpecification("Refresh period in milliseconds",Integer.class,LifeCycleState.READY);
-  public transient ConfigurationSpecification positionSpecification = new ConfigurationSpecification("Position specified as 'value increment min max'",String.class,LifeCycleState.READY);
+  public transient ConfigurationSpecification refreshPeriodSpecification = ConfigurationSpecification.create("Refresh period in milliseconds",Integer.class,LifeCycleState.READY);
+  public transient ConfigurationSpecification positionSpecification = ConfigurationSpecification.create("Position specified as 'value increment min max'",String.class,LifeCycleState.READY);
 
   private int debugLevel;
   private volatile boolean stopRunning;

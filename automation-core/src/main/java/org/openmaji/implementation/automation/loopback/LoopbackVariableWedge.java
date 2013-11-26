@@ -51,7 +51,7 @@ public class LoopbackVariableWedge implements Wedge
 
   
   public transient ConfigurationSpecification positionSpecification = 
-		new ConfigurationSpecification(
+		ConfigurationSpecification.create(
 				"Position specified as 'value increment min max'",
 				String.class, 
 				LifeCycleState.READY

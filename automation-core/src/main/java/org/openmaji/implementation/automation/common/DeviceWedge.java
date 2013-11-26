@@ -43,10 +43,9 @@ public class DeviceWedge implements Wedge, Device {
 	public Device deviceOutput;
 
 	@FacetContent(facet="deviceOutput")
-	public final ContentProvider deviceOutputProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws ContentException {
+	public final ContentProvider<Device> deviceOutputProvider = new ContentProvider<Device>() {
+		public void sendContent(Device client, Filter filter) throws ContentException {
 			if (deviceDescription != null) {
-				Device client = (Device) target;
 				client.descriptionChanged(deviceDescription);
 			}
 		}
@@ -70,17 +69,17 @@ public class DeviceWedge implements Wedge, Device {
 	@ConfigProperty(description="The address of the device")
 	public String address;
 
-	public transient ConfigurationSpecification addressSpecification = new ConfigurationSpecification("The address of the device");
+	public transient ConfigurationSpecification<String> addressSpecification = ConfigurationSpecification.create("The address of the device");
 
 	@ConfigProperty(description="The identifier of the device")
 	public String identifier;
 
-	public transient ConfigurationSpecification identifierSpecification = new ConfigurationSpecification("The identifier of the device");
+	public transient ConfigurationSpecification<String> identifierSpecification = ConfigurationSpecification.create("The identifier of the device");
 
 	@ConfigProperty(description="A description of the device")
 	public String description;
 
-	public transient ConfigurationSpecification descriptionSpecification = new ConfigurationSpecification("A description of the device");
+	public transient ConfigurationSpecification<String> descriptionSpecification = ConfigurationSpecification.create("A description of the device");
 
 	@Content
 	public DeviceDescription deviceDescription;

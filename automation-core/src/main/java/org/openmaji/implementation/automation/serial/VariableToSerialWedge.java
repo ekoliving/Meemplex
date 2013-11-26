@@ -121,7 +121,7 @@ public class VariableToSerialWedge implements Wedge, Variable {
 	public String devString = "/dev/ttyUSB0";
 
 	public transient ConfigurationSpecification deviceStringSpecification  = 
-		new ConfigurationSpecification("The device string", String.class, LifeCycleState.READY);
+		ConfigurationSpecification.create("The device string", String.class, LifeCycleState.READY);
 	
 
 	/* ----------------- private members ------------------- */
