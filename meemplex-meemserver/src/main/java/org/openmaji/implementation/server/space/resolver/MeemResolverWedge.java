@@ -369,8 +369,9 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider {
 		if (Common.TRACE_ENABLED && Common.TRACE_MEEMPATHRESOLVER) {
 			logger.log(LOG_LEVEL, "handleEntryResolved() newEntryPath: " + newEntryPath + " MeemPath: " + path);
 		}
-
-		for (MeemPath meemPath : meemPaths) {
+		
+		
+		for (MeemPath meemPath : Collections.unmodifiableList(meemPaths)) {
 			if (meemPath.equals(newEntryPath)) {
 				// we've found what we are looking for
 				pathResolved(meemPath, path);
@@ -449,7 +450,7 @@ public class MeemResolverWedge implements Wedge, MeemDefinitionProvider {
 			logger.log(MeemResolverWedge.LOG_LEVEL, "entryRemoved: " + removedEntryPath);
 		}
 
-		for (MeemPath meemPath : meemPaths) {
+		for (MeemPath meemPath : Collections.unmodifiableList(meemPaths)) {
 			if (meemPath.equals(removedEntryPath)) {
 				// notify this client with a null path to notify that the
 				// meempath is no longer valid
