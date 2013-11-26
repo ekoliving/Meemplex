@@ -8,6 +8,7 @@
  */
 package org.openmaji.system.meem.wedge.reference;
 
+import org.openmaji.meem.Facet;
 import org.openmaji.meem.Meem;
 
 /**
@@ -26,6 +27,6 @@ public interface MeemClientConduit
 	 * @param specification the interface the inbound facet is expected to implement.
 	 * @param referenceCallback the call back to pass the reference back on.
 	 */
-    public void provideReference(Meem meem, String inboundFacetIdentifier,
-        Class specification, MeemClientCallback referenceCallback);
+    public <T extends Facet> void provideReference(Meem meem, String inboundFacetIdentifier,
+        Class<T> specification, MeemClientCallback<T> referenceCallback);
 }

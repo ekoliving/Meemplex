@@ -23,14 +23,14 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
  * <p>
  * @author Kin Wong
  */
-public class ConfigurationSpecification implements Serializable, Cloneable {
+public class ConfigurationSpecification<T extends Serializable> implements Serializable, Cloneable {
 
 	static final long serialVersionUID = 4106487663762040101L;
 
 	private ConfigurationIdentifier	id;
 	private String description;
-	private Class<? extends Serializable> type;
-	private Serializable defaultValue;
+	private Class<T> type;
+	private T defaultValue;
 	private LifeCycleState maxLifeCycleState;
 
 	/**
@@ -40,7 +40,40 @@ public class ConfigurationSpecification implements Serializable, Cloneable {
 	 * @param type The type of the configurable property.
 	 * @param maxLifeCycleState The maximum life cycle state we can accept config requests in.
 	 */
-	public ConfigurationSpecification(String description, Class<? extends Serializable> type, LifeCycleState maxLifeCycleState) 
+	public static <T extends Serializable> ConfigurationSpecification<T> create(String description, Class<T> type, LifeCycleState maxLifeCycleState) {
+		return new ConfigurationSpecification<T>(description, type, maxLifeCycleState);
+	}
+	
+	/**
+	 * Constructs an instance of <code>ConfigurationSpecification</code> with a default
+	 * maximum life cycle state of LifeCycleState.LOADED.
+	 * <p>
+	 * @param description The description of the configurable property.
+	 * @param type The type of the configurable property.
+	 */
+	public static <T extends Serializable> ConfigurationSpecification<T> create(String description, Class<T> type) {
+		return new ConfigurationSpecification<T>(description, type, LifeCycleState.LOADED);
+	}
+	
+	/**
+	 * Constructs an instance of <code>ConfigurationSpecification</code> for 
+	 * configurable property of type String with default value of an empty string and
+	 * a default maximum life cycle state of LifeCycleState.LOADED.
+	 * <p>
+	 * @param description The description of the configurable property.
+	 */
+	public static ConfigurationSpecification<String> create(String description) {
+		return new ConfigurationSpecification<String>(description, String.class, LifeCycleState.LOADED);
+	}
+
+	/**
+	 * Constructs an instance of <code>ConfigurationSpecification</code>.
+	 * <p>
+	 * @param description The description of the configurable property.
+	 * @param type The type of the configurable property.
+	 * @param maxLifeCycleState The maximum life cycle state we can accept config requests in.
+	 */
+	protected ConfigurationSpecification(String description, Class<T> type, LifeCycleState maxLifeCycleState) 
 	{
 		this.description = description;
 		this.type = type;
@@ -54,22 +87,9 @@ public class ConfigurationSpecification implements Serializable, Cloneable {
 	 * @param description The description of the configurable property.
 	 * @param type The type of the configurable property.
 	 */
-	public ConfigurationSpecification(String description, Class<? extends Serializable> type) 
+	protected ConfigurationSpecification(String description, Class<T> type) 
 	{
 		this(description, type, LifeCycleState.LOADED);
-	}
-	
-	/**
-	 * Constructs an instance of <code>ConfigurationSpecification</code> for 
-	 * configurable property of type String with default value of an empty string and
-	 * a default maximum life cycle state of LifeCycleState.LOADED.
-	 * <p>
-	 * @param description The description of the configurable property.
-	 */
-	public ConfigurationSpecification(String description) 
-	{
-		this(description, String.class, LifeCycleState.LOADED);
-		this.defaultValue = "";
 	}
 	
 	/**
@@ -91,7 +111,7 @@ public class ConfigurationSpecification implements Serializable, Cloneable {
 	 * 
 	 * @param defaultValue
 	 */
-	public void setDefaultValue(Serializable defaultValue) 
+	public void setDefaultValue(T defaultValue) 
 	{
 		this.defaultValue = defaultValue;
 	}
@@ -120,7 +140,7 @@ public class ConfigurationSpecification implements Serializable, Cloneable {
 	 * 
 	 * @return The type of this configurable property.
 	 */
-	public Class<?> getType() {
+	public Class<T> getType() {
 		return type;
 	}
 	
@@ -229,7 +249,7 @@ public class ConfigurationSpecification implements Serializable, Cloneable {
 	public boolean equals(Object obj) {
 		if(obj == null) return false;
 		if(!(obj instanceof ConfigurationSpecification)) return false;
-		ConfigurationSpecification that = (ConfigurationSpecification)obj;
+		ConfigurationSpecification<?> that = (ConfigurationSpecification<?>) obj;
 		return getIdentifier().equals(that.getIdentifier());
 	}
 	
@@ -239,7 +259,7 @@ public class ConfigurationSpecification implements Serializable, Cloneable {
 	 * @param that A ConfigurationSpecification to compare with.
 	 * @return true if the contents are equal, false otherwise.
 	 */
-	public boolean contentEquals(ConfigurationSpecification that) {
+	public boolean contentEquals(ConfigurationSpecification<?> that) {
 		if(!getIdentifier().equals(that.getIdentifier())) return false;
 		if(!getDescription().equals(that.getDescription())) return false;
 		if(!getDefaultValue().equals(that.getDefaultValue())) return false;

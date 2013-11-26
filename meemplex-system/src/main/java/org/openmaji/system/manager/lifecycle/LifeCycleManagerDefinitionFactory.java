@@ -37,7 +37,7 @@ public interface LifeCycleManagerDefinitionFactory {
 	 * @param wedges Array of Wedge classes to be added to the LifeCycleManager MeemDefinition
 	 * @return MeemDefinition for persisting LifeCycleManager
 	 */
-	public MeemDefinition createPersisting(Class[] wedges);
+	public MeemDefinition createPersisting(Class<?>[] wedges);
 	
 	/**
 	 * Create a MeemDefinition for a transient LifeCycleManager with the passed
@@ -45,7 +45,7 @@ public interface LifeCycleManagerDefinitionFactory {
 	 * @param wedges Array of Wedge classes to be added to the LifeCycleManager MeemDefinition
 	 * @return MeemDefinition for transient LifeCycleManager
 	 */
-	public MeemDefinition createTransient(Class[] wedges);
+	public MeemDefinition createTransient(Class<?>[] wedges);
 	
 	/**
 	 * Access point to service provider.

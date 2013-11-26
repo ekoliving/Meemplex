@@ -46,7 +46,7 @@ public interface MeemCore
      * @param specification the interface the conduit implements.
      * @param implementation the target implementation.
      */
-    public void addConduitTarget(String conduitIdentifier, Class<? extends Facet>  specification, Object implementation);
+    public <T> void addConduitTarget(String conduitIdentifier, Class<T>  specification, T implementation);
   
     /**
      * Return the conduit source object for the passed in identifier. The source object is
@@ -62,7 +62,7 @@ public interface MeemCore
      * @param specification the interface the source implements.
      * @return the source object for the conduit.
      */
-    public Object getConduitSource(String conduitIdentifier, Class<? extends Facet>  specification);
+    public <T> T getConduitSource(String conduitIdentifier, Class<T>  specification);
 
     /**
      * Remove the passed in implementation from the conduit's list of targets.
@@ -75,7 +75,7 @@ public interface MeemCore
      * @param conduitIdentifier the name of the conduit affected.
      * @param implementation the target object to be removed.
      */
-    public void removeConduitTarget(String conduitIdentifier, Facet implementation);
+    public <T> void removeConduitTarget(String conduitIdentifier, T implementation);
   
     /**
      * Remove the conduit associated with the given identifier.

@@ -9,7 +9,7 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
  * @author Chris Kakris
  */
 
-public class BooleanConfigurationSpecification extends ConfigurationSpecification
+public class BooleanConfigurationSpecification extends ConfigurationSpecification<Boolean>
 {
 	private static final long serialVersionUID = -1178365040590887015L;
 

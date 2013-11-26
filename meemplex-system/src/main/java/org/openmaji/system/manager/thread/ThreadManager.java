@@ -37,7 +37,7 @@ public interface ThreadManager extends Facet {
 	 * @param runnable the runnable to be performed.
 	 * @param absoluteTime the earliest time it is to be executed.
 	 */
-	public void queue(Runnable runnable, long absoluteTime);
+	public Task queue(Runnable runnable, long absoluteTime);
 
 	/**
 	 * Cancel the job

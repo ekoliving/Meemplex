@@ -23,7 +23,7 @@ public interface ExportableServiceConduit
      * @param service the object providing the service.
      * @param itemList a list of Jini Entry objects.
      */
-    public void serviceAdded(String serviceID, Remote service, List itemList);
+    public void serviceAdded(String serviceID, Remote service, List<?> itemList);
 
     /**
      * Register a service as removed.

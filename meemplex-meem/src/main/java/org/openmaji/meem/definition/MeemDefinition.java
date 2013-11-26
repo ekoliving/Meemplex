@@ -120,7 +120,7 @@ public final class MeemDefinition implements Serializable, Cloneable {
 	 *            Attributes of the Meem
 	 */
 
-	public synchronized void setMeemAttribute(MeemAttribute meemAttribute) {
+	public synchronized MeemDefinition setMeemAttribute(MeemAttribute meemAttribute) {
 
 		if (this.meemAttribute == null) {
 			this.meemAttribute = meemAttribute;
@@ -128,6 +128,7 @@ public final class MeemDefinition implements Serializable, Cloneable {
 		else {
 			MeemAttribute.copyPreservingImmutableAttributes(this.meemAttribute, meemAttribute);
 		}
+		return this;
 	}
 
 	/**
@@ -145,9 +146,9 @@ public final class MeemDefinition implements Serializable, Cloneable {
 	 *            WedgeDefinition to add
 	 */
 
-	public synchronized void addWedgeDefinition(WedgeDefinition wedgeDefinition) {
-
+	public synchronized MeemDefinition addWedgeDefinition(WedgeDefinition wedgeDefinition) {
 		wedgeDefinitions.add(wedgeDefinition);
+		return this;
 	}
 
 	/**
@@ -182,15 +183,17 @@ public final class MeemDefinition implements Serializable, Cloneable {
 	 *            WedgeDefinition to remove
 	 */
 
-	public synchronized void removeWedgeDefinition(WedgeDefinition wedgeDefinition) {
+	public synchronized MeemDefinition removeWedgeDefinition(WedgeDefinition wedgeDefinition) {
 		wedgeDefinitions.remove(wedgeDefinition);
+		return this;
 	}
 
-	public synchronized void removeWedgeDefinition(String wedgeIdentifier) {
+	public synchronized MeemDefinition removeWedgeDefinition(String wedgeIdentifier) {
 		WedgeDefinition wedgeDefinition = getWedgeDefinition(wedgeIdentifier);
 		if (wedgeDefinition != null) {
 			wedgeDefinitions.remove(wedgeDefinition);
 		}
+		return this;
 	}
 
 	/**

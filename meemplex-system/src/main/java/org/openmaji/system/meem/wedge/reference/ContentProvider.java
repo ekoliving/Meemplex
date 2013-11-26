@@ -8,6 +8,7 @@
  */
 package org.openmaji.system.meem.wedge.reference;
 
+import org.openmaji.meem.Facet;
 import org.openmaji.meem.filter.Filter;
 
 /**
@@ -48,7 +49,7 @@ import org.openmaji.meem.filter.Filter;
  * @see org.openmaji.system.meem.wedge.reference.ContentClient
  * @see org.openmaji.meem.wedge.reference.Reference
  */
-public interface ContentProvider
+public interface ContentProvider<T extends Facet>
 {
 	/**
 	 * Send content to the passed in target facet.
@@ -60,5 +61,5 @@ public interface ContentProvider
 	 * @param filter an optional filter object used to check content for relevance before it is sent.
 	 * @throws ContentException if a problem occurs sending the content.
 	 */
-	public void sendContent(Object target, Filter filter) throws ContentException;
+	public void sendContent(T target, Filter filter) throws ContentException;
 }

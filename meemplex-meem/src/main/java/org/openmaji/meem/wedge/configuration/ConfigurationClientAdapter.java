@@ -89,13 +89,13 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 			// fliter so the local implementation only gets requests it asked for.
 			//
 			if (specificationMap.containsKey(id)) {
-				ConfigurationSpecification spec = (ConfigurationSpecification) specificationMap.get(id);
+				ConfigurationSpecification<?> spec = specificationMap.get(id);
 				StringBuffer methodName = new StringBuffer("set");
 
 				methodName.append(id.getFieldName());
 				methodName.setCharAt(3, id.getFieldName().toUpperCase().charAt(0));
 
-				String check = ((ConfigurationSpecification) specificationMap.get(id)).validate(value);
+				String check = (specificationMap.get(id)).validate(value);
 				if (check != null) {
 					logger.log(Level.INFO, check);
 					configurationClientConduit.valueRejected(id, value, check);
@@ -110,7 +110,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 				}
 
 				try {
-					Method method = specification.getMethod(methodName.toString(), new Class[] { ((ConfigurationSpecification) specificationMap.get(id)).getType() });
+					Method method = specification.getMethod(methodName.toString(), new Class[] { (specificationMap.get(id)).getType() });
 					method.invoke(parent, new Object[] { value });
 					configurationClientConduit.valueAccepted(id, value);
 				}
@@ -171,7 +171,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 			initialise();
 
 			if (specificationMap.size() != 0) {
-				ConfigurationSpecification[] specs = (ConfigurationSpecification[]) specificationMap.values().toArray(new ConfigurationSpecification[specificationMap.size()]);
+				ConfigurationSpecification<?>[] specs = specificationMap.values().toArray(new ConfigurationSpecification[specificationMap.size()]);
 				client.specificationChanged(null, specs);
 
 				for (int i = 0; i != specs.length; i++) {
@@ -230,7 +230,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 	 * @param parent
 	 * @param specifications
 	 */
-	public ConfigurationClientAdapter(Wedge parent, ConfigurationSpecification[] specifications) {
+	public ConfigurationClientAdapter(Wedge parent, ConfigurationSpecification<?>[] specifications) {
 		this(parent);
 
 		initialSpecifications = specifications;
@@ -244,7 +244,10 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 	 * @param newSpecifications
 	 *            the specifications for the properties, if any, we are now listening for.
 	 */
-	public final void specificationChanged(ConfigurationSpecification[] oldSpecifications, ConfigurationSpecification[] newSpecifications) {
+	public final void specificationChanged(
+			ConfigurationSpecification<?>[] oldSpecifications, 
+			ConfigurationSpecification<?>[] newSpecifications
+	) {
 		initialise();
 
 		if (oldSpecifications != null) {
@@ -254,7 +257,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 		}
 
 		for (int i = 0; i < newSpecifications.length; i++) {
-			ConfigurationSpecification specification = newSpecifications[i];
+			ConfigurationSpecification<?> specification = newSpecifications[i];
 			specificationMap.put(specification.getIdentifier(), specification);
 		}
 
@@ -308,7 +311,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 			if (Modifier.isPublic(field.getModifiers()) && field.getType() == ConfigurationSpecification.class) {
 				String valueName = field.getName().substring(0, field.getName().length() - "Specification".length());
 				try {
-					ConfigurationSpecification spec = (ConfigurationSpecification) field.get(parent);
+					ConfigurationSpecification<Serializable> spec = (ConfigurationSpecification<Serializable>) field.get(parent);
 
 					if (spec == null) {
 						logger.log(Level.INFO, "Ignoring null configuration specification: " + field.getName() + " in " + parent.getClass());
@@ -321,7 +324,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 						// TODO check if Field declaring class inherits Serializable
 						// Serializable.class.isAssignableFrom(valueField.getDeclaringClass());
 
-						spec.setDefaultValue((Serializable) valueField.get(parent));
+						spec.setDefaultValue(spec.getType().cast( valueField.get(parent) ));
 					}
 					catch (Exception e) {
 						//
@@ -337,7 +340,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 
 							Object value = method.invoke(parent, (Object[]) null);
 
-							spec.setDefaultValue((Serializable) value);
+							spec.setDefaultValue(spec.getType().cast(value));
 						}
 						catch (Exception ex) {
 							logger.log(Level.INFO, "cannot set default value for configuration property '" + valueName + "' in " + parent.getClass() + " reason: " + ex.getMessage());
@@ -355,7 +358,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 
 			if (Modifier.isPublic(field.getModifiers()) && field.getType() == ConfigurationSpecification.class) {
 				try {
-					ConfigurationSpecification spec = (ConfigurationSpecification) field.get(parent);
+					ConfigurationSpecification<?> spec = (ConfigurationSpecification<?>) field.get(parent);
 
 					if (initialSpecifications != null) {
 						for (int j = 0; j != initialSpecifications.length; j++) {
@@ -381,7 +384,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 
 	private static final Logger logger = Logger.getAnonymousLogger();
 	
-	private Map<ConfigurationIdentifier, ConfigurationSpecification> specificationMap = new HashMap<ConfigurationIdentifier, ConfigurationSpecification>();
+	private Map<ConfigurationIdentifier, ConfigurationSpecification<?>> specificationMap = new HashMap<ConfigurationIdentifier, ConfigurationSpecification<?>>();
 
 	private Wedge parent;
 
@@ -389,7 +392,7 @@ public class ConfigurationClientAdapter implements ConfigurationClient {
 
 	private boolean initialised = false;
 
-	private ConfigurationSpecification[] initialSpecifications = null;
+	private ConfigurationSpecification<?>[] initialSpecifications = null;
 
 	private LifeCycleState currentState;
 

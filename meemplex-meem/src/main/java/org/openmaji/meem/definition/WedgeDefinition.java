@@ -126,9 +126,9 @@ public final class WedgeDefinition implements Serializable {
 	 *            Attributes of the Wedge
 	 */
 
-	public synchronized void setWedgeAttribute(WedgeAttribute wedgeAttribute) {
-
+	public synchronized WedgeDefinition setWedgeAttribute(WedgeAttribute wedgeAttribute) {
 		this.wedgeAttribute = wedgeAttribute;
+		return this;
 	}
 
 	/**
@@ -146,12 +146,14 @@ public final class WedgeDefinition implements Serializable {
 	 *            FacetDefinition to add
 	 */
 
-	public synchronized void addFacetDefinition(FacetDefinition facetDefinition) {
+	public synchronized WedgeDefinition addFacetDefinition(FacetDefinition facetDefinition) {
 		facetDefinitions.add(facetDefinition);
+		return this;
 	}
 	
-	public synchronized void setFacetDefinitions(Collection<FacetDefinition> definitions) {
+	public synchronized WedgeDefinition setFacetDefinitions(Collection<FacetDefinition> definitions) {
 		this.facetDefinitions = new LinkedHashSet<FacetDefinition>(definitions);
+		return this;
 	}
 
 	/**

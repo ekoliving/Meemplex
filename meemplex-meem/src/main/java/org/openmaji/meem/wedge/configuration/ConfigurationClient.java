@@ -45,7 +45,7 @@ public interface ConfigurationClient
 	 * @param newSpecifications the specifications, if any, associated with the wedge now.
 	 */
 	public void specificationChanged(
-	   ConfigurationSpecification[] oldSpecifications, ConfigurationSpecification[] newSpecifications);
+	   ConfigurationSpecification<?>[] oldSpecifications, ConfigurationSpecification<?>[] newSpecifications);
 
 	/**
 	 * Announce that a change has been accepted.

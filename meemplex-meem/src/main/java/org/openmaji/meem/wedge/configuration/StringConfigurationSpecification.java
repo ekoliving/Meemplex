@@ -8,7 +8,7 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
  * 
  * @author Chris Kakris
  */
-public class StringConfigurationSpecification extends ConfigurationSpecification
+public class StringConfigurationSpecification extends ConfigurationSpecification<String>
 {
 	private static final long serialVersionUID = -1178365040590887015L;
 
