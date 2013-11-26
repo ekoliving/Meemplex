@@ -31,16 +31,15 @@ public class ConfigurationHandlerProxy extends FacetProxy implements Configurati
 	static public String ID_CONFIGURATION = ConfigurationHandlerProxy.class + ".configuration";
 	static public String ID_LAST_REJECTED_REASON = ConfigurationHandlerProxy.class + ".last rejected reason";
 
-	static public ConfigurationIdentifier ID_MEEM_IDENTIFIER = 
-			new ConfigurationIdentifier("MeemSystemWedge", "meemIdentifier");
+	static public ConfigurationIdentifier ID_MEEM_IDENTIFIER = new ConfigurationIdentifier("MeemSystemWedge", "meemIdentifier");
 	
 	static private FacetSpecificationPair defaultSpecs = 
 		new FacetSpecificationPair(
 			new FacetInboundSpecification(ConfigurationHandler.class, "configurationHandler"),
 			new FacetOutboundSpecification(ConfigurationClient.class, "configClient"));
 
-	private Map specificationMap;
-	private Map valueMap;
+	private Map<ConfigurationIdentifier, ConfigurationSpecification<?>> specificationMap;
+	private Map<ConfigurationIdentifier, Object> valueMap;
 	private Object lastRejectedReason = null;
 
 	//=== Internal ConfigurationHandler Client Implementation ====================
@@ -54,41 +53,47 @@ public class ConfigurationHandlerProxy extends FacetProxy implements Configurati
 			this.p = p;
 		}
 		
-		public void specificationChanged(final ConfigurationSpecification[] oldSpecifications, final ConfigurationSpecification[] newSpecifications) {
+		public void specificationChanged(final ConfigurationSpecification<?>[] oldSpecifications, final ConfigurationSpecification<?>[] newSpecifications) {
 			
 //			System.out.println("configurationAvailableChanged(" + p.getMeemClientProxy().getMeemPath().toString() + ")");
 
-			if(p.specificationMap == null) p.specificationMap = new HashMap();
-			if(p.valueMap == null) p.valueMap = new HashMap();
+			if (p.specificationMap == null) {
+				p.specificationMap = new HashMap<ConfigurationIdentifier, ConfigurationSpecification<?>>();
+			}
+			if (p.valueMap == null) {
+				p.valueMap = new HashMap<ConfigurationIdentifier, Object>();
+			}
 			
 			// Removes old property specifications.
-			if(oldSpecifications != null)
-			for(int i=0; i < oldSpecifications.length; i++) {
-				Assert.isNotNull(oldSpecifications[i]);
-				ConfigurationSpecification propertySpecification = oldSpecifications[i];
-				p.specificationMap.remove(propertySpecification.getIdentifier());
-				p.valueMap.remove(propertySpecification.getIdentifier());
+			if (oldSpecifications != null) {
+				for(int i=0; i < oldSpecifications.length; i++) {
+					Assert.isNotNull(oldSpecifications[i]);
+					ConfigurationSpecification<?> propertySpecification = oldSpecifications[i];
+					p.specificationMap.remove(propertySpecification.getIdentifier());
+					p.valueMap.remove(propertySpecification.getIdentifier());
+				}
 			}
 			
 			// Inserts new property specifications.
-			if(newSpecifications != null)
-			for(int i=0; i < newSpecifications.length; i++) {
-				Assert.isNotNull(newSpecifications[i]);
-				ConfigurationSpecification propertySpecification = 
-					(ConfigurationSpecification)newSpecifications[i].clone();
-				
-				p.specificationMap.put(propertySpecification.getIdentifier(), propertySpecification);
-				p.valueMap.put(propertySpecification.getIdentifier(), propertySpecification.getDefaultValue());
-				
-				//System.out.println("New Configuration Property Inserted: " + propertySpecification);
-			}
-
-			if(p.containsClient())
-			p.getSynchronizer().execute(new Runnable() {
-				public void run() {
-					p.fireConfigurationAvaliableChanged(oldSpecifications, newSpecifications);
+			if (newSpecifications != null) {
+				for(int i=0; i < newSpecifications.length; i++) {
+					Assert.isNotNull(newSpecifications[i]);
+					ConfigurationSpecification<?> propertySpecification = (ConfigurationSpecification<?>)newSpecifications[i].clone();
+					
+					p.specificationMap.put(propertySpecification.getIdentifier(), propertySpecification);
+					p.valueMap.put(propertySpecification.getIdentifier(), propertySpecification.getDefaultValue());
+					
+					//System.out.println("New Configuration Property Inserted: " + propertySpecification);
 				}
-			});
+			}
+			
+			if (p.containsClient()) {
+				p.getSynchronizer().execute(new Runnable() {
+					public void run() {
+						p.fireConfigurationAvaliableChanged(oldSpecifications, newSpecifications);
+					}
+				});
+			}
 		}
 
 		public void valueAccepted(final ConfigurationIdentifier id, final Serializable value) {
@@ -181,9 +186,11 @@ public class ConfigurationHandlerProxy extends FacetProxy implements Configurati
 	 * <p>
 	 * @return Class The class of the value of the configurable property.
 	 */	
-	public ConfigurationSpecification[] getSpecifications() {
-		if(specificationMap == null) return new ConfigurationSpecification[0];
-		return (ConfigurationSpecification[])specificationMap.values().toArray(new ConfigurationSpecification[0]);
+	public ConfigurationSpecification<?>[] getSpecifications() {
+		if(specificationMap == null) {
+			return new ConfigurationSpecification[]{};
+		}
+		return specificationMap.values().toArray(new ConfigurationSpecification<?>[]{});
 	}
 	
 	/**
@@ -193,13 +200,15 @@ public class ConfigurationHandlerProxy extends FacetProxy implements Configurati
 	 * @return <code>ConfigurationSpecification</code> uniquely identifies by the
 	 * the id, or null if it is not found.
 	 */	
-	public ConfigurationSpecification findSpecification(ConfigurationIdentifier id) {
-		if(specificationMap == null) return null;
-		return (ConfigurationSpecification)specificationMap.get(id);
+	public ConfigurationSpecification<?> findSpecification(ConfigurationIdentifier id) {
+		if(specificationMap == null) {
+			return null;
+		}
+		return specificationMap.get(id);
 	}
 	
-	public ConfigurationSpecification getSpecification(Object id) {
-		return (ConfigurationSpecification)specificationMap.get(id);
+	public ConfigurationSpecification<?> getSpecification(Object id) {
+		return specificationMap.get(id);
 	}
 	
 	/**
@@ -235,7 +244,9 @@ public class ConfigurationHandlerProxy extends FacetProxy implements Configurati
 	
 	//=== Outbound methods client delegations ====================================
 	private void fireConfigurationAvaliableChanged(
-	ConfigurationSpecification[] oldSpecifications, ConfigurationSpecification[] newSpecifications) {
+			ConfigurationSpecification<?>[] oldSpecifications, 
+			ConfigurationSpecification<?>[] newSpecifications) 
+	{
 			Object[] clients = getClients();
 			for(int i=0; i < clients.length; i++) {
 				ConfigurationClient client = (ConfigurationClient)clients[i];

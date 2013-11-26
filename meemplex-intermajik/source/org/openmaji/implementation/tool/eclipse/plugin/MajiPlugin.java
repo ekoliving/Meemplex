@@ -125,8 +125,8 @@ public class MajiPlugin extends AbstractUIPlugin {
 		SecurityManager.getInstance().addSecurityListener(new MeemkitManagerListener());
 		 
 		// create intermajik menu 
-		WorkbenchWindow window = (WorkbenchWindow)getWorkbench().getActiveWorkbenchWindow();
-		MenuManager menubar = window.getMenuBarManager();
+		WorkbenchWindow window = (WorkbenchWindow) getWorkbench().getActiveWorkbenchWindow();
+		MenuManager menubar = (MenuManager) window.getMenuBarManager();
 		menubar.insert(0, createInterMajikMenu());
 		 
 		startMajiJob.schedule();

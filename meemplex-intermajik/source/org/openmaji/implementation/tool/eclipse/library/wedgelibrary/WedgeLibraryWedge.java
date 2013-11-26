@@ -14,9 +14,7 @@ package org.openmaji.implementation.tool.eclipse.library.wedgelibrary;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 import org.openmaji.implementation.tool.eclipse.Common;
 import org.openmaji.implementation.tool.eclipse.client.security.SecurityManager;
@@ -40,7 +38,8 @@ import org.openmaji.system.spi.SpecificationType;
  * <p>
  * ...
  * </p>
- * @author  mg
+ * 
+ * @author mg
  * @version 1.0
  */
 public class WedgeLibraryWedge implements WedgeLibrary, Wedge {
@@ -48,70 +47,62 @@ public class WedgeLibraryWedge implements WedgeLibrary, Wedge {
 	static private final Logger logger = Logger.getAnonymousLogger();
 
 	private static final String IDENTITY_MANAGER_WEDGE = "org.openmaji.implementation.server.manager.identity.IdentityManagerWedge";
-	
+
 	/**
 	 * The conduit through which we are alerted to life cycle changes
 	 */
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 
 	public WedgeLibraryClient wedgeLibraryClient;
-    public final ContentProvider wedgeLibraryClientProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) {
 
-            WedgeLibraryClient wedgeLibraryClient = (WedgeLibraryClient) target;
-            Iterator iter = wedgeMap.values().iterator();
+	public final ContentProvider<WedgeLibraryClient> wedgeLibraryClientProvider = new ContentProvider<WedgeLibraryClient>() {
+		public void sendContent(WedgeLibraryClient wedgeLibraryClient, Filter filter) {
+			Iterator<ClassDescriptor> iter = wedgeMap.values().iterator();
 			while (iter.hasNext()) {
 				wedgeLibraryClient.wedgeAdded((ClassDescriptor) iter.next());
 			}
-        }
-    };
+		}
+	};
 
+	public MeemClientConduit meemClientConduit;
 
-
-
-	public MeemClientConduit	meemClientConduit;
-	
 	private Map<String, ClassDescriptor> wedgeMap = Collections.synchronizedMap(new HashMap<String, ClassDescriptor>());
 	private boolean connected = false;
 
-	private Reference reference = Reference.spi.create(
-			"classLibraryClient",
-			SecurityManager.getInstance().getGateway().getTargetFor(new ClassLibraryClientImpl(), ClassLibraryClient.class),
-			true,
-			new InterfaceListFilter("org.openmaji.meem.Wedge")
-		);
+	private Reference<ClassLibraryClient> reference = Reference.spi.create("classLibraryClient",
+			SecurityManager.getInstance().getGateway().getTargetFor(new ClassLibraryClientImpl(), ClassLibraryClient.class), true, new InterfaceListFilter("org.openmaji.meem.Wedge"));
 
 	private Meem classLibraryMeem = null;
 
 	// persisted list of seen wedges
-	public Vector seenWedges;
+	public List<String> seenWedges;
 
-	private Vector<String> systemWedges = new Vector<String>();
+	private List<String> systemWedges = new ArrayList<String>();
 
 	public MeemCore meemCore;
-	
+
 	public Meem wedgeLibraryMeemFacet;
 
 	public Meem meemConduit;
 
 	public WedgeLibraryWedge() {
-		seenWedges = new Vector();
+		seenWedges = new ArrayList<String>();
 	}
-	
+
 	/**
 	 * @see org.openmaji.implementation.tool.eclipse.library.wedgelibrary.WedgeLibrary#reset()
 	 */
 	public void reset() {
 		seenWedges.clear();
-		
-		Reference clientMeem = Reference.spi.create("wedgeLibraryMeemFacet", classLibraryMeem, false, null);
+
+		Reference<Meem> clientMeem = Reference.spi.create("wedgeLibraryMeemFacet", classLibraryMeem, false, null);
 
 		meemConduit.addOutboundReference(clientMeem, false);
-		
+
 		wedgeLibraryMeemFacet.removeOutboundReference(reference);
-		
+
 		wedgeLibraryMeemFacet.addOutboundReference(reference, false);
-		
+
 		meemConduit.removeOutboundReference(clientMeem);
 	}
 
@@ -122,82 +113,45 @@ public class WedgeLibraryWedge implements WedgeLibrary, Wedge {
 		if (systemWedges.contains(className)) {
 			return;
 		}
-		
-      if (className.startsWith("org.openmajik.implementation.server.nursery")) {
-        if ( Common.TRACE_ENABLED && Common.TRACE_WEDGE_LIBRARY )
-  			logger.log(Level.FINE, "Ignoring nursery wedge");
+
+		if (className.startsWith("org.openmajik.implementation.server.nursery")) {
+			if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_LIBRARY)
+				logger.log(Level.FINE, "Ignoring nursery wedge");
 			return;
 		}
 
 		wedgeMap.put(className, classDescriptor);
 
-        if (!seenWedges.contains(className)) {
-          if ( Common.TRACE_ENABLED && Common.TRACE_WEDGE_LIBRARY )
-        	  logger.log(Level.FINE, "Creating new wedgekit meem for wedge: " + className);
-            throw new RuntimeException("this is not meant to be used!!!");
+		if (!seenWedges.contains(className)) {
+			if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_LIBRARY)
+				logger.log(Level.FINE, "Creating new wedgekit meem for wedge: " + className);
+			throw new RuntimeException("this is not meant to be used!!!");
 			// create new entry in unfiled
-            //TODO[ben] Remove string literal, confirm this is the correct hyperspace path
-//			MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_CONFIGURATION_TOOLKIT_WEDGE_UNFILED + className);
-//
-//			Meem meem = MeemFactory.spi.get(SecurityManager.getInstance().getGateway()).create(createDefinition(className), meemPath, LifeCycleState.LOADED);
-//
-//			LifeCycleLimit lifeCycleLimit = (LifeCycleLimit) 
-//				MeemUtility.spi.get(SecurityManager.getInstance().getGateway()).getTarget(meem, "lifeCycleLimit", LifeCycleLimit.class);
-//			lifeCycleLimit.limitLifeCycleState(LifeCycleState.LOADED);
-//
-//			seenWedges.add(className);
-//			
-//			meemClientConduit.provideReference(meem, "managedPersistenceHandler", ManagedPersistenceHandler.class, new ReferenceCallbackImpl());
+			// TODO[ben] Remove string literal, confirm this is the correct
+			// hyperspace path
+			// MeemPath meemPath = MeemPath.spi.create(Space.HYPERSPACE,
+			// StandardHyperSpaceCategory.MAJI_CONFIGURATION_TOOLKIT_WEDGE_UNFILED
+			// + className);
+			//
+			// Meem meem =
+			// MeemFactory.spi.get(SecurityManager.getInstance().getGateway()).create(createDefinition(className),
+			// meemPath, LifeCycleState.LOADED);
+			//
+			// LifeCycleLimit lifeCycleLimit = (LifeCycleLimit)
+			// MeemUtility.spi.get(SecurityManager.getInstance().getGateway()).getTarget(meem,
+			// "lifeCycleLimit", LifeCycleLimit.class);
+			// lifeCycleLimit.limitLifeCycleState(LifeCycleState.LOADED);
+			//
+			// seenWedges.add(className);
+			//
+			// meemClientConduit.provideReference(meem,
+			// "managedPersistenceHandler", ManagedPersistenceHandler.class, new
+			// ReferenceCallbackImpl());
 		}
 
 		wedgeLibraryClient.wedgeAdded(classDescriptor);
 	}
-/*
-	private MeemDefinition createDefinition(String className) {
 
-		MeemAttribute meemAttribute = new MeemAttribute();
-		meemAttribute.setScope(Scope.LOCAL);
-		meemAttribute.setIdentifier(className);
-		meemAttribute.setVersion(1);
-
-		MeemDefinition meemDefinition = new MeemDefinition(meemAttribute);
-
-		try {
-			Class wedgeClass = Class.forName(className);
-
-			WedgeDefinition wedgeDefinition = WedgeIntrospector.getWedgeDefinition(wedgeClass);
-
-			meemDefinition.addWedgeDefinition(wedgeDefinition);
-
-		} catch (WedgeIntrospectorException e) {
-			logger.log(Level.WARNING, "Exception while introspecting class: " + className, e);
-		} catch (ClassNotFoundException e) {
-			logger.log(Level.WARNING, "Class not found: " + className, e);
-		}
-
-		return meemDefinition;
-	}
-*/
-/*
-	private class ReferenceCallbackImpl
-		implements MeemClientCallback
-	{
-		public void referenceProvided(Reference reference)
-		{
-			if (reference == null)
-			{
-				logger.log(Level.WARNING, "no managedPersistenceHandler found can't persist!");
-				return;
-			}
-			
-			((ManagedPersistenceHandler)reference.getTarget()).persist();
-			
-			// persist self.
-			
-			((ManagedPersistenceHandler)meemCore.getTarget("managedPersistenceHandler")).persist();
-		}
-	}
-*/
 	private final class ClassLibraryClientImpl implements ClassLibraryClient {
 		/**
 		 */
@@ -212,56 +166,42 @@ public class WedgeLibraryWedge implements WedgeLibrary, Wedge {
 		}
 	}
 
-    private static MajiSystemProvider majiSystemProvider = null;
-	
-		public void commence() {
-			if (!connected) {
-        if (majiSystemProvider == null) {
-          majiSystemProvider = MajiSystemProvider.systemProvider();
-        } 
-               
-				//		find system wedges
-        
-        Collection<Class> systemWedgeSpecifications = new ArrayList<Class>();
-        systemWedgeSpecifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_WEDGE));
-        systemWedgeSpecifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_HOOK));
-        
-        Iterator<Class> systemWedgeIter = systemWedgeSpecifications.iterator();
-      
-        while (systemWedgeIter.hasNext()) {
-          Class specification = systemWedgeIter.next();
-        
-          String implementationClassName = majiSystemProvider.getSpecificationEntry(specification).getImplementation().getName();
+	private static MajiSystemProvider majiSystemProvider = null;
 
-          systemWedges.add(implementationClassName);
-          
-			if ( Common.TRACE_ENABLED && Common.TRACE_WEDGE_LIBRARY )
-				logger.log(Level.FINE, "SYSTEM: " + implementationClassName);
-				}
-
-				// add security manager as it isn't in the list
-
-				systemWedges.add(IDENTITY_MANAGER_WEDGE);
-
-				// connect to the ClassLibrary
-				if (classLibraryMeem == null) {
-					classLibraryMeem =
-					    SecurityManager.getInstance().getGateway().getMeem(
-                    MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM_CLASS_LIBRARY));
-				}
-			
-			
-				Reference clientMeem = Reference.spi.create("wedgeLibraryMeemFacet", classLibraryMeem, false, null);
-
-				meemConduit.addOutboundReference(clientMeem, false);
-			
-				wedgeLibraryMeemFacet.addOutboundReference(reference, false);
-			
-				meemConduit.removeOutboundReference(clientMeem);
-
-				connected = true;
+	public void commence() {
+		if (!connected) {
+			if (majiSystemProvider == null) {
+				majiSystemProvider = MajiSystemProvider.systemProvider();
 			}
 
-		}
+			// find system wedges
 
+			Collection<Class<?>> systemWedgeSpecifications = new ArrayList<Class<?>>();
+			systemWedgeSpecifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_WEDGE));
+			systemWedgeSpecifications.addAll(majiSystemProvider.getSpecifications(SpecificationType.SYSTEM_HOOK));
+
+			for (Class<?> specification : systemWedgeSpecifications) {
+				String implementationClassName = majiSystemProvider.getSpecificationEntry(specification).getImplementation().getName();
+				systemWedges.add(implementationClassName);
+
+				if (Common.TRACE_ENABLED && Common.TRACE_WEDGE_LIBRARY)
+					logger.log(Level.FINE, "SYSTEM: " + implementationClassName);
+			}
+
+			// add security manager as it isn't in the list
+			systemWedges.add(IDENTITY_MANAGER_WEDGE);
+
+			// connect to the ClassLibrary
+			if (classLibraryMeem == null) {
+				classLibraryMeem = SecurityManager.getInstance().getGateway().getMeem(MeemPath.spi.create(Space.HYPERSPACE, StandardHyperSpaceCategory.MAJI_SYSTEM_CLASS_LIBRARY));
+			}
+
+			Reference<Meem> clientMeem = Reference.spi.create("wedgeLibraryMeemFacet", classLibraryMeem, false, null);
+			meemConduit.addOutboundReference(clientMeem, false);
+			wedgeLibraryMeemFacet.addOutboundReference(reference, false);
+			meemConduit.removeOutboundReference(clientMeem);
+
+			connected = true;
+		}
+	}
 }

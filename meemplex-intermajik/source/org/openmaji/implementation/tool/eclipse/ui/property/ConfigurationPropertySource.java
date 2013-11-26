@@ -44,15 +44,15 @@ public class ConfigurationPropertySource implements IPropertySource {
 	
 	
 	protected void refreshDescriptors() {
-		ConfigurationSpecification[] specs = configuration.getSpecifications();
+		ConfigurationSpecification<?>[] specs = configuration.getSpecifications();
 		descriptors = new IPropertyDescriptor[specs.length];
 		for(int i = 0; i < specs.length; i++) {
-			ConfigurationSpecification spec = specs[i];
+			ConfigurationSpecification<?> spec = specs[i];
 			descriptors[i] = createDescriptor(spec);
 		}
 	}
 	
-	private IPropertyDescriptor createDescriptor(ConfigurationSpecification specification) {
+	private IPropertyDescriptor createDescriptor(ConfigurationSpecification<?> specification) {
 		
 		PropertyDescriptor descriptor = PropertyDescriptorFactory.getInstance().
 			create(specification);
@@ -82,7 +82,7 @@ public class ConfigurationPropertySource implements IPropertySource {
 	public Object getPropertyValue(Object id) {
 		Object value = configuration.getValue(id);
 		if(value == null) {
-			ConfigurationSpecification specification = configuration.getSpecification(id);
+			ConfigurationSpecification<?> specification = configuration.getSpecification(id);
 			if(specification == null) return "";
 			if (specification.getDefaultValue() != null)
 				return specification.getDefaultValue();
@@ -109,7 +109,7 @@ public class ConfigurationPropertySource implements IPropertySource {
 	 * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang.Object, java.lang.Object)
 	 */
 	public void setPropertyValue(Object id, Object value) {
-		ConfigurationSpecification specification = configuration.getSpecification(id);
+		ConfigurationSpecification<?> specification = configuration.getSpecification(id);
 		configuration.valueChanged(specification.getIdentifier(), (Serializable) value);
 		//System.out.println("Value Changing: " + specification.toString() + value);
 	}
