@@ -80,13 +80,13 @@ public class FilePickerWedge implements Wedge, SpeedControl, WedgeDefinitionProv
 	
 	/* ---------------------------- config specs ----------------------------- */
 	
-	public transient ConfigurationSpecification directorySpecification = new ConfigurationSpecification("Directory containing images", String.class,
+	public transient ConfigurationSpecification directorySpecification = ConfigurationSpecification.create("Directory containing images", String.class,
 			LifeCycleState.READY);
 
-	public transient ConfigurationSpecification patternSpecification = new ConfigurationSpecification("Regular expression to match files", String.class,
+	public transient ConfigurationSpecification patternSpecification = ConfigurationSpecification.create("Regular expression to match files", String.class,
 			LifeCycleState.READY);
 
-	public transient ConfigurationSpecification sleeptimeSpecification = new ConfigurationSpecification("Seconds to wait before each update", Integer.class,
+	public transient ConfigurationSpecification sleeptimeSpecification = ConfigurationSpecification.create("Seconds to wait before each update", Integer.class,
 			LifeCycleState.READY);
 
 	

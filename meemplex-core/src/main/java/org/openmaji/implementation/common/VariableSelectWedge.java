@@ -43,17 +43,17 @@ public class VariableSelectWedge implements Wedge, Variable, Linear {
 	
 	/** facet on which to send the selected value */
 	public Variable variableOutput;
-	public ContentProvider variableOutputProvider = new ContentProvider() {
-		public void sendContent(Object object, Filter filter) throws ContentException {
-			((Variable)object).valueChanged(selectedChannelValue);
+	public ContentProvider<Variable> variableOutputProvider = new ContentProvider<Variable>() {
+		public void sendContent(Variable object, Filter filter) throws ContentException {
+			object.valueChanged(selectedChannelValue);
 		}
 	};
 
 	/** facet on which to send selected variable index */
 	public Linear linearOutput;
-	public ContentProvider linearOutputProvider = new ContentProvider() {
-		public void sendContent(Object object, Filter filter) throws ContentException {
-			((Linear)object).valueChanged(
+	public ContentProvider<Linear> linearOutputProvider = new ContentProvider<Linear>() {
+		public void sendContent(Linear object, Filter filter) throws ContentException {
+			object.valueChanged(
 					new IntegerPosition(selectedVariableIndex, 1, 0, availableValues.length)
 				);
 		}
@@ -61,9 +61,9 @@ public class VariableSelectWedge implements Wedge, Variable, Linear {
 
 	/** facet on which to send the possible values to select from */
 	public VariableList variableListOutput;
-	public ContentProvider variableListOutputProvider = new ContentProvider() {
-		public void sendContent(Object object, Filter filter) throws ContentException {
-			((VariableList)object).valueChanged(availableValues);
+	public ContentProvider<VariableList> variableListOutputProvider = new ContentProvider<VariableList>() {
+		public void sendContent(VariableList object, Filter filter) throws ContentException {
+			object.valueChanged(availableValues);
 		}
 	};
 
@@ -124,7 +124,7 @@ public class VariableSelectWedge implements Wedge, Variable, Linear {
 
 	/* ------------------------ configuration specification ---------------------- */
 	
-	public ConfigurationSpecification availableValuesSpecification =  new ConfigurationSpecification("List of available values");
+	public ConfigurationSpecification availableValuesSpecification =  ConfigurationSpecification.create("List of available values");
 
 
 	/* ----------------------- persisted properties -------------------------- */

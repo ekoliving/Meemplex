@@ -80,7 +80,7 @@ public class InjectMeemWedge
     new ConfigurationClientAdapter(this);
 
   public transient ConfigurationSpecification initialMeemPathSpecification =
-    new ConfigurationSpecification("HyperSpace MeemPath to import");
+    ConfigurationSpecification.create("HyperSpace MeemPath to import");
 
   public void setInitialMeemPath(
     String initialMeemPathString) {
@@ -233,7 +233,7 @@ public class InjectMeemWedge
       	
       	Facet proxy = meemContext.getTargetFor(client, MeemDefinitionClient.class);
       	
-      	ExactMatchFilter filter = new ExactMatchFilter(meemPath);
+      	ExactMatchFilter filter = ExactMatchFilter.create(meemPath);
 		
       	Reference reference = Reference.spi.create("meemDefinitionClient", proxy, true, filter);
 		

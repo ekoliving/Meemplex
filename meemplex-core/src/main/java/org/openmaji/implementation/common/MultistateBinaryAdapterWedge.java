@@ -53,12 +53,12 @@ public class MultistateBinaryAdapterWedge implements Multistate, Wedge, WedgeDef
 	 * A configuration property to specify which state to send a Binary true value
 	 */
 	public String onValueState;
-	public transient ConfigurationSpecification onValueStateSpecification = new ConfigurationSpecification("Multistate state string");
+	public transient ConfigurationSpecification onValueStateSpecification = ConfigurationSpecification.create("Multistate state string");
 	/**
 	 * A configuration property to specify which state to send a Binary false value
 	 */
 	public String offValueState;
-	public transient ConfigurationSpecification offValueStateSpecification=new ConfigurationSpecification("Multistate state string");
+	public transient ConfigurationSpecification offValueStateSpecification=ConfigurationSpecification.create("Multistate state string");
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 
 	public void setOnValueState (String string){

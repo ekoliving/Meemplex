@@ -40,11 +40,12 @@ public class DynamicDeviceWedge implements Wedge {
 	/* ----------------- outbound Facets ------------------- */
 
 	public Category parentCategory;
-	public final ContentProvider parentCategoryProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) throws ContentException {
+	
+	public final ContentProvider<Category> parentCategoryProvider = new ContentProvider<Category>() {
+		public void sendContent(Category target, Filter filter) throws ContentException {
 			// send addEntry
 			if (deviceName != null) {
-				((Category)target).addEntry(deviceName, meemContext.getSelf());
+				target.addEntry(deviceName, meemContext.getSelf());
 			}
 		};
 	};
@@ -91,11 +92,11 @@ public class DynamicDeviceWedge implements Wedge {
 	
 	/* ----------------- configuration specification ----------------- */
 
-	public transient ConfigurationSpecification deviceNameSpecification  = 
-		new ConfigurationSpecification("The friendly name for the device", String.class, LifeCycleState.LOADED);
+	public transient ConfigurationSpecification<String> deviceNameSpecification  = 
+		ConfigurationSpecification.create("The friendly name for the device", String.class, LifeCycleState.LOADED);
 
-	public transient ConfigurationSpecification leaseTimeSpecification  = 
-		new ConfigurationSpecification("The lease time in minutes", String.class, LifeCycleState.LOADED);
+	public transient ConfigurationSpecification<String> leaseTimeSpecification  = 
+		ConfigurationSpecification.create("The lease time in minutes", String.class, LifeCycleState.LOADED);
 
 	/**
 	 * 

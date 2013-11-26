@@ -54,7 +54,7 @@ public class LinearListWedge implements LinearList, Wedge
   @Facet(direction=Direction.OUT, name="linearListClient")
   LinearList linearListClient;
   
-  public final ContentProvider linearListClientProvider = new ContentProvider()
+  public final ContentProvider<LinearList> linearListClientProvider = new ContentProvider<LinearList>()
   {
       /**
        * Send content to a Variable client that has just had its Reference added.
@@ -62,10 +62,9 @@ public class LinearListWedge implements LinearList, Wedge
        * @param target           Reference to the target Meem
        * @param filter           No Filters are currently implemented
        */
-      public void sendContent(Object target, Filter filter)
+      public void sendContent(LinearList linearList, Filter filter)
       {
         if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
-        LinearList linearList = (LinearList) target;
         Position[] initialContent = ( valueList == null ? new Position[0] : valueList );
         linearList.valueChanged(initialContent);
       }

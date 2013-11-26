@@ -43,7 +43,7 @@ public class FileExportWedge
     new ConfigurationClientAdapter(this);
 
   public transient ConfigurationSpecification outputFileSpecification =
-    new ConfigurationSpecification("Export file path");
+    ConfigurationSpecification.create("Export file path");
 
   public void setOutputFile(
     String outputFilePath) {

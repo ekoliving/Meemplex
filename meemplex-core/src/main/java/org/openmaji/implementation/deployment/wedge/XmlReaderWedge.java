@@ -173,7 +173,7 @@ public class XmlReaderWedge implements Wedge {
 	
 	/* ---------------------------------- configuration ------------------------------- */
 	
-	public transient ConfigurationSpecification filenameSpecification = new ConfigurationSpecification("The full path to the XML file");
+	public transient ConfigurationSpecification filenameSpecification = ConfigurationSpecification.create("The full path to the XML file");
 
 	/* ---------------------------------- private members ------------------------------- */
 	

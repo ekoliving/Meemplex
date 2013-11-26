@@ -29,7 +29,7 @@ public class ProgressClientWedge implements Wedge {
 
 	public ProgressClient progressClient;
 
-	public final ContentProvider progressClientProvider = new MyContentProvider();
+	public final ContentProvider<ProgressClient> progressClientProvider = new MyContentProvider();
 
 	public ProgressConduit progressConduit = new MyProgressConduit();
 
@@ -79,9 +79,8 @@ public class ProgressClientWedge implements Wedge {
 
 	/* ------------------------------------------------------------------------ */
 
-	private class MyContentProvider implements ContentProvider {
-		public void sendContent(Object target, Filter filter) throws ContentException {
-			ProgressClient client = (ProgressClient) target;
+	private class MyContentProvider implements ContentProvider<ProgressClient> {
+		public void sendContent(ProgressClient client, Filter filter) throws ContentException {
 			sendOverallProgress(client);
 		}
 	}

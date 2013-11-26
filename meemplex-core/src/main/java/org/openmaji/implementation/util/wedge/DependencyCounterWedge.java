@@ -3,6 +3,7 @@ package org.openmaji.implementation.util.wedge;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.meemplex.meem.Conduit;
 import org.openmaji.meem.Meem;
 import org.openmaji.meem.MeemPath;
 import org.openmaji.meem.Wedge;
@@ -36,40 +37,46 @@ public class DependencyCounterWedge implements Wedge {
 	/**
 	 * Conduit on which to send CategoryEntries.
 	 */
+	@Conduit
 	public CategoryEntryConsumer categoryEntryConduit;
 
 	/**
 	 * Conduit on which to send a name.
 	 */
+	@Conduit
 	public Variable nameConduit;
 
 	/**
 	 * Conduit by which to add and remove dependencies to this Meem.
 	 */
+	@Conduit
 	public DependencyHandler dependencyHandlerConduit;
 
 	/**
 	 * Conduit on which to receive dependency events.
 	 */
+	@Conduit
 	public DependencyClient dependencyClientConduit = new DependencyClientConduit();
 
 	/**
 	 * The conduit through which incoming configuration changes arrive
 	 */
+	@Conduit
 	public ConfigurationClient  configurationClientConduit = new ConfigurationClientAdapter(this);
 	/**
 	 * The conduit to enable debug
 	 */
+	@Conduit
 	public Debug debugConduit = new MyDebugConduit();
 	
 
 	/* -------------- configuration specs ----------- */
 	
-	public transient ConfigurationSpecification facetMappingsSpecification  = 
-		new ConfigurationSpecification("Facet mappings, e.g. \"localFacet1 remoteFacet1; localFacet2 remoteFacet2;\"");
+	public transient ConfigurationSpecification<String> facetMappingsSpecification  = 
+		ConfigurationSpecification.create("Facet mappings, e.g. \"localFacet1 remoteFacet1; localFacet2 remoteFacet2;\"");
 
-	public transient ConfigurationSpecification dependencyTypeSpecification  = 
-		new ConfigurationSpecification("Whether the dependency type is " + 
+	public transient ConfigurationSpecification<String> dependencyTypeSpecification  = 
+		ConfigurationSpecification.create("Whether the dependency type is " + 
 				DependencyType.STRONG.getIdentifier() + ", " +
 				DependencyType.WEAK.getIdentifier() + ", " +
 				DependencyType.STRONG_MANY.getIdentifier() + " or " +
@@ -104,17 +111,6 @@ public class DependencyCounterWedge implements Wedge {
 	private HashSet<DependencyAttribute> dependencies = new HashSet<DependencyAttribute>();
 
 	
-	/* --------------- Configuration methods ------------------ */
-
-	
-	/* ------------------------ private methods ----------------- */
-	
-	private void checkConnected() {
-		if (false) {
-			// TODO send state on binary output
-		}
-	}
-
 	/* ---------------- inner classes ---------------------- */
 	
 	/**

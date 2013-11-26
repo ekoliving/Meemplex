@@ -80,15 +80,15 @@ public class BinaryWedge implements Binary, Wedge {
 	 * Send content to a Binary client that has just had its Reference added.
 	 */
 	@FacetContent(facet="binaryOutput")
-	public final ContentProvider binaryClientProvider = new ContentProvider() {
-		public void sendContent(Object target, Filter filter) {
+	public final ContentProvider<Binary> binaryClientProvider = new ContentProvider<Binary>() {
+		public void sendContent(Binary target, Filter filter) {
 			if (DebugFlag.TRACE) {
 				logger.log(Level.FINE, "sendContent() - invoked");
 			}
 			
 			// only send value if one has been received on the binaryStateConduit, otherwise the value is invalid.
 			if (value != null) {
-				((Binary) target).valueChanged(value);
+				target.valueChanged(value);
 			}
 		}
 	};

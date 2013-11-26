@@ -83,7 +83,7 @@ public class BinaryNOTWedge implements Binary, Wedge {
    */
 
   public Binary binaryClient;
-    public final ContentProvider binaryClientProvider = new ContentProvider() {
+    public final ContentProvider<Binary> binaryClientProvider = new ContentProvider<Binary>() {
           /**
            * <p>
            * Send content to a Binary client that has just had it's Reference added.
@@ -91,8 +91,8 @@ public class BinaryNOTWedge implements Binary, Wedge {
            * @param target           Reference to the target Meem
            * @param filter           No Filters are currently implemented
            */
-          public void sendContent(Object target, Filter filter) {
-            ((Binary) target).valueChanged(value);
+          public void sendContent(Binary target, Filter filter) {
+            target.valueChanged(value);
           }
     };
 

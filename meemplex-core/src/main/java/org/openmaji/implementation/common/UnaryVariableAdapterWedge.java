@@ -66,7 +66,7 @@ public class UnaryVariableAdapterWedge implements Wedge {
 	
 	/* ---------------------- configuration specification --------------------- */ 
 	
-	public transient ConfigurationSpecification binaryValueSpecification = new ConfigurationSpecification("true|false");
+	public transient ConfigurationSpecification binaryValueSpecification = ConfigurationSpecification.create("true|false");
 
 
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */

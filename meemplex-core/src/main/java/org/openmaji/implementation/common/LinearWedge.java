@@ -75,7 +75,7 @@ public class LinearWedge implements Linear, Wedge
   public Linear linearClient;
   
   @FacetContent(facet="linearOutput")
-  public final ContentProvider linearClientProvider = new ContentProvider()
+  public final ContentProvider<Linear> linearClientProvider = new ContentProvider<Linear>()
   {
       /**
        * Send content to a Linear client that has just had its Reference added.
@@ -83,10 +83,10 @@ public class LinearWedge implements Linear, Wedge
        * @param target           Reference to the target Meem
        * @param filter           No Filters are currently implemented
        */
-      public synchronized void sendContent(Object target, Filter filter)
+      public synchronized void sendContent(Linear target, Filter filter)
       {
         if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
-        ((Linear) target).valueChanged(position);
+        target.valueChanged(position);
       }
   };
 

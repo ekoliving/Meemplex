@@ -22,66 +22,54 @@ import org.openmaji.meem.wedge.lifecycle.LifeCycleState;
 import org.openmaji.meem.wedge.lifecycle.LifeCycleTransition;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-public class DebugWedge implements Debug, Wedge, WedgeDefinitionProvider
-{
-  public Debug debugOutput;
-  public final ContentProvider debugOutputProvider = new MyContentProvider();
+public class DebugWedge implements Debug, Wedge, WedgeDefinitionProvider {
+	public Debug debugOutput;
+	public final ContentProvider<Debug> debugOutputProvider = new MyContentProvider();
 
-  public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientHandler();
-  public ConfigurationClient configurationClientConduit = new ConfigurationClientAdapter(this);
-  public Debug debugConduit;
+	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientHandler();
+	public ConfigurationClient configurationClientConduit = new ConfigurationClientAdapter(this);
+	public Debug debugConduit;
 
-  public int debugLevel = 1;  // If you add this wedge to your meem it's assumed you want debugging
-  public transient ConfigurationSpecification debugLevelSpecification = new ConfigurationSpecification("Debug mode 0=off",Integer.class,LifeCycleState.READY);
+	public int debugLevel = 1; // If you add this wedge to your meem it's assumed you want debugging
+	public transient ConfigurationSpecification<Integer> debugLevelSpecification = ConfigurationSpecification.create("Debug mode 0=off", Integer.class, LifeCycleState.READY);
 
-  public void setDebugLevel(Integer value)
-  {
-    debugLevel = value.intValue();
-    debugConduit.debugLevelChanged(debugLevel);
-    debugOutput.debugLevelChanged(debugLevel);
-  }
+	public void setDebugLevel(Integer value) {
+		debugLevel = value.intValue();
+		debugConduit.debugLevelChanged(debugLevel);
+		debugOutput.debugLevelChanged(debugLevel);
+	}
 
-  public void debugLevelChanged(int level)
-  {
-    debugConduit.debugLevelChanged(level);
-    debugOutput.debugLevelChanged(debugLevel);
-  }
+	public void debugLevelChanged(int level) {
+		debugConduit.debugLevelChanged(level);
+		debugOutput.debugLevelChanged(debugLevel);
+	}
 
-  public void commence()
-  {
-    debugConduit.debugLevelChanged(debugLevel);
-  }
-  
-  public WedgeDefinition getWedgeDefinition()
-  {
-    WedgeDefinition wedgeDefinition = WedgeDefinitionFactory.spi.create().inspectWedgeDefinition(this.getClass());
-    WedgeDefinitionUtility.renameFacetIdentifier(wedgeDefinition, "debug", "debugIput");
-    return wedgeDefinition;
-  }
+	public void commence() {
+		debugConduit.debugLevelChanged(debugLevel);
+	}
 
-  /* ------------------------------------------------------------------------ */
+	public WedgeDefinition getWedgeDefinition() {
+		WedgeDefinition wedgeDefinition = WedgeDefinitionFactory.spi.create().inspectWedgeDefinition(this.getClass());
+		WedgeDefinitionUtility.renameFacetIdentifier(wedgeDefinition, "debug", "debugIput");
+		return wedgeDefinition;
+	}
 
-  private class LifeCycleClientHandler implements LifeCycleClient
-  {
-    public void lifeCycleStateChanged(LifeCycleTransition transition)
-    {
-      if ( transition.equals(LifeCycleTransition.LOADED_PENDING) )
-      {
-        commence();
-      }
-    }
+	/* ------------------------------------------------------------------------ */
 
-    public void lifeCycleStateChanging(LifeCycleTransition transition)
-    {
-    }
-  }
+	private class LifeCycleClientHandler implements LifeCycleClient {
+		public void lifeCycleStateChanged(LifeCycleTransition transition) {
+			if (transition.equals(LifeCycleTransition.LOADED_PENDING)) {
+				commence();
+			}
+		}
 
-  private class MyContentProvider implements ContentProvider
-  {
-    public synchronized void sendContent(Object target, Filter filter)
-    {
-      Debug debugTarget = (Debug) target;
-      debugTarget.debugLevelChanged(debugLevel);
-    }
-  }
+		public void lifeCycleStateChanging(LifeCycleTransition transition) {
+		}
+	}
+
+	private class MyContentProvider implements ContentProvider<Debug> {
+		public synchronized void sendContent(Debug debugTarget, Filter filter) {
+			debugTarget.debugLevelChanged(debugLevel);
+		}
+	}
 }

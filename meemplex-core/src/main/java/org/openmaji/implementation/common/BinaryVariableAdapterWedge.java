@@ -79,9 +79,9 @@ public class BinaryVariableAdapterWedge implements Wedge {
 	
 	public String falseValue = "false";
 
-	public transient ConfigurationSpecification trueValueSpecification = new ConfigurationSpecification("The value that represents \"true\"");
+	public transient ConfigurationSpecification trueValueSpecification = ConfigurationSpecification.create("The value that represents \"true\"");
 	
-	public transient ConfigurationSpecification falseValueSpecification = new ConfigurationSpecification("The value that represents \"false\"");
+	public transient ConfigurationSpecification falseValueSpecification = ConfigurationSpecification.create("The value that represents \"false\"");
 
 	
 	/* ------------------------- configuration methods ----------------------------------- */

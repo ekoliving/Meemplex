@@ -29,16 +29,16 @@ public class UnaryWedge implements Unary,Wedge{
 	 * Unary outbound Facet
 	 */
 	public Unary unaryClient;
-	public final ContentProvider unaryClientProvider = new ContentProvider(){
+	public final ContentProvider<Unary> unaryClientProvider = new ContentProvider<Unary>(){
 		/**
 	     * Send content to a Unary client that has just had its Reference added.
 	     *
 	     * @param target           Reference to the target Meem
 	     * @param filter           No Filters are currently implemented
 	     */
-	    public synchronized void sendContent(Object target, Filter filter){
+	    public synchronized void sendContent(Unary target, Filter filter){
 			if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
-	        ((Unary) target).valueChanged();
+	        target.valueChanged();
 	    }
 	};
 	

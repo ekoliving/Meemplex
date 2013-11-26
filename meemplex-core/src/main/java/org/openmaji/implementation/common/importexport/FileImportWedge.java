@@ -48,7 +48,7 @@ public class FileImportWedge
     new ConfigurationClientAdapter(this);
 
   public transient ConfigurationSpecification inputFileSpecification =
-    new ConfigurationSpecification("Import file path");
+    ConfigurationSpecification.create("Import file path");
 
   public void setInputFile(
     String inputFilePath) {

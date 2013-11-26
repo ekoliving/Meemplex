@@ -170,7 +170,7 @@ public class ExtractMeemWedge
           "meemDefinitionClient",
           meemContext.getTarget("meemDefinitionClient"),
           true,
-          new ExactMatchFilter(meemPath)
+          ExactMatchFilter.create(meemPath)
         );
 
       meemStoreMeem.addOutboundReference(meemDefinitionClientReference, true);

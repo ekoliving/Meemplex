@@ -59,12 +59,12 @@ public class BinaryMultistateAdapterWedge implements Binary, Wedge, WedgeDefinit
 	 * A configuration property to specify which output State for true Binary value
 	 */
 	public String onValueState;
-	public transient ConfigurationSpecification onValueStateSpecification = new ConfigurationSpecification("Multistate state string");
+	public transient ConfigurationSpecification onValueStateSpecification = ConfigurationSpecification.create("Multistate state string");
 	/**
 	 * A configuration property to specify which output State for false Binary value
 	 */
 	public String offValueState;
-	public transient ConfigurationSpecification offValueStateSpecification=new ConfigurationSpecification("Multistate state string");
+	public transient ConfigurationSpecification offValueStateSpecification=ConfigurationSpecification.create("Multistate state string");
 	
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 

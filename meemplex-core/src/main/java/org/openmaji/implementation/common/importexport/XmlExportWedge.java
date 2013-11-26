@@ -65,7 +65,7 @@ public class XmlExportWedge
     new ConfigurationClientAdapter(this);
 
   public transient ConfigurationSpecification outputURLSpecification =
-    new ConfigurationSpecification("Export URL");
+    ConfigurationSpecification.create("Export URL");
 
   public void setOutputURL(
     String outputURL) {

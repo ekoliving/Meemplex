@@ -55,7 +55,7 @@ public class MultistateUnaryAdapterWedge implements Multistate, Wedge, WedgeDefi
 	 * A configuration property to specify what output string to generate when it receives Binary input value
 	 */
 	public String stateString;
-	public transient ConfigurationSpecification stateStringSpecification = new ConfigurationSpecification("Multistate state string");
+	public transient ConfigurationSpecification stateStringSpecification = ConfigurationSpecification.create("Multistate state string");
 	
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 

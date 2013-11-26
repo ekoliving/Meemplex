@@ -53,7 +53,7 @@ public class UnaryMultistateAdapterWedge implements Unary, Wedge, WedgeDefinitio
 	 */
 	public LifeCycleClient lifeCycleClientConduit = new LifeCycleClientAdapter(this);
 	public String stateString;
-	public transient ConfigurationSpecification stateStringSpecification = new ConfigurationSpecification("Multistate state string");
+	public transient ConfigurationSpecification stateStringSpecification = ConfigurationSpecification.create("Multistate state string");
 	
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 

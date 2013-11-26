@@ -57,7 +57,7 @@ public class XmlImportWedge
     new ConfigurationClientAdapter(this);
 
   public transient ConfigurationSpecification inputURLSpecification =
-    new ConfigurationSpecification("Import URL");
+    ConfigurationSpecification.create("Import URL");
 
   public void setInputURL(
     String inputURL) {

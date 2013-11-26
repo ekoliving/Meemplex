@@ -72,7 +72,7 @@ public class UnaryBinaryAdapterWedge implements Unary, Wedge, WedgeDefinitionPro
 	
 	/* ---------------------- configuration specification --------------------- */ 
 	
-	public transient ConfigurationSpecification binaryValueSpecification = new ConfigurationSpecification("true|false");
+	public transient ConfigurationSpecification binaryValueSpecification = ConfigurationSpecification.create("true|false");
 
 
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */

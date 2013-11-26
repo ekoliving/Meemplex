@@ -50,7 +50,7 @@ public class VariableListWedge implements VariableList, Wedge
    */
 
   public VariableList variableListClient;
-  public final ContentProvider variableClientProvider = new ContentProvider()
+  public final ContentProvider<VariableList> variableClientProvider = new ContentProvider<VariableList>()
   {
       /**
        * Send content to a Variable client that has just had its Reference added.
@@ -58,10 +58,9 @@ public class VariableListWedge implements VariableList, Wedge
        * @param target           Reference to the target Meem
        * @param filter           No Filters are currently implemented
        */
-      public void sendContent(Object target, Filter filter)
+      public void sendContent(VariableList variableList, Filter filter)
       {
         if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
-        VariableList variableList = (VariableList) target;
         Value[] initialContent = ( valueList == null ? new Value[0] : valueList );
         variableList.valueChanged(initialContent);
       }

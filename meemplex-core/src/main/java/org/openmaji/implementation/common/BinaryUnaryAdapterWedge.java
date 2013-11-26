@@ -57,7 +57,7 @@ public class BinaryUnaryAdapterWedge implements Binary, Wedge, WedgeDefinitionPr
 	 * A configuration property to specify which Binary input value the wedge is looking after
 	 */
 	public String binaryValue="true";
-	public transient ConfigurationSpecification binaryValueSpecification=new ConfigurationSpecification("true|false|both");
+	public transient ConfigurationSpecification binaryValueSpecification=ConfigurationSpecification.create("true|false|both");
 	
 	/* ---------- ConfigurationChangeHandler listener ------------------------- */
 

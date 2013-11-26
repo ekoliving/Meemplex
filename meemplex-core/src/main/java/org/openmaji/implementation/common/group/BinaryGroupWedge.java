@@ -92,17 +92,17 @@ public class BinaryGroupWedge implements Binary, Wedge {
 	
 	@Facet(name="onCount", direction=Direction.OUT)
 	public Linear onCount;
-	public final ContentProvider onCountProvider = new ContentProvider() {
-		public synchronized void sendContent(Object target, Filter filter) {
-			((Linear) target).valueChanged(new IntegerPosition(on.size()));
+	public final ContentProvider<Linear> onCountProvider = new ContentProvider<Linear>() {
+		public synchronized void sendContent(Linear target, Filter filter) {
+			target.valueChanged(new IntegerPosition(on.size()));
 		}
 	};
 	
 	@Facet(name="offCount", direction=Direction.OUT)
 	public Linear offCount;
-	public final ContentProvider offCountProvider = new ContentProvider() {
-		public synchronized void sendContent(Object target, Filter filter) {
-			((Linear) target).valueChanged(new IntegerPosition(off.size()));
+	public final ContentProvider<Linear> offCountProvider = new ContentProvider<Linear>() {
+		public synchronized void sendContent(Linear target, Filter filter) {
+			target.valueChanged(new IntegerPosition(off.size()));
 		}
 	};
 	

@@ -51,7 +51,7 @@ public class VariableWedge implements Variable, Wedge
    */
 
   public Variable variableClient;
-  public final ContentProvider variableClientProvider = new ContentProvider()
+  public final ContentProvider<Variable> variableClientProvider = new ContentProvider<Variable>()
   {
       /**
        * Send content to a Variable client that has just had its Reference added.
@@ -59,10 +59,9 @@ public class VariableWedge implements Variable, Wedge
        * @param target           Reference to the target Meem
        * @param filter           No Filters are currently implemented
        */
-      public void sendContent(Object target, Filter filter)
+      public void sendContent(Variable variable, Filter filter)
       {
         if ( DebugFlag.TRACE ) logger.log(Level.FINE, "sendContent() - invoked");
-        Variable variable = (Variable) target;
         Value initialContent = ( value == null ? new StringValue("") : value );
         variable.valueChanged(initialContent);
       }

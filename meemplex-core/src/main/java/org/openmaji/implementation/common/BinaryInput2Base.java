@@ -102,7 +102,7 @@ public abstract class BinaryInput2Base implements Binary {
    */
 
   public Binary binaryOutput;
-  public final ContentProvider binaryOutputProvider = new ContentProvider() {
+  public final ContentProvider<Binary> binaryOutputProvider = new ContentProvider<Binary>() {
         /**
          * <p>
          * Send content to a Binary client that has just had it's Reference added.
@@ -110,8 +110,8 @@ public abstract class BinaryInput2Base implements Binary {
          * @param target           Reference to the target Meem
          * @param filter           No Filters are currently implemented
          */
-        public void sendContent(Object target, Filter filter) {
-          ((Binary) target).valueChanged(output);
+        public void sendContent(Binary target, Filter filter) {
+          target.valueChanged(output);
         }
   };
 

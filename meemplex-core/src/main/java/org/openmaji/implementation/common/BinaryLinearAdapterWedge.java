@@ -81,9 +81,9 @@ public class BinaryLinearAdapterWedge implements Wedge {
 	
 	/* -------------------------- configuration ----------------------- */
 	
-	public transient ConfigurationSpecification trueValueSpecification = new ConfigurationSpecification("The value that represents \"true\"");
+	public transient ConfigurationSpecification trueValueSpecification = ConfigurationSpecification.create("The value that represents \"true\"");
 	
-	public transient ConfigurationSpecification falseValueSpecification = new ConfigurationSpecification("The value that represents \"false\"");
+	public transient ConfigurationSpecification falseValueSpecification = ConfigurationSpecification.create("The value that represents \"false\"");
 
 	public void setTrueValue(String string) {
 		this.trueValue = Float.parseFloat(string);

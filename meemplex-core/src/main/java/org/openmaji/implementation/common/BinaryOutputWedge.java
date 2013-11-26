@@ -15,40 +15,33 @@ import org.openmaji.meem.definition.WedgeDefinitionProvider;
 import org.openmaji.meem.filter.Filter;
 import org.openmaji.system.meem.wedge.reference.ContentProvider;
 
-public class BinaryOutputWedge implements Wedge, WedgeDefinitionProvider
-{
-  public Binary binaryStateConduit = new BinaryStateConduit();
-  public Binary binaryOutput;
-  public final ContentProvider binaryClientProvider = new MyContentProvider();
-  public boolean value = false;
+public class BinaryOutputWedge implements Wedge, WedgeDefinitionProvider {
+	public Binary binaryStateConduit = new BinaryStateConduit();
+	public Binary binaryOutput;
+	public final ContentProvider<Binary> binaryClientProvider = new MyContentProvider();
+	public boolean value = false;
 
-  /* ---------- WedgeDefinitionProvider method(s) --------------------------- */
+	/* ---------- WedgeDefinitionProvider method(s) --------------------------- */
 
-  public WedgeDefinition getWedgeDefinition()
-  {
-    return WedgeDefinitionFactory.spi.create().inspectWedgeDefinition(this.getClass());
-  }  
+	public WedgeDefinition getWedgeDefinition() {
+		return WedgeDefinitionFactory.spi.create().inspectWedgeDefinition(this.getClass());
+	}
 
-  /* ---------- BinaryStateConduit ------------------------------------------ */
+	/* ---------- BinaryStateConduit ------------------------------------------ */
 
-  private class BinaryStateConduit implements Binary
-  {
-    public void valueChanged(boolean newValue)
-    {
-      value = newValue;
-      binaryOutput.valueChanged(value);
-    }
-  }
+	private class BinaryStateConduit implements Binary {
+		public void valueChanged(boolean newValue) {
+			value = newValue;
+			binaryOutput.valueChanged(value);
+		}
+	}
 
-  /* ---------- ContentProvider --------------------------------------------- */
+	/* ---------- ContentProvider --------------------------------------------- */
 
-  private class MyContentProvider implements ContentProvider
-  {
-    public synchronized void sendContent(Object target, Filter filter)
-    {
-      Binary binary = (Binary) target;
-      binary.valueChanged(value);
-    }
-  };
+	private class MyContentProvider implements ContentProvider<Binary> {
+		public synchronized void sendContent(Binary binary, Filter filter) {
+			binary.valueChanged(value);
+		}
+	};
 
 }

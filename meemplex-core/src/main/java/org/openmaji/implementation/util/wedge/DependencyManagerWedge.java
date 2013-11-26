@@ -45,9 +45,10 @@ public class DependencyManagerWedge implements Wedge, CategoryEntryConsumer {
 	/* ----------------- outbound facets ----------------- */
 	
 	public CategoryEntryConsumer categoryEntryOutput;
-	public final ContentProvider categoryEntryOutputProvider = new ContentProvider() {
-		public void sendContent(Object object, Filter filter) throws ContentException {
-			((CategoryEntryConsumer)object).entry(currentEntry);
+	
+	public final ContentProvider<CategoryEntryConsumer> categoryEntryOutputProvider = new ContentProvider<CategoryEntryConsumer>() {
+		public void sendContent(CategoryEntryConsumer target, Filter filter) throws ContentException {
+			target.entry(currentEntry);
 		};
 	};
 
@@ -87,10 +88,10 @@ public class DependencyManagerWedge implements Wedge, CategoryEntryConsumer {
 	/* -------------- configuration specs ----------- */
 	
 	public transient ConfigurationSpecification facetMappingsSpecification  = 
-		new ConfigurationSpecification("Facet mappings, e.g. \"localFacet1 remoteFacet1; localFacet2 remoteFacet2;\"");
+		ConfigurationSpecification.create("Facet mappings, e.g. \"localFacet1 remoteFacet1; localFacet2 remoteFacet2;\"");
 
 	public transient ConfigurationSpecification dependencyTypeSpecification  = 
-		new ConfigurationSpecification("Whether the dependency type is " + 
+		ConfigurationSpecification.create("Whether the dependency type is " + 
 				DependencyType.STRONG.getIdentifier() + ", " +
 				DependencyType.WEAK.getIdentifier() + ", " +
 				DependencyType.STRONG_MANY.getIdentifier() + " or " +

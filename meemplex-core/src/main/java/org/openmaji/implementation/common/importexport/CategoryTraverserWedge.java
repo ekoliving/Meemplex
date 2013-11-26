@@ -57,7 +57,7 @@ public class CategoryTraverserWedge
     new ConfigurationClientAdapter(this);
 
   public transient ConfigurationSpecification depthLimitSpecification =
-    new ConfigurationSpecification(
+    ConfigurationSpecification.create(
       "Maximum depth of Categories to descend", Integer.class
     );
 
@@ -68,7 +68,7 @@ public class CategoryTraverserWedge
   }
 
   public transient ConfigurationSpecification initialMeemPathSpecification =
-    new ConfigurationSpecification("HyperSpace MeemPath to export");
+    ConfigurationSpecification.create("HyperSpace MeemPath to export");
 
   public void setInitialMeemPath(String initialMeemPathString) {
 
