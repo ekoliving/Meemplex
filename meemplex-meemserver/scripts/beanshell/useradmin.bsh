@@ -173,16 +173,18 @@ void addAccess(String userOrGroupID, MeemPath meemPath, AccessLevel level)
     	return;
     }
     
-	Meem	                meem = Meem.spi.get(meemPath);
-	AccessControl	control = ReferenceHelper.getTarget(meem, "accessControl", AccessControl.class);
-	
-	Principal				principal = CoreAdminHelper.getPrincipal(userOrGroupID);
-	
-	if (principal == null)
-	{
-	    throw new RuntimeException("no principal found for " + userOrGroupID);
+	Meem meem             = Meem.spi.get(meemPath);
+	AccessControl control = ReferenceHelper.getTarget(meem, "accessControl", AccessControl.class);
+	if (control == null) {
+		System.out.println("no accessControl facet on meem " + meemPath);
+		return;
 	}
 	
+	Principal principal = CoreAdminHelper.getPrincipal(userOrGroupID);
+	if (principal == null) {
+	    throw new RuntimeException("no principal found for " + userOrGroupID);
+	}
+
 	control.addAccess(principal, level);
 }
 
