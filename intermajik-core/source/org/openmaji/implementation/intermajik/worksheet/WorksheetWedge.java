@@ -21,18 +21,19 @@ import org.openmaji.system.meem.wedge.reference.ContentProvider;
  * <p>
  * ...
  * </p>
- * @author  mg
+ * 
+ * @author mg
  * @version 1.0
  */
 public class WorksheetWedge implements Wedge, Worksheet {
 
-    public Worksheet worksheetClient;
-    public final ContentProvider worksheetClientProvider = new ContentProvider() {
-        public void sendContent(Object target, Filter filter) {
-            Worksheet client = (Worksheet) target;
-            client.lifeCycleManagerChanged(lifeCycleManagerPath);
-        }
-    };
+	public Worksheet worksheetClient;
+
+	public final ContentProvider<Worksheet> worksheetClientProvider = new ContentProvider<Worksheet>() {
+		public void sendContent(Worksheet client, Filter filter) {
+			client.lifeCycleManagerChanged(lifeCycleManagerPath);
+		}
+	};
 
 	private MeemPath lifeCycleManagerPath = null;
 
@@ -43,6 +44,5 @@ public class WorksheetWedge implements Wedge, Worksheet {
 		this.lifeCycleManagerPath = lifeCycleManagerPath;
 		worksheetClient.lifeCycleManagerChanged(lifeCycleManagerPath);
 	}
-
 
 }
